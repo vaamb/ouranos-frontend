@@ -1,0 +1,86 @@
+:root {
+  --main-95: hsl(210, 33%, 95%);  /*original: #f9f9fb*/
+  --main-93: hsl(210, 33%, 93%);
+  --main-90: hsl(210, 33%, 90%);  /*original: #ededed*/
+  --main-80: hsl(210, 33%, 80%);  /*original: #d9dee4*/
+  --main-60: hsl(210, 33%, 60%);
+  --main-50: hsl(210, 33%, 50%);
+  --main-40: hsl(210, 33%, 40%);  /*original: #366485*/
+  --main-25: hsl(210, 33%, 25%);  /*original: #2a3f54*/
+  --main-50-shadow: hsla(210, 33%, 50%, 10%);
+  --derived-50: hsl(210, 17%, 50%);  /*original: #73879c*/
+  --derived-20: hsl(210, 17%, 20%);  /*original: #282f3c*/
+  --green: hsl(122, 40%, 52%);  /*original: #54b657*/
+  --red: hsl(9, 100%, 65%);  /*original: #fd6348*/
+  --gray-80: hsl(0, 0%, 80%);
+  --gray-70: hsl(0, 0%, 70%);
+  --gray-50: hsl(0, 0%, 50%);
+  --graph-blue: #226ba3;
+  --graph-red: #f0341f;
+  --graph-yellow: #e9c429;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--main-95);
+  font-family: "Raleway", Verdana, sans-serif;
+  color: var(--derived-50);
+  overflow-y: scroll;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+
+h2 {
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin-bottom: 0.4em;
+  margin-top: 1.2em;
+}
+
+.header-line + h2 {
+  margin-top: 0.5em;
+}
+
+h3 {
+  font-size: 0.97rem;
+  margin-top: 10px;
+  margin-bottom: 7px;
+}
+
+.center-content {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: relative;
+}
+
+.reset-button {
+  background-color: inherit;
+  color: inherit;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  padding: 0;
+}
+
+.on {
+  color: var(--green);
+}
+
+.off {
+  color: var(--red);
+}
+
+.deco {
+  color: var(--main-60);
+}

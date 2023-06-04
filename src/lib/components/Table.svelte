@@ -20,7 +20,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	const getStatusClass = function () {
+	const getStatusClass = function (status) {
 		if (status === true) {
 			return 'on';
 		} else {
@@ -123,6 +123,7 @@
 		border-collapse: collapse;
 		font-family: sans-serif;
 		box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+		margin-bottom: 1.5rem;
 	}
 
 	.table-base thead {

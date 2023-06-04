@@ -9,7 +9,7 @@ import {
 import { permissions } from "$lib/utils/consts.js";
 import { User } from "$lib/utils/factories.js";
 
-export async function load({ cookies }) {
+export async function load({ cookies, request }) {
   const userDataCookie = cookies.get("userDataCache")
   let currentUser = User()
   if (userDataCookie) {
@@ -24,18 +24,18 @@ export async function load({ cookies }) {
   let serverCurrentData = {};
   let serverStartTime = null;
   if (currentUser.can(permissions.ADMIN)) {
-    const sessionCookie = "session=" + cookies.get("session")
-    const resp1 = await fetchServerCurrentData(sessionCookie);
-    console.log(resp1)
+    const clientSessionCookie = "session=" + cookies.get("session")
+    const clientUserAgent = request.headers.get("user-agent")
+    const resp1 = await fetchServerCurrentData(clientSessionCookie, clientUserAgent);
     serverCurrentData = resp1.serverCurrentData;
-    const resp2 = await fetchServerStartTime(sessionCookie);
+    const resp2 = await fetchServerStartTime(clientSessionCookie, clientUserAgent);
     serverStartTime = resp2.serverStartTime;
   }
 
   return {
     ecosystemsCurrentSensorsDataValues: ecosystemsCurrentSensorsData,
     ecosystemsLightValues: ecosystemsLight,
-    serverCurrentDataValues: serverCurrentData.values,
+    serverCurrentDataValues: serverCurrentData,
     serverStartTimeValue: serverStartTime,
     weatherCurrentlyValues: weatherCurrently,
   };

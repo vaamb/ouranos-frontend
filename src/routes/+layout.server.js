@@ -3,8 +3,7 @@ import {error} from "@sveltejs/kit";
 import { APP_MODE, AppMode } from "../conf.js";
 import { fetchCurrentUserData, fetchServerInfo } from "$lib/actions.js";
 
-export async function load({ cookies }) {
-  const cookie = "session=" + cookies.get("session")
+export async function load({ cookies, request }) {
   const rv = {
     development: APP_MODE === AppMode.development,
   }
@@ -12,7 +11,9 @@ export async function load({ cookies }) {
   rv.appVersion = appVersion;
   rv.serverStatus = serverStatus;
 
-  const { currentUserData } = await fetchCurrentUserData(cookie)
+  const clientSessionCookie = "session=" + cookies.get("session")
+  const clientUserAgent = request.headers.get("user-agent")
+  const { currentUserData } = await fetchCurrentUserData(clientSessionCookie, clientUserAgent)
   rv.userData = currentUserData
 
   switch (APP_MODE) {

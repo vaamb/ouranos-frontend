@@ -32,8 +32,7 @@ export const fetchServerInfo = async function() {
         };
       }
     })
-    .catch((fetchError) => {
-      console.log(fetchError);
+    .catch(() => {
       return {
         appVersion: null,
         serverStatus: SERVER_STATUS.unreachable,
@@ -42,11 +41,14 @@ export const fetchServerInfo = async function() {
 }
 
 // Auth-related actions
-export const fetchCurrentUserData = async function(cookie=undefined) {
+export const fetchCurrentUserData = async function(clientSessionCookie, clientUserAgent) {
   return axios
     .get(`${API_URL}/auth/current_user`,
       {
-        headers: {Cookie: cookie},
+        headers: {
+          "Cookie": clientSessionCookie,
+          "User-Agent": clientUserAgent,
+        },
         withCredentials: true
       }
     )
@@ -303,35 +305,37 @@ export const fetchWeatherForecast = async function(exclude=null) {
 }
 
 // Server-related actions
-export const fetchServerCurrentData = async function(cookie=undefined) {
+export const fetchServerCurrentData = async function(clientSessionCookie, clientUserAgent) {
   return axios
     .get(`${API_URL}/system/data/current`,
       {
-        headers: {Cookie: cookie},
+        headers: {
+          "Cookie": clientSessionCookie,
+          "User-Agent": clientUserAgent,
+        },
         withCredentials: true
       }
     )
     .then((response) => {
       return {
-        serverCurrentData: response.data
+        serverCurrentData: response.data.values
       }
     })
-    .catch((fetchError) => {
-      if (fetchError.response) {
-        if (fetchError.response.status === 401) {
-          return {
-            serverCurrentData: {}
-          }
-        }
+    .catch(() => {
+      return {
+        serverCurrentData: {}
       }
     });
 }
 
-export const fetchServerStartTime = async function(cookie=undefined) {
+export const fetchServerStartTime = async function(clientSessionCookie, clientUserAgent) {
   return axios
     .get(`${API_URL}/system/start_time`,
       {
-        headers: {Cookie: cookie},
+        headers: {
+          "Cookie": clientSessionCookie,
+          "User-Agent": clientUserAgent,
+        },
         withCredentials: true
       }
     )

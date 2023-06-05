@@ -119,22 +119,3 @@ export const graphs = {
     },
   },
 };
-
-export const gaugeOpts = {
-  lines: 12,
-  angle: -0.11,            // The span of the gauge arc
-  lineWidth: 0.25,         // The line thickness
-  radiusScale: 0.7,        // Relative radius
-  pointer: {
-    length: 0.6,           // Relative to gauge radius
-    strokeWidth: 0.035,    // The thickness
-    color: "#000000"       // Fill color
-  },
-  limitMax: true,          // If false, max value increases automatically if value > maxValue
-  limitMin: true,          // If true, the min value of the gauge will be fixed
-  colorStart: "#6FADCF",   // Colors
-  colorStop: "#8FC0DA",    // just experiment with them
-  strokeColor: "#E0E0E0",  // to see which ones work best for you
-  generateGradient: true,
-  highDpiSupport: true,    // High resolution support
-}

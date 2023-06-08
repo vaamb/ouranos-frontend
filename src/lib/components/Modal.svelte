@@ -4,12 +4,11 @@
 	import Fa from 'svelte-fa';
 	import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
+	export let dialog; // HTMLDialogElement
 	export let showModal = false;
 	export let title = undefined;
 
 	const dispatch = createEventDispatcher();
-
-	let dialog; // HTMLDialogElement
 
 	$: if (dialog && showModal) dialog.showModal();
 
@@ -65,6 +64,7 @@
 		position: absolute;
 		top: 0;
 		right: 0;
+		margin-right: 0;
 		width: 35px;
 		height: 35px;
 		cursor: pointer;

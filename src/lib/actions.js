@@ -87,7 +87,7 @@ export const logIn = async function (username, password, remember = false) {
 			if (response.status === 200) {
 				const user = User(response.data.user);
 				currentUser.set(user);
-				let msgs = get(flashMessage);
+				const msgs = get(flashMessage);
 				msgs.push(Message('You are now logged in ' + user.username));
 				flashMessage.set(msgs);
 				goto('/');
@@ -189,7 +189,31 @@ export const fetchEcosystemLight = async function (ecosystemUID) {
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/light`)
 		.then((response) => {
-			return response.data
+			return response.data;
+		})
+		.catch(() => {
+			return {};
+		});
+};
+
+export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID) {
+	return axios
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/environment_parameters`)
+		.then((response) => {
+			return response.data;
+		})
+		.catch(() => {
+			return {};
+		});
+};
+
+export const fetchEcosystemHardware = async function (ecosystemUID) {
+	return axios
+		.get(`${API_URL}/gaia/hardware`, {
+			params: { ecosystems_uid: formatParam(ecosystemUID) }
+		})
+		.then((response) => {
+			return response.data;
 		})
 		.catch(() => {
 			return {};
@@ -385,5 +409,42 @@ export const fetchWarnings = async function () {
 			return {
 				warnings: []
 			};
+		});
+};
+
+export const crudRequest = function (relRoute, action, payload) {
+	let method;
+	if (action === 'create') {
+		method = 'post';
+	} else if (action === 'update') {
+		method = 'put';
+	} else if (action === 'delete') {
+		method = 'delete';
+	} else {
+		throw Error;
+	}
+
+	const options = {
+		method: method,
+		withCredentials: true,
+	}
+	if (action !== 'delete') {
+		options["data"] = payload
+	}
+
+	return axios(`${API_URL}/${relRoute}`, options)
+		.then((response) => {
+			const msgs = get(flashMessage);
+			msgs.push(Message(response.data.msg));
+			flashMessage.set(msgs);
+		})
+		.catch((error) => {
+			const msgs = get(flashMessage);
+			if (error.response.data.msg) {
+				msgs.push(Message(error.response.data.msg));
+			} else {
+				msgs.push(Message(error.response.data));
+			}
+			flashMessage.set(msgs);
 		});
 };

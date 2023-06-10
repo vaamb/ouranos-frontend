@@ -19,7 +19,7 @@
 </script>
 
 <dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={() => closeModal()}>
-	<div on:click|stopPropagation>
+	<div on:click|stopPropagation style="padding-top: 0.7rem; font-size: 1.05rem">
 		<button class="reset-button close" on:click={() => closeModal()}>
 			<Fa icon={faXmark} />
 		</button>
@@ -28,9 +28,6 @@
 				{title}
 			</h1>
 		{/if}
-		<h1>
-			<slot name="header" />
-		</h1>
 		<div class="content">
 			<slot />
 		</div>

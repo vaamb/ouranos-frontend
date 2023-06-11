@@ -40,7 +40,7 @@
 	import {
 		fetchSensorCurrentData,
 		fetchEcosystemsSensorsSkeleton,
-		fetchEcosystemLight,
+		fetchEcosystemLighting,
 		fetchWeatherForecast
 	} from '$lib/actions.js';
 
@@ -180,7 +180,7 @@
 			{#if getParamStatus($ecosystems, uid, 'connected') && getParamStatus($ecosystemsManagement, uid, 'light')}
 				<template>{(filledBox[uid] = true)}</template>
 				<BoxItem title="Light">
-					{#await fetchEcosystemLight(uid)}
+					{#await fetchEcosystemLighting(uid)}
 						<p>Fetching data</p>
 					{:then ecosystemLight}
 						<p>

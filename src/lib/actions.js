@@ -186,7 +186,7 @@ export const fetchEcosystemsManagement = async function () {
 		});
 };
 
-export const fetchEcosystemLight = async function (ecosystemUID) {
+export const fetchEcosystemLighting = async function (ecosystemUID) {
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/light`)
 		.then((response) => {

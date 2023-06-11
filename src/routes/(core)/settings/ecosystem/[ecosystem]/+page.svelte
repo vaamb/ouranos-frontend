@@ -83,7 +83,7 @@
 			}
 		} else if (table === 'hardware') {
 			if (action === 'create') {
-				payload["ecosystem_uid"] = ecosystemUID;
+				payload['ecosystem_uid'] = ecosystemUID;
 				route = `gaia/hardware/u`;
 			} else {
 				route = `gaia/hardware/u/${crudTablePrimaryKey}`;
@@ -95,27 +95,25 @@
 </script>
 
 <HeaderLine title="{ecosystemName} settings" />
-{#if false}
-	<h2>Managements</h2>
-	<table>
-		<tbody>
-			{#each managementChoices as management}
-				<tr>
-					<td>
-						{capitalize(management)}
-					</td>
-					<td>&nbsp; &nbsp;</td>
-					<td><SlideButton bind:checked={$ecosystemsManagement[ecosystemUID][management]} /></td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
-	<div style="margin-top: 14px">
-		<button on:click={() => updateManagement()}>
-			Update {ecosystemName}' management
-		</button>
-	</div>
-{/if}
+<h2>Managements</h2>
+<table>
+	<tbody>
+		{#each managementChoices as management}
+			<tr>
+				<td>
+					{capitalize(management)}
+				</td>
+				<td>&nbsp; &nbsp;</td>
+				<td><SlideButton bind:checked={$ecosystemsManagement[ecosystemUID][management]} /></td>
+			</tr>
+		{/each}
+	</tbody>
+</table>
+<div style="margin-top: 14px">
+	<button on:click={() => updateManagement()}>
+		Update {ecosystemName}' management
+	</button>
+</div>
 
 {#await fetchEcosystemEnvironmentParameters(ecosystemUID) then environmentParameters}
 	<h2>Environment parameters</h2>

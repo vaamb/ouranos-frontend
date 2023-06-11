@@ -85,11 +85,11 @@
 
 	const formatCurrentSensorsAverages = function (averagedCurrentSensorsData) {
 		if (isEmpty(averagedCurrentSensorsData)) {
-			return '<p>No sensor data available</p>';
+			return '<p style="margin-bottom: 0">No sensor data available</p>';
 		}
 		let rv = '';
 		for (const measureRecord of averagedCurrentSensorsData) {
-			rv += `<p>${
+			rv += `<p style="margin-bottom: 0">${
 				capitalize(measureRecord['measure']).replace('_', ' ') +
 				': ' +
 				measureRecord['average'] +
@@ -263,6 +263,10 @@
 {/if}
 
 <style>
+	p {
+		margin-bottom: 0;
+	}
+
 	.weather-icon {
 		height: 115px;
 		line-height: 115px;

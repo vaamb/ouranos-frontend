@@ -14,14 +14,14 @@
 <div class="top-bar">
   <div class="left">
     {#if $currentUser.can(permissions.ADMIN)}
-      <p>Logged as Admin</p>
+      <div>Logged as Admin</div>
     {:else if $currentUser.can(permissions.OPERATE)}
-      <p>Logged as Operator</p>
+      <div>Logged as Operator</div>
     {/if}
   </div>
   <div class="center">
     {#if development}
-      <p style="color: var(--red)">Development mode</p>
+      <div style="color: var(--red)">Development mode</div>
     {/if}
   </div>
     <div class="right">

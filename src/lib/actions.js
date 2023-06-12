@@ -207,6 +207,17 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 		});
 };
 
+export const fetchEcosystemRunningActuators = async function (ecosystemUID) {
+	return axios
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_status`)
+		.then((response) => {
+			return response.data;
+		})
+		.catch(() => {
+			return {};
+		});
+};
+
 export const fetchEcosystemHardware = async function (ecosystemUID) {
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/hardware`)
@@ -424,13 +435,38 @@ export const crudRequest = function (relRoute, action, payload) {
 
 	const options = {
 		method: method,
-		withCredentials: true,
-	}
+		withCredentials: true
+	};
 	if (action !== 'delete') {
-		options["data"] = payload
+		options['data'] = payload;
 	}
 
 	return axios(`${API_URL}/${relRoute}`, options)
+		.then((response) => {
+			const msgs = get(flashMessage);
+			msgs.push(Message(response.data.msg));
+			flashMessage.set(msgs);
+		})
+		.catch((error) => {
+			const msgs = get(flashMessage);
+			if (error.response.data.msg) {
+				msgs.push(Message(error.response.data.msg));
+			} else {
+				msgs.push(Message(error.response.data));
+			}
+			flashMessage.set(msgs);
+		});
+};
+
+export const updateActuatorMode = function (ecosystemUID, actuatorType, mode) {
+	return axios(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/turn_actuator`, {
+		method: 'put',
+		withCredentials: true,
+		data: {
+			actuator: actuatorType,
+			mode: mode
+		}
+	})
 		.then((response) => {
 			const msgs = get(flashMessage);
 			msgs.push(Message(response.data.msg));

@@ -199,7 +199,12 @@ export const getSensorDataStorageKey = function (sensorUid, measure) {
 
 export const checkSensorDataRecency = function (sensorData, minuteModulo) {
 	if (!isEmpty(sensorData)) {
-		return true; // TODO: make some ckecks here
+    const timestamp = new Date(sensorData["timestamp"])
+    const timeSinceLastRecordThreshold = timestamp % (minuteModulo * 60 * 1000)
+    const lastRecordThreshold = timestamp - timeSinceLastRecordThreshold
+    const now = new Date();
+    return (now - lastRecordThreshold) <= ((minuteModulo + 1) * 60 * 1000);
+
 	} else {
 		return false;
 	}

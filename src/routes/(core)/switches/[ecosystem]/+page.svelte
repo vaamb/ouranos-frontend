@@ -4,7 +4,7 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Switch from '$lib/components/Switch.svelte';
 
-	import { fetchEcosystemRunningActuators, updateActuatorMode } from '$lib/actions.js';
+	import { fetchEcosystemActuatorsStatus, updateActuatorMode } from '$lib/actions.js';
 	import { ecosystemsIds } from '$lib/store.js';
 	import { actuatorType } from '$lib/utils/consts.js';
 	import { getEcosystemUid } from '$lib/utils/functions.js';
@@ -15,7 +15,7 @@
 
 <HeaderLine title="Actuator {ecosystemName}" />
 
-{#await fetchEcosystemRunningActuators(ecosystemUID) then runningActuators}
+{#await fetchEcosystemActuatorsStatus(ecosystemUID) then runningActuators}
 	{#each actuatorType as actuator}
 		{#if runningActuators[actuator]['active']}
 			<Switch

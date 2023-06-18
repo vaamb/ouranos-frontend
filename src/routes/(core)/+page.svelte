@@ -22,11 +22,10 @@
 		warnings,
 		weatherCurrently
 	} from '$lib/store.js';
-	import { permissions } from '$lib/utils/consts.js';
+	import { actuatorType, permissions } from '$lib/utils/consts.js';
 	import {
 		computeEcosystemStatusClass,
 		computeLightingHours,
-		computeLightStatusClass,
 		formatSensorsSkeleton,
 		computeUptime,
 		isEmpty,
@@ -38,6 +37,7 @@
 		capitalize
 	} from '$lib/utils/functions.js';
 	import {
+		fetchEcosystemActuatorsStatus,
 		fetchSensorCurrentData,
 		fetchEcosystemsSensorsSkeleton,
 		fetchEcosystemLighting,
@@ -54,6 +54,15 @@
 	$: weatherEnabled = serviceEnabled($services, 'weather');
 	$: calendarEnabled = serviceEnabled($services, 'calendar');
 	$: uptime = computeUptime($serverLastSeen, serverStartTime);
+
+	const anyActiveActuator = function (actuatorsStatus) {
+		for (const actuator of actuatorType) {
+			if (actuatorsStatus[actuator]['active']) {
+				return true;
+			}
+		}
+		return false;
+	};
 
 	const fetchAndComputeCurrentSensorsAverages = async function (FormattedSensorsSkeleton) {
 		if (isEmpty(FormattedSensorsSkeleton)) {
@@ -179,21 +188,34 @@
 
 			{#if getParamStatus($ecosystems, uid, 'connected') && getParamStatus($ecosystemsManagement, uid, 'light')}
 				<template>{(filledBox[uid] = true)}</template>
-				<BoxItem title="Light">
+				<BoxItem title="Lighting">
 					{#await fetchEcosystemLighting(uid)}
 						<p>Fetching data</p>
 					{:then ecosystemLight}
-						<p>
-							Status:
-							<Fa
-								icon={faSyncAlt}
-								class={computeLightStatusClass(ecosystemLight)}
-								spin={ecosystemLight['mode'] === 'automatic'}
-							/>
-						</p>
-						<p>{computeLightingHours(ecosystemLight)}</p>
+						{@html computeLightingHours(ecosystemLight)}
 					{/await}
 				</BoxItem>
+			{/if}
+			{#if getParamStatus($ecosystems, uid, 'connected')}
+				{#await fetchEcosystemActuatorsStatus(uid) then actuatorStatus}
+					{#if anyActiveActuator(actuatorStatus)}
+						<BoxItem title="Actuators">
+							<template>{(filledBox[uid] = true)}</template>
+							{#each actuatorType as actuator}
+								{#if actuatorStatus[actuator]['active']}
+									<p>
+										{capitalize(actuator)}:
+										<Fa
+											icon={faSyncAlt}
+											class={actuatorStatus[actuator]['status'] ? 'on' : 'off'}
+											spin={actuatorStatus[actuator]['mode'] === 'automatic'}
+										/>
+									</p>
+								{/if}
+							{/each}
+						</BoxItem>
+					{/if}
+				{/await}
 			{/if}
 			{#if getParamStatus($ecosystems, uid, 'connected') && getParamStatus($ecosystemsManagement, uid, 'environment_data')}
 				<template>{(filledBox[uid] = true)}</template>

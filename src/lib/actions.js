@@ -207,7 +207,7 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 		});
 };
 
-export const fetchEcosystemRunningActuators = async function (ecosystemUID) {
+export const fetchEcosystemActuatorsStatus = async function (ecosystemUID) {
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_status`)
 		.then((response) => {

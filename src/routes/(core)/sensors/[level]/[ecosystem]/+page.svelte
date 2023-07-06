@@ -60,14 +60,15 @@
 		return {
 			dataset: {
 				label: measureName,
-				data: data
+				data: data,
+				borderColor: colors[measureName],
 			},
 			labels: labels
 		};
 	};
 
 	onMount(async () => {
-		await fetchEcosystemsSensorsSkeleton(); // TODO: move to server ? But make sure not run too often
+		await fetchEcosystemsSensorsSkeleton();
 	});
 </script>
 
@@ -78,20 +79,27 @@
 		<Row>
 			{#await fetchSensorData(sensor.uid, measureInfo.measure) then sensorData}
 				<Box title={sensor.name} direction="row" icon={icons[measureInfo.measure]}>
-					<BoxItem maxWidth="300px" align="center">
-						{#await formatCurrentData(sensorData.current) then currentData}
-							<Gauge value={currentData.value} unit={measureInfo.unit} />
-						{/await}
-					</BoxItem>
+					{#if sensorData.current}
+						<BoxItem maxWidth="300px" align="center">
+							{#await formatCurrentData(sensorData.current) then currentData}
+								<Gauge value={currentData.value} unit={measureInfo.unit} />
+							{/await}
+						</BoxItem>
+					{/if}
 					<BoxItem align="center">
-						{#await formatHistoricData(sensorData.historic, measureInfo.measure) then historicData}
-							<Graph
-								datasets={[historicData.dataset]}
-								labels={historicData.labels}
-								suggestedMax={maxValues[measureInfo.measure]}
-								height="200px"
-							/>
-						{/await}
+						{#if sensorData.historic.values.length > 5}
+							{#await formatHistoricData(sensorData.historic, measureInfo.measure) then historicData}
+								<Graph
+									datasets={[historicData.dataset]}
+									labels={historicData.labels}
+									suggestedMax={maxValues[measureInfo.measure]}
+									height="200px"
+								/>
+							{/await}
+						{:else}
+							<p>There is not currently enough data points to draw a graph.</p>
+							<p>Please come back later to see your graph.</p>
+						{/if}
 					</BoxItem>
 				</Box>
 			{/await}

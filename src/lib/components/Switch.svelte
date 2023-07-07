@@ -42,8 +42,11 @@
 					<div class="switch">
 						<button
 							on:click={() => emitEvent(option)}
-							disabled={!$currentUser.can(permissions.OPERATE)}>{option}</button
+							disabled={!$currentUser.can(permissions.OPERATE)}
+							title={$currentUser.can(permissions.OPERATE) ? "" : "You need to be logged as an operator to toggle switches"}
 						>
+							{option}
+						</button>
 					</div>
 				{/each}
 			</div>
@@ -67,7 +70,9 @@
 	}
 
 	button:disabled {
-		background-color: var(--derived-60);
+		background-color: hsla(210, 33%, 60%, 60%);
+		color: rgba(100%, 100%, 100%, 60%);
+		cursor: default;
 	}
 
 	.fix {

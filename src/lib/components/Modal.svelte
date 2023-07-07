@@ -7,19 +7,29 @@
 	export let dialog; // HTMLDialogElement
 	export let showModal = false;
 	export let title = undefined;
+	export let timeOut = 1500;
 
 	const dispatch = createEventDispatcher();
-
-	$: if (dialog && showModal) dialog.showModal();
 
 	const closeModal = function () {
 		dialog.close();
 		dispatch('close');
 	};
+
+	const displayModal = function () {
+		dialog.showModal();
+		if (timeOut) {
+			setTimeout(() => {
+				closeModal();
+			}, timeOut)
+		}
+	}
+
+	$: if (dialog && showModal) displayModal()
 </script>
 
 <dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={() => closeModal()}>
-	<div on:click|stopPropagation style="padding-top: 0.7rem; font-size: 1.05rem">
+	<div on:click|stopPropagation style="font-size: 1.05rem">
 		<button class="reset-button close" on:click={() => closeModal()}>
 			<Fa icon={faXmark} />
 		</button>
@@ -41,7 +51,7 @@
 		max-width: 90vw;
 		height: fit-content;
 		border: 2px solid var(--main-40);
-		padding: 15px 25px;
+		padding: 20px 25px;
 		border-radius: 15px;
 		background-color: var(--main-95);
 		color: var(--derived-50);

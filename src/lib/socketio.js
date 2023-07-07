@@ -1,8 +1,13 @@
+import { get } from 'svelte/store';
+
 import { Manager } from "socket.io-client";
 
 import { base_URL } from "$lib/utils/consts.js";
 import {
+  ecosystemsActuatorData,
   ecosystemsCurrentSensorsData,
+    ecosystemsLightData,
+    ecosystemsManagement,
   serverCurrentData,
   serverLastSeen,
   serverLatency
@@ -63,9 +68,34 @@ socketio.on("current_server_data", (data) => {
   serverCurrentData.set(data);
 });
 
-socketio.on("current_sensors_data", (data) => {
-  const object = data.reduce(
-    (a, v) => ({...a, [v["ecosystem_uid"]]: v}), {}
+socketio.on("actuator_data", (data) => {
+  let currentData = get(ecosystemsActuatorData)
+  const updatedData = data.reduce(
+    (a, v) => ({...a, [v["uid"]]: v["data"]}), {}
   );
-  ecosystemsCurrentSensorsData.set(object);
+  ecosystemsActuatorData.set(Object.assign(currentData, updatedData));
+})
+
+socketio.on("current_sensors_data", (data) => {
+  let currentData = get(ecosystemsCurrentSensorsData)
+  const updatedData = data.reduce(
+    (a, v) => ({...a, [v["uid"]]: v["data"]}), {}
+  );
+  ecosystemsCurrentSensorsData.set(Object.assign(currentData, updatedData));
+});
+
+socketio.on("on_light_data", (data) => {
+  let currentData = get(ecosystemsLightData)
+  const updatedData = data.reduce(
+    (a, v) => ({...a, [v["uid"]]: v["data"]}), {}
+  );
+  ecosystemsLightData.set(Object.assign(currentData, updatedData));
+});
+
+socketio.on("on_management", (data) => {
+  let currentData = get(ecosystemsManagement)
+  const updatedData = data.reduce(
+    (a, v) => ({...a, [v["uid"]]: v["data"]}), {}
+  );
+  ecosystemsManagement.set(Object.assign(currentData, updatedData));
 });

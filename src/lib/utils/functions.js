@@ -240,7 +240,7 @@ export const formatSensorsSkeleton = function (sensorsSkeleton, sensorsLevel) {
 			return a.name > b.name;
 		});
 		rv.push({
-			measure: measure,
+			name: measure,
 			unit: units[measure],
 			sensors: accumulator
 		});

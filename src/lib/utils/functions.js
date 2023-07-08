@@ -186,10 +186,6 @@ export const getEcosystemUid = function (ecosystemIds, ecosystemName) {
 	}
 };
 
-export const getSensorDataStorageKey = function (sensorUid, measure) {
-	return sensorUid + '_' + measure;
-};
-
 export const checkSensorDataRecency = function (sensorData, minuteModulo) {
 	if (!isEmpty(sensorData)) {
 		return true; // TODO: make some ckecks here
@@ -198,7 +194,21 @@ export const checkSensorDataRecency = function (sensorData, minuteModulo) {
 	}
 };
 
-export const getStoredSensorData = function (store, storageKey) {
+export const getStoreDataKey = function () {
+	if (arguments.length <= 1) {
+		return arguments[0]
+	} else {
+		let rv = arguments[0]
+		const remainingArgs = Array.prototype.slice.call(arguments, 1);
+		for (const value of Object.values(remainingArgs)) {
+			rv = rv + "_" + value
+		}
+		return rv
+	}
+};
+
+export const getStoreData = function (store, storageKey) {
+	// Utility function to easily access stored data outside .svelte files
 	const sensorData = get(store)[storageKey];
 	if (sensorData) {
 		return sensorData;
@@ -207,21 +217,18 @@ export const getStoredSensorData = function (store, storageKey) {
 	}
 };
 
-export const storeSensorData = function (store, data) {
+export const updateStoreData = function (store, data) {
+	// Utility function to easily update stored data outside .svelte files
 	store.set({ ...get(store), ...data });
 };
 
-export const formatSensorsSkeleton = function (sensorsSkeleton, ecosystemUID, sensorsLevel) {
+export const formatSensorsSkeleton = function (sensorsSkeleton, sensorsLevel) {
 	const order = graphs[sensorsLevel].order;
 	const units = graphs[sensorsLevel].units;
 
-	const skeleton = sensorsSkeleton[ecosystemUID];
-	if (isEmpty(skeleton)) {
-		return [];
-	}
 	const rv = [];
 	for (const measure of order) {
-		const sensors = skeleton[measure];
+		const sensors = sensorsSkeleton[measure];
 		if (isEmpty(sensors)) {
 			continue;
 		}

@@ -7,10 +7,10 @@ import { API_URL, SERVER_STATUS } from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
 import {
 	dynamicSort,
-	getSensorDataStorageKey,
+	getStoreDataKey,
 	checkSensorDataRecency,
-	getStoredSensorData,
-	storeSensorData,
+	getStoreData,
+	updateStoreData,
 	isEmpty
 } from '$lib/utils/functions.js';
 import {
@@ -23,7 +23,7 @@ import {
 import { APP_MODE, AppMode } from '../conf.js';
 
 const formatParam = function (param) {
-	if (APP_MODE === AppMode.development) {
+	if (APP_MODE === AppMode.testing) {
 		return null;
 	} else {
 		return param;
@@ -197,8 +197,8 @@ export const fetchEcosystemLight = async function (ecosystemUID) {
 };
 
 export const fetchSensorCurrentData = async function (sensorUID, measure) {
-	const dataKey = getSensorDataStorageKey(sensorUID, measure);
-	const storedData = getStoredSensorData(ecosystemsSensorsDataCurrent, dataKey);
+	const dataKey = getStoreDataKey(sensorUID, measure);
+	const storedData = getStoreData(ecosystemsSensorsDataCurrent, dataKey);
 	if (checkSensorDataRecency(storedData, 1)) {
 		return storedData;
 	}
@@ -210,7 +210,7 @@ export const fetchSensorCurrentData = async function (sensorUID, measure) {
 			const accumulator = {};
 			for (const ecosystem of response['data']) {
 				for (const sensorRecord of ecosystem['data']) {
-					const storageKey = getSensorDataStorageKey(
+					const storageKey = getStoreDataKey(
 						sensorRecord['sensor_uid'],
 						sensorRecord['measure']
 					);
@@ -220,7 +220,7 @@ export const fetchSensorCurrentData = async function (sensorUID, measure) {
 					};
 				}
 			}
-			storeSensorData(ecosystemsSensorsDataCurrent, accumulator);
+			updateStoreData(ecosystemsSensorsDataCurrent, accumulator);
 			return accumulator[dataKey];
 		})
 		.catch(() => {
@@ -229,8 +229,8 @@ export const fetchSensorCurrentData = async function (sensorUID, measure) {
 };
 
 export const fetchSensorHistoricData = async function (sensorUID, measure) {
-	const dataKey = getSensorDataStorageKey(sensorUID, measure);
-	const storedData = getStoredSensorData(ecosystemsSensorsDataHistoric, dataKey);
+	const dataKey = getStoreDataKey(sensorUID, measure);
+	const storedData = getStoreData(ecosystemsSensorsDataHistoric, dataKey);
 	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 10)) {
 		return storedData;
 	}
@@ -244,7 +244,7 @@ export const fetchSensorHistoricData = async function (sensorUID, measure) {
 				timestamp: new Date(response.data[0].span[1]),
 				values: response.data[0].values
 			};
-			storeSensorData(ecosystemsSensorsDataHistoric, { [dataKey]: data });
+			updateStoreData(ecosystemsSensorsDataHistoric, { [dataKey]: data });
 			return data;
 		})
 		.catch(() => {
@@ -252,29 +252,26 @@ export const fetchSensorHistoricData = async function (sensorUID, measure) {
 		});
 };
 
-export const fetchEcosystemsSensorsSkeleton = async function () {
-	const stored = get(ecosystemsSensorsSkeleton);
-	if (!isEmpty(stored)) {
-		return stored;
+export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level=null) {
+	const dataKey = getStoreDataKey(ecosystemUID, level);
+	const storedData = getStoreData(ecosystemsSensorsSkeleton, dataKey);
+	if (!isEmpty(storedData)) {
+		return storedData;
 	}
 	return axios
-		.get(`${API_URL}/gaia/ecosystem/sensors_skeleton`, {
-			params: { ecosystems: formatParam('recent') }
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensors_skeleton`, {
+			params: { level: level }
 		})
 		.then((response) => {
 			const rv = {};
-			for (const ecosystem of response.data) {
-				const measureAccumulator = {};
-				for (const measureRecord of ecosystem['sensors_skeleton']) {
-					const sensorAccumulator = {};
-					for (const sensor of measureRecord.sensors) {
-						sensorAccumulator[sensor['uid']] = sensor.name;
-					}
-					measureAccumulator[measureRecord.measure] = sensorAccumulator;
+			for (const measureRecord of response['data']['sensors_skeleton']) {
+				const sensorAccumulator = {};
+				for (const sensor of measureRecord.sensors) {
+					sensorAccumulator[sensor['uid']] = sensor.name;
 				}
-				rv[ecosystem['uid']] = measureAccumulator;
+				rv[measureRecord.measure] = sensorAccumulator;
 			}
-			ecosystemsSensorsSkeleton.set(rv);
+			updateStoreData(ecosystemsSensorsSkeleton, { [dataKey]: rv });
 			return rv;
 		})
 		.catch(() => {

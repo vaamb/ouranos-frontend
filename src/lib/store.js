@@ -6,12 +6,12 @@ import { User } from "$lib/utils/factories.js";
 export const currentUser = cookieStore("userDataCache", User());
 export const ecosystems = writable({});
 export const ecosystemsIds = writable([]);
-export const ecosystemsCurrentSensorsData = writable({});
-export const ecosystemsLight = writable({});
+export const ecosystemsActuatorData = writable({});
+export const ecosystemsLightData = writable({});
 export const ecosystemsManagement = writable({});
-export const ecosystemsSensorsSkeleton = writable({})
 export const ecosystemsSensorsDataCurrent = writable({})
 export const ecosystemsSensorsDataHistoric = writable({})
+export const ecosystemsSensorsSkeleton = writable({})
 export const engines = writable({});
 export const enginesIds = writable([]);
 export const flashMessage = writable([]);

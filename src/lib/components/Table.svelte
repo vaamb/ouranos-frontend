@@ -184,8 +184,4 @@
 	.table-alternate-colors tbody tr:nth-child(even) {
 		background-color: #f3f3f3;
 	}
-
-	.table-aligner td + td {
-		padding-left: 10px;
-	}
 </style>

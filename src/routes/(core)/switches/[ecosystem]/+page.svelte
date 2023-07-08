@@ -4,8 +4,8 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Switch from '$lib/components/Switch.svelte';
 
-	import { fetchEcosystemActuatorsStatus, updateActuatorMode } from '$lib/actions.js';
-	import { ecosystemsIds } from '$lib/store.js';
+	import { fetchEcosystemActuatorsData, updateActuatorMode } from '$lib/actions.js';
+	import { ecosystemsIds, ecosystemsActuatorData } from '$lib/store.js';
 	import { actuatorType } from '$lib/utils/consts.js';
 	import { getEcosystemUid } from '$lib/utils/functions.js';
 
@@ -15,13 +15,13 @@
 
 <HeaderLine title="Actuator {ecosystemName}" />
 
-{#await fetchEcosystemActuatorsStatus(ecosystemUID) then runningActuators}
+{#await fetchEcosystemActuatorsData(ecosystemUID) then runningActuators}
 	{#each actuatorType as actuator}
-		{#if runningActuators[actuator]['active']}
+		{#if $ecosystemsActuatorData[ecosystemUID][actuator]['active']}
 			<Switch
 				actuatorType={actuator}
-				status={runningActuators[actuator]['status']}
-				mode={runningActuators[actuator]['mode']}
+				status={$ecosystemsActuatorData[ecosystemUID][actuator]['status']}
+				mode={$ecosystemsActuatorData[ecosystemUID][actuator]['mode']}
 				on:switch={(event) => {
 					updateActuatorMode(
 						ecosystemUID,

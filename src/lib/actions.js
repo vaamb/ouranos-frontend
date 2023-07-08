@@ -15,6 +15,7 @@ import {
 } from '$lib/utils/functions.js';
 import {
 	currentUser,
+	ecosystemsActuatorData,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	ecosystemsSensorsSkeleton,
@@ -207,11 +208,15 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 		});
 };
 
-export const fetchEcosystemActuatorsStatus = async function (ecosystemUID) {
+export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_status`)
 		.then((response) => {
-			return response.data;
+			const data = response['data']
+			ecosystemUID = data['ecosystem_uid']
+			delete data['ecosystem_uid']
+			updateStoreData(ecosystemsActuatorData, {[ecosystemUID]: data})
+			return data;
 		})
 		.catch(() => {
 			return {};

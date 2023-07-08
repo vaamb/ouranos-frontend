@@ -1,5 +1,4 @@
 <script>
-	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
 	import Box from '$lib/components/layout/Box.svelte';
@@ -12,9 +11,9 @@
 	import {
 		fetchSensorCurrentData,
 		fetchSensorHistoricData,
-		fetchEcosystemsSensorsSkeleton
+		fetchEcosystemSensorsSkeleton
 	} from '$lib/actions.js';
-	import { ecosystemsIds, ecosystemsSensorsSkeleton } from '$lib/store.js';
+	import { ecosystemsIds } from '$lib/store.js';
 	import { capitalize, formatSensorsSkeleton, getEcosystemUid } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
@@ -33,7 +32,6 @@
 	$: colors = graphs[sensorsLevel].colors;
 	$: maxValues = graphs[sensorsLevel].max_values;
 	$: ecosystemUid = getEcosystemUid($ecosystemsIds, ecosystemName);
-	$: sensorTree = formatSensorsSkeleton($ecosystemsSensorsSkeleton, ecosystemUid, sensorsLevel);
 
 	const fetchSensorData = async function (sensorUid, measure) {
 		const current = await fetchSensorCurrentData(sensorUid, measure);
@@ -66,14 +64,11 @@
 			labels: labels
 		};
 	};
-
-	onMount(async () => {
-		await fetchEcosystemsSensorsSkeleton();
-	});
 </script>
 
 <HeaderLine title={pageTitle} />
-{#each sensorTree as measureInfo}
+{#await fetchEcosystemSensorsSkeleton(ecosystemUid, sensorsLevel) then sensorsSkeleton}
+{#each formatSensorsSkeleton(sensorsSkeleton, sensorsLevel) as measureInfo}
 	<h2>{capitalize(measureInfo.measure)}</h2>
 	{#each measureInfo.sensors as sensor}
 		<Row>
@@ -106,3 +101,4 @@
 		</Row>
 	{/each}
 {/each}
+{/await}

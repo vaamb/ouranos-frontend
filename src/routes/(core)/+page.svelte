@@ -39,7 +39,7 @@
 	import {
 		fetchEcosystemActuatorsStatus,
 		fetchSensorCurrentData,
-		fetchEcosystemsSensorsSkeleton,
+		fetchEcosystemSensorsSkeleton,
 		fetchEcosystemLighting,
 		fetchWeatherForecast
 	} from '$lib/actions.js';
@@ -64,13 +64,14 @@
 		return false;
 	};
 
-	const fetchAndComputeCurrentSensorsAverages = async function (FormattedSensorsSkeleton) {
-		if (isEmpty(FormattedSensorsSkeleton)) {
+	const fetchAndComputeCurrentSensorsAverages = async function (sensorsSkeleton, level) {
+		const formattedSensorsSkeleton = formatSensorsSkeleton(sensorsSkeleton, level)
+		if (isEmpty(formattedSensorsSkeleton)) {
 			return [];
 		}
 		const average = (array) => array.reduce((a, b) => a + b) / array.length;
 		const rv = [];
-		for (const measureInfo of FormattedSensorsSkeleton) {
+		for (const measureInfo of formattedSensorsSkeleton) {
 			const sensors = measureInfo['sensors'];
 			if (isEmpty(sensors)) {
 				continue;
@@ -78,7 +79,10 @@
 			let values = [];
 			for (const sensorInfo of sensors) {
 				const data = await fetchSensorCurrentData(sensorInfo['uid'], measureInfo['measure']);
-				values.push(data['value']);
+				if (data) {
+					// Recently disconnected sensors are still in skeleton but don't have current data
+					values.push(data['value']);
+				}
 			}
 			if (isEmpty(values)) {
 				continue;
@@ -110,7 +114,6 @@
 
 	onMount(async () => {
 		const { weatherCurrentlyValues } = await fetchWeatherForecast('hourly,daily');
-		await fetchEcosystemsSensorsSkeleton(); // TODO: move to server ? But make sure not run too often
 		weatherCurrently.set(weatherCurrentlyValues);
 	});
 </script>
@@ -220,10 +223,10 @@
 			{#if getParamStatus($ecosystems, uid, 'connected') && getParamStatus($ecosystemsManagement, uid, 'environment_data')}
 				<template>{(filledBox[uid] = true)}</template>
 				<BoxItem title="Environment">
-					{#await formatSensorsSkeleton($ecosystemsSensorsSkeleton, uid, 'environment')}
+					{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
 						<p>Collecting environment's data from the ecosystem</p>
-					{:then skeleton}
-						{#await fetchAndComputeCurrentSensorsAverages(skeleton)}
+					{:then sensorsSkeleton}
+						{#await fetchAndComputeCurrentSensorsAverages(sensorsSkeleton, 'environment')}
 							<p>Collecting environment's data from the ecosystem</p>
 						{:then avg}
 							{@html formatCurrentSensorsAverages(avg)}
@@ -234,10 +237,10 @@
 			{#if getParamStatus($ecosystems, uid, 'connected') && getParamStatus($ecosystemsManagement, uid, 'plants_data')}
 				<template>{(filledBox[uid] = true)}</template>
 				<BoxItem title="Plants">
-					{#await formatSensorsSkeleton($ecosystemsSensorsSkeleton, uid, 'plants')}
+					{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
 						<p>Collecting environment's data from the ecosystem</p>
-					{:then skeleton}
-						{#await fetchAndComputeCurrentSensorsAverages(skeleton)}
+					{:then sensorsSkeleton}
+						{#await fetchAndComputeCurrentSensorsAverages(sensorsSkeleton, 'plants')}
 							<p>Collecting environment's data from the ecosystem</p>
 						{:then avg}
 							{@html formatCurrentSensorsAverages(avg)}

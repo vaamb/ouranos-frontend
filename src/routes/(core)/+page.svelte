@@ -71,14 +71,14 @@
 		}
 		const average = (array) => array.reduce((a, b) => a + b) / array.length;
 		const rv = [];
-		for (const measureInfo of formattedSensorsSkeleton) {
-			const sensors = measureInfo['sensors'];
+		for (const measure of formattedSensorsSkeleton) {
+			const sensors = measure['sensors'];
 			if (isEmpty(sensors)) {
 				continue;
 			}
 			let values = [];
 			for (const sensorInfo of sensors) {
-				const data = await fetchSensorCurrentData(sensorInfo['uid'], measureInfo['measure']);
+				const data = await fetchSensorCurrentData(sensorInfo['uid'], measure['name']);
 				if (data) {
 					// Recently disconnected sensors are still in skeleton but don't have current data
 					values.push(data['value']);
@@ -88,8 +88,8 @@
 				continue;
 			}
 			rv.push({
-				measure: measureInfo['measure'],
-				unit: measureInfo['unit'],
+				name: measure['name'],
+				unit: measure['unit'],
 				average: average(values).toFixed(1)
 			});
 		}
@@ -101,12 +101,12 @@
 			return '<p style="margin-bottom: 0">No sensor data available</p>';
 		}
 		let rv = '';
-		for (const measureRecord of averagedCurrentSensorsData) {
+		for (const measure of averagedCurrentSensorsData) {
 			rv += `<p style="margin-bottom: 0">${
-				capitalize(measureRecord['measure']).replace('_', ' ') +
+				capitalize(measure['name']).replace('_', ' ') +
 				': ' +
-				measureRecord['average'] +
-				measureRecord['unit']
+				measure['average'] +
+				measure['unit']
 			}</p>`;
 		}
 		return rv;

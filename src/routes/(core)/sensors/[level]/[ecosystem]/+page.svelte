@@ -13,8 +13,17 @@
 		fetchSensorHistoricData,
 		fetchEcosystemSensorsSkeleton
 	} from '$lib/actions.js';
-	import { ecosystemsIds } from '$lib/store.js';
-	import { capitalize, formatSensorsSkeleton, getEcosystemUid } from '$lib/utils/functions.js';
+	import {
+		ecosystemsIds,
+		ecosystemsSensorsDataCurrent,
+		ecosystemsSensorsDataHistoric
+	} from '$lib/store.js';
+	import {
+		capitalize,
+		formatSensorsSkeleton,
+		getEcosystemUid,
+		getStoreDataKey
+	} from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
 	const generateTitle = function (level, ecosystemName) {
@@ -59,7 +68,7 @@
 			dataset: {
 				label: measureName,
 				data: data,
-				borderColor: colors[measureName],
+				borderColor: colors[measureName]
 			},
 			labels: labels
 		};
@@ -67,38 +76,42 @@
 </script>
 
 <HeaderLine title={pageTitle} />
-{#await fetchEcosystemSensorsSkeleton(ecosystemUid, sensorsLevel) then sensorsSkeleton}
-{#each formatSensorsSkeleton(sensorsSkeleton, sensorsLevel) as measureInfo}
-	<h2>{capitalize(measureInfo.measure)}</h2>
-	{#each measureInfo.sensors as sensor}
-		<Row>
-			{#await fetchSensorData(sensor.uid, measureInfo.measure) then sensorData}
-				<Box title={sensor.name} direction="row" icon={icons[measureInfo.measure]}>
-					{#if sensorData.current}
-						<BoxItem maxWidth="300px" align="center">
-							{#await formatCurrentData(sensorData.current) then currentData}
-								<Gauge value={currentData.value} unit={measureInfo.unit} />
+{#await fetchEcosystemSensorsSkeleton(ecosystemUid, sensorsLevel) then rawSensorsSkeleton}
+	{#each formatSensorsSkeleton(rawSensorsSkeleton, sensorsLevel) as measure}
+		<h2>{capitalize(measure.name)}</h2>
+		{#each measure.sensors as sensor}
+			<Row>
+				{#await fetchSensorData(sensor.uid, measure.name) then sensorData}
+					<Box title={sensor.name} direction="row" icon={icons[measure.name]}>
+						{#await $ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, measure.name)] then rawCurrentData}
+							{#if rawCurrentData}
+								<BoxItem maxWidth="300px" align="center">
+									{#await formatCurrentData(rawCurrentData) then currentData}
+										<Gauge value={currentData.value} unit={measure.unit} />
+									{/await}
+								</BoxItem>
+							{/if}
+						{/await}
+						<BoxItem align="center">
+							{#await $ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, measure.name)] then rawHistoricData}
+								{#if rawHistoricData.values.length > 5}
+									{#await formatHistoricData(rawHistoricData, measure.name) then historicData}
+										<Graph
+											datasets={[historicData.dataset]}
+											labels={historicData.labels}
+											suggestedMax={maxValues[measure.name]}
+											height="200px"
+										/>
+									{/await}
+								{:else}
+									<p>There is not currently enough data points to draw a graph.</p>
+									<p>Please come back later to see your graph.</p>
+								{/if}
 							{/await}
 						</BoxItem>
-					{/if}
-					<BoxItem align="center">
-						{#if sensorData.historic.values.length > 5}
-							{#await formatHistoricData(sensorData.historic, measureInfo.measure) then historicData}
-								<Graph
-									datasets={[historicData.dataset]}
-									labels={historicData.labels}
-									suggestedMax={maxValues[measureInfo.measure]}
-									height="200px"
-								/>
-							{/await}
-						{:else}
-							<p>There is not currently enough data points to draw a graph.</p>
-							<p>Please come back later to see your graph.</p>
-						{/if}
-					</BoxItem>
-				</Box>
-			{/await}
-		</Row>
+					</Box>
+				{/await}
+			</Row>
+		{/each}
 	{/each}
-{/each}
 {/await}

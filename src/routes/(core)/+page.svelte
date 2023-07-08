@@ -13,9 +13,9 @@
 		currentUser,
 		ecosystems,
 		ecosystemsIds,
+		ecosystemsActuatorData,
 		ecosystemsManagement,
 		serverCurrentData,
-		ecosystemsSensorsSkeleton,
 		serverLastSeen,
 		serverLatency,
 		services,
@@ -37,7 +37,7 @@
 		capitalize
 	} from '$lib/utils/functions.js';
 	import {
-		fetchEcosystemActuatorsStatus,
+		fetchEcosystemActuatorsData,
 		fetchSensorCurrentData,
 		fetchEcosystemSensorsSkeleton,
 		fetchEcosystemLighting,
@@ -200,18 +200,18 @@
 				</BoxItem>
 			{/if}
 			{#if getParamStatus($ecosystems, uid, 'connected')}
-				{#await fetchEcosystemActuatorsStatus(uid) then actuatorStatus}
-					{#if anyActiveActuator(actuatorStatus)}
+				{#await fetchEcosystemActuatorsData(uid) then actuatorStatus}
+					{#if anyActiveActuator($ecosystemsActuatorData[uid])}
 						<BoxItem title="Actuators">
 							<template>{(filledBox[uid] = true)}</template>
 							{#each actuatorType as actuator}
-								{#if actuatorStatus[actuator]['active']}
+								{#if $ecosystemsActuatorData[uid][actuator]['active']}
 									<p>
 										{capitalize(actuator)}:
 										<Fa
 											icon={faSyncAlt}
-											class={actuatorStatus[actuator]['status'] ? 'on' : 'off'}
-											spin={actuatorStatus[actuator]['mode'] === 'automatic'}
+											class={$ecosystemsActuatorData[uid][actuator]['status'] ? 'on' : 'off'}
+											spin={$ecosystemsActuatorData[uid][actuator]['mode'] === 'automatic'}
 										/>
 									</p>
 								{/if}

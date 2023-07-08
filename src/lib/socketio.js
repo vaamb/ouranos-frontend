@@ -1,14 +1,13 @@
-import { get } from 'svelte/store';
-
 import { Manager } from 'socket.io-client';
 
 import { base_URL } from '$lib/utils/consts.js';
-import { getStoreDataKey, updateStoreData } from '$lib/utils/functions.js';
+import { getStoreData, getStoreDataKey, updateStoreData } from '$lib/utils/functions.js';
 import {
 	ecosystemsActuatorData,
-	ecosystemsSensorsDataCurrent,
 	ecosystemsLightData,
 	ecosystemsManagement,
+	ecosystemsSensorsDataCurrent,
+	ecosystemsSensorsDataHistoric,
 	serverCurrentData,
 	serverLastSeen,
 	serverLatency
@@ -87,6 +86,32 @@ socketio.on('current_sensors_data', (data) => {
 		}
 	}
 	updateStoreData(ecosystemsSensorsDataCurrent, updatedData);
+});
+
+socketio.on('historic_sensors_data_update', (data) => {
+	const maxValues = 6 * 24 * 7; // one record every 10 mins for a week
+	const updatedData = {};
+	for (const ecosystem of data) {
+		if (!ecosystem['data']['records']) {
+			continue;
+		}
+		for (const sensorRecord of ecosystem['data']['records']) {
+			for (const measureRecord of sensorRecord['measures']) {
+				let storageKey = getStoreDataKey(sensorRecord['sensor_uid'], measureRecord['measure']);
+				const currentData = getStoreData(ecosystemsSensorsDataHistoric, storageKey);
+				if (!currentData['values']) {
+					continue;
+				}
+				let values = currentData['values'];
+				values.push([ecosystem['data']['timestamp'], measureRecord['value']]);
+				updatedData[storageKey] = {
+					timestamp: new Date(ecosystem['data']['timestamp']),
+					values: values.slice(-maxValues)
+				};
+			}
+		}
+	}
+	updateStoreData(ecosystemsSensorsDataHistoric, updatedData);
 });
 
 socketio.on('on_light_data', (data) => {

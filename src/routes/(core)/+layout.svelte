@@ -47,12 +47,14 @@
 		if (showModal) {
 			return {
 				title: flashMessage[0].title,
-				message: flashMessage[0].message
+				message: flashMessage[0].message,
+				timeOut: flashMessage[0].timeOut
 			};
 		}
 		return {
 			title: undefined,
-			message: undefined
+			message: undefined,
+			timeOut: undefined
 		};
 	};
 
@@ -73,7 +75,12 @@
 	};
 </script>
 
-<Modal bind:showModal on:close={sliceMessages} title={getMessage($flashMessage)['title']}>
+<Modal
+	bind:showModal
+	on:close={sliceMessages}
+	title={getMessage($flashMessage)['title']}
+	timeOut={getMessage($flashMessage)['timeOut']}
+>
 	{getMessage($flashMessage)['message']}
 </Modal>
 

@@ -67,7 +67,7 @@
 	const updateManagement = function () {
 		const payload = {};
 		for (const management of managementChoices) {
-			payload[management] = getParamStatus($ecosystemsManagement, management);
+			payload[management] = getParamStatus($ecosystemsManagement, ecosystemUID, management);
 		}
 		const route = `gaia/ecosystem/u/${ecosystemUID}/management`;
 		crudRequest(route, 'update', payload);

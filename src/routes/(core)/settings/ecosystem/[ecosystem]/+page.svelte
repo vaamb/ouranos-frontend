@@ -83,8 +83,7 @@
 			}
 		} else if (table === 'hardware') {
 			if (action === 'create') {
-				payload['ecosystem_uid'] = ecosystemUID;
-				route = `gaia/hardware/u`;
+				route = `gaia/ecosystem/u/${ecosystemUID}/hardware`;
 			} else {
 				route = `gaia/hardware/u/${crudTablePrimaryKey}`;
 			}

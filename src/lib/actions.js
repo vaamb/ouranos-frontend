@@ -3,7 +3,7 @@ import { goto } from '$app/navigation';
 
 import axios from 'axios';
 
-import { API_URL, SERVER_STATUS } from '$lib/utils/consts.js';
+import { API_URL, SERVER_STATUS, SERVER_URL } from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
 import {
 	dynamicSort,
@@ -33,7 +33,7 @@ const formatParam = function (param) {
 
 export const fetchServerInfo = async function () {
 	return await axios
-		.get(`${API_URL}/app/version`)
+		.get(`${SERVER_URL}/app/version`)
 		.then((response) => {
 			if (response.status === 200) {
 				return {
@@ -53,7 +53,7 @@ export const fetchServerInfo = async function () {
 // Auth-related actions
 export const fetchCurrentUserData = async function (clientSessionCookie, clientUserAgent) {
 	return axios
-		.get(`${API_URL}/auth/current_user`, {
+		.get(`${SERVER_URL}/auth/current_user`, {
 			headers: {
 				Cookie: clientSessionCookie,
 				'User-Agent': clientUserAgent
@@ -124,7 +124,7 @@ export const logOut = function () {
 // Engines-related actions
 export const fetchEngines = async function () {
 	return axios
-		.get(`${API_URL}/gaia/engine`, {
+		.get(`${SERVER_URL}/gaia/engine`, {
 			params: { engines_id: formatParam('recent') }
 		})
 		.then((response) => {
@@ -147,7 +147,7 @@ export const fetchEngines = async function () {
 // Ecosystems-related actions
 export const fetchEcosystems = async function () {
 	return axios
-		.get(`${API_URL}/gaia/ecosystem`, {
+		.get(`${SERVER_URL}/gaia/ecosystem`, {
 			params: { ecosystems_id: formatParam('recent') }
 		})
 		.then((response) => {
@@ -170,7 +170,7 @@ export const fetchEcosystems = async function () {
 
 export const fetchEcosystemsManagement = async function () {
 	return axios
-		.get(`${API_URL}/gaia/ecosystem/management`, {
+		.get(`${SERVER_URL}/gaia/ecosystem/management`, {
 			params: { ecosystems: formatParam('recent') }
 		})
 		.then((response) => {
@@ -353,7 +353,7 @@ export const fetchWeatherForecast = async function (exclude = null) {
 // Server-related actions
 export const fetchServerCurrentData = async function (clientSessionCookie, clientUserAgent) {
 	return axios
-		.get(`${API_URL}/system/data/current`, {
+		.get(`${SERVER_URL}/system/data/current`, {
 			headers: {
 				Cookie: clientSessionCookie,
 				'User-Agent': clientUserAgent
@@ -374,7 +374,7 @@ export const fetchServerCurrentData = async function (clientSessionCookie, clien
 
 export const fetchServerStartTime = async function (clientSessionCookie, clientUserAgent) {
 	return axios
-		.get(`${API_URL}/system/start_time`, {
+		.get(`${SERVER_URL}/system/start_time`, {
 			headers: {
 				Cookie: clientSessionCookie,
 				'User-Agent': clientUserAgent
@@ -395,7 +395,7 @@ export const fetchServerStartTime = async function (clientSessionCookie, clientU
 
 export const fetchServices = async function () {
 	return axios
-		.get(`${API_URL}/app/services`)
+		.get(`${SERVER_URL}/app/services`)
 		.then((response) => {
 			return {
 				services: response.data
@@ -410,7 +410,7 @@ export const fetchServices = async function () {
 
 export const fetchWarnings = async function () {
 	return axios
-		.get(`${API_URL}/gaia/warning`)
+		.get(`${SERVER_URL}/gaia/warning`)
 		.then((response) => {
 			return {
 				warnings: response.data

@@ -71,19 +71,12 @@ socketio.on('actuator_data', (data) => {
 
 socketio.on('current_sensors_data', (data) => {
 	const updatedData = {};
-	for (const ecosystem of data) {
-		if (!ecosystem['data']['records']) {
-			continue;
-		}
-		for (const sensorRecord of ecosystem['data']['records']) {
-			for (const measureRecord of sensorRecord['measures']) {
-				const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], measureRecord['measure']);
-				updatedData[storageKey] = {
-					timestamp: new Date(ecosystem['data']['timestamp']),
-					value: measureRecord['value']
-				};
-			}
-		}
+	for (const sensorRecord of data) {
+		const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
+		updatedData[storageKey] = {
+			timestamp: new Date(sensorRecord['timestamp']),
+			value: sensorRecord['value']
+		};
 	}
 	updateStoreData(ecosystemsSensorsDataCurrent, updatedData);
 });
@@ -91,25 +84,19 @@ socketio.on('current_sensors_data', (data) => {
 socketio.on('historic_sensors_data_update', (data) => {
 	const maxValues = 6 * 24 * 7; // one record every 10 mins for a week
 	const updatedData = {};
-	for (const ecosystem of data) {
-		if (!ecosystem['data']['records']) {
+	for (const sensorRecord of data) {
+		const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
+		const currentData = getStoreData(ecosystemsSensorsDataHistoric, storageKey);
+		if (!currentData['values']) {
+			// No historic data, will wait for some to be loaded from api before appending new data
 			continue;
 		}
-		for (const sensorRecord of ecosystem['data']['records']) {
-			for (const measureRecord of sensorRecord['measures']) {
-				let storageKey = getStoreDataKey(sensorRecord['sensor_uid'], measureRecord['measure']);
-				const currentData = getStoreData(ecosystemsSensorsDataHistoric, storageKey);
-				if (!currentData['values']) {
-					continue;
-				}
-				let values = currentData['values'];
-				values.push([ecosystem['data']['timestamp'], measureRecord['value']]);
-				updatedData[storageKey] = {
-					timestamp: new Date(ecosystem['data']['timestamp']),
-					values: values.slice(-maxValues)
-				};
-			}
-		}
+		let values = currentData['values'];
+		values.push([sensorRecord['timestamp'], sensorRecord['value']]);
+		updatedData[storageKey] = {
+			timestamp: new Date(sensorRecord['timestamp']),
+			values: values.slice(-maxValues)
+		};
 	}
 	updateStoreData(ecosystemsSensorsDataHistoric, updatedData);
 });

@@ -46,9 +46,7 @@
 </script>
 
 <div class="container">
-	<div>
-		<canvas bind:this={canvas} width="clientWidth" height="clientHeight" />
-	</div>
+	<canvas bind:this={canvas} />
 
 	<span class="value">{value} {unit}</span>
 </div>
@@ -57,7 +55,8 @@
 	canvas {
 		width: 100%;
 		height: 100%;
-		margin-top: -15px;
+		margin: auto;
+		max-width: 300px;
 	}
 
 	.container {

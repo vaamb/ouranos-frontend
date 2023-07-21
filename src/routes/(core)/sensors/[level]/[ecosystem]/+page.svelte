@@ -85,14 +85,14 @@
 					<Box title={sensor.name} direction="row" icon={icons[measure.name]}>
 						{#await $ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, measure.name)] then rawCurrentData}
 							{#if rawCurrentData}
-								<BoxItem maxWidth="300px" align="center">
+								<BoxItem maxWidth="300px">
 									{#await formatCurrentData(rawCurrentData) then currentData}
 										<Gauge value={currentData.value} unit={measure.unit} />
 									{/await}
 								</BoxItem>
 							{/if}
 						{/await}
-						<BoxItem align="center">
+						<BoxItem>
 							{#await $ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, measure.name)] then rawHistoricData}
 								{#if rawHistoricData.values.length > 5}
 									{#await formatHistoricData(rawHistoricData, measure.name) then historicData}

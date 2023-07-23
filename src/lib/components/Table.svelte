@@ -138,11 +138,6 @@
 		padding: 0.75rem 1rem;
 	}
 
-	.table-base td .open {
-		transition: all 0.4s ease-out;
-		transform: rotate(90deg);
-	}
-
 	.table-base thead tr {
 		background-color: #73879c;
 		color: #f9f9fb;

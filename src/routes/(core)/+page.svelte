@@ -78,7 +78,7 @@
 			}
 			let values = [];
 			for (const sensorInfo of sensors) {
-				const data = await fetchSensorCurrentData(sensorInfo['uid'], measure['name']);
+				const data = await fetchSensorCurrentData(sensorInfo['uid'], measure['name'].replace(" ", "_"));
 				if (data) {
 					// Recently disconnected sensors are still in skeleton but don't have current data
 					values.push(data['value']);

@@ -242,15 +242,9 @@ export const updateStoreData = function (store, data) {
 };
 
 export const formatSensorsSkeleton = function (sensorsSkeleton, sensorsLevel) {
-	const order = graphs[sensorsLevel].order;
 	const units = graphs[sensorsLevel].units;
-
 	const rv = [];
-	for (const measure of order) {
-		const sensors = sensorsSkeleton[measure];
-		if (isEmpty(sensors)) {
-			continue;
-		}
+	for (const [measure, sensors]of Object.entries(sensorsSkeleton)) {
 		let accumulator = [];
 		for (const [sensorUID, sensorName] of Object.entries(sensors)) {
 			accumulator.push({ uid: sensorUID, name: sensorName });
@@ -260,7 +254,7 @@ export const formatSensorsSkeleton = function (sensorsSkeleton, sensorsLevel) {
 		});
 		rv.push({
 			name: measure,
-			unit: units[measure],
+			unit: units[measure] || "",
 			sensors: accumulator
 		});
 	}

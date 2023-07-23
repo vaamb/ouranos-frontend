@@ -62,7 +62,7 @@
 
 <p>
   New User?
-  <a href="/auth/register">
+  <a href="/auth/invitation">
     Click here to register!
   </a>
 </p>

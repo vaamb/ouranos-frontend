@@ -1,49 +1,27 @@
 <script>
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 
 	import axios from 'axios';
 	import jwt_decode from 'jwt-decode';
+	import Fa from 'svelte-fa';
+	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
 	import { flashMessage } from '$lib/store.js';
 	import { API_URL } from '$lib/utils/consts.js';
 	import { Message } from '$lib/utils/factories.js';
 
-	const rawToken = $page.url.searchParams.get('token');
-	let token;
-	let validToken;
-	let role;
+	let token = $page.url.searchParams.get('token');
 
+	let role;
 	try {
-		token = jwt_decode(rawToken);
-		validToken = true;
-		role = token.rle || 'User';
+		const data = jwt_decode(token);
+		role = data.rle || 'User';
 	} catch (error) {
 		token = null;
-		validToken = false;
 	}
 
-	let invitationToken;
-	let invitationError = null;
-
 	const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-	const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-+_!$&?.,])(?=.{8,})[^ ]+$/;
-
-	const validateInvitation = function () {
-		invitationError = null;
-		try {
-			const decodedInvitationToken = jwt_decode(invitationToken);
-			if (new Date() >= decodedInvitationToken.exp * 1000) {
-				invitationError = 'Expired token';
-			} else {
-				goto(`${API_URL}/auth/register?token=${invitationToken}`);
-			}
-		} catch (error) {
-			if (error.message) {
-				invitationError = 'Invalid token';
-			}
-		}
-	};
+	const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-+_!$&?.,])[^ ]{8,20}$/;
 
 	let errors = {};
 	const resetErrors = function () {
@@ -61,6 +39,33 @@
 	let telegramId;
 	let password1;
 	let password2;
+
+	const checkValidEmail = function (email) {
+		if (!email) {
+			return null;
+		}
+		return regexEmail.test(email);
+	};
+
+	$: validEmail = checkValidEmail(email);
+
+	const checkValidPassword = function (password) {
+		if (!password) {
+			return null;
+		}
+		return regexPassword.test(password);
+	};
+
+	$: validPassword = checkValidPassword(password1);
+
+	const checkSamePassword = function (password1, password2) {
+		if (!password1 || !password2) {
+			return null;
+		}
+		return password1 === password2;
+	};
+
+	$: samePassword = checkSamePassword(password1, password2);
 
 	const validateRegistration = function () {
 		resetErrors();
@@ -95,24 +100,19 @@
 				}
 			});
 	};
+	const getValidationColorClass = function (validationCode) {
+		if (validationCode === null) {
+			return 'hidden';
+		} else if (validationCode === true) {
+			return 'on';
+		} else if (validationCode === false) {
+			return 'off';
+		}
+	};
 </script>
 
-{#if !rawToken}
-	<h1>Enter your registration token</h1>
-	<form on:submit={validateInvitation}>
-		<div class="input-group">
-			{#if invitationError}
-				<div class="error">{invitationError}</div>
-			{/if}
-			<input id="invitation" size="60" type="text" bind:value={invitationToken} />
-		</div>
-		<div class="input-group">
-			<input id="submit-invitation" type="submit" class="submit-button" value="Validate" />
-		</div>
-	</form>
-{:else if !validToken}
-	<h1>Invalid token</h1>
-	<p>Get a new token and enter it <a href="/auth/register">here</a></p>
+{#if !token}
+	<p>Get a valid token and enter it <a href="/auth/invitation">here</a></p>
 {:else}
 	<h1>Register</h1>
 	<form on:submit={validateRegistration}>
@@ -146,36 +146,59 @@
 		<div class="input-group">
 			<label for="email">E-mail</label> <br />
 			<input id="email" size="32" type="text" bind:value={email} />
+			<Fa icon={faCircle} class={getValidationColorClass(validEmail)} />
 			{#if errors.email}
 				<br />
 				<div class="error">{errors.email}</div>
 			{/if}
 		</div>
+		<!--
 		<div class="input-group">
 			<label for="telegram-id">Telegram ID</label> <br />
 			<input id="telegram-id" size="32" type="text" bind:value={telegramId} />
 		</div>
+		-->
 		<div class="input-group">
 			<label for="password1">Password</label> <br />
-			<input
-				id="password1"
-				size="32"
-				type="text"
-				bind:value={password1}
-				placeholder="Should contain at least one lowercase, one capital, one number and one special character"
-			/>
+			<input id="password1" size="32" type="password" bind:value={password1} />
+			<div style="display: {validPassword !== null ? 'auto' : 'none'}" />
+			<Fa icon={faCircle} class={getValidationColorClass(validPassword)} />
 			{#if errors.password1}
 				<br />
 				<div class="error">{errors.password1}</div>
+			{:else}
+				<p style="max-width: 250px; margin: 0; font-size: smaller">
+					Should be between 8 and 20 characters long, contain at least one lower case letter, one
+					capital letter, one number and one special character amongst -+_!$&?.,
+				</p>
 			{/if}
 		</div>
 		<div class="input-group">
 			<label for="password2">Repeat your password</label> <br />
-			<input id="password2" size="32" type="text" bind:value={password2} />
+			<input id="password2" size="32" type="password" bind:value={password2} />
+			<Fa icon={faCircle} class={getValidationColorClass(samePassword)} />
 			{#if errors.password2}
 				<br />
 				<div class="error">{errors.password2}</div>
 			{/if}
 		</div>
+		<div class="input-group">
+			<input
+				id="submit-invitation"
+				type="submit"
+				class="submit-button"
+				value="Validate"
+				style="height: 2rem"
+			/>
+		</div>
 	</form>
 {/if}
+
+<style>
+	label {
+		font-size: 1.15rem;
+	}
+	input {
+		height: 1.3rem;
+	}
+</style>

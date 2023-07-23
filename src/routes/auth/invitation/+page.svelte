@@ -35,6 +35,12 @@
 		<input id="invitation" size="60" type="text" bind:value={invitationToken} />
 	</div>
 	<div class="input-group">
-		<input id="submit-invitation" type="submit" class="submit-button" value="Validate" />
+		<input
+			id="submit-invitation"
+			type="submit"
+			class="submit-button"
+			value="Validate"
+			style="height: 2rem"
+		/>
 	</div>
 </form>

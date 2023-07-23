@@ -193,12 +193,3 @@
 		</div>
 	</form>
 {/if}
-
-<style>
-	label {
-		font-size: 1.15rem;
-	}
-	input {
-		height: 1.3rem;
-	}
-</style>

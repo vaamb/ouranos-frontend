@@ -6,8 +6,10 @@
 
 	export let labels;
 	export let datasets;
-	export let suggestedMin = 0;
-	export let suggestedMax = 10;
+	export let defaultMin = 0
+	export let suggestedMin = defaultMin;
+	export let defaultMax = 100
+	export let suggestedMax = defaultMax;
 	export let height = 250;
 
 	let canvas;
@@ -23,8 +25,8 @@
 			},
 			y: {
 				display: true,
-				suggestedMin: suggestedMin,
-				suggestedMax: suggestedMax
+				suggestedMin: suggestedMin || defaultMin,
+				suggestedMax: suggestedMax || defaultMax,
 			}
 		},
 		plugins: {

@@ -27,15 +27,22 @@ export const isEmpty = function (obj) {
 	return Object.keys(obj).length === 0;
 };
 
-export function capitalize(string) {
+export const isDate = function (date) {
+	return Object.prototype.toString.call(date) === '[object Date]';
+};
+
+export const isNumber = function (number) {
+	return !(Number.isNaN(Number(number))) && !(number === "") ;
+}
+
+export const isObject = function(object) {
+	return typeof object === 'object' && object !== null
+}
+
+export const capitalize = function(string) {
 	if (typeof string !== 'string') return '';
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
-// Date time related
-const isDate = function (date) {
-	return Object.prototype.toString.call(date) === '[object Date]';
-};
 
 export const formatDateTime = function (date) {
 	if (isDate(date)) {

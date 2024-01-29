@@ -3,9 +3,11 @@
 
 	import { Gauge } from 'gaugeJS';
 
-	export let minValue = 0;
+	export let defaultMin = 0;
 	export let value = 50;
-	export let maxValue = 100;
+	export let minValue = defaultMin;
+	export let defaultMax = 100;
+	export let maxValue = defaultMax;
 	export let unit = '';
 
 	let canvas;
@@ -39,8 +41,8 @@
 	onMount(async () => {
 		gauge = new Gauge(canvas);
 		gauge.setOptions(gaugeOpts); // create sexy gauge!
-		gauge.maxValue = maxValue; // set max gauge value
-		gauge.minValue = minValue; // set min value
+		gauge.minValue = minValue || defaultMin; // set min value
+		gauge.maxValue = maxValue || defaultMax; // set max gauge value
 		gauge.set(value);
 	});
 </script>

@@ -8,6 +8,7 @@
   --main-40: hsl(210, 33%, 40%);  /*original: #366485*/
   --main-25: hsl(210, 33%, 25%);  /*original: #2a3f54*/
   --main-50-shadow: hsla(210, 33%, 50%, 10%);
+  --derived-60: hsl(210, 17%, 60%);
   --derived-50: hsl(210, 17%, 50%);  /*original: #73879c*/
   --derived-20: hsl(210, 17%, 20%);  /*original: #282f3c*/
   --green: hsl(122, 40%, 52%);  /*original: #54b657*/

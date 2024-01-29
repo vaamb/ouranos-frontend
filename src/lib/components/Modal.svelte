@@ -7,7 +7,7 @@
 	export let dialog; // HTMLDialogElement
 	export let showModal = false;
 	export let title = undefined;
-	export let timeOut = 1500;
+	export let timeOut = undefined;
 
 	const dispatch = createEventDispatcher();
 
@@ -21,11 +21,11 @@
 		if (timeOut) {
 			setTimeout(() => {
 				closeModal();
-			}, timeOut)
+			}, timeOut);
 		}
-	}
+	};
 
-	$: if (dialog && showModal) displayModal()
+	$: if (dialog && showModal) displayModal();
 </script>
 
 <dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={() => closeModal()}>

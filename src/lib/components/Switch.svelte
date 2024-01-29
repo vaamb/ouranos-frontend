@@ -43,7 +43,9 @@
 						<button
 							on:click={() => emitEvent(option)}
 							disabled={!$currentUser.can(permissions.OPERATE)}
-							title={$currentUser.can(permissions.OPERATE) ? "" : "You need to be logged as an operator to toggle switches"}
+							title={$currentUser.can(permissions.OPERATE)
+								? ''
+								: 'You need to be logged as an operator to toggle switches'}
 						>
 							{option}
 						</button>

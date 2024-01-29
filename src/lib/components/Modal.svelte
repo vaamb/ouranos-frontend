@@ -1,24 +1,34 @@
 <script>
+	import { createEventDispatcher } from 'svelte';
+
 	import Fa from 'svelte-fa';
 	import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 	export let showModal = false;
-	export const title = undefined;
+	export let title = undefined;
+
+	const dispatch = createEventDispatcher();
 
 	let dialog; // HTMLDialogElement
 
 	$: if (dialog && showModal) dialog.showModal();
+
+	const closeModal = function () {
+		dialog.close();
+		dispatch('close');
+	};
 </script>
 
-<dialog
-	bind:this={dialog}
-	on:close={() => (showModal = false)}
-	on:click|self={() => dialog.close()}
->
+<dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={() => closeModal()}>
 	<div on:click|stopPropagation>
-		<button class="reset-button close" on:click={() => dialog.close()}>
+		<button class="reset-button close" on:click={() => closeModal()}>
 			<Fa icon={faXmark} />
 		</button>
+		{#if title}
+			<h1>
+				{title}
+			</h1>
+		{/if}
 		<h1>
 			<slot name="header" />
 		</h1>

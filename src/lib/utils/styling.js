@@ -71,7 +71,11 @@ export const graphs = {
 		},
 		max_values: {
 			moisture: 100,
-			temperature: 35
+			temperature: 35,
+		},
+		min_values: {
+			moisture: 0,
+			temperature: 20,
 		},
 	},
 	plants_health: {

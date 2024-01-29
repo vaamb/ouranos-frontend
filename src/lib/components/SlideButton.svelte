@@ -13,9 +13,9 @@
 		const target = event.target;
 		const state = target.getAttribute('aria-checked');
 		checked = state !== 'true';
-		dispatch("toggle", {
+		dispatch('toggle', {
 			checked
-		})
+		});
 	};
 </script>
 
@@ -25,8 +25,8 @@
 		{disabled}
 		aria-checked={checked}
 		aria-labelledby={label}
-		on:click={toggle}>
-	</button>
+		on:click={toggle}
+	/>
 </div>
 
 <style>

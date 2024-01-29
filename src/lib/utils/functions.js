@@ -32,17 +32,17 @@ export const isDate = function (date) {
 };
 
 export const isNumber = function (number) {
-	return !(Number.isNaN(Number(number))) && !(number === "") ;
-}
+	return !Number.isNaN(Number(number)) && !(number === '');
+};
 
-export const isObject = function(object) {
-	return typeof object === 'object' && object !== null
-}
+export const isObject = function (object) {
+	return typeof object === 'object' && object !== null;
+};
 
-export const capitalize = function(string) {
+export const capitalize = function (string) {
 	if (typeof string !== 'string') return '';
 	return string.charAt(0).toUpperCase() + string.slice(1);
-}
+};
 
 export const formatDateTime = function (date) {
 	if (isDate(date)) {
@@ -127,21 +127,29 @@ export const computeEcosystemStatusClass = function (ecosystem) {
 	}
 };
 
-export const computeLightStatusClass = function (ecosystemLight) {
-	if (ecosystemLight['status']) {
-		return 'on';
-	} else {
-		return 'off';
-	}
+const strHoursToDate = function (strHour) {
+	const now = new Date();
+	const hour = strHour.split(':');
+	now.setHours(hour[0], hour[1], hour[2]);
+	return now;
 };
 
 export const computeLightingHours = function (ecosystemLight) {
 	let rv = '';
-	if (['elongate', 'mimic'].includes(ecosystemLight['method'])) {
+	if (['fixed', 'mimic'].includes(ecosystemLight['method'])) {
+		const start = strHoursToDate(ecosystemLight['morning_start']);
+		const end = strHoursToDate(ecosystemLight['evening_end']);
+		rv += `<p> ${
+			'Lighting from ' +
+			start.toLocaleTimeString([], { timeStyle: 'short' }) +
+			' to ' +
+			end.toLocaleTimeString([], { timeStyle: 'short' })
+		} </p>`;
+	} else if (ecosystemLight['method'] === 'elongate') {
 		for (const TOD of ['morning', 'evening']) {
 			if (ecosystemLight[TOD + '_start'] && ecosystemLight[TOD + '_end']) {
-				const start = new Date(ecosystemLight[TOD + '_start']);
-				const end = new Date(ecosystemLight[TOD + '_end']);
+				const start = strHoursToDate(ecosystemLight[TOD + '_start']);
+				const end = strHoursToDate(ecosystemLight[TOD + '_end']);
 				if (start < end) {
 					rv += `<p> ${
 						capitalize(TOD) +
@@ -195,7 +203,11 @@ export const getEcosystemUid = function (ecosystemIds, ecosystemName) {
 
 export const checkSensorDataRecency = function (sensorData, minuteModulo) {
 	if (!isEmpty(sensorData)) {
-		return true; // TODO: make some ckecks here
+		const timestamp = new Date(sensorData['timestamp']);
+		const timeSinceLastRecordThreshold = timestamp % (minuteModulo * 60 * 1000);
+		const lastRecordThreshold = timestamp - timeSinceLastRecordThreshold;
+		const now = new Date();
+		return now - lastRecordThreshold <= (minuteModulo + 1) * 60 * 1000;
 	} else {
 		return false;
 	}

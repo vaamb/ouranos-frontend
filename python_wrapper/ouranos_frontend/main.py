@@ -17,15 +17,20 @@ class Frontend(Functionality):
         self.frontend_dir = base_dir/"lib/ouranos-frontend"
 
     def _startup(self):
+        address = current_app.config.get("FRONTEND_ADDRESS", Config.FRONTEND_ADDRESS)
+        port = current_app.config.get("FRONTEND_PORT", Config.FRONTEND_PORT)
         if current_app.config["DEVELOPMENT"]:
             cmd = [
                 "npm",
                 "run",
                 "dev",
                 "--prefix", str(self.frontend_dir),
+                "--",
+                "--host", str(address),
+                "--port", str(port),
             ]
             self.logger.info(
-                "Vite development server running on http://127.0.0.1:5173 "
+                f"Vite development server running on http://{address}:{port} "
                 "(Press CTRL+C to quit)"
             )
         else:
@@ -34,7 +39,10 @@ class Frontend(Functionality):
             cmd = [
                 "node",
                 str(self.frontend_dir/"build"),
-                ]
+                "--",
+                "--host", str(address),
+                "--port", str(port),
+            ]
             self.logger.info(
                 f"Node running on http://{address}:{port} (Press CTRL+C to quit)"
             )

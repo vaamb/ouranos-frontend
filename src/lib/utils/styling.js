@@ -47,18 +47,22 @@ export const graphs = {
   },
   plants: {
     colors: {
-      moisture: "#226ba3",
+      moisture: colors.blue,
+      temperature: colors.red,
     },
     icons: {
       moisture: faTint,
+      temperature: faFire,
     },
     units: {
       moisture: " % RWC",
+      temperature: "°C",
     },
     max_values: {
       moisture: 100,
+      temperature: 35,
     },
-    order: ["moisture"],
+    order: ["moisture", "temperature",],
   },
   plants_health: {
     measures: {

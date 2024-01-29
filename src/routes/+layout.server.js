@@ -26,7 +26,7 @@ export async function load({ cookies, request }) {
     rv.maintenance = true;
     return rv;
   default:
-    throw error(
+    error(
       500,
       "We are experiencing an unexpected issue, come back later"
     );

@@ -1,79 +1,83 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+	import { createEventDispatcher } from 'svelte';
 
-  import Fa from "svelte-fa";
-  import {faXmark} from "@fortawesome/free-solid-svg-icons";
+	import Fa from 'svelte-fa';
+	import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
-  export let opened = false;
-  export const title = null;
+	export let dialog; // HTMLDialogElement
+	export let showModal = false;
+	export let title = undefined;
+	export let timeOut = undefined;
 
-  const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher();
 
-  const closeModal = function() {
-    opened = false;
-    dispatch("closeModal");
-  }
+	const closeModal = function () {
+		dialog.close();
+		dispatch('close');
+	};
+
+	const displayModal = function () {
+		dialog.showModal();
+		if (timeOut) {
+			setTimeout(() => {
+				closeModal();
+			}, timeOut);
+		}
+	};
+
+	$: if (dialog && showModal) displayModal();
 </script>
 
-{#if opened}
-  <div class="modal-overlay" on:click={closeModal}>
-    <div class="modal">
-      {#if title}
-        <h1>{ title }</h1>
-      {/if}
-      <button class="reset-button close" on:click={closeModal}>
-        <Fa icon={faXmark} />
-      </button>
-      <div class="content">
-        <slot />
-      </div>
-    </div>
-  </div>
-{/if}
-
-
+<dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={() => closeModal()}>
+	<div on:click|stopPropagation style="font-size: 1.05rem">
+		<button class="reset-button close" on:click={() => closeModal()}>
+			<Fa icon={faXmark} />
+		</button>
+		{#if title}
+			<h1>
+				{title}
+			</h1>
+		{/if}
+		<div class="content">
+			<slot />
+		</div>
+	</div>
+</dialog>
 
 <style>
-  h1 {
-    font-size: 1.6rem;
-    font-weight: 500;
-    margin-bottom: 7px;
-  }
+	dialog {
+		margin: auto;
+		min-width: 30vw;
+		max-width: 90vw;
+		height: fit-content;
+		border: 2px solid var(--main-40);
+		padding: 20px 25px;
+		border-radius: 15px;
+		background-color: var(--main-95);
+		color: var(--derived-50);
+	}
 
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 20;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--main-25);
-  }
+	dialog::backdrop {
+		background: rgba(0, 0, 0, 0.3);
+	}
 
-  .modal {
-    position: absolute;
-    min-width: 30vw;
-    max-width: 90vw;
-    height: fit-content;
-    border: 2px solid var(--main-40);
-    padding: 15px 25px;
-    border-radius: 15px;
-    background-color: var(--main-95);
-  }
+	h1 {
+		font-size: 1.3rem;
+		font-weight: 500;
+		margin-bottom: 7px;
+	}
 
-  .close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 35px;
-    height: 35px;
-    cursor: pointer;
-  }
+	.close {
+		position: absolute;
+		top: 0;
+		right: 0;
+		margin-right: 0;
+		width: 35px;
+		height: 35px;
+		cursor: pointer;
+	}
 
-  .content {
-    padding: 10px 0;
-  }
+	.content {
+		padding: 10px 0;
+	}
 </style>

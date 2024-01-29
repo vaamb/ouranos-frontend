@@ -186,7 +186,7 @@ export const fetchEcosystemsManagement = async function () {
 		});
 };
 
-export const fetchEcosystemLight = async function (ecosystemUID) {
+export const fetchEcosystemLighting = async function (ecosystemUID) {
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/light`)
 		.then((response) => {
@@ -212,10 +212,10 @@ export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_status`)
 		.then((response) => {
-			const data = response['data']
-			ecosystemUID = data['ecosystem_uid']
-			delete data['ecosystem_uid']
-			updateStoreData(ecosystemsActuatorData, {[ecosystemUID]: data})
+			const data = response['data'];
+			ecosystemUID = data['ecosystem_uid'];
+			delete data['ecosystem_uid'];
+			updateStoreData(ecosystemsActuatorData, { [ecosystemUID]: data });
 			return data;
 		})
 		.catch(() => {
@@ -248,10 +248,7 @@ export const fetchSensorCurrentData = async function (sensorUID, measure) {
 			const accumulator = {};
 			for (const ecosystem of response['data']) {
 				for (const sensorRecord of ecosystem['data']) {
-					const storageKey = getStoreDataKey(
-						sensorRecord['sensor_uid'],
-						sensorRecord['measure']
-					);
+					const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
 					accumulator[storageKey] = {
 						timestamp: new Date(sensorRecord['timestamp']),
 						value: sensorRecord['value']
@@ -290,7 +287,7 @@ export const fetchSensorHistoricData = async function (sensorUID, measure) {
 		});
 };
 
-export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level=null) {
+export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level = null) {
 	const dataKey = getStoreDataKey(ecosystemUID, level);
 	const storedData = getStoreData(ecosystemsSensorsSkeleton, dataKey);
 	if (!isEmpty(storedData)) {
@@ -449,7 +446,7 @@ export const crudRequest = function (relRoute, action, payload) {
 	return axios(`${API_URL}/${relRoute}`, options)
 		.then((response) => {
 			const msgs = get(flashMessage);
-			msgs.push(Message(response.data.msg));
+			msgs.push(Message(response.data.msg, null, 3000));
 			flashMessage.set(msgs);
 		})
 		.catch((error) => {
@@ -474,7 +471,7 @@ export const updateActuatorMode = function (ecosystemUID, actuatorType, mode) {
 	})
 		.then((response) => {
 			const msgs = get(flashMessage);
-			msgs.push(Message(response.data.msg));
+			msgs.push(Message(response.data.msg, null, 1500));
 			flashMessage.set(msgs);
 		})
 		.catch((error) => {

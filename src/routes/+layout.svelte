@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
 
   import MaintenanceScreen from "$lib/components/screens/Maintenance.svelte";
+  import UnreachableScreen from "$lib/components/screens/Unreachable.svelte";
 
   import { connectSocketio, disconnectSocketio } from "$lib/socketio.js";
   import { currentUser, serverLastSeen } from "$lib/store.js";
@@ -13,15 +14,6 @@
 
   const user = User(userData);
   currentUser.set(user);
-
-  let content;
-  if (development) {
-    content = CONTENT.display;
-  } else if (maintenance || serverStatus === SERVER_STATUS.unreachable) {
-    content = CONTENT.maintenance;
-  } else {
-    content = CONTENT.display;
-  }
 
   if (serverStatus === SERVER_STATUS.connected) {
     serverLastSeen.set(new Date());
@@ -38,8 +30,10 @@
   });
 </script>
 
-{#if content === CONTENT.maintenance}
+{#if maintenance === CONTENT.maintenance}
   <MaintenanceScreen />
-{:else if content === CONTENT.display}
+{:else if serverStatus === SERVER_STATUS.connected}
   <slot />
+{:else}
+  <UnreachableScreen />
 {/if}

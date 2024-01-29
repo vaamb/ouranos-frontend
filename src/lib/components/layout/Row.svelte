@@ -1,11 +1,11 @@
 <div class="row">
-  <slot />
+	<slot />
 </div>
 
 <style>
-  .row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
 </style>

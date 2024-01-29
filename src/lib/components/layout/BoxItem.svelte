@@ -1,7 +1,8 @@
 <script>
   export let title = null;
-  export let direction = "column";
   export let maxWidth = "auto";
+  export let direction = "column";
+  export let align = "";
 </script>
 
 <div class="box-item" style="--max-width:{ maxWidth }">
@@ -10,7 +11,7 @@
       <h1>{ title }</h1>
     {/if}
   </div>
-  <div class="box-item-content {direction}">
+  <div class="box-item-content {direction} {align}">
     <slot />
   </div>
 </div>
@@ -43,6 +44,13 @@
   .row {
     flex-direction: row;
   }
+
+  .center {
+    position: relative;
+    top: 50%;
+    transform: translate(0%, -50%);
+  }
+
 
   @media only screen and (min-width: 768px) {
     .box-item {

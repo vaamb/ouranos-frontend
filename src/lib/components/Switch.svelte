@@ -8,7 +8,7 @@
 
 	import { currentUser } from '$lib/store.js';
 	import { permissions } from '$lib/utils/consts.js';
-	import { capitalize, computeLightStatusClass } from '$lib/utils/functions.js';
+	import { capitalize } from '$lib/utils/functions.js';
 
 	export let actuatorType;
 	export let title = capitalize(actuatorType);
@@ -31,7 +31,7 @@
 				<div style="padding-top: 25px">
 					<Fa
 						icon={faSyncAlt}
-						class={computeLightStatusClass(status)}
+						class={status ? 'on' : 'off'}
 						size="6x"
 						spin={mode === 'automatic'}
 					/>

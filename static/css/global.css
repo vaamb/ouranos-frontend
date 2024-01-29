@@ -52,8 +52,12 @@ h2 {
 
 h3 {
   font-size: 0.97rem;
-  margin-top: 10px;
-  margin-bottom: 7px;
+  margin-top: 0.8em;
+  margin-bottom: 0.8rem;
+}
+
+p {
+  margin-bottom: 1rem;
 }
 
 .center-content {

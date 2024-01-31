@@ -159,13 +159,14 @@
 	{/if}
 	{#if $currentUser.isAuthenticated}
 		<Box title="Warnings overview" align="center">
-			<BoxItem>
-				{#each $warnings as warning}
-					{warning.content}
-				{:else}
-					No warning
-				{/each}
-			</BoxItem>
+			{#each $warnings as warning}
+				<BoxItem title="{warning.title}">
+					{warning.level}
+					{warning.description}
+				</BoxItem>
+			{:else}
+				<BoxItem title="No warning" />
+			{/each}
 		</Box>
 	{/if}
 </Row>

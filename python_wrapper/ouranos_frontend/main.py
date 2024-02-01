@@ -16,7 +16,7 @@ class Frontend(Functionality):
         base_dir = get_base_dir().absolute()
         self.frontend_dir = base_dir/"lib/ouranos-frontend"
 
-    def _startup(self):
+    async def _startup(self):
         address = current_app.config.get("FRONTEND_ADDRESS", Config.FRONTEND_ADDRESS)
         port = current_app.config.get("FRONTEND_PORT", Config.FRONTEND_PORT)
         if current_app.config["DEVELOPMENT"]:
@@ -49,6 +49,6 @@ class Frontend(Functionality):
         self.subprocess = subprocess.Popen(
             cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
 
-    def _shutdown(self):
+    async def _shutdown(self):
         self.subprocess.terminate()
         self.subprocess = None

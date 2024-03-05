@@ -212,7 +212,7 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 };
 
 export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
-	const dataKey = getStoreDataKey(ecosystemUID, level);
+	const dataKey = getStoreDataKey(ecosystemUID);
 	const storedData = getStoreData(ecosystemsSensorsSkeleton, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;

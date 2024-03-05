@@ -22,7 +22,7 @@
 		warnings,
 		weatherCurrently
 	} from '$lib/store.js';
-	import { actuatorType, permissions } from '$lib/utils/consts.js';
+	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
 		computeEcosystemStatusClass,
 		computeLightingHours,
@@ -56,7 +56,7 @@
 	$: uptime = computeUptime($serverLastSeen, serverStartTime);
 
 	const anyActiveActuator = function (actuatorsStatus) {
-		for (const actuator of actuatorType) {
+		for (const actuator of actuatorTypes) {
 			if (actuatorsStatus[actuator]['active']) {
 				return true;
 			}
@@ -204,7 +204,7 @@
 					{#if anyActiveActuator($ecosystemsActuatorData[uid])}
 						<BoxItem title="Actuators">
 							<template>{(filledBox[uid] = true)}</template>
-							{#each actuatorType as actuator}
+							{#each actuatorTypes as actuator}
 								{#if $ecosystemsActuatorData[uid][actuator]['active']}
 									<p>
 										{capitalize(actuator)}:

@@ -23,8 +23,8 @@ export const permissions = {
 
 export const climateParameters = ['temperature', 'humidity', 'light'];
 
-export const hardwareLevel = ['environment', 'plants'];
+export const hardwareLevels = ['environment', 'plants'];
 
-export const actuatorType = ['light', 'heater', 'cooler', 'humidifier', 'dehumidifier'];
+export const actuatorTypes = ['light', 'heater', 'cooler', 'humidifier', 'dehumidifier'];
 
-export const hardwareType = ['sensor', ...actuatorType];
+export const hardwareTypes = ['sensor', ...actuatorTypes];

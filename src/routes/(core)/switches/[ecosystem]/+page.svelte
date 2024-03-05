@@ -6,7 +6,7 @@
 
 	import { fetchEcosystemActuatorsData, updateActuatorMode } from '$lib/actions.js';
 	import { ecosystemsIds, ecosystemsActuatorData } from '$lib/store.js';
-	import { actuatorType } from '$lib/utils/consts.js';
+	import { actuatorTypes } from '$lib/utils/consts.js';
 	import { getEcosystemUid } from '$lib/utils/functions.js';
 
 	$: ecosystemName = $page['params']['ecosystem'];
@@ -16,7 +16,7 @@
 <HeaderLine title="Actuator {ecosystemName}" />
 
 {#await fetchEcosystemActuatorsData(ecosystemUID) then runningActuators}
-	{#each actuatorType as actuator}
+	{#each actuatorTypes as actuator}
 		{#if $ecosystemsActuatorData[ecosystemUID][actuator]['active']}
 			<Switch
 				actuatorType={actuator}

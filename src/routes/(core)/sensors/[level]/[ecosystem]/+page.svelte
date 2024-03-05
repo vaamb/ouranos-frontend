@@ -16,11 +16,11 @@
 	import {
 		ecosystemsIds,
 		ecosystemsSensorsDataCurrent,
-		ecosystemsSensorsDataHistoric
+		ecosystemsSensorsDataHistoric,
+		ecosystemsSensorsSkeleton
 	} from '$lib/store.js';
 	import {
 		capitalize,
-		formatSensorsSkeleton,
 		getEcosystemUid,
 		getStoreDataKey
 	} from '$lib/utils/functions.js';
@@ -39,6 +39,7 @@
 	$: pageTitle = generateTitle(sensorsLevel, ecosystemName);
 	$: icons = graphs[sensorsLevel].icons;
 	$: colors = graphs[sensorsLevel].colors;
+	$: minValues = graphs[sensorsLevel].min_values;
 	$: maxValues = graphs[sensorsLevel].max_values;
 	$: ecosystemUid = getEcosystemUid($ecosystemsIds, ecosystemName);
 
@@ -48,12 +49,6 @@
 		return {
 			current: current,
 			historic: historic
-		};
-	};
-
-	const formatCurrentData = function (currentData) {
-		return {
-			value: currentData['value']
 		};
 	};
 
@@ -76,40 +71,45 @@
 </script>
 
 <HeaderLine title={pageTitle} />
-{#await fetchEcosystemSensorsSkeleton(ecosystemUid, sensorsLevel) then rawSensorsSkeleton}
-	{#each formatSensorsSkeleton(rawSensorsSkeleton, sensorsLevel) as measure}
-		<h2>{capitalize(measure.name)}</h2>
-		{#each measure.sensors as sensor}
+{#await fetchEcosystemSensorsSkeleton(ecosystemUid, sensorsLevel) then sensorsSkeleton}
+	{#each $ecosystemsSensorsSkeleton[getStoreDataKey(ecosystemUid, sensorsLevel)] as sensorsBone}
+		<h2>{capitalize(sensorsBone.measure.replace("_", " "))}</h2>
+		{#each sensorsBone.sensors as sensor}
 			<Row>
-				{#await fetchSensorData(sensor.uid, measure.name) then sensorData}
-					<Box title={sensor.name} direction="row" icon={icons[measure.name]}>
-						{#await $ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, measure.name)] then rawCurrentData}
-							{#if rawCurrentData}
+				{#await fetchSensorData(sensor.uid, sensorsBone.measure) then sensorData}
+					{@const currentSensorsData = $ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
+					{@const historicSensorsData = $ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
+					{#if currentSensorsData || historicSensorsData}
+						<Box title={sensor.name} direction="row" icon={icons[sensorsBone.measure]}>
+							{#if currentSensorsData}
 								<BoxItem maxWidth="300px">
-									{#await formatCurrentData(rawCurrentData) then currentData}
-										<Gauge value={currentData.value} unit={measure.unit} />
-									{/await}
+									<Gauge
+										value={currentSensorsData.value.toFixed(2)}
+										unit={sensor.unit}
+										minValue={minValues[sensorsBone.measure]}
+										maxValue={maxValues[sensorsBone.measure]}
+									/>
 								</BoxItem>
 							{/if}
-						{/await}
-						<BoxItem>
-							{#await $ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, measure.name)] then rawHistoricData}
-								{#if rawHistoricData.values.length > 5}
-									{#await formatHistoricData(rawHistoricData, measure.name) then historicData}
-										<Graph
-											datasets={[historicData.dataset]}
-											labels={historicData.labels}
-											suggestedMax={maxValues[measure.name]}
-											height="200px"
-										/>
-									{/await}
+							<BoxItem>
+								{#if historicSensorsData && historicSensorsData.values.length > 5}
+									{@const formattedHistoricSensorsData = formatHistoricData(historicSensorsData, sensorsBone.measure)}
+									<Graph
+										datasets={[formattedHistoricSensorsData.dataset]}
+										labels={formattedHistoricSensorsData.labels}
+										suggestedMin={minValues[sensorsBone.measure]}
+										suggestedMax={maxValues[sensorsBone.measure]}
+										height="200px"
+									/>
 								{:else}
-									<p>There is not currently enough data points to draw a graph.</p>
-									<p>Please come back later to see your graph.</p>
+									<div style="margin: auto">
+										<p style="margin-bottom: 0">There is not currently enough data points to draw a graph.</p>
+										<p style="margin-bottom: 0">Please come back later to see your graph.</p>
+									</div>
 								{/if}
-							{/await}
-						</BoxItem>
-					</Box>
+							</BoxItem>
+						</Box>
+					{/if}
 				{/await}
 			</Row>
 		{/each}

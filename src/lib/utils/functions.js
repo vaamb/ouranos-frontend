@@ -215,14 +215,14 @@ export const checkSensorDataRecency = function (sensorData, minuteModulo) {
 
 export const getStoreDataKey = function () {
 	if (arguments.length <= 1) {
-		return arguments[0]
+		return arguments[0];
 	} else {
-		let rv = arguments[0]
+		let rv = arguments[0];
 		const remainingArgs = Array.prototype.slice.call(arguments, 1);
 		for (const value of Object.values(remainingArgs)) {
-			rv = rv + "_" + value
+			rv = rv + '_' + value;
 		}
-		return rv
+		return rv;
 	}
 };
 
@@ -239,24 +239,4 @@ export const getStoreData = function (store, storageKey) {
 export const updateStoreData = function (store, data) {
 	// Utility function to easily update stored data outside .svelte files
 	store.set({ ...get(store), ...data });
-};
-
-export const formatSensorsSkeleton = function (sensorsSkeleton, sensorsLevel) {
-	const units = graphs[sensorsLevel].units;
-	const rv = [];
-	for (const [measure, sensors]of Object.entries(sensorsSkeleton)) {
-		let accumulator = [];
-		for (const [sensorUID, sensorName] of Object.entries(sensors)) {
-			accumulator.push({ uid: sensorUID, name: sensorName });
-		}
-		accumulator = accumulator.sort((a, b) => {
-			return a.name > b.name;
-		});
-		rv.push({
-			name: measure,
-			unit: units[measure] || "",
-			sensors: accumulator
-		});
-	}
-	return rv;
 };

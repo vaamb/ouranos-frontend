@@ -15,6 +15,8 @@
 		ecosystemsIds,
 		ecosystemsActuatorData,
 		ecosystemsManagement,
+		ecosystemsSensorsDataCurrent,
+		ecosystemsSensorsSkeleton,
 		serverCurrentData,
 		serverLastSeen,
 		serverLatency,
@@ -26,7 +28,6 @@
 	import {
 		computeEcosystemStatusClass,
 		computeLightingHours,
-		formatSensorsSkeleton,
 		computeUptime,
 		isEmpty,
 		formatDate,
@@ -34,7 +35,8 @@
 		getWeatherIcon,
 		serviceEnabled,
 		getParamStatus,
-		capitalize
+		capitalize,
+		getStoreDataKey
 	} from '$lib/utils/functions.js';
 	import {
 		fetchEcosystemActuatorsData,
@@ -50,69 +52,57 @@
 	const serverStartTime = new Date(serverStartTimeValue);
 	let now = new Date();
 
-	const filledBox = {};
 	$: weatherEnabled = serviceEnabled($services, 'weather');
 	$: calendarEnabled = serviceEnabled($services, 'calendar');
 	$: uptime = computeUptime($serverLastSeen, serverStartTime);
 
-	const anyActiveActuator = function (actuatorsStatus) {
-		for (const actuator of actuatorTypes) {
-			if (actuatorsStatus[actuator]['active']) {
+	const anyActiveActuator = function (ecosystemsActuatorData, uid) {
+		const actuatorsStatus = ecosystemsActuatorData[uid];
+		if (!actuatorsStatus) {
+			return false;
+		}
+		for (const actuatorType of actuatorTypes) {
+			if (actuatorsStatus[actuatorType]['active']) {
 				return true;
 			}
 		}
 		return false;
 	};
 
-	const fetchAndComputeCurrentSensorsAverages = async function (sensorsSkeleton, level) {
-		const formattedSensorsSkeleton = formatSensorsSkeleton(sensorsSkeleton, level)
-		if (isEmpty(formattedSensorsSkeleton)) {
-			return [];
-		}
-		const average = (array) => array.reduce((a, b) => a + b) / array.length;
-		const rv = [];
-		for (const measure of formattedSensorsSkeleton) {
-			const sensors = measure['sensors'];
-			if (isEmpty(sensors)) {
-				continue;
-			}
-			let values = [];
-			for (const sensorInfo of sensors) {
-				const data = await fetchSensorCurrentData(sensorInfo['uid'], measure['name'].replace(" ", "_"));
-				if (data) {
-					// Recently disconnected sensors are still in skeleton but don't have current data
-					values.push(data['value']);
-				}
-			}
-			if (isEmpty(values)) {
-				continue;
-			}
-			rv.push({
-				name: measure['name'],
-				unit: measure['unit'],
-				average: average(values).toFixed(1)
-			});
+	const fetchSensorsCurrentDataForMeasure = async function (measure, sensors) {
+		let rv = [];
+		for (const sensor of sensors) {
+			const data = await fetchSensorCurrentData(sensor['uid'], measure.replace(' ', '_'));
+			rv.push(data);
 		}
 		return rv;
 	};
 
-	const formatCurrentSensorsAverages = function (averagedCurrentSensorsData) {
-		if (isEmpty(averagedCurrentSensorsData)) {
-			return '<p style="margin-bottom: 0">No sensor data available</p>';
+	const computeAverageSensorsCurrentDataForMeasure = function (
+		ecosystemsSensorsDataCurrent,
+		measure,
+		sensors,
+	) {
+		let rv = [];
+		for (const sensor of sensors) {
+			const data = ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, measure)];
+			if (data) {
+				rv.push(data.value);
+			}
 		}
-		let rv = '';
-		for (const measure of averagedCurrentSensorsData) {
-			rv += `<p style="margin-bottom: 0">${
-				capitalize(measure['name']).replace('_', ' ') +
-				': ' +
-				measure['average'] +
-				measure['unit']
-			}</p>`;
+		if (rv.length === 0) {
+			return null;
 		}
-		return rv;
+		const average = (array) => array.reduce((a, b) => a + b) / array.length;
+		return average(rv).toFixed(2);
 	};
 
 	onMount(async () => {
+		for (const { uid, name } of $ecosystemsIds) {
+			if ($ecosystems[uid]['connected']) {
+				await fetchEcosystemActuatorsData(uid);
+			}
+		}
 		const { weatherCurrentlyValues } = await fetchWeatherForecast('hourly,daily');
 		weatherCurrently.set(weatherCurrentlyValues);
 	});
@@ -131,13 +121,13 @@
 	</Box>
 	{#if weatherEnabled && !isEmpty($weatherCurrently)}
 		<Box title="Current weather" align="center">
-			<i class="{getWeatherIcon($weatherCurrently.icon)} weather-icon" />
-			<BoxItem title={$weatherCurrently.summary}>
-				<p>Temperature: {$weatherCurrently.temperature.toFixed(1)} °C</p>
-				<p>Wind: {$weatherCurrently.windSpeed.toFixed(1)} km/h</p>
-				<p>Precipitation:{($weatherCurrently.precipProbability * 100).toFixed(1)} %</p>
-				<p>Humidity: {($weatherCurrently.humidity * 100).toFixed(1)} %</p>
-				<p>Cloud cover:{($weatherCurrently.cloudCover * 100).toFixed(1)} %</p>
+			<i class="{getWeatherIcon($weatherCurrently['icon'])} weather-icon"></i>
+			<BoxItem title={$weatherCurrently['summary']}>
+				<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
+				<p>Wind: {$weatherCurrently['windSpeed'].toFixed(1)} km/h</p>
+				<p>Precipitation:{($weatherCurrently['precipProbability'] * 100).toFixed(1)} %</p>
+				<p>Humidity: {($weatherCurrently['humidity'] * 100).toFixed(1)} %</p>
+				<p>Cloud cover:{($weatherCurrently['cloudCover'] * 100).toFixed(1)} %</p>
 			</BoxItem>
 		</Box>
 	{/if}
@@ -181,109 +171,135 @@
 {#if $ecosystemsIds.length > 0}
 	<h2>Ecosystems overview</h2>
 	{#each $ecosystemsIds as { uid, name }}
-		<Box
-			title={name}
-			align="center"
-			status={computeEcosystemStatusClass($ecosystems[uid])}
-			direction="row"
-		>
-			<template>{(filledBox[uid] = false)}</template>
-
-			{#if getParamStatus($ecosystems, uid, 'connected') && getParamStatus($ecosystemsManagement, uid, 'light')}
-				<template>{(filledBox[uid] = true)}</template>
-				<BoxItem title="Lighting">
-					{#await fetchEcosystemLighting(uid)}
-						<p>Fetching data</p>
-					{:then ecosystemLight}
-						{@html computeLightingHours(ecosystemLight)}
-					{/await}
-				</BoxItem>
-			{/if}
-			{#if getParamStatus($ecosystems, uid, 'connected')}
-				{#await fetchEcosystemActuatorsData(uid) then actuatorStatus}
-					{#if anyActiveActuator($ecosystemsActuatorData[uid])}
+		{@const ecosystem = $ecosystems[uid]}
+		{#if ecosystem}
+			<Box
+				title={name}
+				align="center"
+				status={computeEcosystemStatusClass(ecosystem)}
+				direction="row"
+			>
+				{#if !ecosystem['connected']}
+					<BoxItem>
+						<p>The ecosystem {name} is not currently connected</p>
+						<p>
+							Last connection to the server on
+							{formatDateTime(new Date(ecosystem.last_seen))}
+						</p>
+					</BoxItem>
+				{:else if !ecosystem['status']}
+					<BoxItem>
+						<p>The ecosystem {name} is not currently running</p>
+						{#if $currentUser.can(permissions.OPERATE)}
+							<p>
+								Click
+								<a href="/settings/ecosystem/{name}">here</a>
+								to configure {name}
+							</p>
+						{/if}
+					</BoxItem>
+				{:else}{@html '<!--Only connected and running ecosystems afterwards-->'}
+					{@const light = getParamStatus($ecosystemsManagement, uid, 'light')}
+					{@const actuator = anyActiveActuator($ecosystemsActuatorData, uid)}
+					{@const environmentData = getParamStatus($ecosystemsManagement, uid, 'environment_data')}
+					{@const plantsData = getParamStatus($ecosystemsManagement, uid, 'plants_data')}
+					{#if !(light || actuator || environmentData || plantsData)}
+						<BoxItem>
+							<p>No functionality is enabled in {name}</p>
+							{#if $currentUser.can(permissions.OPERATE)}
+								<p>
+									Click
+									<a href="/settings/ecosystem/{name}">here</a>
+									to configure {name}
+								</p>
+							{/if}
+						</BoxItem>
+					{/if}
+					{#if light}
+						<BoxItem title="Lighting">
+							{#await fetchEcosystemLighting(uid)}
+								<p>Fetching data</p>
+							{:then ecosystemLight}
+								{@html computeLightingHours(ecosystemLight)}
+							{/await}
+						</BoxItem>
+					{/if}
+					{#if actuator}
 						<BoxItem title="Actuators">
-							<template>{(filledBox[uid] = true)}</template>
-							{#each actuatorTypes as actuator}
-								{#if $ecosystemsActuatorData[uid][actuator]['active']}
+							{#each actuatorTypes as actuatorType}
+								{@const actuator = $ecosystemsActuatorData[uid][actuatorType]}
+								{#if actuator['active']}
 									<p>
-										{capitalize(actuator)}:
+										{capitalize(actuatorType)}:
 										<Fa
 											icon={faSyncAlt}
-											class={$ecosystemsActuatorData[uid][actuator]['status'] ? 'on' : 'off'}
-											spin={$ecosystemsActuatorData[uid][actuator]['mode'] === 'automatic'}
+											class={actuator['status'] ? 'on' : 'off'}
+											spin={actuator['mode'] === 'automatic'}
 										/>
 									</p>
 								{/if}
 							{/each}
 						</BoxItem>
 					{/if}
-				{/await}
-			{/if}
-			{#if getParamStatus($ecosystems, uid, 'connected') && getParamStatus($ecosystemsManagement, uid, 'environment_data')}
-				<template>{(filledBox[uid] = true)}</template>
-				<BoxItem title="Environment">
-					{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
-						<p>Collecting environment's data from the ecosystem</p>
-					{:then sensorsSkeleton}
-						{#await fetchAndComputeCurrentSensorsAverages(sensorsSkeleton, 'environment')}
-							<p>Collecting environment's data from the ecosystem</p>
-						{:then avg}
-							{@html formatCurrentSensorsAverages(avg)}
-						{/await}
-					{/await}
-				</BoxItem>
-			{/if}
-			{#if getParamStatus($ecosystems, uid, 'connected') && getParamStatus($ecosystemsManagement, uid, 'plants_data')}
-				<template>{(filledBox[uid] = true)}</template>
-				<BoxItem title="Plants">
-					{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
-						<p>Collecting environment's data from the ecosystem</p>
-					{:then sensorsSkeleton}
-						{#await fetchAndComputeCurrentSensorsAverages(sensorsSkeleton, 'plants')}
-							<p>Collecting environment's data from the ecosystem</p>
-						{:then avg}
-							{@html formatCurrentSensorsAverages(avg)}
-						{/await}
-					{/await}
-				</BoxItem>
-			{/if}
-			{#if getParamStatus($ecosystems, uid, 'connected') && !$ecosystems[uid]['status']}
-				<template>{(filledBox[uid] = true)}</template>
-				<BoxItem>
-					<p>The ecosystem {name} is not currently running</p>
-					{#if $currentUser.can(permissions.OPERATE)}
-						<p>
-							Click
-							<a href="/settings/ecosystem/{name}">here</a>
-							to configure {name}
-						</p>
+					{#if environmentData}
+						<BoxItem title="Environment">
+							{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
+								<p>Collecting environment's data from the ecosystem</p>
+							{:then sensorsSkeleton}
+								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'environment')] as sensorsBone}
+									{#await fetchSensorsCurrentDataForMeasure(sensorsBone.measure, sensorsBone.sensors)}
+										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
+									{:then sensorsData}
+										{@const averageData = computeAverageSensorsCurrentDataForMeasure(
+											$ecosystemsSensorsDataCurrent,
+											sensorsBone.measure,
+											sensorsBone.sensors,
+										)}
+										{#if averageData !== null}
+											<p style="margin-bottom: 0">
+												{capitalize(sensorsBone.measure).replace('_', ' ')}:
+												{averageData}
+												{sensorsBone.units[0]}
+											</p>
+										{/if}
+									{/await}
+								{:else}
+									<p style="margin-bottom: 0">No sensor data available</p>
+								{/each}
+							{/await}
+						</BoxItem>
 					{/if}
-				</BoxItem>
-			{/if}
-			{#if $ecosystems[uid] && !$ecosystems[uid]['connected']}
-				<template>{(filledBox[uid] = true)}</template>
-				<BoxItem>
-					<p>The ecosystem {name} is not currently connected</p>
-					<p>
-						Last connection to the server on
-						{formatDateTime(new Date($ecosystems[uid]['last_seen']))}
-					</p>
-				</BoxItem>
-			{/if}
-			{#if $ecosystems[uid] && !filledBox[uid]}
-				<BoxItem>
-					<p>No functionality is enabled in {name}</p>
-					{#if $currentUser.can(permissions.OPERATE)}
-						<p>
-							Click
-							<a href="/settings/ecosystem/{name}">here</a>
-							to configure {name}
-						</p>
+					{#if plantsData}
+						<BoxItem title="Plants">
+							{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
+								<p>Collecting environment's data from the ecosystem</p>
+							{:then sensorsSkeleton}
+								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'plants')] as sensorsBone}
+									{#await fetchSensorsCurrentDataForMeasure(sensorsBone.measure, sensorsBone.sensors)}
+										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
+									{:then sensorsData}
+										{@const averageData = computeAverageSensorsCurrentDataForMeasure(
+											$ecosystemsSensorsDataCurrent,
+											sensorsBone.measure,
+											sensorsBone.sensors,
+										)}
+										{#if averageData !== null}
+											<p style="margin-bottom: 0">
+												{capitalize(sensorsBone.measure).replace('_', ' ')}:
+												{averageData}
+												{sensorsBone.units[0]}
+											</p>
+										{/if}
+									{/await}
+								{:else}
+									<p style="margin-bottom: 0">No sensor data available</p>
+								{/each}
+							{/await}
+						</BoxItem>
 					{/if}
-				</BoxItem>
-			{/if}
-		</Box>
+				{/if}
+			</Box>
+		{/if}
 	{/each}
 {/if}
 

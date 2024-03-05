@@ -231,11 +231,11 @@
 								<p style="margin-bottom: 0">
 									{capitalize(sensorsBone.measure).replace('_', ' ')}:
 									{computeAverageSensorsCurrentDataForMeasure(
+										$ecosystemsSensorsDataCurrent,
 										sensorsBone.measure,
 										sensorsBone.sensors,
-										$ecosystemsSensorsDataCurrent
 									)}
-									{sensorsBone.sensors[0].unit}
+									{sensorsBone.units[0]}
 								</p>
 							{/await}
 						{:else}

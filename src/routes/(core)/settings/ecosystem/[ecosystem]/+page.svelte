@@ -10,7 +10,7 @@
 
 	import { ecosystemsIds, ecosystemsManagement } from '$lib/store.js';
 	import { capitalize, getEcosystemUid, getParamStatus, isNumber } from '$lib/utils/functions.js';
-	import { climateParameters, hardwareLevel, hardwareType } from '$lib/utils/consts.js';
+	import { climateParameters, hardwareLevels, hardwareTypes } from '$lib/utils/consts.js';
 	import {
 		fetchEcosystemEnvironmentParameters,
 		fetchEcosystemHardware,
@@ -224,8 +224,8 @@
 				<Form
 					data={[
 						{ label: 'Name', key: 'name' },
-						{ label: 'Level', key: 'level', selectFrom: hardwareLevel },
-						{ label: 'Type', key: 'type', selectFrom: hardwareType },
+						{ label: 'Level', key: 'level', selectFrom: hardwareLevels },
+						{ label: 'Type', key: 'type', selectFrom: hardwareTypes },
 						{ label: 'Model', key: 'model' },
 						{ label: 'Address', key: 'address' }
 					]}
@@ -241,13 +241,13 @@
 							label: 'Level',
 							key: 'level',
 							value: getValue(hardware, 'level'),
-							selectFrom: hardwareLevel
+							selectFrom: hardwareLevels
 						},
 						{
 							label: 'Type',
 							key: 'type',
 							value: getValue(hardware, 'type'),
-							selectFrom: hardwareType,
+							selectFrom: hardwareTypes,
 							disabled: true
 						},
 						{ label: 'Model', key: 'model', value: getValue(hardware, 'model'), disabled: true },

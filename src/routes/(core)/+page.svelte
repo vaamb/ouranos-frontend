@@ -258,7 +258,8 @@
 										{#if averageData !== null}
 											<p style="margin-bottom: 0">
 												{capitalize(sensorsBone.measure).replace('_', ' ')}:
-												{averageData} {sensorsBone.units[0]}
+												{averageData}
+												{sensorsBone.units[0]}
 											</p>
 										{/if}
 									{/await}
@@ -285,7 +286,8 @@
 										{#if averageData !== null}
 											<p style="margin-bottom: 0">
 												{capitalize(sensorsBone.measure).replace('_', ' ')}:
-												{averageData} {sensorsBone.units[0]}
+												{averageData}
+												{sensorsBone.units[0]}
 											</p>
 										{/if}
 									{/await}

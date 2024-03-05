@@ -4,13 +4,13 @@
 	export let direction = 'column';
 </script>
 
-<div class="box-item" style="--max-width:{maxWidth}">
+<div class="box-item" style="--max-width:{maxWidth}; height=100%">
 	<div class="top-fix">
 		{#if title}
 			<h1>{title}</h1>
 		{/if}
 	</div>
-	<div class="box-item-content {direction}">
+	<div class="box-item-content {direction}" style="height: 100%; display: flex">
 		<slot />
 	</div>
 </div>

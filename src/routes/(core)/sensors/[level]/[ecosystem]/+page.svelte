@@ -52,12 +52,6 @@
 		};
 	};
 
-	const formatCurrentData = function (currentData) {
-		return {
-			value: currentData['value']
-		};
-	};
-
 	const formatHistoricData = function (historicData, measureName) {
 		const labels = [];
 		const data = [];
@@ -83,40 +77,39 @@
 		{#each sensorsBone.sensors as sensor}
 			<Row>
 				{#await fetchSensorData(sensor.uid, sensorsBone.measure) then sensorData}
-					<Box title={sensor.name} direction="row" icon={icons[sensorsBone.measure]}>
-						{#await $ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)] then rawCurrentData}
-							{#if rawCurrentData}
+					{@const currentSensorsData = $ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
+					{@const historicSensorsData = $ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
+					{#if currentSensorsData || historicSensorsData}
+						<Box title={sensor.name} direction="row" icon={icons[sensorsBone.measure]}>
+							{#if currentSensorsData}
 								<BoxItem maxWidth="300px">
-									{#await formatCurrentData(rawCurrentData) then currentData}
-										<Gauge
-												value={currentData.value.toFixed(2)}
-												unit={sensor.unit}
-												minValue={minValues[sensorsBone.measure]}
-												maxValue={maxValues[sensorsBone.measure]}
-										/>
-									{/await}
+									<Gauge
+										value={currentSensorsData.value.toFixed(2)}
+										unit={sensor.unit}
+										minValue={minValues[sensorsBone.measure]}
+										maxValue={maxValues[sensorsBone.measure]}
+									/>
 								</BoxItem>
 							{/if}
-						{/await}
-						<BoxItem>
-							{#await $ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, sensorsBone.measure)] then rawHistoricData}
-								{#if rawHistoricData.values.length > 5}
-									{#await formatHistoricData(rawHistoricData, sensorsBone.measure) then historicData}
-										<Graph
-											datasets={[historicData.dataset]}
-											labels={historicData.labels}
-											suggestedMin={minValues[sensorsBone.measure]}
-											suggestedMax={maxValues[sensorsBone.measure]}
-											height="200px"
-										/>
-									{/await}
+							<BoxItem>
+								{#if historicSensorsData && historicSensorsData.values.length > 5}
+									{@const formattedHistoricSensorsData = formatHistoricData(historicSensorsData, sensorsBone.measure)}
+									<Graph
+										datasets={[formattedHistoricSensorsData.dataset]}
+										labels={formattedHistoricSensorsData.labels}
+										suggestedMin={minValues[sensorsBone.measure]}
+										suggestedMax={maxValues[sensorsBone.measure]}
+										height="200px"
+									/>
 								{:else}
-									<p>There is not currently enough data points to draw a graph.</p>
-									<p>Please come back later to see your graph.</p>
+									<div style="margin: auto">
+										<p style="margin-bottom: 0">There is not currently enough data points to draw a graph.</p>
+										<p style="margin-bottom: 0">Please come back later to see your graph.</p>
+									</div>
 								{/if}
-							{/await}
-						</BoxItem>
-					</Box>
+							</BoxItem>
+						</Box>
+					{/if}
 				{/await}
 			</Row>
 		{/each}

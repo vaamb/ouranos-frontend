@@ -19,7 +19,10 @@ import {
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	ecosystemsSensorsSkeleton,
-	flashMessage
+	flashMessage,
+	weatherCurrently,
+	weatherHourly,
+	weatherDaily,
 } from '$lib/store.js';
 import { APP_MODE, AppMode } from '../conf.js';
 
@@ -308,38 +311,44 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 };
 
 // Weather-related actions
-export const fetchWeatherForecast = async function (exclude = null) {
+export const loadWeatherForecast = async function (include = null) {
+	if (include === null) {
+		include = ['currently', 'hourly', 'daily'];
+	}
+	if (include.includes('currently') && !isEmpty(get(weatherCurrently))) {
+		include.filter((element) => element !== 'currently');
+	}
+	if (include.includes('hourly') && get(weatherHourly).length > 0) {
+		include.filter((element) => element !== 'hourly');
+	}
+	if (include.includes('daily') && get(weatherDaily).length > 0) {
+		include.filter((element) => element !== 'daily');
+	}
+
+	let exclude = ['currently', 'hourly', 'daily']
+	exclude.filter((element) => !include.includes(element));
+
+	if (exclude.length >= 3) {
+		return // Useless call, already have all the data
+	}
+
 	return axios
 		.get(`${API_URL}/weather/forecast`, {
-			params: { exclude: exclude }
+			params: { exclude: exclude.join(',') }
 		})
 		.then((response) => {
-			let weatherCurrently = {};
-			let weatherHourly = [];
-			let weatherDaily = [];
-
 			if (Object.prototype.hasOwnProperty.call(response.data, 'currently')) {
-				weatherCurrently = response.data.currently;
+				weatherCurrently.set(response.data["currently"]);
 			}
 			if (Object.prototype.hasOwnProperty.call(response.data, 'hourly')) {
-				weatherHourly = response.data.hourly;
+				weatherHourly.set(response.data["hourly"]);
 			}
 			if (Object.prototype.hasOwnProperty.call(response.data, 'daily')) {
-				weatherDaily = response.data.daily;
+				weatherDaily.set(response.data["daily"]);
 			}
-
-			return {
-				weatherCurrentlyValue: weatherCurrently,
-				weatherHourlyValue: weatherHourly,
-				weatherDailyValue: weatherDaily
-			};
 		})
 		.catch(() => {
-			return {
-				weatherCurrentlyValue: {},
-				weatherHourlyValue: [],
-				weatherDailyValue: []
-			};
+			// TODO: handle
 		});
 };
 

@@ -43,7 +43,7 @@
 		fetchSensorCurrentData,
 		fetchEcosystemSensorsSkeleton,
 		fetchEcosystemLighting,
-		fetchWeatherForecast
+		loadWeatherForecast
 	} from '$lib/actions.js';
 
 	export let data;
@@ -103,8 +103,9 @@
 				await fetchEcosystemActuatorsData(uid);
 			}
 		}
-		const { weatherCurrentlyValues } = await fetchWeatherForecast('hourly,daily');
-		weatherCurrently.set(weatherCurrentlyValues);
+		if (weatherEnabled) {
+			await loadWeatherForecast(['hourly' ,'daily']);
+		}
 	});
 </script>
 

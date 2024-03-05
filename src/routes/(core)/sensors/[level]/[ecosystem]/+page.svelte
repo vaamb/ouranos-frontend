@@ -39,6 +39,7 @@
 	$: pageTitle = generateTitle(sensorsLevel, ecosystemName);
 	$: icons = graphs[sensorsLevel].icons;
 	$: colors = graphs[sensorsLevel].colors;
+	$: minValues = graphs[sensorsLevel].min_values;
 	$: maxValues = graphs[sensorsLevel].max_values;
 	$: ecosystemUid = getEcosystemUid($ecosystemsIds, ecosystemName);
 
@@ -87,7 +88,12 @@
 							{#if rawCurrentData}
 								<BoxItem maxWidth="300px">
 									{#await formatCurrentData(rawCurrentData) then currentData}
-										<Gauge value={currentData.value.toFixed(2)} unit={sensor.unit} />
+										<Gauge
+												value={currentData.value.toFixed(2)}
+												unit={sensor.unit}
+												minValue={minValues[sensorsBone.measure]}
+												maxValue={maxValues[sensorsBone.measure]}
+										/>
 									{/await}
 								</BoxItem>
 							{/if}
@@ -99,6 +105,7 @@
 										<Graph
 											datasets={[historicData.dataset]}
 											labels={historicData.labels}
+											suggestedMin={minValues[sensorsBone.measure]}
 											suggestedMax={maxValues[sensorsBone.measure]}
 											height="200px"
 										/>

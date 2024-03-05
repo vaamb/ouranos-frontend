@@ -15,6 +15,8 @@
 		ecosystemsIds,
 		ecosystemsActuatorData,
 		ecosystemsManagement,
+		ecosystemsSensorsDataCurrent,
+		ecosystemsSensorsSkeleton,
 		serverCurrentData,
 		serverLastSeen,
 		serverLatency,
@@ -26,7 +28,6 @@
 	import {
 		computeEcosystemStatusClass,
 		computeLightingHours,
-		formatSensorsSkeleton,
 		computeUptime,
 		isEmpty,
 		formatDate,
@@ -34,7 +35,8 @@
 		getWeatherIcon,
 		serviceEnabled,
 		getParamStatus,
-		capitalize
+		capitalize,
+		getStoreDataKey
 	} from '$lib/utils/functions.js';
 	import {
 		fetchEcosystemActuatorsData,
@@ -64,52 +66,26 @@
 		return false;
 	};
 
-	const fetchAndComputeCurrentSensorsAverages = async function (sensorsSkeleton, level) {
-		const formattedSensorsSkeleton = formatSensorsSkeleton(sensorsSkeleton, level)
-		if (isEmpty(formattedSensorsSkeleton)) {
-			return [];
-		}
-		const average = (array) => array.reduce((a, b) => a + b) / array.length;
-		const rv = [];
-		for (const measure of formattedSensorsSkeleton) {
-			const sensors = measure['sensors'];
-			if (isEmpty(sensors)) {
-				continue;
-			}
-			let values = [];
-			for (const sensorInfo of sensors) {
-				const data = await fetchSensorCurrentData(sensorInfo['uid'], measure['name'].replace(" ", "_"));
-				if (data) {
-					// Recently disconnected sensors are still in skeleton but don't have current data
-					values.push(data['value']);
-				}
-			}
-			if (isEmpty(values)) {
-				continue;
-			}
-			rv.push({
-				name: measure['name'],
-				unit: measure['unit'],
-				average: average(values).toFixed(1)
-			});
+	const fetchSensorsCurrentDataForMeasure = async function (measure, sensors) {
+		let rv = [];
+		for (const sensor of sensors) {
+			const data = await fetchSensorCurrentData(sensor['uid'], measure.replace(' ', '_'));
+			rv.push(data);
 		}
 		return rv;
 	};
 
-	const formatCurrentSensorsAverages = function (averagedCurrentSensorsData) {
-		if (isEmpty(averagedCurrentSensorsData)) {
-			return '<p style="margin-bottom: 0">No sensor data available</p>';
+	const computeAverageSensorsCurrentDataForMeasure = function (
+		ecosystemsSensorsDataCurrent,
+		measure,
+		sensors,
+	) {
+		let rv = [];
+		for (const sensor of sensors) {
+			rv.push(ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, measure)].value);
 		}
-		let rv = '';
-		for (const measure of averagedCurrentSensorsData) {
-			rv += `<p style="margin-bottom: 0">${
-				capitalize(measure['name']).replace('_', ' ') +
-				': ' +
-				measure['average'] +
-				measure['unit']
-			}</p>`;
-		}
-		return rv;
+		const average = (array) => array.reduce((a, b) => a + b) / array.length;
+		return average(rv).toFixed(2);
 	};
 
 	onMount(async () => {
@@ -226,11 +202,21 @@
 					{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
 						<p>Collecting environment's data from the ecosystem</p>
 					{:then sensorsSkeleton}
-						{#await fetchAndComputeCurrentSensorsAverages(sensorsSkeleton, 'environment')}
-							<p>Collecting environment's data from the ecosystem</p>
-						{:then avg}
-							{@html formatCurrentSensorsAverages(avg)}
-						{/await}
+						{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'environment')] as sensorsBone}
+							{#await fetchSensorsCurrentDataForMeasure(sensorsBone.measure, sensorsBone.sensors) then sensorsData}
+								<p style="margin-bottom: 0">
+									{capitalize(sensorsBone.measure).replace('_', ' ')}:
+									{computeAverageSensorsCurrentDataForMeasure(
+										$ecosystemsSensorsDataCurrent,
+										sensorsBone.measure,
+										sensorsBone.sensors,
+									)}
+									{sensorsBone.units[0]}
+								</p>
+							{/await}
+						{:else}
+							<p style="margin-bottom: 0">No sensor data available</p>
+						{/each}
 					{/await}
 				</BoxItem>
 			{/if}
@@ -240,11 +226,21 @@
 					{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
 						<p>Collecting environment's data from the ecosystem</p>
 					{:then sensorsSkeleton}
-						{#await fetchAndComputeCurrentSensorsAverages(sensorsSkeleton, 'plants')}
-							<p>Collecting environment's data from the ecosystem</p>
-						{:then avg}
-							{@html formatCurrentSensorsAverages(avg)}
-						{/await}
+						{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'plants')] as sensorsBone}
+							{#await fetchSensorsCurrentDataForMeasure(sensorsBone.measure, sensorsBone.sensors) then sensorsData}
+								<p style="margin-bottom: 0">
+									{capitalize(sensorsBone.measure).replace('_', ' ')}:
+									{computeAverageSensorsCurrentDataForMeasure(
+										sensorsBone.measure,
+										sensorsBone.sensors,
+										$ecosystemsSensorsDataCurrent
+									)}
+									{sensorsBone.sensors[0].unit}
+								</p>
+							{/await}
+						{:else}
+							<p style="margin-bottom: 0">No sensor data available</p>
+						{/each}
 					{/await}
 				</BoxItem>
 			{/if}

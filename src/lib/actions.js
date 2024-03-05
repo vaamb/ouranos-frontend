@@ -298,16 +298,9 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 			params: { level: level }
 		})
 		.then((response) => {
-			const rv = {};
-			for (const measureRecord of response['data']['sensors_skeleton']) {
-				const sensorAccumulator = {};
-				for (const sensor of measureRecord.sensors) {
-					sensorAccumulator[sensor['uid']] = sensor.name;
-				}
-				rv[measureRecord.measure] = sensorAccumulator;
-			}
-			updateStoreData(ecosystemsSensorsSkeleton, { [dataKey]: rv });
-			return rv;
+			const data = response['data']['sensors_skeleton'];
+			updateStoreData(ecosystemsSensorsSkeleton, { [dataKey]: data });
+			return data;
 		})
 		.catch(() => {
 			return {};

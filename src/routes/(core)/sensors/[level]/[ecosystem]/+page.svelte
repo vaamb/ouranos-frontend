@@ -16,11 +16,11 @@
 	import {
 		ecosystemsIds,
 		ecosystemsSensorsDataCurrent,
-		ecosystemsSensorsDataHistoric
+		ecosystemsSensorsDataHistoric,
+		ecosystemsSensorsSkeleton
 	} from '$lib/store.js';
 	import {
 		capitalize,
-		formatSensorsSkeleton,
 		getEcosystemUid,
 		getStoreDataKey
 	} from '$lib/utils/functions.js';
@@ -76,30 +76,30 @@
 </script>
 
 <HeaderLine title={pageTitle} />
-{#await fetchEcosystemSensorsSkeleton(ecosystemUid, sensorsLevel) then rawSensorsSkeleton}
-	{#each formatSensorsSkeleton(rawSensorsSkeleton, sensorsLevel) as measure}
-		<h2>{capitalize(measure.name)}</h2>
-		{#each measure.sensors as sensor}
+{#await fetchEcosystemSensorsSkeleton(ecosystemUid, sensorsLevel) then sensorsSkeleton}
+	{#each $ecosystemsSensorsSkeleton[getStoreDataKey(ecosystemUid, sensorsLevel)] as sensorsBone}
+		<h2>{capitalize(sensorsBone.measure.replace("_", " "))}</h2>
+		{#each sensorsBone.sensors as sensor}
 			<Row>
-				{#await fetchSensorData(sensor.uid, measure.name) then sensorData}
-					<Box title={sensor.name} direction="row" icon={icons[measure.name]}>
-						{#await $ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, measure.name)] then rawCurrentData}
+				{#await fetchSensorData(sensor.uid, sensorsBone.measure) then sensorData}
+					<Box title={sensor.name} direction="row" icon={icons[sensorsBone.measure]}>
+						{#await $ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)] then rawCurrentData}
 							{#if rawCurrentData}
 								<BoxItem maxWidth="300px">
 									{#await formatCurrentData(rawCurrentData) then currentData}
-										<Gauge value={currentData.value} unit={measure.unit} />
+										<Gauge value={currentData.value.toFixed(2)} unit={sensor.unit} />
 									{/await}
 								</BoxItem>
 							{/if}
 						{/await}
 						<BoxItem>
-							{#await $ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, measure.name)] then rawHistoricData}
+							{#await $ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, sensorsBone.measure)] then rawHistoricData}
 								{#if rawHistoricData.values.length > 5}
-									{#await formatHistoricData(rawHistoricData, measure.name) then historicData}
+									{#await formatHistoricData(rawHistoricData, sensorsBone.measure) then historicData}
 										<Graph
 											datasets={[historicData.dataset]}
 											labels={historicData.labels}
-											suggestedMax={maxValues[measure.name]}
+											suggestedMax={maxValues[sensorsBone.measure]}
 											height="200px"
 										/>
 									{/await}

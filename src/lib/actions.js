@@ -209,6 +209,11 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 };
 
 export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
+	const dataKey = getStoreDataKey(ecosystemUID, level);
+	const storedData = getStoreData(ecosystemsSensorsSkeleton, dataKey);
+	if (!isEmpty(storedData)) {
+		return storedData;
+	}
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_status`)
 		.then((response) => {

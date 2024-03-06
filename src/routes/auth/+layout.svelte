@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<link rel="stylesheet" href="../css/auth.css" />
+	<link rel="stylesheet" href="/css/auth.css" />
 </svelte:head>
 
 <div class="center-content">

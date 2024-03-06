@@ -60,8 +60,8 @@ socketio.on('pong', (msg) => {
 	serverLatency.set((Math.round((10 * sum) / latencyArray.length) / 10).toFixed(1));
 });
 
-socketio.on("current_server_data", (data) => {
-  serverCurrentData.set(data);
+socketio.on('current_server_data', (data) => {
+	serverCurrentData.set(data);
 });
 
 socketio.on('actuator_data', (data) => {

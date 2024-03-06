@@ -7,9 +7,9 @@ import { API_URL, SERVER_STATUS, SERVER_URL } from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
 import {
 	dynamicSort,
+	getFreshStoreData,
 	getStoreDataKey,
 	checkSensorDataRecency,
-	getStoreData,
 	updateStoreData,
 	isEmpty
 } from '$lib/utils/functions.js';
@@ -213,7 +213,7 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 
 export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
 	const dataKey = getStoreDataKey(ecosystemUID);
-	const storedData = getStoreData(ecosystemsSensorsSkeleton, dataKey);
+	const storedData = getFreshStoreData(ecosystemsActuatorData, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
 	}
@@ -244,7 +244,7 @@ export const fetchEcosystemHardware = async function (ecosystemUID) {
 
 export const fetchSensorCurrentData = async function (sensorUID, measure) {
 	const dataKey = getStoreDataKey(sensorUID, measure);
-	const storedData = getStoreData(ecosystemsSensorsDataCurrent, dataKey);
+	const storedData = getFreshStoreData(ecosystemsSensorsDataCurrent, dataKey);
 	if (checkSensorDataRecency(storedData, 1)) {
 		return storedData;
 	}
@@ -273,7 +273,7 @@ export const fetchSensorCurrentData = async function (sensorUID, measure) {
 
 export const fetchSensorHistoricData = async function (sensorUID, measure) {
 	const dataKey = getStoreDataKey(sensorUID, measure);
-	const storedData = getStoreData(ecosystemsSensorsDataHistoric, dataKey);
+	const storedData = getFreshStoreData(ecosystemsSensorsDataHistoric, dataKey);
 	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 10)) {
 		return storedData;
 	}
@@ -297,7 +297,7 @@ export const fetchSensorHistoricData = async function (sensorUID, measure) {
 
 export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level = null) {
 	const dataKey = getStoreDataKey(ecosystemUID, level);
-	const storedData = getStoreData(ecosystemsSensorsSkeleton, dataKey);
+	const storedData = getFreshStoreData(ecosystemsSensorsSkeleton, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
 	}

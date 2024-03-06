@@ -1,7 +1,7 @@
 import { Manager } from 'socket.io-client';
 
 import { base_URL } from '$lib/utils/consts.js';
-import { getStoreData, getStoreDataKey, updateStoreData } from '$lib/utils/functions.js';
+import { getFreshStoreData, getStoreDataKey, updateStoreData } from '$lib/utils/functions.js';
 import {
 	ecosystemsActuatorData,
 	ecosystemsLightData,
@@ -86,7 +86,7 @@ socketio.on('historic_sensors_data_update', (data) => {
 	const updatedData = {};
 	for (const sensorRecord of data) {
 		const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
-		const currentData = getStoreData(ecosystemsSensorsDataHistoric, storageKey);
+		const currentData = getFreshStoreData(ecosystemsSensorsDataHistoric, storageKey);
 		if (!currentData['values']) {
 			// No historic data, will wait for some to be loaded from api before appending new data
 			continue;

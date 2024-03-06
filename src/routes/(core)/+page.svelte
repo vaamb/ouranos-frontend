@@ -14,6 +14,7 @@
 		ecosystems,
 		ecosystemsIds,
 		ecosystemsActuatorData,
+		ecosystemsLightData,
 		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsSkeleton,
@@ -42,7 +43,7 @@
 		fetchEcosystemActuatorsData,
 		fetchSensorCurrentData,
 		fetchEcosystemSensorsSkeleton,
-		fetchEcosystemLighting,
+		fetchEcosystemLightData,
 		loadWeatherForecast
 	} from '$lib/actions.js';
 
@@ -218,10 +219,15 @@
 					{/if}
 					{#if light}
 						<BoxItem title="Lighting">
-							{#await fetchEcosystemLighting(uid)}
+							{#await fetchEcosystemLightData(uid)}
 								<p>Fetching data</p>
-							{:then ecosystemLight}
-								{@html computeLightingHours(ecosystemLight)}
+							{:then ecosystemLightData_notUsed}
+								{@const lightData = $ecosystemsLightData[getStoreDataKey(uid)]}
+								{#each computeLightingHours(lightData) as lightingHours}
+									<p>{lightingHours}</p>
+								{:else}
+									<p>No lighting needed</p>
+								{/each}
 							{/await}
 						</BoxItem>
 					{/if}

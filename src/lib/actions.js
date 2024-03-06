@@ -16,6 +16,7 @@ import {
 import {
 	currentUser,
 	ecosystemsActuatorData,
+	ecosystemsLightData,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	ecosystemsSensorsSkeleton,
@@ -189,11 +190,19 @@ export const fetchEcosystemsManagement = async function () {
 		});
 };
 
-export const fetchEcosystemLighting = async function (ecosystemUID) {
+export const fetchEcosystemLightData = async function (ecosystemUID) {
+	const dataKey = getStoreDataKey(ecosystemUID);
+	const storedData = getStoreData(ecosystemsLightData, dataKey);
+	if (!isEmpty(storedData)) {
+		return storedData;
+	}
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/light`)
 		.then((response) => {
-			return response.data;
+			const data = response.data;
+			delete data['ecosystem_uid'];
+			updateStoreData(ecosystemsLightData, { [dataKey]: data });
+			return data;
 		})
 		.catch(() => {
 			return {};
@@ -220,10 +229,9 @@ export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_status`)
 		.then((response) => {
-			const data = response['data'];
-			ecosystemUID = data['ecosystem_uid'];
+			const data = response.data;
 			delete data['ecosystem_uid'];
-			updateStoreData(ecosystemsActuatorData, { [ecosystemUID]: data });
+			updateStoreData(ecosystemsActuatorData, { [dataKey]: data });
 			return data;
 		})
 		.catch(() => {

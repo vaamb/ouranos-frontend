@@ -136,29 +136,29 @@ const strHoursToDate = function (strHour) {
 };
 
 export const computeLightingHours = function (ecosystemLight) {
-	let rv = '';
+	let rv = [];
 	if (['fixed', 'mimic'].includes(ecosystemLight['method'])) {
 		const start = strHoursToDate(ecosystemLight['morning_start']);
 		const end = strHoursToDate(ecosystemLight['evening_end']);
-		rv += `<p> ${
+		rv.push(`${
 			'Lighting from ' +
 			start.toLocaleTimeString([], { timeStyle: 'short' }) +
 			' to ' +
 			end.toLocaleTimeString([], { timeStyle: 'short' })
-		} </p>`;
+		}`);
 	} else if (ecosystemLight['method'] === 'elongate') {
 		for (const TOD of ['morning', 'evening']) {
 			if (ecosystemLight[TOD + '_start'] && ecosystemLight[TOD + '_end']) {
 				const start = strHoursToDate(ecosystemLight[TOD + '_start']);
 				const end = strHoursToDate(ecosystemLight[TOD + '_end']);
 				if (start < end) {
-					rv += `<p> ${
+					rv.push(`<p> ${
 						capitalize(TOD) +
 						' lighting from ' +
 						start.toLocaleTimeString([], { timeStyle: 'short' }) +
 						' to ' +
 						end.toLocaleTimeString([], { timeStyle: 'short' })
-					} </p>`;
+					} </p>`);
 				}
 			}
 		}

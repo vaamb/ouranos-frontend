@@ -132,10 +132,10 @@ export const generateMenuLayout = function (
 	}
 
 	if (currentUser.can(permissions.ADMIN)) {
-		menuLayout.items.push(MenuItem('Services', faBellConcierge, '/services'));
+		// menuLayout.items.push(MenuItem('Services', faBellConcierge, '/services'));
 		let children = [
             MenuItemChild('Server load', '/server'),
-            MenuItemChild('Logs', '/logs')
+            // MenuItemChild('Logs', '/logs')
         ];
 		menuLayout.items.push(MenuItem('System', faDatabase, '/system', children));
 	}

@@ -2,6 +2,7 @@ import { get } from 'svelte/store';
 
 import humanizeDuration from 'humanize-duration';
 
+import { serverLastSeen } from "$lib/store.js";
 import { graphs } from '$lib/utils/styling.js';
 
 export const dynamicSort = function (property) {
@@ -228,12 +229,20 @@ export const getStoreDataKey = function () {
 
 export const getStoreData = function (store, storageKey) {
 	// Utility function to easily access stored data outside .svelte files
-	const sensorData = get(store)[storageKey];
-	if (sensorData) {
-		return sensorData;
+	const storeData = get(store)[storageKey];
+	if (storeData) {
+		return storeData;
 	} else {
 		return {};
 	}
+};
+
+export const getFreshStoreData = function (store, storageKey) {
+	const now = new Date()
+	if (now - get(serverLastSeen) > 60000) {
+		return {};
+	}
+	return getStoreData(store, storageKey)
 };
 
 export const updateStoreData = function (store, data) {

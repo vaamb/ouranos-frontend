@@ -11,10 +11,15 @@ export async function load({ cookies, request }) {
   rv.appVersion = appVersion;
   rv.serverStatus = serverStatus;
 
-  const clientSessionCookie = "session=" + cookies.get("session")
-  const clientUserAgent = request.headers.get("user-agent")
-  const { currentUserData } = await fetchCurrentUserData(clientSessionCookie, clientUserAgent)
-  rv.userData = currentUserData
+  const sessionCookie = cookies.get("session");
+  if(sessionCookie !== undefined) {
+    const clientSessionCookie = "session=" + sessionCookie;
+    const clientUserAgent = request.headers.get("user-agent");
+    const { currentUserData } = await fetchCurrentUserData(clientSessionCookie, clientUserAgent);
+    rv.userData = currentUserData;
+  } else {
+    rv.userData = undefined;
+  }
 
   switch (APP_MODE) {
   case AppMode.development:

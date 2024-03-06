@@ -40,7 +40,7 @@ const pingServer = function () {
 
 // Reserved events
 socketio.on('connect', (msg) => {
-	pingLoop = setInterval(pingServer, 3000);
+	pingLoop = setInterval(pingServer, 10000);
 });
 
 socketio.on('disconnect', (msg) => {

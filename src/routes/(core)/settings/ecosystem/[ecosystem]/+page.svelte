@@ -24,7 +24,7 @@
 		'watering',
 		'health',
 		'alarms',
-		'webcam',
+		'pictures',
 		'database'
 	];
 

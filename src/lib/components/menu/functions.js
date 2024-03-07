@@ -94,9 +94,9 @@ export const generateMenuLayout = function (
 			management: 'switches'
 		},
 		{
-			name: 'Webcam',
+			name: 'Pictures',
 			icon: faVideo,
-			path: '/webcam',
+			path: '/pictures',
 			management: 'webcam'
 		}
 	];

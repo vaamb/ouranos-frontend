@@ -116,18 +116,18 @@ export const generateMenuLayout = function (
 
 	if (currentUser.can(permissions.OPERATE)) {
 		{
-			let children = [];
-			for (const id of ecosystemsIds) {
-				children.push(MenuItemChild(id.name, '/' + id.name));
-			}
-			menuLayout.items.push(MenuItem('Ecosystems', faCog, '/settings/ecosystem', children));
-		}
-		{
 			let children = [MenuItemChild('Overview', '/overview')];
 			for (const id of enginesIds) {
 				children.push(MenuItemChild(id.uid, '/' + id.uid));
 			}
 			menuLayout.items.push(MenuItem('Engines', faServer, '/settings/engine', children));
+		}
+		{
+			let children = [];
+			for (const id of ecosystemsIds) {
+				children.push(MenuItemChild(id.name, '/' + id.name));
+			}
+			menuLayout.items.push(MenuItem('Ecosystems', faCog, '/settings/ecosystem', children));
 		}
 	}
 

@@ -152,13 +152,13 @@ export const computeLightingHours = function (ecosystemLight) {
 				const start = strHoursToDate(ecosystemLight[TOD + '_start']);
 				const end = strHoursToDate(ecosystemLight[TOD + '_end']);
 				if (start < end) {
-					rv.push(`<p> ${
+					rv.push(`${
 						capitalize(TOD) +
 						' lighting from ' +
 						start.toLocaleTimeString([], { timeStyle: 'short' }) +
 						' to ' +
 						end.toLocaleTimeString([], { timeStyle: 'short' })
-					} </p>`);
+					}`);
 				}
 			}
 		}

@@ -137,7 +137,7 @@ export const generateMenuLayout = function (
             MenuItemChild('Server load', '/server'),
             // MenuItemChild('Logs', '/logs')
         ];
-		menuLayout.items.push(MenuItem('System', faDatabase, '/system', children));
+		menuLayout.items.push(MenuItem('System', faDatabase, '/admin/system', children));
 	}
 	return menuLayout;
 };

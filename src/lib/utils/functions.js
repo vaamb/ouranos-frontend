@@ -57,6 +57,14 @@ export const formatDateTime = function (date) {
 	}
 };
 
+export const timeStringToDate = function (timeString) {
+	if (timeString !== null) {
+		return formatDateTime(new Date(timeString));
+	} else {
+		return 'NA';
+	}
+};
+
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const months = [
@@ -191,6 +199,14 @@ export const setCookie = function (name, value, expDays = 90) {
 	date.setTime(date.getTime() + expDays * 24 * 60 * 60 * 1000);
 	const expires = 'expires=' + date.toUTCString();
 	document.cookie = name + '=' + value + '; ' + expires + '; path=/;SameSite=Lax';
+};
+
+export const getStatusClass = function (status) {
+	if (status === true) {
+		return 'on';
+	} else {
+		return 'off';
+	}
 };
 
 export const getEcosystemUid = function (ecosystemIds, ecosystemName) {

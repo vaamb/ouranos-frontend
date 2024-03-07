@@ -10,31 +10,16 @@
 	} from '@fortawesome/free-solid-svg-icons';
 
 	import { permissions } from '$lib/utils/consts.js';
-	import { formatDateTime } from '$lib/utils/functions.js';
+	import { getStatusClass, timeStringToDate } from '$lib/utils/functions.js';
 	import { currentUser } from '$lib/store.js';
 
 	export let tableID;
 	export let columns = [{}]; // [{label: "My column", key: "data_key", isTime: false, isStatus: false}]
 	export let data = [{}]; // [{data_key: data1}, {data_key: data2}]
 	export let editable = false;
+	export let crudOptions = ['create', 'update', 'delete'];
 
 	const dispatch = createEventDispatcher();
-
-	const getStatusClass = function (status) {
-		if (status === true) {
-			return 'on';
-		} else {
-			return 'off';
-		}
-	};
-
-	const timeStringToDate = function (timeString) {
-		if (timeString !== null) {
-			return formatDateTime(new Date(timeString));
-		} else {
-			return 'NA';
-		}
-	};
 
 	const emitEvent = function (action, rowIndex) {
 		const payload = {
@@ -87,22 +72,26 @@
 						{/if}
 					</td>
 				{/each}
-				{#if $currentUser.can(permissions.OPERATE) & editable}
+				{#if $currentUser.can(permissions.OPERATE) & editable & (crudOptions.includes('update') || crudOptions.includes('delete'))}
 					<td>
 						<div>
-							<button on:click={() => emitEvent('update', rowIndex)}>
-								<Fa icon={faPenToSquare} />
-							</button>
-							<button on:click={() => emitEvent('delete', rowIndex)}>
-								<Fa icon={faTrashCan} />
-							</button>
+							{#if crudOptions.includes('update')}
+								<button on:click={() => emitEvent('update', rowIndex)}>
+									<Fa icon={faPenToSquare} />
+								</button>
+							{/if}
+							{#if crudOptions.includes('delete')}
+								<button on:click={() => emitEvent('delete', rowIndex)}>
+									<Fa icon={faTrashCan} />
+								</button>
+							{/if}
 						</div>
 					</td>
 				{/if}
 			</tr>
 		{/each}
 	</tbody>
-	{#if $currentUser.can(permissions.OPERATE) & editable}
+	{#if $currentUser.can(permissions.OPERATE) & editable & crudOptions.includes('create')}
 		<tbody>
 			<tr>
 				<td colspan="8" style="text-align: center; vertical-align: middle">

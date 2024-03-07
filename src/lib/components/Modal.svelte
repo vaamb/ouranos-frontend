@@ -3,10 +3,12 @@
 
 	import Fa from 'svelte-fa';
 	import { faXmark } from '@fortawesome/free-solid-svg-icons';
+	import ConfirmButtons from "$lib/components/ConfirmButtons.svelte";
 
 	export let dialog; // HTMLDialogElement
 	export let showModal = false;
 	export let title = undefined;
+	export let confirmationButtons = false;
 	export let timeOut = undefined;
 
 	const dispatch = createEventDispatcher();
@@ -28,9 +30,9 @@
 	$: if (dialog && showModal) displayModal();
 </script>
 
-<dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={() => closeModal()}>
+<dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={closeModal}>
 	<div on:click|stopPropagation style="font-size: 1.05rem">
-		<button class="reset-button close" on:click={() => closeModal()}>
+		<button class="reset-button close" on:click={closeModal}>
 			<Fa icon={faXmark} />
 		</button>
 		{#if title}
@@ -41,6 +43,12 @@
 		<div class="content">
 			<slot />
 		</div>
+		{#if confirmationButtons}
+			<ConfirmButtons
+				on:confirm={() => {dispatch('confirm')}}
+				on:cancel={() => {dispatch('cancel'); closeModal()}}
+			/>
+		{/if}
 	</div>
 </dialog>
 

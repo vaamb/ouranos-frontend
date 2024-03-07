@@ -17,6 +17,7 @@
 	export let columns = [{}]; // [{label: "My column", key: "data_key", isTime: false, isStatus: false}]
 	export let data = [{}]; // [{data_key: data1}, {data_key: data2}]
 	export let editable = false;
+	export let crudOptions = ['create', 'update', 'delete'];
 
 	const dispatch = createEventDispatcher();
 
@@ -71,22 +72,26 @@
 						{/if}
 					</td>
 				{/each}
-				{#if $currentUser.can(permissions.OPERATE) & editable}
+				{#if $currentUser.can(permissions.OPERATE) & editable & (crudOptions.includes('update') || crudOptions.includes('delete'))}
 					<td>
 						<div>
-							<button on:click={() => emitEvent('update', rowIndex)}>
-								<Fa icon={faPenToSquare} />
-							</button>
-							<button on:click={() => emitEvent('delete', rowIndex)}>
-								<Fa icon={faTrashCan} />
-							</button>
+							{#if crudOptions.includes('update')}
+								<button on:click={() => emitEvent('update', rowIndex)}>
+									<Fa icon={faPenToSquare} />
+								</button>
+							{/if}
+							{#if crudOptions.includes('delete')}
+								<button on:click={() => emitEvent('delete', rowIndex)}>
+									<Fa icon={faTrashCan} />
+								</button>
+							{/if}
 						</div>
 					</td>
 				{/if}
 			</tr>
 		{/each}
 	</tbody>
-	{#if $currentUser.can(permissions.OPERATE) & editable}
+	{#if $currentUser.can(permissions.OPERATE) & editable & crudOptions.includes('create')}
 		<tbody>
 			<tr>
 				<td colspan="8" style="text-align: center; vertical-align: middle">

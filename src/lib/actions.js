@@ -23,7 +23,7 @@ import {
 	flashMessage,
 	weatherCurrently,
 	weatherHourly,
-	weatherDaily,
+	weatherDaily
 } from '$lib/store.js';
 import { APP_MODE, AppMode } from '../conf.js';
 
@@ -125,6 +125,20 @@ export const logOut = function () {
 		});
 };
 
+const extractEngineOrEcosystemData = function (dataArray) {
+	dataArray.forEach((element) => {
+		element['last_seen'] = new Date(element['last_seen']);
+		element['registration_date'] = new Date(element['registration_date']);
+	});
+	const dataObject = dataArray.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
+	const sorted = dataArray.sort(dynamicSort('uid'));
+	const IDsArray = sorted.map((obj) => ({ uid: obj.uid, sid: obj.sid }));
+	return {
+		dataObject: dataObject,
+		IDsArray: IDsArray
+	};
+};
+
 // Engines-related actions
 export const fetchEngines = async function () {
 	return axios
@@ -132,12 +146,11 @@ export const fetchEngines = async function () {
 			params: { engines_id: formatParam('recent') }
 		})
 		.then((response) => {
-			const engines = response.data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
-			const sorted = response.data.sort(dynamicSort('uid'));
-			const enginesIds = sorted.map((obj) => ({ uid: obj.uid, sid: obj.sid }));
+			const data = response.data;
+			const extracted = extractEngineOrEcosystemData(data);
 			return {
-				engines: engines,
-				enginesIds: enginesIds
+				engines: extracted['dataObject'],
+				enginesIds: extracted['IDsArray']
 			};
 		})
 		.catch(() => {
@@ -155,13 +168,11 @@ export const fetchEcosystems = async function () {
 			params: { ecosystems_id: formatParam('recent') }
 		})
 		.then((response) => {
-			const ecosystems = response.data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
-			const sorted = response.data.sort(dynamicSort('name'));
-			const ecosystemsIds = sorted.map((obj) => ({ uid: obj.uid, name: obj.name }));
-
+			const data = response.data;
+			const extracted = extractEngineOrEcosystemData(data);
 			return {
-				ecosystems: ecosystems,
-				ecosystemsIds: ecosystemsIds
+				ecosystems: extracted['dataObject'],
+				ecosystemsIds: extracted['IDsArray']
 			};
 		})
 		.catch(() => {
@@ -338,11 +349,11 @@ export const loadWeatherForecast = async function (include = null) {
 		include.filter((element) => element !== 'daily');
 	}
 
-	let exclude = ['currently', 'hourly', 'daily']
+	let exclude = ['currently', 'hourly', 'daily'];
 	exclude.filter((element) => !include.includes(element));
 
 	if (exclude.length >= 3) {
-		return // Useless call, already have all the data
+		return; // Useless call, already have all the data
 	}
 
 	return axios
@@ -351,13 +362,13 @@ export const loadWeatherForecast = async function (include = null) {
 		})
 		.then((response) => {
 			if (Object.prototype.hasOwnProperty.call(response.data, 'currently')) {
-				weatherCurrently.set(response.data["currently"]);
+				weatherCurrently.set(response.data['currently']);
 			}
 			if (Object.prototype.hasOwnProperty.call(response.data, 'hourly')) {
-				weatherHourly.set(response.data["hourly"]);
+				weatherHourly.set(response.data['hourly']);
 			}
 			if (Object.prototype.hasOwnProperty.call(response.data, 'daily')) {
-				weatherDaily.set(response.data["daily"]);
+				weatherDaily.set(response.data['daily']);
 			}
 		})
 		.catch(() => {

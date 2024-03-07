@@ -192,7 +192,7 @@ export const fetchEcosystemsManagement = async function () {
 
 export const fetchEcosystemLightData = async function (ecosystemUID) {
 	const dataKey = getStoreDataKey(ecosystemUID);
-	const storedData = getStoreData(ecosystemsLightData, dataKey);
+	const storedData = getFreshStoreData(ecosystemsLightData, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
 	}

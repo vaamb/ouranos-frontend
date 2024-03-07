@@ -25,7 +25,7 @@
 		{/if}
 	</div>
 	<div class="right">
-		<div style="margin: auto" />
+		<div style="margin: auto"></div>
 		<div class="dropdown">
 			{#if $currentUser.isAnonymous}
 				<a href="/auth/login">
@@ -65,9 +65,9 @@
 		display: flex;
 		font-size: 1rem;
 		font-weight: bold;
-		min-height: 45px;
+		height: 45px;
 		background: var(--main-93);
-		border-bottom: thin solid var(--main-80);
+		border-bottom: 1px solid var(--main-80);
 		z-index: 10;
 	}
 

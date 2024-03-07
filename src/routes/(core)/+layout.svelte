@@ -98,10 +98,13 @@
 		left: 0;
 		right: 0;
 		margin-left: 0;
+		display: flex;
+  		flex-direction: column;
 		background-color: var(--main-95);
 	}
 
 	.main {
+		height: calc(100vh - 141px);  /* 141px = Nav bar (65) + Top bar (45) + border (1) + padding (10+20) */
 		padding: 10px 20px 20px 20px;
 		position: relative;
 	}
@@ -113,6 +116,7 @@
 		}
 
 		.main {
+			height: calc(100vh - 76px);  /* 76px = Top bar (45) + border (1) + padding (10+20) */
 			padding-right: 45px;
 		}
 	}

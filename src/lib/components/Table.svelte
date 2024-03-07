@@ -10,7 +10,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 
 	import { permissions } from '$lib/utils/consts.js';
-	import { formatDateTime, getStatusClass } from '$lib/utils/functions.js';
+	import { getStatusClass, timeStringToDate } from '$lib/utils/functions.js';
 	import { currentUser } from '$lib/store.js';
 
 	export let tableID;
@@ -19,14 +19,6 @@
 	export let editable = false;
 
 	const dispatch = createEventDispatcher();
-
-	const timeStringToDate = function (timeString) {
-		if (timeString !== null) {
-			return formatDateTime(new Date(timeString));
-		} else {
-			return 'NA';
-		}
-	};
 
 	const emitEvent = function (action, rowIndex) {
 		const payload = {

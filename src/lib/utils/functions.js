@@ -57,6 +57,14 @@ export const formatDateTime = function (date) {
 	}
 };
 
+export const timeStringToDate = function (timeString) {
+	if (timeString !== null) {
+		return formatDateTime(new Date(timeString));
+	} else {
+		return 'NA';
+	}
+};
+
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const months = [

@@ -193,6 +193,14 @@ export const setCookie = function (name, value, expDays = 90) {
 	document.cookie = name + '=' + value + '; ' + expires + '; path=/;SameSite=Lax';
 };
 
+export const getStatusClass = function (status) {
+	if (status === true) {
+		return 'on';
+	} else {
+		return 'off';
+	}
+};
+
 export const getEcosystemUid = function (ecosystemIds, ecosystemName) {
 	const Ids = ecosystemIds.find((id) => {
 		return id.name === ecosystemName;

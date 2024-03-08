@@ -107,7 +107,7 @@
 	<Modal
 		bind:closeModal={closeModals['1']}
 		showModal={crudTable === 'climate_parameter' && crudAction === 'create'}
-		title="Add a new climate parameter"
+		title="Add a new environment parameter"
 		on:close={resetCrudData}
 	>
 		<Form
@@ -127,7 +127,7 @@
 	<Modal
 		bind:closeModal={closeModals['2']}
 		showModal={crudTable === 'climate_parameter' && crudAction === 'update'}
-		title="Update {environmentParameters[crudDataIndex]['parameter']}"
+		title="Update {environmentParameters[crudDataIndex]['parameter']} environment parameter"
 		on:close={resetCrudData}
 	>
 		<Form
@@ -171,7 +171,7 @@
 	</Modal>
 	<Modal
 		showModal={crudTable === 'climate_parameter' && crudAction === 'delete'}
-		title="Delete {environmentParameters[crudDataIndex]['parameter']}"
+		title="Delete {environmentParameters[crudDataIndex]['parameter']} environment parameter"
 		confirmationButtons={true}
 		on:close={resetCrudData}
 		on:confirm={() => {
@@ -233,7 +233,7 @@
 	<Modal
 		bind:closeModal={closeModals['4']}
 		showModal={crudTable === 'hardware' && crudAction === 'update'}
-		title="Update {hardware[crudDataIndex]['name']}"
+		title="Update '{hardware[crudDataIndex]['name']}' hardware"
 		on:close={resetCrudData}
 	>
 		<Form
@@ -266,7 +266,7 @@
 	</Modal>
 	<Modal
 		showModal={crudTable === 'hardware' && crudAction === 'delete'}
-		title="Delete {hardware[crudDataIndex]['name']}"
+		title="Delete '{hardware[crudDataIndex]['name']}' hardware"
 		confirmationButtons={true}
 		on:close={resetCrudData}
 		on:confirm={() => {
@@ -274,7 +274,7 @@
 			crudRequest(`gaia/hardware/u/${uid}`, 'delete');
 		}}
 	>
-		<p>Are you sure you want to delete the {hardware[crudDataIndex]['name']} ?</p>
+		<p>Are you sure you want to delete '{hardware[crudDataIndex]['name']}' hardware ?</p>
 	</Modal>
 {/await}
 

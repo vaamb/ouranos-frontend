@@ -438,8 +438,7 @@ export const fetchServices = async function () {
 
 export const fetchWarnings = async function (clientSessionCookie, clientUserAgent) {
 	return axios
-		.get(`${SERVER_URL}/gaia/warning`,
-			{
+		.get(`${SERVER_URL}/gaia/warning`, {
 			headers: {
 				Cookie: clientSessionCookie,
 				'User-Agent': clientUserAgent
@@ -447,8 +446,13 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 			withCredentials: true
 		})
 		.then((response) => {
+			const levels = ['low', 'elevated', 'high', 'severe', 'critical'];
+			const warnings = response.data;
+			warnings.forEach((element) => {
+				element['level'] = levels[element['level']];
+			});
 			return {
-				warnings: response.data
+				warnings: warnings
 			};
 		})
 		.catch(() => {

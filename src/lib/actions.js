@@ -436,9 +436,16 @@ export const fetchServices = async function () {
 		});
 };
 
-export const fetchWarnings = async function () {
+export const fetchWarnings = async function (clientSessionCookie, clientUserAgent) {
 	return axios
-		.get(`${SERVER_URL}/gaia/warning`)
+		.get(`${SERVER_URL}/gaia/warning`,
+			{
+			headers: {
+				Cookie: clientSessionCookie,
+				'User-Agent': clientUserAgent
+			},
+			withCredentials: true
+		})
 		.then((response) => {
 			return {
 				warnings: response.data

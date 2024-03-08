@@ -1,7 +1,6 @@
 <script>
 	import { page } from '$app/stores';
 
-	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
@@ -31,66 +30,40 @@
 	$: ecosystemName = $page['params']['ecosystem'];
 	$: ecosystemUID = getEcosystemUid($ecosystemsIds, ecosystemName);
 
+	const getValue = function (data, key) {
+		return data[crudDataIndex][key];
+	};
+
+	// Management crud-related function
+	const crudUpdateManagement = function () {
+		const payload = {};
+		for (const management of managementChoices) {
+			payload[management] = getParamStatus($ecosystemsManagement, ecosystemUID, management);
+		}
+		crudRequest(`gaia/ecosystem/u/${ecosystemUID}/management`, 'update', payload);
+	};
+
+	// General crud-related variables and functions
 	let crudAction = undefined;
 	let crudTable = undefined;
 	let crudTablePrimaryKey = undefined;
 	let crudDataIndex = 0;
 
-	const setCrudInfo = function (parameter, action, target, rowIndex) {
+	const setCrudData = function (parameter, action, target, rowIndex) {
 		crudAction = action;
 		crudTable = parameter;
 		crudTablePrimaryKey = target;
 		crudDataIndex = rowIndex;
 	};
 
-	const resetModal = function () {
+	const resetCrudData = function () {
 		crudAction = undefined;
 		crudTable = undefined;
 		crudTablePrimaryKey = undefined;
 		crudDataIndex = 0;
 	};
 
-	const createTitle = function (parameter) {
-		if (crudAction === 'create') {
-			return 'Add a new ' + parameter.replace('_', ' ');
-		} else {
-			return capitalize(crudAction) + ' ' + crudTablePrimaryKey;
-		}
-	};
-
-	$: modalTitle = createTitle(crudTable);
-
-	const getValue = function (data, key) {
-		return data[crudDataIndex][key];
-	};
-
-	const updateManagement = function () {
-		const payload = {};
-		for (const management of managementChoices) {
-			payload[management] = getParamStatus($ecosystemsManagement, ecosystemUID, management);
-		}
-		const route = `gaia/ecosystem/u/${ecosystemUID}/management`;
-		crudRequest(route, 'update', payload);
-	};
-
-	const sendRequest = function (action, table, payload) {
-		let route;
-		if (table === 'climate_parameter') {
-			if (action === 'create') {
-				route = `gaia/ecosystem/u/${ecosystemUID}/environment_parameters`;
-			} else {
-				route = `gaia/ecosystem/u/${ecosystemUID}/environment_parameters/${crudTablePrimaryKey}`;
-			}
-		} else if (table === 'hardware') {
-			if (action === 'create') {
-				route = `gaia/ecosystem/u/${ecosystemUID}/hardware`;
-			} else {
-				route = `gaia/hardware/u/${crudTablePrimaryKey}`;
-			}
-		}
-		crudRequest(route, action, payload);
-		resetModal();
-	};
+	let closeModals = {};
 </script>
 
 <HeaderLine title="{ecosystemName} settings" />
@@ -109,7 +82,7 @@
 	</tbody>
 </table>
 <div style="margin-top: 14px">
-	<button on:click={() => updateManagement()}>
+	<button on:click={() => crudUpdateManagement()}>
 		Update {ecosystemName}' management
 	</button>
 </div>
@@ -127,7 +100,7 @@
 		data={environmentParameters}
 		editable={true}
 		on:crud={(event) => {
-			setCrudInfo(
+			setCrudData(
 				'climate_parameter',
 				event['detail']['action'],
 				event['detail']['rowIndex'] !== undefined
@@ -137,59 +110,84 @@
 			);
 		}}
 	/>
-	{#if crudTable === 'climate_parameter'}
-		<Modal showModal={true} on:close={resetModal} title={modalTitle}>
-			{#if crudAction === 'create'}
-				<Form
-					data={[
-						{ label: 'Parameter', key: 'parameter', selectFrom: climateParameters },
-						{ label: 'Day', key: 'day', validate: isNumber },
-						{ label: 'Night', key: 'night', validate: isNumber },
-						{ label: 'Hysteresis', key: 'hysteresis', validate: isNumber }
-					]}
-					on:confirm={(event) => sendRequest('create', 'climate_parameter', event.detail)}
-					on:cancel={resetModal}
-				/>
-			{:else if crudAction === 'update'}
-				<Form
-					data={[
-						{
-							label: 'Parameter',
-							key: 'parameter',
-							value: getValue(environmentParameters, 'parameter'),
-							disabled: true
-						},
-						{
-							label: 'Day',
-							key: 'day',
-							value: getValue(environmentParameters, 'day'),
-							validate: isNumber
-						},
-						{
-							label: 'Night',
-							key: 'night',
-							value: getValue(environmentParameters, 'night'),
-							validate: isNumber
-						},
-						{
-							label: 'Hysteresis',
-							key: 'hysteresis',
-							value: getValue(environmentParameters, 'hysteresis'),
-							validate: isNumber
-						}
-					]}
-					on:confirm={(event) => sendRequest('update', 'climate_parameter', event.detail)}
-					on:cancel={resetModal}
-				/>
-			{:else if crudAction === 'delete'}
-				<p>Are you sure you want to delete the {crudTablePrimaryKey} environment parameter?</p>
-				<ConfirmButtons
-					on:confirm={(event) => sendRequest('delete', 'climate_parameter', event.detail)}
-					on:cancel={resetModal}
-				/>
-			{/if}
-		</Modal>
-	{/if}
+	<Modal
+		bind:closeModal={closeModals['1']}
+		showModal={crudTable === 'climate_parameter' && crudAction === 'create'}
+		title="Add a new climate parameter"
+		on:close={resetCrudData}
+	>
+		<Form
+			data={[
+				{ label: 'Parameter', key: 'parameter', selectFrom: climateParameters },
+				{ label: 'Day', key: 'day', validate: isNumber },
+				{ label: 'Night', key: 'night', validate: isNumber },
+				{ label: 'Hysteresis', key: 'hysteresis', validate: isNumber }
+			]}
+			on:confirm={(event) => {
+				const payload = event.detail;
+				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameters`, 'create', payload);
+			}}
+			on:cancel={closeModals['1']}
+		/>
+	</Modal>
+	<Modal
+		bind:closeModal={closeModals['2']}
+		showModal={crudTable === 'climate_parameter' && crudAction === 'update'}
+		title="Update {crudTablePrimaryKey}"
+		on:close={resetCrudData}
+	>
+		<Form
+			data={[
+				{
+					label: 'Parameter',
+					key: 'parameter',
+					value: getValue(environmentParameters, 'parameter'),
+					disabled: true
+				},
+				{
+					label: 'Day',
+					key: 'day',
+					value: getValue(environmentParameters, 'day'),
+					validate: isNumber
+				},
+				{
+					label: 'Night',
+					key: 'night',
+					value: getValue(environmentParameters, 'night'),
+					validate: isNumber
+				},
+				{
+					label: 'Hysteresis',
+					key: 'hysteresis',
+					value: getValue(environmentParameters, 'hysteresis'),
+					validate: isNumber
+				}
+			]}
+			on:confirm={(event) => {
+				const payload = event.detail;
+				crudRequest(
+					`gaia/ecosystem/u/${ecosystemUID}/environment_parameters/${crudTablePrimaryKey}`,
+					'update',
+					payload
+				);
+			}}
+			on:cancel={closeModals['2']}
+		/>
+	</Modal>
+	<Modal
+		showModal={crudTable === 'climate_parameter' && crudAction === 'delete'}
+		title="Delete {crudTablePrimaryKey}"
+		confirmationButtons={true}
+		on:close={resetCrudData}
+		on:confirm={() => {
+			crudRequest(
+				`gaia/ecosystem/u/${ecosystemUID}/environment_parameters/${crudTablePrimaryKey}`,
+				'delete'
+			);
+		}}
+	>
+		<p>Are you sure you want to delete the {crudTablePrimaryKey} environment parameter?</p>
+	</Modal>
 {/await}
 
 {#await fetchEcosystemHardware(ecosystemUID) then hardware}
@@ -208,7 +206,7 @@
 		data={hardware}
 		editable={true}
 		on:crud={(event) => {
-			setCrudInfo(
+			setCrudData(
 				'hardware',
 				event['detail']['action'],
 				event['detail']['rowIndex'] !== undefined
@@ -218,53 +216,71 @@
 			);
 		}}
 	/>
-	{#if crudTable === 'hardware'}
-		<Modal showModal={true} on:close={resetModal} title={modalTitle}>
-			{#if crudAction === 'create'}
-				<Form
-					data={[
-						{ label: 'Name', key: 'name' },
-						{ label: 'Level', key: 'level', selectFrom: hardwareLevels },
-						{ label: 'Type', key: 'type', selectFrom: hardwareTypes },
-						{ label: 'Model', key: 'model' },
-						{ label: 'Address', key: 'address' }
-					]}
-					on:confirm={(event) => sendRequest('create', 'hardware', event.detail)}
-					on:cancel={resetModal}
-				/>
-			{:else if crudAction === 'update'}
-				<Form
-					data={[
-						{ label: 'Name', key: 'name', value: getValue(hardware, 'name') },
-						{ label: 'UID', key: 'uid', value: getValue(hardware, 'uid'), disabled: true },
-						{
-							label: 'Level',
-							key: 'level',
-							value: getValue(hardware, 'level'),
-							selectFrom: hardwareLevels
-						},
-						{
-							label: 'Type',
-							key: 'type',
-							value: getValue(hardware, 'type'),
-							selectFrom: hardwareTypes,
-							disabled: true
-						},
-						{ label: 'Model', key: 'model', value: getValue(hardware, 'model'), disabled: true },
-						{ label: 'Address', key: 'address', value: getValue(hardware, 'address') }
-					]}
-					on:confirm={(event) => sendRequest('update', 'hardware', event.detail)}
-					on:cancel={resetModal}
-				/>
-			{:else if crudAction === 'delete'}
-				<p>Are you sure you want to delete the {crudTablePrimaryKey} hardware?</p>
-				<ConfirmButtons
-					on:confirm={(event) => sendRequest('delete', 'hardware', event.detail)}
-					on:cancel={resetModal}
-				/>
-			{/if}
-		</Modal>
-	{/if}
+	<Modal
+		bind:closeModal={closeModals['3']}
+		showModal={crudTable === 'hardware' && crudAction === 'create'}
+		title="Add a new hardware"
+		on:close={resetCrudData}
+	>
+		<Form
+			data={[
+				{ label: 'Name', key: 'name' },
+				{ label: 'Level', key: 'level', selectFrom: hardwareLevels },
+				{ label: 'Type', key: 'type', selectFrom: hardwareTypes },
+				{ label: 'Model', key: 'model' },
+				{ label: 'Address', key: 'address' }
+			]}
+			on:confirm={(event) => {
+				const payload = event.detail;
+				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/hardware`, 'create', payload);
+			}}
+			on:cancel={closeModals['3']}
+		/>
+	</Modal>
+	<Modal
+		bind:closeModal={closeModals['4']}
+		showModal={crudTable === 'hardware' && crudAction === 'update'}
+		title="Update {crudTablePrimaryKey}"
+		on:close={resetCrudData}
+	>
+		<Form
+			data={[
+				{ label: 'Name', key: 'name', value: getValue(hardware, 'name') },
+				{ label: 'UID', key: 'uid', value: getValue(hardware, 'uid'), disabled: true },
+				{
+					label: 'Level',
+					key: 'level',
+					value: getValue(hardware, 'level'),
+					selectFrom: hardwareLevels
+				},
+				{
+					label: 'Type',
+					key: 'type',
+					value: getValue(hardware, 'type'),
+					selectFrom: hardwareTypes,
+					disabled: true
+				},
+				{ label: 'Model', key: 'model', value: getValue(hardware, 'model'), disabled: true },
+				{ label: 'Address', key: 'address', value: getValue(hardware, 'address') }
+			]}
+			on:confirm={(event) => {
+				const payload = event.detail;
+				crudRequest(`gaia/hardware/u/${crudTablePrimaryKey}`, 'update', payload);
+			}}
+			on:cancel={closeModals['4']}
+		/>
+	</Modal>
+	<Modal
+		showModal={crudTable === 'hardware' && crudAction === 'delete'}
+		title="Delete {crudTablePrimaryKey}"
+		confirmationButtons={true}
+		on:close={resetCrudData}
+		on:confirm={() => {
+			crudRequest(`gaia/hardware/u/${crudTablePrimaryKey}`, 'delete');
+		}}
+	>
+		<p>Are you sure you want to delete the {crudTablePrimaryKey} hardware?</p>
+	</Modal>
 {/await}
 
 <style>

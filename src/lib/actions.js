@@ -125,14 +125,16 @@ export const logOut = function () {
 		});
 };
 
-const extractEngineOrEcosystemData = function (dataArray) {
+const extractEngineOrEcosystemData = function (dataArray, engineOrEcosystem) {
 	dataArray.forEach((element) => {
 		element['last_seen'] = new Date(element['last_seen']);
 		element['registration_date'] = new Date(element['registration_date']);
 	});
 	const dataObject = dataArray.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
-	const sorted = dataArray.sort(dynamicSort('uid'));
-	const IDsArray = sorted.map((obj) => ({ uid: obj.uid, sid: obj.sid }));
+	const sortKey = engineOrEcosystem === 'engine' ? 'uid' : 'name';
+	const sorted = dataArray.sort(dynamicSort(sortKey));
+	const secKey = engineOrEcosystem === 'engine' ? 'sid' : 'name';
+	const IDsArray = sorted.map((obj) => ({ uid: obj['uid'], [secKey]: obj[secKey] }));
 	return {
 		dataObject: dataObject,
 		IDsArray: IDsArray
@@ -147,7 +149,7 @@ export const fetchEngines = async function () {
 		})
 		.then((response) => {
 			const data = response.data;
-			const extracted = extractEngineOrEcosystemData(data);
+			const extracted = extractEngineOrEcosystemData(data, 'engine');
 			return {
 				engines: extracted['dataObject'],
 				enginesIds: extracted['IDsArray']
@@ -169,7 +171,7 @@ export const fetchEcosystems = async function () {
 		})
 		.then((response) => {
 			const data = response.data;
-			const extracted = extractEngineOrEcosystemData(data);
+			const extracted = extractEngineOrEcosystemData(data, 'ecosystem');
 			return {
 				ecosystems: extracted['dataObject'],
 				ecosystemsIds: extracted['IDsArray']

@@ -13,7 +13,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	const closeModal = function () {
+	export const closeModal = function () {
 		dialog.close();
 		dispatch('close');
 	};
@@ -30,27 +30,29 @@
 	$: if (dialog && showModal) displayModal();
 </script>
 
-<dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={closeModal}>
-	<div on:click|stopPropagation style="font-size: 1.05rem">
-		<button class="reset-button close" on:click={closeModal}>
-			<Fa icon={faXmark} />
-		</button>
-		{#if title}
-			<h1>
-				{title}
-			</h1>
-		{/if}
-		<div class="content">
-			<slot />
+{#if showModal}
+	<dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={closeModal}>
+		<div on:click|stopPropagation style="font-size: 1.05rem">
+			<button class="reset-button close" on:click={closeModal}>
+				<Fa icon={faXmark} />
+			</button>
+			{#if title}
+				<h1>
+					{title}
+				</h1>
+			{/if}
+			<div class="content">
+				<slot />
+			</div>
+			{#if confirmationButtons}
+				<ConfirmButtons
+					on:confirm={() => {dispatch('confirm')}}
+					on:cancel={() => {dispatch('cancel'); closeModal()}}
+				/>
+			{/if}
 		</div>
-		{#if confirmationButtons}
-			<ConfirmButtons
-				on:confirm={() => {dispatch('confirm')}}
-				on:cancel={() => {dispatch('cancel'); closeModal()}}
-			/>
-		{/if}
-	</div>
-</dialog>
+	</dialog>
+{/if}
 
 <style>
 	dialog {

@@ -1,13 +1,16 @@
+import { get } from 'svelte/store';
 import { Manager } from 'socket.io-client';
 
 import { base_URL } from '$lib/utils/consts.js';
 import { getFreshStoreData, getStoreDataKey, updateStoreData } from '$lib/utils/functions.js';
 import {
+	ecosystems,
 	ecosystemsActuatorData,
 	ecosystemsLightData,
 	ecosystemsManagement,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
+	engines,
 	serverCurrentData,
 	serverLastSeen,
 	serverLatency
@@ -58,6 +61,21 @@ socketio.on('pong', (msg) => {
 		sum += latencyArray[i];
 	}
 	serverLatency.set((Math.round((10 * sum) / latencyArray.length) / 10).toFixed(1));
+});
+
+socketio.on('ecosystems_heartbeat', (data) => {
+	const enginesObj = get(engines);
+	if (enginesObj[data['engine_uid']]) {
+		enginesObj[data['engine_uid']]['last_seen'] = new Date();
+		engines.set(enginesObj);
+	}
+	const ecosytemObj = get(ecosystems);
+	for (const ecosytemData of data['ecosystems']) {
+		if (ecosytemObj[ecosytemData['uid']]) {
+			ecosytemObj[ecosytemData['uid']]['last_seen'] = new Date();
+		}
+	}
+	ecosystems.set(ecosytemObj);
 });
 
 socketio.on('current_server_data', (data) => {

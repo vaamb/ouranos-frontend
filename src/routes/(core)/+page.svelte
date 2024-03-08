@@ -186,7 +186,7 @@
 						<p>The ecosystem {name} is not currently connected</p>
 						<p>
 							Last connection to the server on
-							{formatDateTime(new Date(ecosystem.last_seen))}
+							{formatDateTime(ecosystem['last_seen'])}
 						</p>
 					</BoxItem>
 				{:else if !ecosystem['status']}

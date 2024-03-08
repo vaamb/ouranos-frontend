@@ -46,20 +46,17 @@
 	// General crud-related variables and functions
 	let crudAction = undefined;
 	let crudTable = undefined;
-	let crudTablePrimaryKey = undefined;
 	let crudDataIndex = 0;
 
 	const setCrudData = function (parameter, action, target, rowIndex) {
 		crudAction = action;
 		crudTable = parameter;
-		crudTablePrimaryKey = target;
-		crudDataIndex = rowIndex;
+		crudDataIndex = rowIndex || 0;
 	};
 
 	const resetCrudData = function () {
 		crudAction = undefined;
 		crudTable = undefined;
-		crudTablePrimaryKey = undefined;
 		crudDataIndex = 0;
 	};
 
@@ -103,9 +100,6 @@
 			setCrudData(
 				'climate_parameter',
 				event['detail']['action'],
-				event['detail']['rowIndex'] !== undefined
-					? environmentParameters[event['detail']['rowIndex']]['parameter']
-					: undefined,
 				event['detail']['rowIndex']
 			);
 		}}
@@ -133,7 +127,7 @@
 	<Modal
 		bind:closeModal={closeModals['2']}
 		showModal={crudTable === 'climate_parameter' && crudAction === 'update'}
-		title="Update {crudTablePrimaryKey}"
+		title="Update {environmentParameters[crudDataIndex]['parameter']}"
 		on:close={resetCrudData}
 	>
 		<Form
@@ -164,9 +158,10 @@
 				}
 			]}
 			on:confirm={(event) => {
+				const parameter = environmentParameters[crudDataIndex]['parameter']
 				const payload = event.detail;
 				crudRequest(
-					`gaia/ecosystem/u/${ecosystemUID}/environment_parameters/${crudTablePrimaryKey}`,
+					`gaia/ecosystem/u/${ecosystemUID}/environment_parameters/${parameter}`,
 					'update',
 					payload
 				);
@@ -176,17 +171,18 @@
 	</Modal>
 	<Modal
 		showModal={crudTable === 'climate_parameter' && crudAction === 'delete'}
-		title="Delete {crudTablePrimaryKey}"
+		title="Delete {environmentParameters[crudDataIndex]['parameter']}"
 		confirmationButtons={true}
 		on:close={resetCrudData}
 		on:confirm={() => {
+			const parameter = environmentParameters[crudDataIndex]['parameter'];
 			crudRequest(
-				`gaia/ecosystem/u/${ecosystemUID}/environment_parameters/${crudTablePrimaryKey}`,
+				`gaia/ecosystem/u/${ecosystemUID}/environment_parameters/${parameter}`,
 				'delete'
 			);
 		}}
 	>
-		<p>Are you sure you want to delete the {crudTablePrimaryKey} environment parameter?</p>
+		<p>Are you sure you want to delete the {environmentParameters[crudDataIndex]['parameter']} environment parameter?</p>
 	</Modal>
 {/await}
 
@@ -209,9 +205,6 @@
 			setCrudData(
 				'hardware',
 				event['detail']['action'],
-				event['detail']['rowIndex'] !== undefined
-					? hardware[event['detail']['rowIndex']]['uid']
-					: undefined,
 				event['detail']['rowIndex']
 			);
 		}}
@@ -240,7 +233,7 @@
 	<Modal
 		bind:closeModal={closeModals['4']}
 		showModal={crudTable === 'hardware' && crudAction === 'update'}
-		title="Update {crudTablePrimaryKey}"
+		title="Update {hardware[crudDataIndex]['name']}"
 		on:close={resetCrudData}
 	>
 		<Form
@@ -264,22 +257,24 @@
 				{ label: 'Address', key: 'address', value: getValue(hardware, 'address') }
 			]}
 			on:confirm={(event) => {
+				const uid = hardware[crudDataIndex]['uid']
 				const payload = event.detail;
-				crudRequest(`gaia/hardware/u/${crudTablePrimaryKey}`, 'update', payload);
+				crudRequest(`gaia/hardware/u/${uid}`, 'update', payload);
 			}}
 			on:cancel={closeModals['4']}
 		/>
 	</Modal>
 	<Modal
 		showModal={crudTable === 'hardware' && crudAction === 'delete'}
-		title="Delete {crudTablePrimaryKey}"
+		title="Delete {hardware[crudDataIndex]['name']}"
 		confirmationButtons={true}
 		on:close={resetCrudData}
 		on:confirm={() => {
-			crudRequest(`gaia/hardware/u/${crudTablePrimaryKey}`, 'delete');
+			const uid = hardware[crudDataIndex]['uid']
+			crudRequest(`gaia/hardware/u/${uid}`, 'delete');
 		}}
 	>
-		<p>Are you sure you want to delete the {crudTablePrimaryKey} hardware?</p>
+		<p>Are you sure you want to delete the {hardware[crudDataIndex]['name']} ?</p>
 	</Modal>
 {/await}
 

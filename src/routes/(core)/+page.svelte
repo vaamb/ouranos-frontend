@@ -159,14 +159,15 @@
 	{/if}
 	{#if $currentUser.isAuthenticated}
 		<Box title="Warnings overview" align="center">
-			{#each $warnings as warning}
-				<BoxItem title="{warning.title}">
-					{warning.level}
-					{warning.description}
-				</BoxItem>
-			{:else}
-				<BoxItem title="No warning" />
-			{/each}
+			<a href="/warnings" style="background: var(--main-95); color:inherit; text-decoration: none">
+				{#each $warnings as warning}
+					<BoxItem title="{warning.title}">
+						{warning.description}
+					</BoxItem>
+				{:else}
+					<BoxItem title="No warning" />
+				{/each}
+			</a>
 		</Box>
 	{/if}
 </Row>

@@ -13,7 +13,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	const closeModal = function () {
+	export const closeModal = function () {
 		dialog.close();
 		dispatch('close');
 	};

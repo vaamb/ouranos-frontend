@@ -30,29 +30,27 @@
 	$: if (dialog && showModal) displayModal();
 </script>
 
-{#if showModal}
-	<dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={closeModal}>
-		<div on:click|stopPropagation style="font-size: 1.05rem">
-			<button class="reset-button close" on:click={closeModal}>
-				<Fa icon={faXmark} />
-			</button>
-			{#if title}
-				<h1>
-					{title}
-				</h1>
-			{/if}
-			<div class="content">
-				<slot />
-			</div>
-			{#if confirmationButtons}
-				<ConfirmButtons
-					on:confirm={() => {dispatch('confirm')}}
-					on:cancel={() => {dispatch('cancel'); closeModal()}}
-				/>
-			{/if}
+<dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={closeModal}>
+	<div on:click|stopPropagation style="font-size: 1.05rem">
+		<button class="reset-button close" on:click={closeModal}>
+			<Fa icon={faXmark} />
+		</button>
+		{#if title}
+			<h1>
+				{title}
+			</h1>
+		{/if}
+		<div class="content">
+			<slot />
 		</div>
-	</dialog>
-{/if}
+		{#if confirmationButtons}
+			<ConfirmButtons
+				on:confirm={() => {dispatch('confirm')}}
+				on:cancel={() => {dispatch('cancel'); closeModal()}}
+			/>
+		{/if}
+	</div>
+</dialog>
 
 <style>
 	dialog {

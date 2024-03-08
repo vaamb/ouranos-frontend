@@ -8,9 +8,17 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { engines } from '$lib/store.js';
+	import { ecosystems, engines } from '$lib/store.js';
 	import { getStatusClass, isEmpty, timeStringToDate } from '$lib/utils/functions.js';
 	import { crudRequest } from '$lib/actions.js';
+
+	const getEcosystemsArray = function (engineUID, ecosystemsStore) {
+		if (!ecosystemsStore) {
+			return [];
+		}
+		const array = Object.values(ecosystemsStore);
+		return array.filter((ecosystem) => ecosystem['engine_uid'] === engineUID);
+	};
 
 	$: engineUID = $page['params']['engine'];
 	$: engine = $engines[engineUID];
@@ -71,7 +79,7 @@
 			{ label: 'Status', key: 'status', isStatus: true },
 			{ label: 'Last Seen', key: 'last_seen', isTime: true }
 		]}
-		data={engine['ecosystems']}
+		data={getEcosystemsArray(engineUID, $ecosystems)}
 		editable={true}
 		crudOptions={['delete']}
 		on:crud={(event) => {

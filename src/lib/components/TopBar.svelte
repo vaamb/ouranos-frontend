@@ -44,7 +44,7 @@
 			{/if}
 		</div>
 		<div class="warning-button">
-			{#if $currentUser.isAuthenticated && warnings.length > 0}
+			{#if $currentUser.isAuthenticated && $warnings.length > 0}
 				<a href="/warnings">
 					<Fa icon={faExclamationTriangle} />
 				</a>

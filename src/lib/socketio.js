@@ -73,6 +73,7 @@ socketio.on('ecosystems_heartbeat', (data) => {
 	for (const ecosytemData of data['ecosystems']) {
 		if (ecosytemObj[ecosytemData['uid']]) {
 			ecosytemObj[ecosytemData['uid']]['last_seen'] = new Date();
+			ecosytemObj[ecosytemData['uid']]['status'] = ecosytemData['status']
 		}
 	}
 	ecosystems.set(ecosytemObj);

@@ -158,7 +158,7 @@
 		</Box>
 	{/if}
 	{#if $currentUser.isAuthenticated}
-		<Box title="Warnings overview" align="center">
+		<Box title="Ecosystem warnings overview" align="center">
 			<a href="/warnings" style="background: var(--main-95); color:inherit; text-decoration: none">
 				{#each $warnings as warning}
 					<BoxItem title="{warning.title}">

@@ -135,7 +135,7 @@
 	</Box>
 	{#if weatherEnabled && !isEmpty($weatherCurrently)}
 		<Box title="Current weather" align="center">
-			<i class="{getWeatherIcon($weatherCurrently['icon'])} weather-icon" />
+			<i class="{getWeatherIcon($weatherCurrently['icon'])} weather-icon"></i>
 			<BoxItem title={$weatherCurrently['summary']}>
 				<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
 				<p>Wind: {$weatherCurrently['windSpeed'].toFixed(1)} km/h</p>

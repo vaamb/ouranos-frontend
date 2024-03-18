@@ -50,8 +50,9 @@
 		title="Remove a warning"
 		on:close={resetCrudData}
 		confirmationButtons={true}
-		on:confirmation={() => {
+		on:confirm={() => {
 			crudRequest(`gaia/warning/u/${crudDataIndex}/mark_as_solved`, 'create');
+			closeModal();
 		}}
 	>
 		Are you sure you want to remove the warning '{$warnings[crudDataIndex]

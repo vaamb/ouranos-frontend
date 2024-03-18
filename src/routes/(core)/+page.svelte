@@ -37,7 +37,8 @@
 		serviceEnabled,
 		getParamStatus,
 		capitalize,
-		getStoreDataKey
+		getStoreDataKey,
+		timeStringToDate
 	} from '$lib/utils/functions.js';
 	import {
 		fetchEcosystemActuatorsData,
@@ -56,6 +57,17 @@
 	$: weatherEnabled = serviceEnabled($services, 'weather');
 	$: calendarEnabled = serviceEnabled($services, 'calendar');
 	$: uptime = computeUptime($serverLastSeen, serverStartTime);
+
+	const sortWarningsByEcosystem = function (warnings) {
+		const sortedWarnings = {};
+		for (const warning of warnings) {
+			sortedWarnings[warning['created_by']] = sortedWarnings[warning['created_by']] || [];
+			sortedWarnings[warning['created_by']].push(warning);
+		}
+		console.log(sortedWarnings);
+		return sortedWarnings;
+	};
+	$: sortedWarnings = sortWarningsByEcosystem($warnings);
 
 	const anyActiveActuator = function (ecosystemsActuatorData, uid) {
 		const actuatorsStatus = ecosystemsActuatorData[uid];
@@ -82,7 +94,7 @@
 	const computeAverageSensorsCurrentDataForMeasure = function (
 		ecosystemsSensorsDataCurrent,
 		measure,
-		sensors,
+		sensors
 	) {
 		let rv = [];
 		for (const sensor of sensors) {
@@ -105,7 +117,7 @@
 			}
 		}
 		if (weatherEnabled) {
-			await loadWeatherForecast(['hourly' ,'daily']);
+			await loadWeatherForecast(['hourly', 'daily']);
 		}
 	});
 </script>
@@ -123,7 +135,7 @@
 	</Box>
 	{#if weatherEnabled && !isEmpty($weatherCurrently)}
 		<Box title="Current weather" align="center">
-			<i class="{getWeatherIcon($weatherCurrently['icon'])} weather-icon"></i>
+			<i class="{getWeatherIcon($weatherCurrently['icon'])} weather-icon" />
 			<BoxItem title={$weatherCurrently['summary']}>
 				<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
 				<p>Wind: {$weatherCurrently['windSpeed'].toFixed(1)} km/h</p>
@@ -160,13 +172,25 @@
 	{#if $currentUser.isAuthenticated}
 		<Box title="Ecosystem warnings overview" align="center">
 			<a href="/warnings" style="background: var(--main-95); color:inherit; text-decoration: none">
-				{#each $warnings as warning}
-					<BoxItem title="{warning.title}">
-						{warning.description}
-					</BoxItem>
+				{#if $warnings}
+					{#each Object.keys(sortedWarnings) as name}
+						{@const ecosystemWarnings = sortedWarnings[name]}
+						{#if ecosystemWarnings}
+							<BoxItem title={name}>
+								{#each ecosystemWarnings as warning}
+									<div style="margin-bottom: 4px">
+										<p style="font-weight: 600; font-size: 0.90rem">
+											On {timeStringToDate(warning['created_on'])}
+										</p>
+										<p>{warning['description']}</p>
+									</div>
+								{/each}
+							</BoxItem>
+						{/if}
+					{/each}
 				{:else}
 					<BoxItem title="No warning" />
-				{/each}
+				{/if}
 			</a>
 		</Box>
 	{/if}
@@ -262,7 +286,7 @@
 										{@const averageData = computeAverageSensorsCurrentDataForMeasure(
 											$ecosystemsSensorsDataCurrent,
 											sensorsBone.measure,
-											sensorsBone.sensors,
+											sensorsBone.sensors
 										)}
 										{#if averageData !== null}
 											<p style="margin-bottom: 0">
@@ -290,7 +314,7 @@
 										{@const averageData = computeAverageSensorsCurrentDataForMeasure(
 											$ecosystemsSensorsDataCurrent,
 											sensorsBone.measure,
-											sensorsBone.sensors,
+											sensorsBone.sensors
 										)}
 										{#if averageData !== null}
 											<p style="margin-bottom: 0">

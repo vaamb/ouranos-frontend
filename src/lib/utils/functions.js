@@ -2,8 +2,7 @@ import { get } from 'svelte/store';
 
 import humanizeDuration from 'humanize-duration';
 
-import { serverLastSeen } from "$lib/store.js";
-import { graphs } from '$lib/utils/styling.js';
+import { serverLastSeen } from '$lib/store.js';
 
 export const dynamicSort = function (property) {
 	// from https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
@@ -148,25 +147,29 @@ export const computeLightingHours = function (ecosystemLight) {
 	if (['fixed', 'mimic'].includes(ecosystemLight['method'])) {
 		const start = strHoursToDate(ecosystemLight['morning_start']);
 		const end = strHoursToDate(ecosystemLight['evening_end']);
-		rv.push(`${
-			'Lighting from ' +
-			start.toLocaleTimeString([], { timeStyle: 'short' }) +
-			' to ' +
-			end.toLocaleTimeString([], { timeStyle: 'short' })
-		}`);
+		rv.push(
+			`${
+				'Lighting from ' +
+				start.toLocaleTimeString([], { timeStyle: 'short' }) +
+				' to ' +
+				end.toLocaleTimeString([], { timeStyle: 'short' })
+			}`
+		);
 	} else if (ecosystemLight['method'] === 'elongate') {
 		for (const TOD of ['morning', 'evening']) {
 			if (ecosystemLight[TOD + '_start'] && ecosystemLight[TOD + '_end']) {
 				const start = strHoursToDate(ecosystemLight[TOD + '_start']);
 				const end = strHoursToDate(ecosystemLight[TOD + '_end']);
 				if (start < end) {
-					rv.push(`${
-						capitalize(TOD) +
-						' lighting from ' +
-						start.toLocaleTimeString([], { timeStyle: 'short' }) +
-						' to ' +
-						end.toLocaleTimeString([], { timeStyle: 'short' })
-					}`);
+					rv.push(
+						`${
+							capitalize(TOD) +
+							' lighting from ' +
+							start.toLocaleTimeString([], { timeStyle: 'short' }) +
+							' to ' +
+							end.toLocaleTimeString([], { timeStyle: 'short' })
+						}`
+					);
 				}
 			}
 		}
@@ -254,11 +257,11 @@ export const getStoreData = function (store, storageKey) {
 };
 
 export const getFreshStoreData = function (store, storageKey) {
-	const now = new Date()
+	const now = new Date();
 	if (now - get(serverLastSeen) > 60000) {
 		return {};
 	}
-	return getStoreData(store, storageKey)
+	return getStoreData(store, storageKey);
 };
 
 export const updateStoreData = function (store, data) {

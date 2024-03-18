@@ -38,13 +38,13 @@
 	warnings.set(warningsValues);
 
 	const addEcosystemNameToWarnings = function (warnings, ecosystems) {
-        warnings.forEach((warning) => {
-            if (ecosystems[warning["created_by"]]) {
-                warning["created_by"] = ecosystems[warning["created_by"]]["name"]
-            }
-        })
-        return warnings;
-    }
+		warnings.forEach((warning) => {
+			if (ecosystems[warning['created_by']]) {
+				warning['created_by'] = ecosystems[warning['created_by']]['name'];
+			}
+		});
+		return warnings;
+	};
 	addEcosystemNameToWarnings($warnings, $ecosystems);
 
 	let menuWidth = 210;
@@ -109,12 +109,14 @@
 		right: 0;
 		margin-left: 0;
 		display: flex;
-  		flex-direction: column;
+		flex-direction: column;
 		background-color: var(--main-95);
 	}
 
 	.main {
-		min-height: calc(100vh - 141px);  /* 141px = Nav bar (65) + Top bar (45) + border (1) + padding (10+20) */
+		min-height: calc(
+			100vh - 141px
+		); /* 141px = Nav bar (65) + Top bar (45) + border (1) + padding (10+20) */
 		padding: 10px 20px 20px 20px;
 		position: relative;
 	}
@@ -126,7 +128,7 @@
 		}
 
 		.main {
-			min-height: calc(100vh - 76px);  /* 76px = Top bar (45) + border (1) + padding (10+20) */
+			min-height: calc(100vh - 76px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
 			padding-right: 45px;
 		}
 	}

@@ -37,6 +37,16 @@
 	services.set(servicesValues);
 	warnings.set(warningsValues);
 
+	const addEcosystemNameToWarnings = function (warnings, ecosystems) {
+        warnings.forEach((warning) => {
+            if (ecosystems[warning["created_by"]]) {
+                warning["created_by"] = ecosystems[warning["created_by"]]["name"]
+            }
+        })
+        return warnings;
+    }
+	addEcosystemNameToWarnings($warnings, $ecosystems);
+
 	let menuWidth = 210;
 
 	const anyMessage = function (flashMessage) {

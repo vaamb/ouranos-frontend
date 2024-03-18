@@ -6,7 +6,7 @@
     import Table from "$lib/components/Table.svelte";
 
     import {crudRequest} from "$lib/actions.js";
-    import { currentUser, warnings } from '$lib/store.js';
+    import {currentUser, warnings} from '$lib/store.js';
 
 	if (!$currentUser.isAuthenticated) {
 		goto('/');
@@ -32,6 +32,7 @@
         tableID="warnings"
         columns={[
             { label: 'Level', key: 'level' },
+            { label: 'Ecosystem', key: 'created_by' },
             { label: 'Title', key: 'title' },
             { label: 'Description', key: 'description' },
             { label: 'Created on', key: 'created_on', isTime: true }
@@ -52,10 +53,11 @@
 		on:close={resetCrudData}
         confirmationButtons={true}
         on:confirmation={() => {
-            crudRequest(`gaia/warning`, 'delete', {id: crudDataIndex});
+            crudRequest(`gaia/warning/u/${crudDataIndex}/mark_as_solved`, 'create');
         }}
     >
-        Are you sure you want to remove the warning '{$warnings[crudDataIndex] ? $warnings[crudDataIndex]['title']: ""}'?
+        Are you sure you want to remove the warning '{$warnings[crudDataIndex] ? $warnings[crudDataIndex]['title']: ""}'
+        created by the ecosystem '{$warnings[crudDataIndex] ? $warnings[crudDataIndex]['created_by']: ""}'?
     </Modal>
 {:else}
     No warnings

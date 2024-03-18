@@ -446,10 +446,10 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 			withCredentials: true
 		})
 		.then((response) => {
-			const levels = ['low', 'elevated', 'high', 'severe', 'critical'];
+			const levels = ['Low', 'Elevated', 'High', 'Severe', 'Critical'];
 			const warnings = response.data;
-			warnings.forEach((element) => {
-				element['level'] = levels[element['level']];
+			warnings.forEach((warning) => {
+				warning['level'] = levels[warning['level']];
 			});
 			return {
 				warnings: warnings

@@ -4,11 +4,9 @@
 
 	import { logOut } from '$lib/actions.js';
 	import { permissions } from '$lib/utils/consts.js';
-	import { currentUser } from '$lib/store.js';
+	import { currentUser, warnings } from '$lib/store.js';
 
 	export let development;
-
-	let anyWarnings = true; // TODO
 </script>
 
 <div class="top-bar">
@@ -46,7 +44,7 @@
 			{/if}
 		</div>
 		<div class="warning-button">
-			{#if $currentUser.isAuthenticated && anyWarnings}
+			{#if $currentUser.isAuthenticated && $warnings.length > 0}
 				<a href="/warnings">
 					<Fa icon={faExclamationTriangle} />
 				</a>

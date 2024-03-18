@@ -7,7 +7,7 @@ import {
 } from "$lib/actions.js";
 import { User } from "$lib/utils/factories.js";
 
-export async function load({ cookies }) {
+export async function load({ cookies, request }) {
   const userDataCookie = cookies.get("userDataCache")
   let currentUser = User()
   if (userDataCookie) {
@@ -20,7 +20,9 @@ export async function load({ cookies }) {
   const { services } = await fetchServices();
   let warnings = []
   if (currentUser.isAuthenticated) {
-    const resp = await fetchWarnings();
+    const clientSessionCookie = 'session=' + cookies.get('session');
+    const clientUserAgent = request.headers.get('user-agent');
+    const resp = await fetchWarnings(clientSessionCookie, clientUserAgent);
     warnings = resp.warnings
   }
 

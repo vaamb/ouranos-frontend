@@ -221,7 +221,7 @@
 	{#if $currentUser.isAuthenticated}
 		<Box title="Ecosystem warnings overview" align="center">
 			<a href="/warnings" style="background: var(--main-95); color:inherit; display: contents">
-				{#if $warnings}
+				{#if $warnings.length > 0}
 					{#each Object.keys(sortedWarnings) as name}
 						{@const ecosystemWarnings = sortedWarnings[name]}
 						{#if ecosystemWarnings}

@@ -5,6 +5,7 @@
 	import TopBar from '$lib/components/TopBar.svelte';
 
 	import {
+		calendarEvents,
 		currentUser,
 		ecosystems,
 		ecosystemsIds,
@@ -20,15 +21,17 @@
 	export let data;
 
 	const {
+		calendarEventsValues,
 		development,
-		enginesValues,
 		enginesIdsValues,
-		ecosystemsValues,
+		enginesValues,
 		ecosystemsIdsValues,
 		ecosystemsManagementValues,
+		ecosystemsValues,
 		servicesValues,
 		warningsValues
 	} = data;
+	calendarEvents.set(calendarEventsValues);
 	engines.set(enginesValues);
 	enginesIds.set(enginesIdsValues);
 	ecosystems.set(ecosystemsValues);

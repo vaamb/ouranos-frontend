@@ -3,15 +3,15 @@ import { goto } from '$app/navigation';
 
 import axios from 'axios';
 
-import { API_URL, SERVER_STATUS, SERVER_URL } from '$lib/utils/consts.js';
+import { API_URL, eventLevels, SERVER_STATUS, SERVER_URL } from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
 import {
+	checkSensorDataRecency,
 	dynamicSort,
 	getFreshStoreData,
 	getStoreDataKey,
-	checkSensorDataRecency,
-	updateStoreData,
-	isEmpty
+	isEmpty,
+	updateStoreData
 } from '$lib/utils/functions.js';
 import {
 	currentUser,
@@ -22,8 +22,8 @@ import {
 	ecosystemsSensorsSkeleton,
 	flashMessage,
 	weatherCurrently,
-	weatherHourly,
-	weatherDaily
+	weatherDaily,
+	weatherHourly
 } from '$lib/store.js';
 import { APP_MODE, AppMode } from '../conf.js';
 
@@ -446,11 +446,10 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 			withCredentials: true
 		})
 		.then((response) => {
-			const levels = ['Low', 'Elevated', 'High', 'Severe', 'Critical'];
 			const warnings = response.data;
 			warnings.forEach((warning) => {
 				warning['created_on'] = new Date(warning['created_on']);
-				warning['level'] = levels[warning['level']];
+				warning['level'] = eventLevels[warning['level']];
 			});
 			return {
 				warnings: warnings
@@ -459,6 +458,34 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 		.catch(() => {
 			return {
 				warnings: []
+			};
+		});
+};
+
+export const fetchCalendarEvents = async function (clientSessionCookie, clientUserAgent) {
+	return axios
+		.get(`${SERVER_URL}/app/services/calendar`, {
+			headers: {
+				Cookie: clientSessionCookie,
+				'User-Agent': clientUserAgent
+			},
+			withCredentials: true
+		})
+		.then((response) => {
+			const events = response.data;
+			events.forEach((event) => {
+				event['start_time'] = new Date(event['start_time']);
+				event['end_time'] = new Date(event['end_time']);
+				event['level'] = eventLevels[event['level']];
+			});
+			return {
+				events: events
+			};
+		})
+		.catch(() => {
+			const events = [];
+			return {
+				events: events
 			};
 		});
 };

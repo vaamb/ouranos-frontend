@@ -10,6 +10,7 @@
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
 
 	import {
+		calendarEvents,
 		currentUser,
 		ecosystems,
 		ecosystemsIds,
@@ -67,6 +68,23 @@
 		return sortedWarnings;
 	};
 	$: sortedWarnings = sortWarningsByEcosystem($warnings);
+
+	const sortCalendarEventsByHappening = function (calendarEvents) {
+		const sortedEvents = {
+			happening: [],
+			future: []
+		};
+		const now = new Date();
+		for (const event of calendarEvents) {
+			if (event['start_time'] <= now && now <= event['end_time']) {
+				sortedEvents['happening'].push(event);
+			} else if (now <= event['start_time']) {
+				sortedEvents['future'].push(event);
+			}
+		}
+		return sortedEvents;
+	};
+	$: sortedCalendarEvents = sortCalendarEventsByHappening($calendarEvents);
 
 	const anyActiveActuator = function (ecosystemsActuatorData, uid) {
 		const actuatorsStatus = ecosystemsActuatorData[uid];
@@ -138,12 +156,31 @@
 
 <h2>Global overview</h2>
 <Row>
-	<Box title="Calendar" align="center">
-		<BoxItem title={formatDate(now)}>
-			{#if calendarEnabled}
-				<p>Later here: your personal calendar</p>
-			{/if}
-		</BoxItem>
+	<Box title="Calendar - {formatDate(now)}" align="center">
+		<a href="/calendar" style="background: var(--main-95); color:inherit; display: contents">
+			<BoxItem title="Happening now">
+				{#each sortedCalendarEvents['happening'] as event}
+					{@const color = getLevelColor(event['level'])}
+					<p style="text-align: left">
+						<Fa icon={faCircleExclamation} style="color: var({color});" />
+						Until {event['end_time'].toLocaleDateString('en-GB')}: {event['title']}
+					</p>
+				{:else}
+					<p style="text-align: left">There is no event happening currently.</p>
+				{/each}
+			</BoxItem>
+			<BoxItem title="Planned">
+				{#each sortedCalendarEvents['future'] as event}
+					{@const color = getLevelColor(event['level'])}
+					<p style="text-align: left">
+						<Fa icon={faCircleExclamation} style="color: var({color});" />
+						Starting on {event['start_time'].toLocaleDateString('en-GB')}: {event['title']}
+					</p>
+				{:else}
+					<p style="text-align: left">There is no event planned.</p>
+				{/each}
+			</BoxItem>
+		</a>
 	</Box>
 	{#if weatherEnabled && !isEmpty($weatherCurrently)}
 		<Box title="Current weather" align="center">

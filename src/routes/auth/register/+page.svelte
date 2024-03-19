@@ -12,10 +12,18 @@
 
 	let token = $page.url.searchParams.get('token');
 
-	let role;
+	let tokenUsername;
+	let tokenFirstname;
+	let tokenLastname;
+	let tokenRole;
+	let tokenEmail;
 	try {
 		const data = jwt_decode(token);
-		role = data.rle || 'User';
+		tokenUsername = data['username'];
+		tokenFirstname = data['firstname'];
+		tokenLastname = data['lastname'];
+		tokenRole = data['role'];
+		tokenEmail = data['email'];
 	} catch (error) {
 		token = null;
 	}
@@ -32,10 +40,11 @@
 	};
 	resetErrors();
 
-	let username;
-	let firstname;
-	let lastname;
-	let email;
+	let username = tokenUsername;
+	let firstname = tokenFirstname;
+	let lastname = tokenLastname;
+	let role = tokenRole || 'User';
+	let email = tokenEmail;
 	let telegramId;
 	let password1;
 	let password2;
@@ -80,10 +89,10 @@
 		}
 		axios
 			.post(`${API_URL}/auth/register?token=${token}`, {
-				username: username,
+				username: tokenUsername ? tokenUsername : username,
 				firstname: firstname,
 				lastname: lastname,
-				email: email,
+				email: tokenEmail ? tokenEmail : email,
 				telegram_id: telegramId,
 				password: password1
 			})
@@ -125,7 +134,13 @@
 		{/if}
 		<div class="input-group">
 			<label for="username">Username</label> <br />
-			<input id="username" size="32" type="text" bind:value={username} />
+			<input
+				id="username"
+				size="32"
+				type="text"
+				bind:value={username}
+				disabled={tokenUsername !== undefined}
+			/>
 			{#if errors.username}
 				<br />
 				<div class="error">{errors.username}</div>
@@ -145,7 +160,13 @@
 		</div>
 		<div class="input-group">
 			<label for="email">E-mail</label> <br />
-			<input id="email" size="32" type="text" bind:value={email} />
+			<input
+				id="email"
+				size="32"
+				type="text"
+				bind:value={email}
+				disabled={tokenEmail !== undefined}
+			/>
 			<Fa icon={faCircle} class={getValidationColorClass(validEmail)} />
 			{#if errors.email}
 				<br />

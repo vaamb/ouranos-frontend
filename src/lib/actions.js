@@ -449,6 +449,7 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 			const levels = ['Low', 'Elevated', 'High', 'Severe', 'Critical'];
 			const warnings = response.data;
 			warnings.forEach((warning) => {
+				warning['created_on'] = new Date(warning['created_on']);
 				warning['level'] = levels[warning['level']];
 			});
 			return {

@@ -64,7 +64,6 @@
 			sortedWarnings[warning['created_by']] = sortedWarnings[warning['created_by']] || [];
 			sortedWarnings[warning['created_by']].push(warning);
 		}
-		console.log(sortedWarnings);
 		return sortedWarnings;
 	};
 	$: sortedWarnings = sortWarningsByEcosystem($warnings);
@@ -171,7 +170,7 @@
 	{/if}
 	{#if $currentUser.isAuthenticated}
 		<Box title="Ecosystem warnings overview" align="center">
-			<a href="/warnings" style="background: var(--main-95); color:inherit; text-decoration: none">
+			<a href="/warnings" style="background: var(--main-95); color:inherit; display: contents">
 				{#if $warnings}
 					{#each Object.keys(sortedWarnings) as name}
 						{@const ecosystemWarnings = sortedWarnings[name]}

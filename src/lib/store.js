@@ -12,7 +12,6 @@ export const ecosystemsManagement = writable({});
 export const ecosystemsSensorsSkeleton = writable({});
 export const ecosystemsSensorsDataCurrent = writable({});
 export const ecosystemsSensorsDataHistoric = writable({});
-export const ecosystemsWarnings = writable({});
 export const engines = writable({});
 export const enginesIds = writable([]);
 export const flashMessage = writable([]);

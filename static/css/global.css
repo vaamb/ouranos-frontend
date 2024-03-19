@@ -12,6 +12,8 @@
 	--derived-50: hsl(210, 17%, 50%); /*original: #73879c*/
 	--derived-20: hsl(210, 17%, 20%); /*original: #282f3c*/
 	--green: hsl(122, 40%, 52%); /*original: #54b657*/
+	--yellow: hsl(45, 65%, 65%);
+	--orange: hsl(27, 85%, 65%);
 	--red: hsl(9, 100%, 65%); /*original: #fd6348*/
 	--gray-90: hsl(0, 0%, 90%);
 	--gray-80: hsl(0, 0%, 80%);

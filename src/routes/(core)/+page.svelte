@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 
 	import Fa from 'svelte-fa';
-	import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+	import { faCircleExclamation, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Row from '$lib/components/layout/Row.svelte';
@@ -64,7 +64,6 @@
 			sortedWarnings[warning['created_by']] = sortedWarnings[warning['created_by']] || [];
 			sortedWarnings[warning['created_by']].push(warning);
 		}
-		console.log(sortedWarnings);
 		return sortedWarnings;
 	};
 	$: sortedWarnings = sortWarningsByEcosystem($warnings);
@@ -108,6 +107,19 @@
 		}
 		const average = (array) => array.reduce((a, b) => a + b) / array.length;
 		return average(rv).toFixed(2);
+	};
+
+	const getLevelColor = function (level) {
+		['High', 'Severe', 'Critical'];
+		if (level === 'High') {
+			return '--yellow';
+		} else if (level === 'Severe') {
+			return '--orange';
+		} else if (level === 'Critical') {
+			return '--red';
+		} else {
+			return '--green';
+		}
 	};
 
 	onMount(async () => {
@@ -171,19 +183,18 @@
 	{/if}
 	{#if $currentUser.isAuthenticated}
 		<Box title="Ecosystem warnings overview" align="center">
-			<a href="/warnings" style="background: var(--main-95); color:inherit; text-decoration: none">
+			<a href="/warnings" style="background: var(--main-95); color:inherit; display: contents">
 				{#if $warnings}
 					{#each Object.keys(sortedWarnings) as name}
 						{@const ecosystemWarnings = sortedWarnings[name]}
 						{#if ecosystemWarnings}
 							<BoxItem title={name}>
 								{#each ecosystemWarnings as warning}
-									<div style="margin-bottom: 4px">
-										<p style="font-weight: 600; font-size: 0.90rem">
-											On {timeStringToDate(warning['created_on'])}
-										</p>
-										<p>{warning['description']}</p>
-									</div>
+									{@const color = getLevelColor(warning['level'])}
+									<p style="text-align: left">
+										<Fa icon={faCircleExclamation} style="color: var({color});" />
+										On {timeStringToDate(warning['created_on'])}: {warning['title']}
+									</p>
 								{/each}
 							</BoxItem>
 						{/if}

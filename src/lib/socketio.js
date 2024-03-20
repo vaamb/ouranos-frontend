@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import { Manager } from 'socket.io-client';
 
-import { base_URL } from '$lib/utils/consts.js';
+import { BASE_URL } from '$lib/utils/consts.js';
 import { getFreshStoreData, getStoreDataKey, updateStoreData } from '$lib/utils/functions.js';
 import {
 	ecosystems,
@@ -20,7 +20,7 @@ let latencyArray = [];
 let pingTime = null;
 let pingLoop = null;
 
-const manager = new Manager(base_URL, {
+const manager = new Manager(BASE_URL, {
 	autoConnect: false,
 	reconnectionDelayMax: 30000,
 	transports: ['websocket', 'polling']

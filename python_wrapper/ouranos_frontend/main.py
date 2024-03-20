@@ -59,7 +59,6 @@ class Frontend(Functionality):
             port = current_app.config.get("FRONTEND_PORT", Config.FRONTEND_PORT)
             cmd = [
                 "node",
-                "-r", "dotenv/config",
                 str(self.frontend_dir/"build"),
                 "--",
                 "--host", str(address),

@@ -1,6 +1,8 @@
-export const BASE_URL = 'http://127.0.0.1:5000';
+import { PUBLIC_BASE_URL, PUBLIC_LOCAL_API_URL } from '$env/static/public'
+
+export const BASE_URL = PUBLIC_BASE_URL;
 export const API_URL = BASE_URL + '/api';
-export const LOCAL_API_URL = 'http://127.0.0.1:5000/api';
+export const LOCAL_API_URL = PUBLIC_LOCAL_API_URL;
 
 export const SERVER_STATUS = {
 	unreachable: -1,

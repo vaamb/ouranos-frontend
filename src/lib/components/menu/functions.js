@@ -8,7 +8,6 @@ import {
 	faHeartbeat,
 	faToggleOff,
 	faVideo,
-	faBellConcierge,
 	faDatabase
 } from '@fortawesome/free-solid-svg-icons';
 

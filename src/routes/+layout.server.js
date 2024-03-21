@@ -2,6 +2,7 @@ import { error } from '@sveltejs/kit';
 
 import { APP_MODE, AppMode } from '../conf.js';
 import { fetchCurrentUserData, fetchServerInfo } from '$lib/actions.js';
+import { User } from '$lib/utils/factories.js';
 
 export async function load({ cookies, request }) {
 	const rv = {
@@ -16,9 +17,9 @@ export async function load({ cookies, request }) {
 		const clientSessionCookie = 'session=' + sessionCookie;
 		const clientUserAgent = request.headers.get('user-agent');
 		const { currentUserData } = await fetchCurrentUserData(clientSessionCookie, clientUserAgent);
-		rv.userData = currentUserData;
+		rv.userData = new User(currentUserData).flatten();
 	} else {
-		rv.userData = undefined;
+		rv.userData = new User().flatten();
 	}
 
 	switch (APP_MODE) {

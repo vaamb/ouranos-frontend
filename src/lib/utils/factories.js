@@ -21,6 +21,19 @@ export function User(userObject = {}) {
 				return false;
 			}
 			return (permissions & perm) === perm;
+		},
+		flatten: function () {
+			return {
+				username: this.username,
+				firstname: this.firstname,
+				lastname: this.lastname,
+				permissions: this.permissions,
+				iat: this.iat,
+				isAuthenticated: this.isAuthenticated,
+				isAnonymous: this.isAnonymous,
+				isConfirmed: this.isConfirmed,
+				avatar: this.avatar
+			};
 		}
 	};
 }

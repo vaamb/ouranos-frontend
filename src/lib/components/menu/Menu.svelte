@@ -69,7 +69,9 @@
 		</ul>
 		<div class="bottom-box">
 			<a href="/about"><Fa icon={faAddressCard} /></a>
-			<a href="/user/settings"><Fa icon={faUserCog} /></a>
+			{#if $currentUser.isAuthenticated}
+				<a href="/user/settings"><Fa icon={faUserCog} /></a>
+			{/if}
 			{#if $currentUser.can(permissions.ADMIN)}
 				<button class="reset-button" on:click={restartServer}><Fa icon={faPowerOff} /></button>
 			{/if}

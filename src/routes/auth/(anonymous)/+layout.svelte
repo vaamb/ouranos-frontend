@@ -1,13 +1,3 @@
-<script>
-	import { goto } from '$app/navigation';
-
-	import { currentUser } from '$lib/store.js';
-
-	if ($currentUser.isAuthenticated) {
-		goto('/');
-	}
-</script>
-
 <svelte:head>
 	<link rel="stylesheet" href="/css/auth.css" />
 </svelte:head>

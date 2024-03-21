@@ -41,7 +41,14 @@
 <svelte:window bind:outerWidth />
 
 <nav style="--menu-width:{width}">
-	<div class="top-box" tabindex="0" role="button" aria-pressed="false" on:click={toggleMenu}>
+	<div
+			class="top-box"
+			tabindex="0"
+			role="button"
+			aria-pressed="false"
+			on:click={toggleMenu}
+			on:keypress={toggleMenu}
+	>
 		<div class="menu-title">
 			<h1>{layout.title}</h1>
 		</div>

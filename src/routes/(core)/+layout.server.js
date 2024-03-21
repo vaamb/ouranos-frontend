@@ -8,13 +8,9 @@ import {
 } from "$lib/actions.js";
 import { User } from "$lib/utils/factories.js";
 
-export async function load({ cookies, request }) {
-  const userDataCookie = cookies.get("userDataCache")
-  let currentUser = User()
-  if (userDataCookie) {
-    currentUser = User(JSON.parse(userDataCookie));
-  }
-
+export async function load({ cookies, request, parent }) {
+  const data = await parent();
+  let currentUser = User(data.userData);
   const { ecosystems, ecosystemsIds } = await fetchEcosystems();
   const { ecosystemsManagement } = await fetchEcosystemsManagement();
   const { engines, enginesIds } = await fetchEngines();

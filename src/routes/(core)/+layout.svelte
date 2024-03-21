@@ -16,13 +16,14 @@
 		services,
 		warnings
 	} from '$lib/store.js';
+	import {APP_MODE} from "$lib/utils/consts.js";
 	import { serviceEnabled } from '$lib/utils/functions.js';
 
 	export let data;
 
 	const {
+		appMode,
 		calendarEventsValues,
-		development,
 		enginesIdsValues,
 		enginesValues,
 		ecosystemsIdsValues,
@@ -99,7 +100,7 @@
 
 <Menu layout={menuLayout} width={menuWidth} />
 <div class="container" style="--margin-width:{menuWidth}">
-	<TopBar {development} />
+	<TopBar development={appMode === APP_MODE.development} />
 	<div class="main">
 		<slot />
 	</div>

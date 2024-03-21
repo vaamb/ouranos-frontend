@@ -25,15 +25,6 @@ import {
 	weatherDaily,
 	weatherHourly
 } from '$lib/store.js';
-import { APP_MODE, AppMode } from '../conf.js';
-
-const formatParam = function (param) {
-	if (APP_MODE === AppMode.testing) {
-		return null;
-	} else {
-		return param;
-	}
-};
 
 export const fetchServerInfo = async function () {
 	return await axios
@@ -145,7 +136,7 @@ const extractEngineOrEcosystemData = function (dataArray, engineOrEcosystem) {
 export const fetchEngines = async function () {
 	return axios
 		.get(`${LOCAL_API_URL}/gaia/engine`, {
-			params: { engines_id: formatParam('recent') }
+			params: { engines_id: 'recent' }
 		})
 		.then((response) => {
 			const data = response.data;
@@ -167,7 +158,7 @@ export const fetchEngines = async function () {
 export const fetchEcosystems = async function () {
 	return axios
 		.get(`${LOCAL_API_URL}/gaia/ecosystem`, {
-			params: { ecosystems_id: formatParam('recent') }
+			params: { ecosystems_id: 'recent' }
 		})
 		.then((response) => {
 			const data = response.data;
@@ -188,7 +179,7 @@ export const fetchEcosystems = async function () {
 export const fetchEcosystemsManagement = async function () {
 	return axios
 		.get(`${LOCAL_API_URL}/gaia/ecosystem/management`, {
-			params: { ecosystems: formatParam('recent') }
+			params: { ecosystems: 'recent' }
 		})
 		.then((response) => {
 			const object = response.data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
@@ -271,7 +262,7 @@ export const fetchSensorCurrentData = async function (sensorUID, measure) {
 	}
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/current_data`, {
-			params: { ecosystems: formatParam('recent') }
+			params: { ecosystems: 'recent' }
 		})
 		.then((response) => {
 			const accumulator = {};

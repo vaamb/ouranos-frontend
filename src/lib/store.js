@@ -1,10 +1,9 @@
 import { writable } from 'svelte/store';
 
-import { cookieStore } from '$lib/cookieStore.js';
 import { User } from '$lib/utils/factories.js';
 
 export const calendarEvents = writable([]);
-export const currentUser = cookieStore('userDataCache', User());
+export const currentUser = writable(User());
 export const ecosystems = writable({});
 export const ecosystemsIds = writable([]);
 export const ecosystemsActuatorData = writable({});

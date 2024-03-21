@@ -1,21 +1,17 @@
 export function User(userObject = {}) {
-	const username = userObject.username || null;
-	const permissions = userObject.permissions || 0;
-	let auth = false;
-	if (username) {
-		auth = true;
-	}
+	const username = userObject['username'] || null;
+	const permissions = userObject['permissions'] || 0;
+	const auth = username ? true : false
 	return {
 		username: username,
-		firstname: userObject.firstname || null,
-		lastname: userObject.lastname || null,
+		firstname: userObject['firstname'] || null,
+		lastname: userObject['lastname'] || null,
 		permissions: permissions,
 		iat: userObject.iat || null,
 		isAuthenticated: auth,
 		isAnonymous: !auth,
-		isConfirmed: userObject.is_confirmed || null,
-
-		avatar: 'seedling', // TODO: for later
+		isConfirmed: userObject['is_confirmed'] || false,
+		avatar: userObject['avatar'] || 'seedling', // TODO: for later
 		can: function (perm) {
 			if (perm === undefined) {
 				return false;

@@ -3,6 +3,10 @@
   export let info = null;
 </script>
 
+<svelte:head>
+	<title>{title} - GAIA</title>
+</svelte:head>
+
 <div class="header-line">
   <h1>{ title }</h1>
   {#if info}

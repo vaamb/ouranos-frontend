@@ -1,7 +1,3 @@
-<svelte:head>
-	<link rel="stylesheet" href="/css/auth.css" />
-</svelte:head>
-
 <div class="center-content">
 	<div style="max-width: 80%">
 		<slot />

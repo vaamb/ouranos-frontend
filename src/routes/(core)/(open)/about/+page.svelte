@@ -92,15 +92,5 @@
 </div>
 
 <style>
-	.text {
-		width: 800px;
-		margin: auto;
-		line-height: 1.5;
-		text-align: justify;
-		text-justify: inter-word;
-	}
-	.text p {
-		font-size: 1.06rem;
-		margin-bottom: 1rem;
-	}
+
 </style>

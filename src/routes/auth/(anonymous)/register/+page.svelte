@@ -1,4 +1,5 @@
 <script>
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 
 	import axios from 'axios';
@@ -6,9 +7,9 @@
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
-	import { flashMessage } from '$lib/store.js';
+	import { currentUser, flashMessage } from '$lib/store.js';
 	import { API_URL } from '$lib/utils/consts.js';
-	import { Message } from '$lib/utils/factories.js';
+	import { Message, User } from '$lib/utils/factories.js';
 
 	let token = $page.url.searchParams.get('token');
 
@@ -87,24 +88,33 @@
 		if (password1 !== password2) {
 			errors.password2 = 'Both passwords should match.';
 		}
-		axios
-			.post(`${API_URL}/auth/register?token=${token}`, {
+		axios(`${API_URL}/auth/register?invitation_token=${token}`, {
+			method: 'post',
+			withCredentials: true,
+			data: {
 				username: tokenUsername ? tokenUsername : username,
 				firstname: firstname,
 				lastname: lastname,
 				email: tokenEmail ? tokenEmail : email,
 				telegram_id: telegramId,
 				password: password1
-			})
-			.then(() => {
+			}
+		})
+			.then((response) => {
+				const user = User(response.data.user);
+				currentUser.set(user);
 				let msgs = $flashMessage;
-				msgs.push(Message('Hello ' + username + ', welcome to Ouranos'));
+				msgs.push(Message('Hello ' + user['username'] + ', welcome to Ouranos'));
 				flashMessage.set(msgs);
+				goto(`/`);
 			})
 			.catch((postError) => {
 				if (postError.response) {
-					if (postError.response.status === 400) {
+					if (postError.response.data.detail) {
 						errors.server = postError.response.data.detail;
+					} else {
+						errors.server =
+							'We encountered an error. Please contact the administrator and come back later.';
 					}
 				}
 			});
@@ -127,9 +137,7 @@
 	<form on:submit={validateRegistration}>
 		{#if errors.server}
 			<div class="input-group">
-				{#each errors.server as error}
-					<div class="error">{error}</div>
-				{/each}
+				<div class="error">{errors.server}</div>
 			</div>
 		{/if}
 		<div class="input-group">

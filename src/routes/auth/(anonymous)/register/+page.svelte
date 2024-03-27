@@ -1,4 +1,5 @@
 <script>
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 
 	import axios from 'axios';
@@ -102,6 +103,7 @@
 				let msgs = $flashMessage;
 				msgs.push(Message('Hello ' + user['username'] + ', welcome to Ouranos'));
 				flashMessage.set(msgs);
+				goto(`/`);
 			})
 			.catch((postError) => {
 				if (postError.response) {

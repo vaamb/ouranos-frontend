@@ -6,9 +6,9 @@
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
-	import { flashMessage } from '$lib/store.js';
+	import { currentUser, flashMessage } from '$lib/store.js';
 	import { API_URL } from '$lib/utils/consts.js';
-	import { Message } from '$lib/utils/factories.js';
+	import { Message, User } from '$lib/utils/factories.js';
 
 	let token = $page.url.searchParams.get('token');
 
@@ -96,9 +96,11 @@
 				telegram_id: telegramId,
 				password: password1
 			})
-			.then(() => {
+			.then((response) => {
+				const user = User(response.data.user);
+				currentUser.set(user);
 				let msgs = $flashMessage;
-				msgs.push(Message('Hello ' + username + ', welcome to Ouranos'));
+				msgs.push(Message('Hello ' + user['username'] + ', welcome to Ouranos'));
 				flashMessage.set(msgs);
 			})
 			.catch((postError) => {

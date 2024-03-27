@@ -88,15 +88,18 @@
 		if (password1 !== password2) {
 			errors.password2 = 'Both passwords should match.';
 		}
-		axios
-			.post(`${API_URL}/auth/register?token=${token}`, {
+		axios(`${API_URL}/auth/register?invitation_token=${token}`, {
+			method: 'post',
+			withCredentials: true,
+			data: {
 				username: tokenUsername ? tokenUsername : username,
 				firstname: firstname,
 				lastname: lastname,
 				email: tokenEmail ? tokenEmail : email,
 				telegram_id: telegramId,
 				password: password1
-			})
+			}
+		})
 			.then((response) => {
 				const user = User(response.data.user);
 				currentUser.set(user);
@@ -107,8 +110,11 @@
 			})
 			.catch((postError) => {
 				if (postError.response) {
-					if (postError.response.status === 400) {
+					if (postError.response.data.detail) {
 						errors.server = postError.response.data.detail;
+					} else {
+						errors.server =
+							'We encountered an error. Please contact the administrator and come back later.';
 					}
 				}
 			});
@@ -131,9 +137,7 @@
 	<form on:submit={validateRegistration}>
 		{#if errors.server}
 			<div class="input-group">
-				{#each errors.server as error}
-					<div class="error">{error}</div>
-				{/each}
+				<div class="error">{errors.server}</div>
 			</div>
 		{/if}
 		<div class="input-group">

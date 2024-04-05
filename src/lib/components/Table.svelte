@@ -48,7 +48,7 @@
 </script>
 
 <div class="table-wrap">
-	<table class="table-base table-alternate-colors">
+	<table class="table-base table-spaced table-alternate-colors">
 		<thead>
 			<tr>
 				{#each columns as column}
@@ -77,12 +77,12 @@
 						<td>
 							<div>
 								{#if crudOptions.includes('update')}
-									<button on:click={() => emitEvent('update', rowIndex)}>
+									<button class="crud-button" on:click={() => emitEvent('update', rowIndex)}>
 										<Fa icon={faPenToSquare} />
 									</button>
 								{/if}
 								{#if crudOptions.includes('delete')}
-									<button on:click={() => emitEvent('delete', rowIndex)}>
+									<button class="crud-button" on:click={() => emitEvent('delete', rowIndex)}>
 										<Fa icon={faTrashCan} />
 									</button>
 								{/if}
@@ -94,9 +94,9 @@
 		</tbody>
 		{#if $currentUser.can(permissions.OPERATE) & editable & crudOptions.includes('create')}
 			<tbody>
-				<tr>
+				<tr class="table-bigger-line">
 					<td colspan="8" style="text-align: center; vertical-align: middle">
-						<button class="table-bigger-line" on:click={() => emitEvent('create')}>
+						<button class="crud-button" style="font-size: 2rem" on:click={() => emitEvent('create')}>
 							<Fa icon={faSquarePlus} />
 						</button>
 					</td>
@@ -108,69 +108,5 @@
 <style>
 	.table-wrap {
 		overflow-x: auto;
-	}
-
-	.table-base {
-		display: table;
-		/* table-layout: fixed; */
-		width: 100%;
-		border-collapse: collapse;
-		font-family: sans-serif;
-		box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-		margin-bottom: 1.5rem;
-	}
-
-	.table-base thead {
-		text-align: left;
-	}
-
-	.table-base thead th {
-		padding: 1.25rem 1rem;
-	}
-
-	.table-base td {
-		padding: 0.75rem 1rem;
-	}
-
-	.table-base thead tr {
-		background-color: #73879c;
-		color: #f9f9fb;
-	}
-
-	.table-base tbody {
-		text-align: left;
-	}
-
-	.table-base tbody tr {
-		border-bottom: thin solid #dddddd;
-	}
-
-	.table-base tbody tr:last-of-type {
-		border-bottom: 2px solid #73879c;
-	}
-
-	.table-base tbody tr .table-bigger-line {
-		height: 3.14rem;
-		font-size: 2rem;
-	}
-
-	.table-base button {
-		border: none;
-		color: inherit;
-		background-color: inherit;
-		font-size: 1.2rem;
-		cursor: pointer;
-	}
-
-	.table-base button:disabled {
-		color: rgba(115, 135, 156, 0.33);
-	}
-
-	.table-base button + button {
-		margin-left: 8px;
-	}
-
-	.table-alternate-colors tbody tr:nth-child(even) {
-		background-color: #f3f3f3;
 	}
 </style>

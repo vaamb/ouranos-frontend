@@ -54,7 +54,7 @@
 	};
 </script>
 
-<table class="table-base">
+<table style="display: table">
 	<tbody>
 		{#each data as row}
 			<tr>
@@ -101,10 +101,6 @@
 <ConfirmButtons disabled={disabledSubmit} on:confirm={confirm} on:cancel={cancel} />
 
 <style>
-	.table-base {
-		display: table;
-	}
-
 	input {
 		height: 1.3rem;
 		width: 216px;

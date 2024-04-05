@@ -30,11 +30,6 @@
 </div>
 
 <style>
-	:root {
-		--accent-color: #2196f3;
-		--gray: #ccc;
-	}
-
 	.slider {
 		display: flex;
 		align-items: center;
@@ -45,7 +40,7 @@
 		height: 1.6em;
 		position: relative;
 		margin: 0 0 0 0.5em;
-		background: var(--gray);
+		background: var(--gray-80);
 		border: none;
 	}
 
@@ -61,7 +56,7 @@
 	}
 
 	.slider button[aria-checked='true'] {
-		background-color: var(--accent-color);
+		background-color: var(--blue-accent);
 	}
 
 	.slider button[aria-checked='true']::before {
@@ -75,5 +70,9 @@
 
 	.slider button::before {
 		border-radius: 100%;
+	}
+
+	.slider button:disabled {
+		background-color: var(--gray-70);
 	}
 </style>

@@ -35,7 +35,7 @@
 				</button>
 				<div class="dropdown-content" id="userDropdownContent">
 					<div>
-						<a href="/user/profile">Profile</a>
+						<a href='/user/u/{$currentUser.username}/profile'>Profile</a>
 					</div>
 					<div>
 						<button class="reset-button clickable" on:click={logOut}>Log out</button>

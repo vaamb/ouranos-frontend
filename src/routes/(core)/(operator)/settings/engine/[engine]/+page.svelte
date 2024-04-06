@@ -10,7 +10,13 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import { ecosystems, engines } from '$lib/store.js';
-	import {getStatusClass, isBool, isEmpty, isTime, timeStringToDate} from '$lib/utils/functions.js';
+	import {
+		getStatusClass,
+		isBool,
+		isEmpty,
+		isTime,
+		timeStringToDate
+	} from '$lib/utils/functions.js';
 	import { crudRequest } from '$lib/actions.js';
 
 	const getEcosystemsArray = function (engineUID, ecosystemsStore) {
@@ -141,9 +147,19 @@
 		<Form
 			data={[
 				{ label: 'Name', key: 'name' },
-				{ label: 'Day start', key: 'day_start', validate: isTime },
-				{ label: 'Night start', key: 'night_start', validate: isTime },
-				{ label: 'Status', key: 'status', validate: isBool }
+				{
+					label: 'Day start',
+					key: 'day_start',
+					validate: isTime,
+					hint: 'Time in the HH:MM format'
+				},
+				{
+					label: 'Night start',
+					key: 'night_start',
+					validate: isTime,
+					hint: 'Time in the HH:MM format'
+				},
+				{ label: 'Status', key: 'status', validate: isBool, hint: "'true' or 'false'" }
 			]}
 			on:confirm={(event) => {
 				const payload = event.detail;

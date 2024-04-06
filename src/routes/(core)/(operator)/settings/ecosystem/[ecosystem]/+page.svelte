@@ -152,8 +152,20 @@
 				value: ecosystem['lighting_method'],
 				selectFrom: ['fixed', 'elongate', 'mimic']
 			},
-			{ label: 'Day start', key: 'day_start', value: ecosystem['day_start'], validate: isTime },
-			{ label: 'Day end', key: 'night_start', value: ecosystem['night_start'], validate: isTime }
+			{
+				label: 'Day start',
+				key: 'day_start',
+				value: ecosystem['day_start'],
+				validate: isTime,
+				hint: 'Time in the HH:MM format'
+			},
+			{
+				label: 'Day end',
+				key: 'night_start',
+				value: ecosystem['night_start'],
+				validate: isTime,
+				hint: 'Time in the HH:MM format'
+			}
 		]}
 		on:confirm={(event) => {
 			const payload = event.detail;

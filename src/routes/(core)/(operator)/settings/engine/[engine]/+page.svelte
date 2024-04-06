@@ -4,12 +4,13 @@
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
+	import Form from '$lib/components/Form.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
 	import { ecosystems, engines } from '$lib/store.js';
-	import { getStatusClass, isEmpty, timeStringToDate } from '$lib/utils/functions.js';
+	import {getStatusClass, isBool, isEmpty, isTime, timeStringToDate} from '$lib/utils/functions.js';
 	import { crudRequest } from '$lib/actions.js';
 
 	const getEcosystemsArray = function (engineUID, ecosystemsStore) {
@@ -22,52 +23,87 @@
 
 	$: engineUID = $page['params']['engine'];
 	$: engine = $engines[engineUID];
+	$: ecosystemsArray = getEcosystemsArray(engineUID, $ecosystems);
+	$: ecosystemArray = crudIndex !== undefined ? ecosystemsArray[crudIndex] : [];
 
 	// Crud-related variables and functions
 	let crudAction = undefined;
+	let crudIndex = undefined;
 	let crudEcosystemUID = '';
 	let crudEcosystemName = '';
 
-	const setCrudData = function (action, ecosystemUID, ecosystemName) {
+	const setCrudData = function (action, index, ecosystemUID, ecosystemName) {
 		crudAction = action;
+		crudIndex = index;
 		crudEcosystemUID = ecosystemUID;
 		crudEcosystemName = ecosystemName;
 	};
 
 	const resetCrudData = function () {
 		crudAction = undefined;
+		crudIndex = undefined;
 		crudEcosystemUID = '';
 		crudEcosystemName = '';
 	};
+
+	let closeModals = {};
 </script>
 
 <HeaderLine title="{engineUID} engine" />
-
 <h2>Base info</h2>
-<table>
-	<tbody>
-		<tr>
-			<td>Connected</td>
-			<td>&nbsp; &nbsp;</td>
-			<td><Fa icon={faCircle} class={getStatusClass(engine['connected'])} /></td>
-		</tr>
-		<tr>
-			<td>SID</td>
-			<td>&nbsp; &nbsp;</td>
-			<td>{engine['sid']}</td>
-		</tr>
-		<tr>
-			<td>Registration date</td>
-			<td>&nbsp; &nbsp;</td>
-			<td>{timeStringToDate(engine['registration_date'])}</td>
-		</tr>
-		<tr>
-			<td>Last seen</td>
-			<td>&nbsp; &nbsp;</td>
-			<td>{timeStringToDate(engine['last_seen'])}</td>
-		</tr>
-	</tbody>
-</table>
+<div style="overflow-x: auto">
+	<table class="table-base table-alternate-colors table-narrow">
+		<tbody>
+			<tr>
+				<td>UID</td>
+				<td
+					>{engineUID} &nbsp; <Fa icon={faCircle} class={getStatusClass(engine['connected'])} /></td
+				>
+			</tr>
+			<tr>
+				<td>SID</td>
+				<td>{engine['sid']}</td>
+			</tr>
+			<tr>
+				<td>Registration date</td>
+				<td>{timeStringToDate(engine['registration_date'])}</td>
+			</tr>
+			<tr>
+				<td>Last seen</td>
+				<td>{timeStringToDate(engine['last_seen'])}</td>
+			</tr>
+		</tbody>
+		<tbody>
+			<tr>
+				<td colspan="2" style="text-align: center; vertical-align: middle">
+					<button
+						class="text-button"
+						on:click={() => {
+							setCrudData('base_info', undefined, undefined, undefined);
+						}}
+					>
+						Update {engineUID}' base info
+					</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<Modal
+	bind:closeModal={closeModals['base_info']}
+	showModal={crudAction === 'base_info'}
+	title="Update {engineUID}' base info"
+	on:close={resetCrudData}
+>
+	<Form
+		data={[{ label: 'Uid', key: 'uid', value: engineUID }]}
+		on:confirm={(event) => {
+			const payload = event.detail;
+			crudRequest(`gaia/engine/u/${engineUID}`, 'update', payload);
+		}}
+		on:cancel={closeModals['base_info']}
+	/>
+</Modal>
 
 {#if !isEmpty(engine['ecosystems'])}
 	<h2>Linked ecosystems</h2>
@@ -79,13 +115,14 @@
 			{ label: 'Status', key: 'status', isStatus: true },
 			{ label: 'Last Seen', key: 'last_seen', isTime: true }
 		]}
-		data={getEcosystemsArray(engineUID, $ecosystems)}
+		data={ecosystemsArray}
 		editable={true}
-		crudOptions={['delete']}
+		crudOptions={['create', 'delete']}
 		on:crud={(event) => {
 			const rowIndex = event['detail']['rowIndex'];
 			setCrudData(
 				event['detail']['action'],
+				rowIndex,
 				event['detail']['rowIndex'] !== undefined
 					? engine['ecosystems'][rowIndex]['uid']
 					: undefined,
@@ -95,18 +132,44 @@
 			);
 		}}
 	/>
-
 	<Modal
-		showModal={crudAction}
+		bind:closeModal={closeModals['create']}
+		showModal={crudAction === 'create'}
+		title="Create a new ecosystem"
+		on:close={resetCrudData}
+	>
+		<Form
+			data={[
+				{ label: 'Name', key: 'name' },
+				{ label: 'Day start', key: 'day_start', validate: isTime },
+				{ label: 'Night start', key: 'night_start', validate: isTime },
+				{ label: 'Status', key: 'status', validate: isBool }
+			]}
+			on:confirm={(event) => {
+				const payload = event.detail;
+				payload['engine_uid'] = engineUID;
+				crudRequest(`gaia/ecosystem/u`, 'create', payload);
+				closeModals['create']();
+			}}
+			on:cancel={closeModals['create']}
+		/>
+	</Modal>
+	<Modal
+		bind:closeModal={closeModals['delete']}
+		showModal={crudAction === 'delete'}
 		title="Delete {crudEcosystemName}"
 		on:close={resetCrudData}
 		confirmationButtons={true}
 		on:confirm={() => {
 			crudRequest(`gaia/ecosystem/u/${crudEcosystemUID}`, 'delete');
-			resetCrudData();
+			closeModals['delete']();
 		}}
 	>
-		<p>Are you sure you want to delete the ecosystem {crudEcosystemName} ?</p>
+		<p>
+			Are you sure you want to delete the ecosystem {ecosystemArray['uid']} - {ecosystemArray[
+				'name'
+			]} ?
+		</p>
 	</Modal>
 {:else}
 	<p>No linked ecosystem found.</p>

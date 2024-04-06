@@ -82,6 +82,18 @@ p {
 	padding: 0;
 }
 
+.text-button {
+	background-color: var(--derived-50);
+	border: none;
+	color: #f9f9fb;
+	padding: 0.7em 1.4em;
+	margin: 0 25px;
+	text-align: center;
+	border-radius: 7px;
+	font-size: 1rem;
+	cursor: pointer;
+}
+
 .text {
 	max-width: 800px;
 	margin: auto;
@@ -164,6 +176,12 @@ p {
 
 .table-alternate-colors tbody tr:nth-child(even) {
 	background-color: #f3f3f3;
+}
+
+@media only screen and (min-width: 992px) {
+	.table-narrow {
+		max-width: 35%;
+	}
 }
 
 .on {

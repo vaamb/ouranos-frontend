@@ -68,7 +68,7 @@
 							id={row['key']}
 							bind:value={values[row['key']]['value']}
 							disabled={row['disabled']}
-							title={row['hint'] ? row['hint'] : ''}
+							placeholder={row['hint'] ? row['hint'] : ''}
 						/>
 					{:else}
 						<select

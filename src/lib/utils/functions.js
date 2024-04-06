@@ -1,6 +1,7 @@
 import { get } from 'svelte/store';
 
 import humanizeDuration from 'humanize-duration';
+import moment from 'moment';
 
 import { serverLastSeen } from '$lib/store.js';
 
@@ -31,8 +32,16 @@ export const isDate = function (date) {
 	return Object.prototype.toString.call(date) === '[object Date]';
 };
 
+export const isTime = function (time) {
+	return moment(time, ['HH:mm:ss', 'H:mm:ss', 'HH:mm', 'H:mm'])['_isValid'];
+};
+
 export const isNumber = function (number) {
 	return !Number.isNaN(Number(number)) && !(number === '');
+};
+
+export const isBool = function (bool) {
+	return bool === "true" || bool === "false"
 };
 
 export const isObject = function (object) {

@@ -124,6 +124,7 @@
 				<tr>
 					<td colspan="2" style="text-align: center; vertical-align: middle">
 						<button
+							class="text-button"
 							on:click={() => {
 								setCrudData('base_info', undefined, undefined);
 							}}
@@ -186,6 +187,7 @@
 				<tr>
 					<td colspan="2" style="text-align: center; vertical-align: middle">
 						<button
+							class="text-button"
 							on:click={() => {
 								setCrudData('management', undefined, undefined);
 							}}
@@ -396,17 +398,3 @@
 		<p>Are you sure you want to delete '{hardware['name']}' hardware ?</p>
 	</Modal>
 {/if}
-
-<style>
-	button {
-		background-color: var(--derived-50);
-		border: none;
-		color: #f9f9fb;
-		padding: 0.7em 1.4em;
-		margin: 0 25px;
-		text-align: center;
-		border-radius: 7px;
-		font-size: 1rem;
-		cursor: pointer;
-	}
-</style>

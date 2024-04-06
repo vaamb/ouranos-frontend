@@ -106,6 +106,7 @@
 		on:confirm={(event) => {
 			const payload = event.detail;
 			crudRequest(`gaia/engine/u/${engineUID}`, 'update', payload);
+			closeModals['base_info']()
 		}}
 		on:cancel={closeModals['base_info']}
 	/>

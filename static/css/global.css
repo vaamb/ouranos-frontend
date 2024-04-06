@@ -166,6 +166,12 @@ p {
 	background-color: #f3f3f3;
 }
 
+@media only screen and (min-width: 992px) {
+	.table-narrow {
+		max-width: 35%;
+	}
+}
+
 .on {
 	color: var(--green);
 }

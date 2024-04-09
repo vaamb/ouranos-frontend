@@ -77,7 +77,7 @@
 								setCrudAction('confirm');
 							}}
 						>
-							Confirm profile
+							Confirm account
 						</button>
 					</td>
 				</tr>
@@ -90,7 +90,7 @@
 							setCrudAction('delete');
 						}}
 					>
-						Delete profile
+						Delete account
 					</button>
 				</td>
 			</tr>
@@ -100,7 +100,7 @@
 		bind:closeModal={closeModals['update']}
 		showModal={crudAction === 'update'}
 		on:close={resetCrudAction}
-		title="Update {$currentUser['username']}'s info"
+		title="Update {$currentUser['username']}'s user info"
 	>
 		<Form
 			data={[
@@ -122,7 +122,7 @@
 		bind:closeModal={closeModals['confirm']}
 		showModal={crudAction === 'confirm'}
 		on:close={resetCrudAction}
-		title="Confirm {$currentUser['username']}'s profile"
+		title="Confirm {$currentUser['username']}'s account"
 		confirmationButtons={true}
 		on:confirm={() => {
 			crudRequest(`user/u/${$currentUser['username']}/confirm`, 'create');
@@ -135,7 +135,7 @@
 		bind:closeModal={closeModals['delete']}
 		showModal={crudAction === 'delete'}
 		on:close={resetCrudAction}
-		title="Confirm {$currentUser['username']}'s profile"
+		title="Delete {$currentUser['username']}'s account"
 		confirmationButtons={true}
 		on:confirm={() => {
 			crudRequest(`user/u/${$currentUser['username']}/delete`, 'create');

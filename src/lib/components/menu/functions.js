@@ -114,14 +114,14 @@ export const generateMenuLayout = function (
 	}
 
 	if (currentUser.can(permissions.OPERATE)) {
-		{
+		if (enginesIds.length > 0) {
 			let children = [MenuItemChild('Overview', '/overview')];
 			for (const id of enginesIds) {
 				children.push(MenuItemChild(id.uid, '/' + id.uid));
 			}
 			menuLayout.items.push(MenuItem('Engines', faServer, '/settings/engine', children));
 		}
-		{
+		if (ecosystemsIds.length > 0) {
 			let children = [];
 			for (const id of ecosystemsIds) {
 				children.push(MenuItemChild(id.name, '/' + id.name));

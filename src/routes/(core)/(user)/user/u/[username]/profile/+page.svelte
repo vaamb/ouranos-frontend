@@ -76,6 +76,7 @@
 							on:click={() => {
 								setCrudAction('confirm');
 							}}
+							disabled
 						>
 							Confirm account
 						</button>
@@ -89,6 +90,7 @@
 						on:click={() => {
 							setCrudAction('delete');
 						}}
+						disabled
 					>
 						Delete account
 					</button>

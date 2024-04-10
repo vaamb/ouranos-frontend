@@ -481,7 +481,20 @@ export const fetchCalendarEvents = async function (clientSessionCookie, clientUs
 		});
 };
 
-export const crudRequest = function (relRoute, action, payload) {
+export const fetchUserDescription = async function (username) {
+	return axios
+		.get(`${LOCAL_API_URL}/user/u/${username}`, {
+			withCredentials: true
+		})
+		.then((response) => {
+			return response.data
+		})
+		.catch(() => {
+			return undefined;
+		});
+};
+
+export const crudRequest = function (relRoute, action, payload=undefined) {
 	let method;
 	if (action === 'create') {
 		method = 'post';
@@ -497,7 +510,7 @@ export const crudRequest = function (relRoute, action, payload) {
 		method: method,
 		withCredentials: true
 	};
-	if (action !== 'delete') {
+	if (action !== 'delete' && payload !== undefined) {
 		options['data'] = payload;
 	}
 

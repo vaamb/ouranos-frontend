@@ -85,13 +85,19 @@ p {
 .text-button {
 	background-color: var(--derived-50);
 	border: none;
-	color: #f9f9fb;
+	color: var(--main-95);
 	padding: 0.7em 1.4em;
 	margin: 0 25px;
 	text-align: center;
 	border-radius: 7px;
 	font-size: 1rem;
 	cursor: pointer;
+}
+
+.text-button:disabled {
+	background-color: var(--gray-50);
+	color: var(--main-95);
+	cursor: default;
 }
 
 .text {
@@ -101,6 +107,7 @@ p {
 	text-align: justify;
 	text-justify: inter-word;
 }
+
 .text p {
 	font-size: 1.06rem;
 	margin-bottom: 1rem;
@@ -160,10 +167,6 @@ p {
 	background-color: inherit;
 	font-size: 1.2rem;
 	cursor: pointer;
-}
-
-.table-base button:disabled {
-	color: rgba(115, 135, 156, 0.33);
 }
 
 .table-base button + button {

@@ -94,7 +94,6 @@ p {
 	cursor: pointer;
 }
 
-
 .text-button:disabled {
 	background-color: var(--gray-50);
 	color: var(--main-95);
@@ -108,6 +107,7 @@ p {
 	text-align: justify;
 	text-justify: inter-word;
 }
+
 .text p {
 	font-size: 1.06rem;
 	margin-bottom: 1rem;
@@ -167,10 +167,6 @@ p {
 	background-color: inherit;
 	font-size: 1.2rem;
 	cursor: pointer;
-}
-
-.table-base .crud-button:disabled {
-	color: rgba(115, 135, 156, 0.33);
 }
 
 .table-base button + button {

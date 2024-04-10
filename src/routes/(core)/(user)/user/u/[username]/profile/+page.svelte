@@ -76,7 +76,6 @@
 							on:click={() => {
 								setCrudAction('confirm');
 							}}
-							disabled
 						>
 							Confirm account
 						</button>
@@ -90,7 +89,6 @@
 						on:click={() => {
 							setCrudAction('delete');
 						}}
-						disabled
 					>
 						Delete account
 					</button>
@@ -131,7 +129,7 @@
 			closeModals['update']();
 		}}
 	>
-		<p>Send an e-mail to confirm {$currentUser['username']}'s account ?</p>
+		<p>Confirm {$currentUser['username']}'s account ?</p>
 	</Modal>
 		<Modal
 		bind:closeModal={closeModals['delete']}
@@ -144,6 +142,6 @@
 			closeModals['delete']();
 		}}
 	>
-		<p>Send an e-mail to request the deletion of {$currentUser['username']}'s account ?</p>
+		<p>Are you sure you want to delete {$currentUser['username']}'s account ?</p>
 	</Modal>
 {/await}

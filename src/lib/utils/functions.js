@@ -1,9 +1,10 @@
 import { get } from 'svelte/store';
 
 import humanizeDuration from 'humanize-duration';
-import moment from 'moment';
 
 import { serverLastSeen } from '$lib/store.js';
+
+const timeRegex = new RegExp("^([0-9]{2}:){1,2}[0-9]{2}$")
 
 export const dynamicSort = function (property) {
 	// from https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
@@ -33,7 +34,7 @@ export const isDate = function (date) {
 };
 
 export const isTime = function (time) {
-	return moment(time, ['HH:mm:ss', 'H:mm:ss', 'HH:mm', 'H:mm'])['_isValid'];
+	return timeRegex.test(time);
 };
 
 export const isNumber = function (number) {

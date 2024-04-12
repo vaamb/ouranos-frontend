@@ -507,7 +507,7 @@ export const crudRequest = function (relRoute, action, payload) {
 			msgs.push(Message(response.data.msg, null, 3000));
 			flashMessage.set(msgs);
 		})
-		.catch((error) => {
+		.catch(() => {
 			const msgs = get(flashMessage);
 			if (error.response.data.msg) {
 				msgs.push(Message(error.response.data.msg));
@@ -534,11 +534,7 @@ export const updateActuatorMode = function (ecosystemUID, actuatorType, mode) {
 		})
 		.catch((error) => {
 			const msgs = get(flashMessage);
-			if (error.response.data.msg) {
-				msgs.push(Message(error.response.data.msg));
-			} else {
-				msgs.push(Message(error.response.data));
-			}
+			msgs.push(Message("There was one or more error(s) while processing your request. Please contact the administrator."));
 			flashMessage.set(msgs);
 		});
 };

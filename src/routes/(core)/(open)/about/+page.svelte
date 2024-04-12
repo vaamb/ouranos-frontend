@@ -14,7 +14,7 @@
         sensor, and logging the information into a text file.
 	</p>
 	<p>
-		Then, as I delved deeper into Python, I wanted to add some functionalities. First, I focused on incorporating
+		Then, as I learnt more about Python, I wanted to add some functionalities. First, I focused on incorporating
         the possibility to extract configurations from a YAML file, streamlining the process instead of embedding them
         directly into the main Python script.
         Then, as I became limited by possibilities offered by storing my sensor data in a text file, I sought to
@@ -86,7 +86,7 @@
     </p>
 	<p>
         Here is the current snapshot of my side project, until I decide to make further changes.
-        I've thoroughly enjoyed delving into this project, as it has provided me with valuable insights into Python,
+        It has been a real pleasure to play with this project, as it has provided me with valuable insights into Python,
         project architecture, databases, JavaScript, NGINX, concurrency, RabbitMQ, and more ...
 	</p>
 </div>

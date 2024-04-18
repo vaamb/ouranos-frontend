@@ -1,16 +1,10 @@
 <script>
-	import { goto } from '$app/navigation';
-
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
 	import { crudRequest } from '$lib/actions.js';
-	import { currentUser, warnings } from '$lib/store.js';
-
-	if (!$currentUser.isAuthenticated) {
-		goto('/');
-	}
+	import { warnings } from '$lib/store.js';
 
 	// Crud-related variables and functions
 	let closeModal;
@@ -51,7 +45,8 @@
 		on:close={resetCrudData}
 		confirmationButtons={true}
 		on:confirm={() => {
-			crudRequest(`gaia/warning/u/${crudDataIndex}/mark_as_solved`, 'create');
+			const warningID = $warnings[crudDataIndex]['id'];
+			crudRequest(`gaia/warning/u/${warningID}/mark_as_solved`, 'create');
 			closeModal();
 		}}
 	>

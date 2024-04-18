@@ -1,4 +1,5 @@
 import {
+	faCalendarDay,
 	faCloud,
 	faCog,
 	faDatabase,
@@ -34,6 +35,10 @@ export const generateListOfMenuItems = function (
 	systemsIds
 ) {
 	let menuItems = [MenuItem('Home', '/', faHome)];
+
+	if (serviceEnabled(services, 'calendar')) {
+		menuItems.push(MenuItem('Calendar', '/calendar', faCalendarDay));
+	}
 
 	if (serviceEnabled(services, 'weather')) {
 		menuItems.push(MenuItem('Weather Forecast', '/weather', faCloud));

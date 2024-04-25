@@ -23,7 +23,7 @@
 			<div class="menu-item">
 				<div class="left-ico"><Fa icon={item.icon} /></div>
 				<div class="item-name">{item.name}</div>
-				<div class="right-ico"><Fa icon={faChevronRight} /></div>
+				<div class="right-ico" class:rotated={open === true} ><Fa icon={faChevronRight} /></div>
 			</div>
 		</button>
 
@@ -75,6 +75,11 @@
 		float: right;
 		line-height: 25px;
 		margin: auto 0 auto;
+	}
+
+	.rotated {
+		transition: transform 0.5s;
+  		transform: rotate(90deg);
 	}
 
 	.item-submenu {

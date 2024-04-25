@@ -20,12 +20,12 @@
 		showMenu = !showMenu;
 	};
 
-	let openSubMenuIndex = null;
-	let toggleSubMenu = function (index) {
-		if (openSubMenuIndex === index) {
-			openSubMenuIndex = null;
+	let toggledMenuItemIndex = null;
+	let toggleMenuItem = function (index) {
+		if (toggledMenuItemIndex === index) {
+			toggledMenuItemIndex = null;
 		} else {
-			openSubMenuIndex = index;
+			toggledMenuItemIndex = index;
 		}
 	};
 
@@ -33,7 +33,7 @@
 		// Close menu when changing page
 		if (outerWidth < 992) {
 			showMenu = false;
-			openSubMenuIndex = null;
+			toggledMenuItemIndex = null;
 		}
 	}
 </script>
@@ -71,7 +71,7 @@
 	<div class="toggle-accordion" class:show={showMenu === true}>
 		<ul class="accordion">
 			{#each layout.items as item, index}
-				<MenuItem {item} open={openSubMenuIndex === index} on:click={() => toggleSubMenu(index)} />
+				<MenuItem {item} open={toggledMenuItemIndex === index} on:click={() => toggleMenuItem(index)} />
 			{/each}
 		</ul>
 		<div class="bottom-box">

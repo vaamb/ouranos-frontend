@@ -14,9 +14,6 @@ import {
 import { permissions } from '$lib/utils/consts.js';
 
 export function MenuItem(name, path, icon=undefined, children = []) {
-	if (!path.startsWith('/')) {
-		path = '/' + path;
-	}
 	return {
 		name: name,
 		icon: icon,
@@ -90,6 +87,7 @@ export const generateMenuLayout = function (
 		}
 	];
 
+	/*
 	for (const menuItem of ecosystemMenuItems) {
 		const management = menuItem.management;
 		if (Object.prototype.hasOwnProperty.call(submenus, management)) {
@@ -102,28 +100,57 @@ export const generateMenuLayout = function (
 			}
 		}
 	}
+	 */
 
 	if (currentUser.can(permissions.OPERATE)) {
 		if (enginesIds.length > 0) {
-			let children = [MenuItem('Overview', '/overview')];
+			let children = [MenuItem('Overview', '/settings/engine/overview')];
 			for (const id of enginesIds) {
-				children.push(MenuItem(id.uid, '/' + id.uid));
+				children.push(MenuItem(id.uid, '/settings/engine/' + id.uid));
 			}
 			menuLayout.items.push(MenuItem('Engines', '/settings/engine', faServer, children));
 		}
+		/*
 		if (ecosystemsIds.length > 0) {
 			let children = [];
 			for (const id of ecosystemsIds) {
-				children.push(MenuItem(id.name, '/' + id.name));
+				children.push(MenuItem(id.name, '/settings/ecosystem/' + id.name));
 			}
 			menuLayout.items.push(MenuItem('Ecosystems', '/settings/ecosystem', faCog, children));
 		}
+		*/
+	}
+
+	let ecosystemMenus = []
+	for (const id of ecosystemsIds) {
+		const uid = id['uid']
+		const ecosystemManagement = ecosystemsManagement[uid];
+		let children = []
+		if (currentUser.can(permissions.OPERATE)) {
+			children.push(MenuItem("Settings", '/settings/ecosystem/' + id.name, faCog));
+		}
+		for (const menuItem of ecosystemMenuItems) {
+			const management = menuItem['management']
+			if (ecosystemManagement[management]) {
+				children.push(
+					MenuItem(
+						menuItem['name'],
+						menuItem['path'] + "/" + id['name'],
+						menuItem['icon'],
+					)
+				)
+			}
+		}
+		ecosystemMenus.push(MenuItem(id['name'], "#", undefined, children))
+	}
+	if (ecosystemMenus.length > 0) {
+		menuLayout.items.push(MenuItem("Ecosystems", "#", faSeedling, ecosystemMenus))
 	}
 
 	if (currentUser.can(permissions.ADMIN)) {
 		// menuLayout.items.push(MenuItem('Services', faBellConcierge, '/services'));
 		let children = [
-            MenuItem('Server load', '/server'),
+            MenuItem('Server load', '/admin/system/server'),
             // MenuItem('Logs', '/logs')
         ];
 		menuLayout.items.push(MenuItem('System', '/admin/system', faDatabase, children));

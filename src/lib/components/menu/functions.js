@@ -13,7 +13,7 @@ import {
 
 import { permissions } from '$lib/utils/consts.js';
 
-export function MenuItem(name, icon, path, children = []) {
+export function MenuItem(name, path, icon=undefined, children = []) {
 	if (!path.startsWith('/')) {
 		path = '/' + path;
 	}
@@ -44,11 +44,11 @@ export const generateMenuLayout = function (
 ) {
 	let menuLayout = {
 		title: 'GAIA',
-		items: [MenuItem('Home', faHome, '/')]
+		items: [MenuItem('Home', '/', faHome)]
 	};
 
 	if (weatherEnabled === true) {
-		menuLayout.items.push(MenuItem('Weather Forecast', faCloud, 'weather'));
+		menuLayout.items.push(MenuItem('Weather Forecast', 'weather', faCloud));
 	}
 
 	let submenus = {
@@ -108,7 +108,7 @@ export const generateMenuLayout = function (
 				for (const ecosystemId of submenus[management]) {
 					children.push(MenuItemChild(ecosystemId.name, '/' + ecosystemId.name));
 				}
-				menuLayout.items.push(MenuItem(menuItem.name, menuItem.icon, menuItem.path, children));
+				menuLayout.items.push(MenuItem(menuItem.name, menuItem.path, menuItem.icon, children));
 			}
 		}
 	}
@@ -119,14 +119,14 @@ export const generateMenuLayout = function (
 			for (const id of enginesIds) {
 				children.push(MenuItemChild(id.uid, '/' + id.uid));
 			}
-			menuLayout.items.push(MenuItem('Engines', faServer, '/settings/engine', children));
+			menuLayout.items.push(MenuItem('Engines', '/settings/engine', faServer, children));
 		}
 		if (ecosystemsIds.length > 0) {
 			let children = [];
 			for (const id of ecosystemsIds) {
 				children.push(MenuItemChild(id.name, '/' + id.name));
 			}
-			menuLayout.items.push(MenuItem('Ecosystems', faCog, '/settings/ecosystem', children));
+			menuLayout.items.push(MenuItem('Ecosystems', '/settings/ecosystem', faCog, children));
 		}
 	}
 
@@ -136,7 +136,7 @@ export const generateMenuLayout = function (
             MenuItemChild('Server load', '/server'),
             // MenuItemChild('Logs', '/logs')
         ];
-		menuLayout.items.push(MenuItem('System', faDatabase, '/admin/system', children));
+		menuLayout.items.push(MenuItem('System', '/admin/system', faDatabase, children));
 	}
 	return menuLayout;
 };

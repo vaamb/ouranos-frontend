@@ -25,16 +25,6 @@ export function MenuItem(name, path, icon=undefined, children = []) {
 	};
 }
 
-export function MenuItemChild(name, path) {
-	if (!path.startsWith('/')) {
-		path = '/' + path;
-	}
-	return {
-		name: name,
-		path: path
-	};
-}
-
 export const generateMenuLayout = function (
 	currentUser,
 	ecosystemsIds,
@@ -106,7 +96,7 @@ export const generateMenuLayout = function (
 			if (submenus[management].length > 0) {
 				let children = [];
 				for (const ecosystemId of submenus[management]) {
-					children.push(MenuItemChild(ecosystemId.name, '/' + ecosystemId.name));
+					children.push(MenuItem(ecosystemId.name, '/' + ecosystemId.name));
 				}
 				menuLayout.items.push(MenuItem(menuItem.name, menuItem.path, menuItem.icon, children));
 			}
@@ -115,16 +105,16 @@ export const generateMenuLayout = function (
 
 	if (currentUser.can(permissions.OPERATE)) {
 		if (enginesIds.length > 0) {
-			let children = [MenuItemChild('Overview', '/overview')];
+			let children = [MenuItem('Overview', '/overview')];
 			for (const id of enginesIds) {
-				children.push(MenuItemChild(id.uid, '/' + id.uid));
+				children.push(MenuItem(id.uid, '/' + id.uid));
 			}
 			menuLayout.items.push(MenuItem('Engines', '/settings/engine', faServer, children));
 		}
 		if (ecosystemsIds.length > 0) {
 			let children = [];
 			for (const id of ecosystemsIds) {
-				children.push(MenuItemChild(id.name, '/' + id.name));
+				children.push(MenuItem(id.name, '/' + id.name));
 			}
 			menuLayout.items.push(MenuItem('Ecosystems', '/settings/ecosystem', faCog, children));
 		}
@@ -133,8 +123,8 @@ export const generateMenuLayout = function (
 	if (currentUser.can(permissions.ADMIN)) {
 		// menuLayout.items.push(MenuItem('Services', faBellConcierge, '/services'));
 		let children = [
-            MenuItemChild('Server load', '/server'),
-            // MenuItemChild('Logs', '/logs')
+            MenuItem('Server load', '/server'),
+            // MenuItem('Logs', '/logs')
         ];
 		menuLayout.items.push(MenuItem('System', '/admin/system', faDatabase, children));
 	}

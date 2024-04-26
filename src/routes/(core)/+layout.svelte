@@ -16,7 +16,7 @@
 		services,
 		warnings
 	} from '$lib/store.js';
-	import {APP_MODE} from "$lib/utils/consts.js";
+	import { APP_MODE } from '$lib/utils/consts.js';
 
 	export let data;
 
@@ -56,6 +56,9 @@
 		return flashMessage.length > 0;
 	};
 
+	let showModal;
+	$: showModal = anyMessage($flashMessage);
+
 	const getMessage = function (flashMessage) {
 		if (showModal) {
 			return {
@@ -78,7 +81,6 @@
 		$enginesIds,
 		$services
 	);
-	$: showModal = anyMessage($flashMessage);
 
 	const sliceMessages = function () {
 		let msgs = $flashMessage;

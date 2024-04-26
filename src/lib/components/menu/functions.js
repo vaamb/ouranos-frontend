@@ -9,20 +9,20 @@ import {
 	faServer,
 	faThermometerHalf,
 	faToggleOff,
-	faVideo,
+	faVideo
 } from '@fortawesome/free-solid-svg-icons';
 
 import { permissions } from '$lib/utils/consts.js';
 import { serviceEnabled } from '$lib/utils/functions.js';
 
-const MenuItem = function (name, path, icon=undefined, children = []) {
+const MenuItem = function (name, path, icon = undefined, children = []) {
 	return {
 		name: name,
 		icon: icon,
 		path: path,
 		children: children
 	};
-}
+};
 
 export const generateListOfMenuItems = function (
 	currentUser,
@@ -31,7 +31,7 @@ export const generateListOfMenuItems = function (
 	enginesIds,
 	services
 ) {
-	let menuItems = [MenuItem('Home', '/', faHome)]
+	let menuItems = [MenuItem('Home', '/', faHome)];
 
 	if (serviceEnabled(services, 'weather')) {
 		menuItems.push(MenuItem('Weather Forecast', '/weather', faCloud));
@@ -122,37 +122,33 @@ export const generateListOfMenuItems = function (
 		*/
 	}
 
-	let ecosystemMenus = []
+	let ecosystemMenus = [];
 	for (const id of ecosystemsIds) {
-		const uid = id['uid']
+		const uid = id['uid'];
 		const ecosystemManagement = ecosystemsManagement[uid];
-		let children = []
+		let children = [];
 		if (currentUser.can(permissions.OPERATE)) {
-			children.push(MenuItem("Settings", '/settings/ecosystem/' + id.name, faCog));
+			children.push(MenuItem('Settings', '/settings/ecosystem/' + id.name, faCog));
 		}
 		for (const menuItem of ecosystemMenuItems) {
-			const management = menuItem['management']
+			const management = menuItem['management'];
 			if (ecosystemManagement[management]) {
 				children.push(
-					MenuItem(
-						menuItem['name'],
-						menuItem['path'] + "/" + id['name'],
-						menuItem['icon'],
-					)
-				)
+					MenuItem(menuItem['name'], menuItem['path'] + '/' + id['name'], menuItem['icon'])
+				);
 			}
 		}
-		ecosystemMenus.push(MenuItem(id['name'], "#", undefined, children))
+		ecosystemMenus.push(MenuItem(id['name'], '#', undefined, children));
 	}
 	if (ecosystemMenus.length > 0) {
-		menuItems.push(MenuItem("Ecosystems", "#", faGlobe, ecosystemMenus))
+		menuItems.push(MenuItem('Ecosystems', '#', faGlobe, ecosystemMenus));
 	}
 
 	if (currentUser.can(permissions.ADMIN)) {
 		let children = [
-            MenuItem('Server load', '/admin/system/server'),
-            // MenuItem('Logs', '/logs')
-        ];
+			MenuItem('Server load', '/admin/system/server')
+			// MenuItem('Logs', '/logs')
+		];
 		menuItems.push(MenuItem('System', '#', faDatabase, children));
 	}
 	return menuItems;

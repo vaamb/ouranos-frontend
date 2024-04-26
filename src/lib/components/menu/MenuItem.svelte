@@ -1,6 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	import { slide } from 'svelte/transition'
+	import { slide } from 'svelte/transition';
 	import { page } from '$app/stores';
 
 	import Fa from 'svelte-fa';
@@ -30,17 +30,12 @@
 		dispatch('click');
 	};
 
-	const animate = (node, args) =>
-		args.anyItemClicked ? slide(node, args): undefined
+	const animate = (node, args) => (args.anyItemClicked ? slide(node, args) : undefined);
 </script>
 
 {#if item.children.length === 0}
 	<li>
-		<a
-				href={item.path}
-				class="menu-item"
-				class:active={$page.url.pathname === item.path}
-		>
+		<a href={item.path} class="menu-item" class:active={$page.url.pathname === item.path}>
 			<div class="left-ico">
 				{#if item.icon !== undefined}
 					<Fa icon={item.icon} />
@@ -61,14 +56,10 @@
 			<div class="right-ico" class:rotated={open === true}><Fa icon={faChevronRight} /></div>
 		</button>
 		{#if open}
-			<ul transition:animate={{anyItemClicked: anyItemClicked}}>
+			<ul transition:animate={{ anyItemClicked: anyItemClicked }}>
 				{#each item.children as child, index}
 					{#if !child.children || child.children.length === 0}
-						<a
-								href={child.path}
-								class="menu-item"
-								class:active={$page.url.pathname === child.path}
-						>
+						<a href={child.path} class="menu-item" class:active={$page.url.pathname === child.path}>
 							<div class="left-ico">
 								{#if child.icon !== undefined}
 									<Fa icon={child.icon} />
@@ -79,8 +70,10 @@
 					{:else}
 						<li>
 							<button
-									class="reset-button menu-item menu-sub-item"
-									on:click={() => {toggleMenuSubItem(index)}}
+								class="reset-button menu-item menu-sub-item"
+								on:click={() => {
+									toggleMenuSubItem(index);
+								}}
 							>
 								<div class="left-ico"><Fa icon={child.icon} /></div>
 								<div class="item-name">{child.name}</div>
@@ -93,9 +86,9 @@
 							<ul transition:slide>
 								{#each child.children as grandchild}
 									<a
-											href="{grandchild.path}"
-											class="menu-item"
-											class:active={$page.url.pathname === grandchild.path}
+										href={grandchild.path}
+										class="menu-item"
+										class:active={$page.url.pathname === grandchild.path}
 									>
 										<div class="left-ico">
 											{#if grandchild.icon !== undefined}

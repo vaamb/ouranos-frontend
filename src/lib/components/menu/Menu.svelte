@@ -10,7 +10,7 @@
 	import { permissions } from '$lib/utils/consts.js';
 	import { currentUser, ecosystemsIds } from '$lib/store.js';
 
-	export let items;  // [MenuItem(), MenuItem()]
+	export let items; // [MenuItem(), MenuItem()]
 	export let width = 210;
 
 	$: outerWidth = 0;
@@ -42,12 +42,12 @@
 
 <nav style="--menu-width:{width}">
 	<div
-			class="top-box"
-			tabindex="0"
-			role="button"
-			aria-pressed="false"
-			on:click={toggleMenu}
-			on:keypress={toggleMenu}
+		class="top-box"
+		tabindex="0"
+		role="button"
+		aria-pressed="false"
+		on:click={toggleMenu}
+		on:keypress={toggleMenu}
 	>
 		<div class="menu-title">
 			<h1>GAIA</h1>
@@ -74,7 +74,11 @@
 				{#if $ecosystemsIds.length <= 3 && item['name'] === 'Ecosystems'}
 					<template>{toggleMenuItem(index)}</template>
 				{/if}
-				<MenuItem {item} open={toggledMenuItemIndex === index} on:click={() => toggleMenuItem(index)} />
+				<MenuItem
+					{item}
+					open={toggledMenuItemIndex === index}
+					on:click={() => toggleMenuItem(index)}
+				/>
 			{/each}
 		</ul>
 		<div class="bottom-box">

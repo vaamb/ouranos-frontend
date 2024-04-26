@@ -38,6 +38,7 @@ export const generateMenuLayout = function (
 		menuLayout.items.push(MenuItem('Weather Forecast', 'weather', faCloud));
 	}
 
+	/*
 	let submenus = {
 		environment_data: [],
 		plants_data: [],
@@ -53,6 +54,7 @@ export const generateMenuLayout = function (
 			}
 		}
 	}
+	*/
 
 	let ecosystemMenuItems = [
 		{
@@ -148,7 +150,6 @@ export const generateMenuLayout = function (
 	}
 
 	if (currentUser.can(permissions.ADMIN)) {
-		// menuLayout.items.push(MenuItem('Services', faBellConcierge, '/services'));
 		let children = [
             MenuItem('Server load', '/admin/system/server'),
             // MenuItem('Logs', '/logs')

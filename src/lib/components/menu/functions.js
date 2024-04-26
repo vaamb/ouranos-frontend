@@ -12,8 +12,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { permissions } from '$lib/utils/consts.js';
+import { serviceEnabled } from '$lib/utils/functions.js';
 
-export function MenuItem(name, path, icon=undefined, children = []) {
+const MenuItem = function (name, path, icon=undefined, children = []) {
 	return {
 		name: name,
 		icon: icon,
@@ -22,20 +23,17 @@ export function MenuItem(name, path, icon=undefined, children = []) {
 	};
 }
 
-export const generateMenuLayout = function (
+export const generateListOfMenuItems = function (
 	currentUser,
 	ecosystemsIds,
 	ecosystemsManagement,
 	enginesIds,
-	weatherEnabled
+	services
 ) {
-	let menuLayout = {
-		title: 'GAIA',
-		items: [MenuItem('Home', '/', faHome)]
-	};
+	let menuItems = [MenuItem('Home', '/', faHome)]
 
-	if (weatherEnabled === true) {
-		menuLayout.items.push(MenuItem('Weather Forecast', 'weather', faCloud));
+	if (serviceEnabled(services, 'weather')) {
+		menuItems.push(MenuItem('Weather Forecast', 'weather', faCloud));
 	}
 
 	/*
@@ -98,7 +96,7 @@ export const generateMenuLayout = function (
 				for (const ecosystemId of submenus[management]) {
 					children.push(MenuItem(ecosystemId.name, '/' + ecosystemId.name));
 				}
-				menuLayout.items.push(MenuItem(menuItem.name, menuItem.path, menuItem.icon, children));
+				menuItems.push(MenuItem(menuItem.name, menuItem.path, menuItem.icon, children));
 			}
 		}
 	}
@@ -110,7 +108,7 @@ export const generateMenuLayout = function (
 			for (const id of enginesIds) {
 				children.push(MenuItem(id.uid, '/settings/engine/' + id.uid));
 			}
-			menuLayout.items.push(MenuItem('Engines', '/settings/engine', faServer, children));
+			menuItems.push(MenuItem('Engines', '/settings/engine', faServer, children));
 		}
 		/*
 		if (ecosystemsIds.length > 0) {
@@ -118,7 +116,7 @@ export const generateMenuLayout = function (
 			for (const id of ecosystemsIds) {
 				children.push(MenuItem(id.name, '/settings/ecosystem/' + id.name));
 			}
-			menuLayout.items.push(MenuItem('Ecosystems', '/settings/ecosystem', faCog, children));
+			menuItems.push(MenuItem('Ecosystems', '/settings/ecosystem', faCog, children));
 		}
 		*/
 	}
@@ -146,7 +144,7 @@ export const generateMenuLayout = function (
 		ecosystemMenus.push(MenuItem(id['name'], "#", undefined, children))
 	}
 	if (ecosystemMenus.length > 0) {
-		menuLayout.items.push(MenuItem("Ecosystems", "#", faSeedling, ecosystemMenus))
+		menuItems.push(MenuItem("Ecosystems", "#", faSeedling, ecosystemMenus))
 	}
 
 	if (currentUser.can(permissions.ADMIN)) {
@@ -154,9 +152,9 @@ export const generateMenuLayout = function (
             MenuItem('Server load', '/admin/system/server'),
             // MenuItem('Logs', '/logs')
         ];
-		menuLayout.items.push(MenuItem('System', '/admin/system', faDatabase, children));
+		menuItems.push(MenuItem('System', '/admin/system', faDatabase, children));
 	}
-	return menuLayout;
+	return menuItems;
 };
 
 export const restartServer = function () {

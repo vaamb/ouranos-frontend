@@ -10,7 +10,7 @@
 	import { permissions } from '$lib/utils/consts.js';
 	import { currentUser, ecosystemsIds } from '$lib/store.js';
 
-	export let layout;
+	export let items;  // [MenuItem(), MenuItem()]
 	export let width = 210;
 
 	$: outerWidth = 0;
@@ -50,7 +50,7 @@
 			on:keypress={toggleMenu}
 	>
 		<div class="menu-title">
-			<h1>{layout.title}</h1>
+			<h1>GAIA</h1>
 		</div>
 		<div class="user-box">
 			<img src="/images/avatar/{$currentUser.avatar}_64.jpg" alt="User avatar" class="avatar" />
@@ -70,7 +70,7 @@
 	</div>
 	<div class="toggle-accordion" class:show={showMenu === true}>
 		<ul class="accordion">
-			{#each layout.items as item, index}
+			{#each items as item, index}
 				{#if $ecosystemsIds.length <= 3 && item['name'] === 'Ecosystems'}
 					<template>{toggleMenuItem(index)}</template>
 				{/if}

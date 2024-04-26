@@ -1,5 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
+	import { slide } from 'svelte/transition'
 	import { page } from '$app/stores';
 
 	import Fa from 'svelte-fa';
@@ -28,68 +29,81 @@
 
 {#if item.children.length === 0}
 	<li>
-		<a href={item.path} class:active={$page.url.pathname === item.path}>
-			<div class="menu-item">
-				<div class="left-ico">
-					{#if item.icon !== undefined}
-						<Fa icon={item.icon} />
-					{/if}
-				</div>
-				<div class="item-name">{item.name}</div>
+		<a
+				href={item.path}
+				class="menu-item"
+				class:active={$page.url.pathname === item.path}
+		>
+			<div class="left-ico">
+				{#if item.icon !== undefined}
+					<Fa icon={item.icon} />
+				{/if}
 			</div>
+			<div class="item-name">{item.name}</div>
 		</a>
 	</li>
 {:else}
 	<li>
-		<button class="reset-button" style="width: 100%" on:click={toggleMenuItem}>
-			<div class="menu-item">
-				<div class="left-ico">
-					{#if item.icon !== undefined}
-						<Fa icon={item.icon} />
-					{/if}
-				</div>
-				<div class="item-name">{item.name}</div>
-				<div class="right-ico" class:rotated={open === true}><Fa icon={faChevronRight} /></div>
+		<button class="reset-button menu-item" style="width: 100%" on:click={toggleMenuItem}>
+			<div class="left-ico">
+				{#if item.icon !== undefined}
+					<Fa icon={item.icon} />
+				{/if}
 			</div>
+			<div class="item-name">{item.name}</div>
+			<div class="right-ico" class:rotated={open === true}><Fa icon={faChevronRight} /></div>
 		</button>
-		<ul class="item-submenu" class:open={open === true}>
-			{#each item.children as child, index}
-				{#if !child.children || child.children.length === 0}
-					<a href={child.path} class:active={$page.url.pathname === child.path}>
-						<div class="left-ico">
-							{#if child.icon !== undefined}
-								<Fa icon={child.icon} />
-							{/if}
-						</div>
-						<div class="item-name">{child.name}</div>
-					</a>
-				{:else}
-					<li>
-						<button class="reset-button" style="width: 100% " on:click={() => {toggleMenuSubItem(index)}}>
-							<div class="menu-sub-item">
+		{#if open}
+			<ul transition:slide>
+				{#each item.children as child, index}
+					{#if !child.children || child.children.length === 0}
+						<a
+								href={child.path}
+								class="menu-item"
+								class:active={$page.url.pathname === child.path}
+						>
+							<div class="left-ico">
+								{#if child.icon !== undefined}
+									<Fa icon={child.icon} />
+								{/if}
+							</div>
+							<div class="item-name">{child.name}</div>
+						</a>
+					{:else}
+						<li>
+							<button
+									class="reset-button menu-item menu-sub-item"
+									on:click={() => {toggleMenuSubItem(index)}}
+							>
 								<div class="left-ico"><Fa icon={child.icon} /></div>
 								<div class="item-name">{child.name}</div>
 								<div class="right-ico" class:rotated={toggledMenuSubItemIndex === index}>
 									<Fa icon={faChevronRight} />
 								</div>
-							</div>
-						</button>
-					</li>
-					<ul class="item-submenu" class:open={toggledMenuSubItemIndex === index}>
-						{#each child.children as grandchild}
-							<a href="{grandchild.path}" class:active={$page.url.pathname === grandchild.path}>
-								<div class="left-ico">
-									{#if grandchild.icon !== undefined}
-										<Fa icon={grandchild.icon} />
-									{/if}
-								</div>
-								<div class="item-name">{grandchild.name}</div>
-							</a>
-						{/each}
-					</ul>
-				{/if}
-			{/each}
-		</ul>
+							</button>
+						</li>
+						{#if toggledMenuSubItemIndex === index}
+							<ul transition:slide>
+								{#each child.children as grandchild}
+									<a
+											href="{grandchild.path}"
+											class="menu-item"
+											class:active={$page.url.pathname === grandchild.path}
+									>
+										<div class="left-ico">
+											{#if grandchild.icon !== undefined}
+												<Fa icon={grandchild.icon} />
+											{/if}
+										</div>
+										<div class="item-name">{grandchild.name}</div>
+									</a>
+								{/each}
+							</ul>
+						{/if}
+					{/if}
+				{/each}
+			</ul>
+		{/if}
 	</li>
 {/if}
 
@@ -103,30 +117,37 @@
 		color: inherit;
 	}
 
+	a.active {
+		font-weight: 600;
+		color: var(--main-60);
+	}
+
+	ul a {
+		background: var(--gray-65);
+		color: var(--gray-90);
+	}
+
+	ul a.active {
+		color: var(--derived-40);
+	}
+
 	.menu-item {
 		cursor: pointer;
 		display: flex;
-		padding: 12px 15px 12px 15px;
+		width: 100%;
+		padding: 12px 15px;
 		border-bottom: thin solid var(--main-95);
-		font-size: 0.86rem;
-		line-height: 25px;
+		font-size: 0.84rem;
+		line-height: 24px;
 		z-index: 50;
 	}
 
 	.menu-sub-item {
-		cursor: pointer;
-		display: flex;
-		padding: 11px 12px 11px 12px;
 		background-color: var(--green);
 		color: var(--main-95);
-		border-bottom: thin solid var(--main-95);
-		font-size: 0.86rem;
-		line-height: 25px;
-		z-index: 50;
 	}
 
 	.item-name {
-		padding-right: 5px;
 		margin-right: auto;
 	}
 
@@ -145,30 +166,5 @@
 	.rotated {
 		transition: transform 0.5s;
 		transform: rotate(90deg);
-	}
-
-	.item-submenu {
-		display: none;
-	}
-
-	.item-submenu a {
-		background: var(--gray-65);
-		color: var(--gray-90);
-		cursor: pointer;
-		display: flex;
-		padding: 11px 12px 11px 12px;
-		transition: all 0.4s ease-out;
-		font-size: 0.95rem;
-		border-bottom: thin solid var(--gray-80);
-		line-height: 23px;
-	}
-
-	a.active {
-		font-weight: 600;
-		color: var(--main-60);
-	}
-
-	.open {
-		display: block;
 	}
 </style>

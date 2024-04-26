@@ -8,7 +8,7 @@
 	import { restartServer } from '$lib/components/menu/functions.js';
 
 	import { permissions } from '$lib/utils/consts.js';
-	import { currentUser } from '$lib/store.js';
+	import { currentUser, ecosystemsIds } from '$lib/store.js';
 
 	export let layout;
 	export let width = 210;
@@ -71,6 +71,9 @@
 	<div class="toggle-accordion" class:show={showMenu === true}>
 		<ul class="accordion">
 			{#each layout.items as item, index}
+				{#if $ecosystemsIds.length <= 3 && item['name'] === 'Ecosystems'}
+					<template>{toggleMenuItem(index)}</template>
+				{/if}
 				<MenuItem {item} open={toggledMenuItemIndex === index} on:click={() => toggleMenuItem(index)} />
 			{/each}
 		</ul>

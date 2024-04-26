@@ -46,7 +46,7 @@
 	</li>
 {:else}
 	<li>
-		<button class="reset-button menu-item" style="width: 100%" on:click={toggleMenuItem}>
+		<button class="reset-button menu-item" on:click={toggleMenuItem}>
 			<div class="left-ico">
 				{#if item.icon !== undefined}
 					<Fa icon={item.icon} />
@@ -125,6 +125,7 @@
 	ul a {
 		background: var(--gray-65);
 		color: var(--gray-90);
+		padding: 9px 15px;
 	}
 
 	ul a.active {
@@ -145,6 +146,7 @@
 	.menu-sub-item {
 		background-color: var(--green);
 		color: var(--main-95);
+		padding: 9px 15px;
 	}
 
 	.item-name {

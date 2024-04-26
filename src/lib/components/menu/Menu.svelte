@@ -142,7 +142,7 @@
 
 	.user-box {
 		height: 56px;
-		margin-top: 20px;
+		margin-top: 5px;
 		margin-bottom: 15px;
 		display: none;
 	}

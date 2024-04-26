@@ -9,10 +9,10 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { ecosystems, engines } from '$lib/store.js';
+	import { currentUser, ecosystems, engines } from '$lib/store.js';
+	import { permissions } from "$lib/utils/consts.js";
 	import {
 		getStatusClass,
-		isBool,
 		isEmpty,
 		isTime,
 		timeStringToDate
@@ -112,7 +112,7 @@
 	/>
 </Modal>
 
-{#if !isEmpty(engine['ecosystems'])}
+{#if $currentUser.can(permissions.OPERATE) || !isEmpty(engine['ecosystems'])}
 	<h2>Linked ecosystems</h2>
 	<Table
 		tableID="linkedEnvironmentsTable"
@@ -160,7 +160,7 @@
 					validate: isTime,
 					hint: 'Time in the HH:MM format'
 				},
-				{ label: 'Status', key: 'status', validate: isBool, hint: "'true' or 'false'" }
+				{ label: 'Status', key: 'status', value: true, selectFrom: [true, false] }
 			]}
 			on:confirm={(event) => {
 				const payload = event.detail;

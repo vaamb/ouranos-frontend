@@ -10,10 +10,13 @@
 
 	export let open = false;
 
+	let anyItemClicked = false;
+
 	const dispatch = createEventDispatcher();
 
 	let toggledMenuSubItemIndex = null;
-	let toggleMenuSubItem = function (index) {
+	const toggleMenuSubItem = function (index) {
+		anyItemClicked = true;
 		if (toggledMenuSubItemIndex === index) {
 			toggledMenuSubItemIndex = null;
 		} else {
@@ -21,10 +24,14 @@
 		}
 	};
 
-	let toggleMenuItem = function () {
+	const toggleMenuItem = function () {
+		anyItemClicked = true;
 		toggledMenuSubItemIndex = null;
 		dispatch('click');
 	};
+
+	const animate = (node, args) =>
+		args.anyItemClicked ? slide(node, args): undefined
 </script>
 
 {#if item.children.length === 0}
@@ -54,7 +61,7 @@
 			<div class="right-ico" class:rotated={open === true}><Fa icon={faChevronRight} /></div>
 		</button>
 		{#if open}
-			<ul transition:slide>
+			<ul transition:animate={{anyItemClicked: anyItemClicked}}>
 				{#each item.children as child, index}
 					{#if !child.children || child.children.length === 0}
 						<a

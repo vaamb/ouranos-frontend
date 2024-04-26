@@ -66,15 +66,17 @@
 	let closeModals = {};
 
 	// Data to populate the tables and modals
-	let environmentParameters = [];
+	let environmentParameters = undefined
 	$: environmentParameter =
-		crudTable === 'climate_parameter' && crudIndex !== undefined
+		environmentParameters !== undefined && crudTable === 'climate_parameter' && crudIndex !== undefined
 			? environmentParameters[crudIndex]
 			: {};
 
-	let hardwareObjects = [];
+	let hardwareObjects = undefined;
 	$: hardware =
-		crudTable === 'hardware' && crudIndex !== undefined ? hardwareObjects[crudIndex] : {};
+		hardwareObjects !== undefined && crudTable === 'hardware' && crudIndex !== undefined
+			? hardwareObjects[crudIndex]
+			: {};
 
 	onMount(async () => {
 		environmentParameters = await fetchEcosystemEnvironmentParameters(ecosystemUID);
@@ -226,7 +228,10 @@
 	<p>Are you sure you want to update {ecosystemName}' subroutines management?</p>
 </Modal>
 
-{#if environmentParameters.length > 0}
+{#if
+		environmentParameters !== undefined
+		&& ($currentUser.can(permissions.OPERATE) || environmentParameters.length > 0)
+}
 	<h2>Environment parameters</h2>
 	<Table
 		tableID="environmentParametersTable"
@@ -327,7 +332,10 @@
 	</Modal>
 {/if}
 
-{#if hardwareObjects.length > 0}
+{#if
+		hardwareObjects !== undefined
+		&& ($currentUser.can(permissions.OPERATE) || hardwareObjects.length > 0)
+}
 	<h2>Hardware</h2>
 	<Table
 		tableID="hardwareTable"

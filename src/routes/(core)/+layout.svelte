@@ -1,6 +1,6 @@
 <script>
 	import Menu from '$lib/components/menu/Menu.svelte';
-	import { generateMenuLayout } from '$lib/components/menu/functions.js';
+	import { generateListOfMenuItems } from '$lib/components/menu/functions.js';
 	import Modal from '$lib/components/Modal.svelte';
 	import TopBar from '$lib/components/TopBar.svelte';
 
@@ -16,8 +16,7 @@
 		services,
 		warnings
 	} from '$lib/store.js';
-	import {APP_MODE} from "$lib/utils/consts.js";
-	import { serviceEnabled } from '$lib/utils/functions.js';
+	import { APP_MODE } from '$lib/utils/consts.js';
 
 	export let data;
 
@@ -57,6 +56,9 @@
 		return flashMessage.length > 0;
 	};
 
+	let showModal;
+	$: showModal = anyMessage($flashMessage);
+
 	const getMessage = function (flashMessage) {
 		if (showModal) {
 			return {
@@ -72,15 +74,13 @@
 		};
 	};
 
-	$: weatherEnabled = serviceEnabled($services, 'weather');
-	$: menuLayout = generateMenuLayout(
+	$: menuItems = generateListOfMenuItems(
 		$currentUser,
 		$ecosystemsIds,
 		$ecosystemsManagement,
 		$enginesIds,
-		weatherEnabled
+		$services
 	);
-	$: showModal = anyMessage($flashMessage);
 
 	const sliceMessages = function () {
 		let msgs = $flashMessage;
@@ -98,7 +98,7 @@
 	{getMessage($flashMessage)['message']}
 </Modal>
 
-<Menu layout={menuLayout} width={menuWidth} />
+<Menu items={menuItems} width={menuWidth} />
 <div class="container" style="--margin-width:{menuWidth}">
 	<TopBar development={appMode === APP_MODE.development} />
 	<div class="main">

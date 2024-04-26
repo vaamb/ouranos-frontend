@@ -1,56 +1,43 @@
 import {
-	faHome,
 	faCloud,
-	faThermometerHalf,
 	faCog,
-	faServer,
-	faSeedling,
+	faDatabase,
+	faGlobe,
 	faHeartbeat,
+	faHome,
+	faSeedling,
+	faServer,
+	faThermometerHalf,
 	faToggleOff,
-	faVideo,
-	faDatabase
+	faVideo
 } from '@fortawesome/free-solid-svg-icons';
 
 import { permissions } from '$lib/utils/consts.js';
+import { serviceEnabled } from '$lib/utils/functions.js';
 
-export function MenuItem(name, icon, path, children = []) {
-	if (!path.startsWith('/')) {
-		path = '/' + path;
-	}
+const MenuItem = function (name, path, icon = undefined, children = []) {
 	return {
 		name: name,
 		icon: icon,
 		path: path,
 		children: children
 	};
-}
+};
 
-export function MenuItemChild(name, path) {
-	if (!path.startsWith('/')) {
-		path = '/' + path;
-	}
-	return {
-		name: name,
-		path: path
-	};
-}
-
-export const generateMenuLayout = function (
+export const generateListOfMenuItems = function (
 	currentUser,
 	ecosystemsIds,
 	ecosystemsManagement,
 	enginesIds,
-	weatherEnabled
+	services
 ) {
-	let menuLayout = {
-		title: 'GAIA',
-		items: [MenuItem('Home', faHome, '/')]
-	};
+	let menuItems = [MenuItem('Home', '/', faHome)];
 
-	if (weatherEnabled === true) {
-		menuLayout.items.push(MenuItem('Weather Forecast', faCloud, 'weather'));
+	if (serviceEnabled(services, 'weather')) {
+		menuItems.push(MenuItem('Weather Forecast', '/weather', faCloud));
 	}
 
+	/*
 	let submenus = {
 		environment_data: [],
 		plants_data: [],
@@ -66,6 +53,7 @@ export const generateMenuLayout = function (
 			}
 		}
 	}
+	*/
 
 	let ecosystemMenuItems = [
 		{
@@ -87,7 +75,7 @@ export const generateMenuLayout = function (
 			management: 'health'
 		},
 		{
-			name: 'Switches',
+			name: 'Actuators',
 			icon: faToggleOff,
 			path: '/switches',
 			management: 'switches'
@@ -100,45 +88,70 @@ export const generateMenuLayout = function (
 		}
 	];
 
+	/*
 	for (const menuItem of ecosystemMenuItems) {
 		const management = menuItem.management;
 		if (Object.prototype.hasOwnProperty.call(submenus, management)) {
 			if (submenus[management].length > 0) {
 				let children = [];
 				for (const ecosystemId of submenus[management]) {
-					children.push(MenuItemChild(ecosystemId.name, '/' + ecosystemId.name));
+					children.push(MenuItem(ecosystemId.name, menuItem.path + '/' + ecosystemId.name));
 				}
-				menuLayout.items.push(MenuItem(menuItem.name, menuItem.icon, menuItem.path, children));
+				menuItems.push(MenuItem(menuItem.name, menuItem.path, menuItem.icon, children));
 			}
 		}
 	}
+	 */
 
 	if (currentUser.can(permissions.OPERATE)) {
 		if (enginesIds.length > 0) {
-			let children = [MenuItemChild('Overview', '/overview')];
+			let children = [MenuItem('Overview', '/settings/engine/overview')];
 			for (const id of enginesIds) {
-				children.push(MenuItemChild(id.uid, '/' + id.uid));
+				children.push(MenuItem(id.uid, '/settings/engine/' + id.uid));
 			}
-			menuLayout.items.push(MenuItem('Engines', faServer, '/settings/engine', children));
+			menuItems.push(MenuItem('Engines', '#', faServer, children));
 		}
+		/*
 		if (ecosystemsIds.length > 0) {
 			let children = [];
 			for (const id of ecosystemsIds) {
-				children.push(MenuItemChild(id.name, '/' + id.name));
+				children.push(MenuItem(id.name, '/settings/ecosystem/' + id.name));
 			}
-			menuLayout.items.push(MenuItem('Ecosystems', faCog, '/settings/ecosystem', children));
+			menuItems.push(MenuItem('Ecosystems', '/settings/ecosystem', faCog, children));
 		}
+		*/
+	}
+
+	let ecosystemMenus = [];
+	for (const id of ecosystemsIds) {
+		const uid = id['uid'];
+		const ecosystemManagement = ecosystemsManagement[uid];
+		let children = [];
+		if (currentUser.can(permissions.OPERATE)) {
+			children.push(MenuItem('Settings', '/settings/ecosystem/' + id.name, faCog));
+		}
+		for (const menuItem of ecosystemMenuItems) {
+			const management = menuItem['management'];
+			if (ecosystemManagement[management]) {
+				children.push(
+					MenuItem(menuItem['name'], menuItem['path'] + '/' + id['name'], menuItem['icon'])
+				);
+			}
+		}
+		ecosystemMenus.push(MenuItem(id['name'], '#', undefined, children));
+	}
+	if (ecosystemMenus.length > 0) {
+		menuItems.push(MenuItem('Ecosystems', '#', faGlobe, ecosystemMenus));
 	}
 
 	if (currentUser.can(permissions.ADMIN)) {
-		// menuLayout.items.push(MenuItem('Services', faBellConcierge, '/services'));
 		let children = [
-            MenuItemChild('Server load', '/server'),
-            // MenuItemChild('Logs', '/logs')
-        ];
-		menuLayout.items.push(MenuItem('System', faDatabase, '/admin/system', children));
+			MenuItem('Server load', '/admin/system/server')
+			// MenuItem('Logs', '/logs')
+		];
+		menuItems.push(MenuItem('System', '#', faDatabase, children));
 	}
-	return menuLayout;
+	return menuItems;
 };
 
 export const restartServer = function () {

@@ -1,14 +1,15 @@
 import {
-	faHome,
 	faCloud,
-	faThermometerHalf,
 	faCog,
-	faServer,
-	faSeedling,
+	faDatabase,
+	faGlobe,
 	faHeartbeat,
+	faHome,
+	faSeedling,
+	faServer,
+	faThermometerHalf,
 	faToggleOff,
 	faVideo,
-	faDatabase
 } from '@fortawesome/free-solid-svg-icons';
 
 import { permissions } from '$lib/utils/consts.js';
@@ -33,7 +34,7 @@ export const generateListOfMenuItems = function (
 	let menuItems = [MenuItem('Home', '/', faHome)]
 
 	if (serviceEnabled(services, 'weather')) {
-		menuItems.push(MenuItem('Weather Forecast', 'weather', faCloud));
+		menuItems.push(MenuItem('Weather Forecast', '/weather', faCloud));
 	}
 
 	/*
@@ -74,7 +75,7 @@ export const generateListOfMenuItems = function (
 			management: 'health'
 		},
 		{
-			name: 'Switches',
+			name: 'Actuators',
 			icon: faToggleOff,
 			path: '/switches',
 			management: 'switches'
@@ -94,7 +95,7 @@ export const generateListOfMenuItems = function (
 			if (submenus[management].length > 0) {
 				let children = [];
 				for (const ecosystemId of submenus[management]) {
-					children.push(MenuItem(ecosystemId.name, '/' + ecosystemId.name));
+					children.push(MenuItem(ecosystemId.name, menuItem.path + '/' + ecosystemId.name));
 				}
 				menuItems.push(MenuItem(menuItem.name, menuItem.path, menuItem.icon, children));
 			}
@@ -108,7 +109,7 @@ export const generateListOfMenuItems = function (
 			for (const id of enginesIds) {
 				children.push(MenuItem(id.uid, '/settings/engine/' + id.uid));
 			}
-			menuItems.push(MenuItem('Engines', '/settings/engine', faServer, children));
+			menuItems.push(MenuItem('Engines', '#', faServer, children));
 		}
 		/*
 		if (ecosystemsIds.length > 0) {
@@ -144,7 +145,7 @@ export const generateListOfMenuItems = function (
 		ecosystemMenus.push(MenuItem(id['name'], "#", undefined, children))
 	}
 	if (ecosystemMenus.length > 0) {
-		menuItems.push(MenuItem("Ecosystems", "#", faSeedling, ecosystemMenus))
+		menuItems.push(MenuItem("Ecosystems", "#", faGlobe, ecosystemMenus))
 	}
 
 	if (currentUser.can(permissions.ADMIN)) {
@@ -152,7 +153,7 @@ export const generateListOfMenuItems = function (
             MenuItem('Server load', '/admin/system/server'),
             // MenuItem('Logs', '/logs')
         ];
-		menuItems.push(MenuItem('System', '/admin/system', faDatabase, children));
+		menuItems.push(MenuItem('System', '#', faDatabase, children));
 	}
 	return menuItems;
 };

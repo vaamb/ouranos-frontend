@@ -13,7 +13,7 @@
 	$: ecosystemUID = getEcosystemUid($ecosystemsIds, ecosystemName);
 </script>
 
-<HeaderLine title="Actuator {ecosystemName}" />
+<HeaderLine title="Actuators in {ecosystemName}" />
 
 {#await fetchEcosystemActuatorsData(ecosystemUID) then runningActuators}
 	{#each actuatorTypes as actuator}

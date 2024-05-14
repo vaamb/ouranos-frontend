@@ -42,7 +42,7 @@ export const generateListOfMenuItems = function (
 		environment_data: [],
 		plants_data: [],
 		health: [],
-		switches: [],
+		actuators: [],
 		webcam: []
 	};
 	for (const id of ecosystemsIds) {
@@ -57,7 +57,7 @@ export const generateListOfMenuItems = function (
 
 	let ecosystemMenuItems = [
 		{
-			name: 'Environments',
+			name: 'Environment',
 			icon: faThermometerHalf,
 			path: '/sensors/environment',
 			management: 'environment_data'
@@ -77,14 +77,14 @@ export const generateListOfMenuItems = function (
 		{
 			name: 'Actuators',
 			icon: faToggleOff,
-			path: '/switches',
+			path: '/actuators',
 			management: 'switches'
 		},
 		{
 			name: 'Pictures',
 			icon: faVideo,
 			path: '/pictures',
-			management: 'webcam'
+			management: 'pictures'
 		}
 	];
 

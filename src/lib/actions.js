@@ -3,7 +3,14 @@ import { goto } from '$app/navigation';
 
 import axios from 'axios';
 
-import { API_URL, eventLevels, SERVER_STATUS, LOCAL_API_URL } from '$lib/utils/consts.js';
+import {
+	API_URL,
+	APP_MODE,
+	eventLevels,
+	getAppMode,
+	LOCAL_API_URL,
+	SERVER_STATUS
+} from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
 import {
 	checkSensorDataRecency,
@@ -25,6 +32,23 @@ import {
 	weatherDaily,
 	weatherHourly
 } from '$lib/store.js';
+
+const ERROR_MSG =
+	'There was one or more error(s) while processing your request. Please contact the administrator.';
+
+const setFlashMsgError = function (error) {
+	const appMode = getAppMode();
+	let errorMsg;
+	if (appMode === APP_MODE.development) {
+		console.log(error);
+		errorMsg = Message(JSON.stringify(error.response.data), 'Encountered an error');
+	} else {
+		errorMsg = Message(ERROR_MSG);
+	}
+	const msgs = get(flashMessage);
+	msgs.push(errorMsg);
+	flashMessage.set(msgs);
+};
 
 export const fetchServerInfo = async function () {
 	return await axios
@@ -89,11 +113,11 @@ export const logIn = async function (username, password, remember = false) {
 				goto('/');
 			}
 		})
-		.catch((fetchError) => {
-			if (fetchError.response) {
-				if (fetchError.response.status === 401) {
-					return fetchError.response.data.detail;
-				} else if (fetchError.response.status === 500) {
+		.catch((error) => {
+			if (error.response) {
+				if (error.response.status === 401) {
+					return error.response.data.detail;
+				} else if (error.response.status === 500) {
 					return 'It seems like we have an issue on our side';
 				}
 			}
@@ -111,8 +135,8 @@ export const logOut = function () {
 				currentUser.set(user);
 			}
 		})
-		.catch((fetchError) => {
-			console.log(fetchError);
+		.catch((error) => {
+			setFlashMsgError(error);
 		});
 };
 
@@ -474,9 +498,8 @@ export const fetchCalendarEvents = async function (clientSessionCookie, clientUs
 			};
 		})
 		.catch(() => {
-			const events = [];
 			return {
-				events: events
+				events: []
 			};
 		});
 };
@@ -487,14 +510,14 @@ export const fetchUserDescription = async function (username) {
 			withCredentials: true
 		})
 		.then((response) => {
-			return response.data
+			return response.data;
 		})
 		.catch(() => {
 			return undefined;
 		});
 };
 
-export const crudRequest = function (relRoute, action, payload=undefined) {
+export const crudRequest = function (relRoute, action, payload = undefined) {
 	let method;
 	if (action === 'create') {
 		method = 'post';
@@ -520,14 +543,8 @@ export const crudRequest = function (relRoute, action, payload=undefined) {
 			msgs.push(Message(response.data.msg, null, 3000));
 			flashMessage.set(msgs);
 		})
-		.catch(() => {
-			const msgs = get(flashMessage);
-			if (error.response.data.msg) {
-				msgs.push(Message(error.response.data.msg));
-			} else {
-				msgs.push(Message(error.response.data));
-			}
-			flashMessage.set(msgs);
+		.catch((error) => {
+			setFlashMsgError(error);
 		});
 };
 
@@ -546,8 +563,6 @@ export const updateActuatorMode = function (ecosystemUID, actuatorType, mode) {
 			flashMessage.set(msgs);
 		})
 		.catch((error) => {
-			const msgs = get(flashMessage);
-			msgs.push(Message("There was one or more error(s) while processing your request. Please contact the administrator."));
-			flashMessage.set(msgs);
+			setFlashMsgError(error);
 		});
 };

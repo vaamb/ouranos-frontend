@@ -10,8 +10,9 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import { currentUser, ecosystems, engines } from '$lib/store.js';
-	import { permissions } from "$lib/utils/consts.js";
+	import { permissions } from '$lib/utils/consts.js';
 	import {
+		ecosystemIsConnected,
 		getStatusClass,
 		isEmpty,
 		isTime,
@@ -63,7 +64,10 @@
 			<tr>
 				<td>UID</td>
 				<td
-					>{engineUID} &nbsp; <Fa icon={faCircle} class={getStatusClass(engine['connected'])} /></td
+					>{engineUID} &nbsp; <Fa
+						icon={faCircle}
+						class={getStatusClass(ecosystemIsConnected(engine))}
+					/></td
 				>
 			</tr>
 			<tr>
@@ -106,7 +110,7 @@
 		on:confirm={(event) => {
 			const payload = event.detail;
 			crudRequest(`gaia/engine/u/${engineUID}`, 'update', payload);
-			closeModals['base_info']()
+			closeModals['base_info']();
 		}}
 		on:cancel={closeModals['base_info']}
 	/>

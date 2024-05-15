@@ -1,4 +1,4 @@
-import { PUBLIC_APP_MODE, PUBLIC_BASE_URL, PUBLIC_LOCAL_API_URL } from '$env/static/public'
+import { PUBLIC_APP_MODE, PUBLIC_BASE_URL, PUBLIC_LOCAL_API_URL } from '$env/static/public';
 
 export const BASE_URL = PUBLIC_BASE_URL;
 export const API_URL = BASE_URL + '/api';
@@ -24,26 +24,28 @@ export const permissions = {
 };
 
 export const APP_MODE = {
-    development: "development",
-    testing: "testing",
-    production: "production",
-    maintenance: "maintenance",
-}
+	development: 'development',
+	testing: 'testing',
+	production: 'production',
+	maintenance: 'maintenance'
+};
 
 export const getAppMode = function () {
 	switch (PUBLIC_APP_MODE) {
-		case "production":
-			return APP_MODE.production
-		case "maintenance":
-			return APP_MODE.maintenance
-		case "testing":
-			return APP_MODE.testing
-		case "development":
-			return APP_MODE.development
+		case 'production':
+			return APP_MODE.production;
+		case 'maintenance':
+			return APP_MODE.maintenance;
+		case 'testing':
+			return APP_MODE.testing;
+		case 'development':
+			return APP_MODE.development;
 		default:
-			return APP_MODE.development
+			return APP_MODE.development;
 	}
-}
+};
+
+export const ECOSYSTEM_CONNECTION_TIMEOUT = 90;
 
 export const climateParameters = ['temperature', 'humidity', 'light'];
 

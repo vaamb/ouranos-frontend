@@ -64,19 +64,20 @@ socketio.on('pong', (msg) => {
 });
 
 socketio.on('ecosystems_heartbeat', (data) => {
+	const now = new Date();
 	const enginesObj = get(engines);
 	if (enginesObj[data['engine_uid']]) {
-		enginesObj[data['engine_uid']]['last_seen'] = new Date();
+		enginesObj[data['engine_uid']]['last_seen'] = now;
 		engines.set(enginesObj);
 	}
-	const ecosytemObj = get(ecosystems);
-	for (const ecosytemData of data['ecosystems']) {
-		if (ecosytemObj[ecosytemData['uid']]) {
-			ecosytemObj[ecosytemData['uid']]['last_seen'] = new Date();
-			ecosytemObj[ecosytemData['uid']]['status'] = ecosytemData['status']
+	const ecosystemsObj = get(ecosystems);
+	for (const ecosystemData of data['ecosystems']) {
+		if (ecosystemsObj[ecosystemData['uid']]) {
+			ecosystemsObj[ecosystemData['uid']]['last_seen'] = now;
+			ecosystemsObj[ecosystemData['uid']]['status'] = ecosystemData['status'];
 		}
 	}
-	ecosystems.set(ecosytemObj);
+	ecosystems.set(ecosystemsObj);
 });
 
 socketio.on('current_server_data', (data) => {

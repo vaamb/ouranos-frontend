@@ -14,6 +14,7 @@
 	import { permissions } from '$lib/utils/consts.js';
 	import {
 		capitalize,
+		ecosystemIsConnected,
 		getEcosystemUid,
 		getStatusClass,
 		isNumber,
@@ -66,9 +67,11 @@
 	let closeModals = {};
 
 	// Data to populate the tables and modals
-	let environmentParameters = undefined
+	let environmentParameters = undefined;
 	$: environmentParameter =
-		environmentParameters !== undefined && crudTable === 'climate_parameter' && crudIndex !== undefined
+		environmentParameters !== undefined &&
+		crudTable === 'climate_parameter' &&
+		crudIndex !== undefined
 			? environmentParameters[crudIndex]
 			: {};
 
@@ -93,7 +96,7 @@
 				<td>Name</td>
 				<td>
 					{ecosystem['name']} &nbsp;
-					<Fa icon={faCircle} class={getStatusClass(ecosystem['connected'])} />
+					<Fa icon={faCircle} class={getStatusClass(ecosystemIsConnected(ecosystem))} />
 				</td>
 			</tr>
 			<tr>
@@ -228,10 +231,7 @@
 	<p>Are you sure you want to update {ecosystemName}' subroutines management?</p>
 </Modal>
 
-{#if
-		environmentParameters !== undefined
-		&& ($currentUser.can(permissions.OPERATE) || environmentParameters.length > 0)
-}
+{#if environmentParameters !== undefined && ($currentUser.can(permissions.OPERATE) || environmentParameters.length > 0)}
 	<h2>Environment parameters</h2>
 	<Table
 		tableID="environmentParametersTable"
@@ -263,7 +263,7 @@
 			on:confirm={(event) => {
 				const payload = event.detail;
 				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameters`, 'create', payload);
-				closeModals['climate_parameter_create']()
+				closeModals['climate_parameter_create']();
 			}}
 			on:cancel={closeModals['climate_parameter_create']}
 		/>
@@ -309,7 +309,7 @@
 					'update',
 					payload
 				);
-				closeModals['climate_parameter_update']()
+				closeModals['climate_parameter_update']();
 			}}
 			on:cancel={closeModals['climate_parameter_update']}
 		/>
@@ -323,7 +323,7 @@
 		on:confirm={() => {
 			const parameter = environmentParameter['parameter'];
 			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameters/${parameter}`, 'delete');
-			closeModals['climate_parameter_delete']()
+			closeModals['climate_parameter_delete']();
 		}}
 	>
 		<p>
@@ -332,10 +332,7 @@
 	</Modal>
 {/if}
 
-{#if
-		hardwareObjects !== undefined
-		&& ($currentUser.can(permissions.OPERATE) || hardwareObjects.length > 0)
-}
+{#if hardwareObjects !== undefined && ($currentUser.can(permissions.OPERATE) || hardwareObjects.length > 0)}
 	<h2>Hardware</h2>
 	<Table
 		tableID="hardwareTable"
@@ -371,7 +368,7 @@
 			on:confirm={(event) => {
 				const payload = event.detail;
 				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/hardware`, 'create', payload);
-				closeModals['hardware_create']()
+				closeModals['hardware_create']();
 			}}
 			on:cancel={closeModals['hardware_create']}
 		/>
@@ -406,7 +403,7 @@
 				const uid = hardware['uid'];
 				const payload = event.detail;
 				crudRequest(`gaia/hardware/u/${uid}`, 'update', payload);
-				closeModals['hardware_update']()
+				closeModals['hardware_update']();
 			}}
 			on:cancel={closeModals['hardware_update']}
 		/>
@@ -420,7 +417,7 @@
 		on:confirm={() => {
 			const uid = hardware['uid'];
 			crudRequest(`gaia/hardware/u/${uid}`, 'delete');
-			closeModals['hardware_delete']()
+			closeModals['hardware_delete']();
 		}}
 	>
 		<p>Are you sure you want to delete '{hardware['name']}' hardware ?</p>

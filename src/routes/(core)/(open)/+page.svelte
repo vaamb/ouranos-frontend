@@ -32,6 +32,7 @@
 		computeLightingHours,
 		computeUptime,
 		isEmpty,
+		ecosystemIsConnected,
 		formatDate,
 		formatDateTime,
 		getWeatherIcon,
@@ -142,7 +143,7 @@
 
 	onMount(async () => {
 		for (const { uid, name } of $ecosystemsIds) {
-			if ($ecosystems[uid]['connected']) {
+			if (ecosystemIsConnected($ecosystems[uid])) {
 				await fetchEcosystemActuatorsData(uid);
 			}
 		}
@@ -184,7 +185,7 @@
 	</Box>
 	{#if weatherEnabled && !isEmpty($weatherCurrently)}
 		<Box title="Current weather" align="center">
-			<i class="{getWeatherIcon($weatherCurrently['icon'])} weather-icon"></i>
+			<i class="{getWeatherIcon($weatherCurrently['icon'])} weather-icon" />
 			<BoxItem title={$weatherCurrently['summary']}>
 				<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
 				<p>Wind: {$weatherCurrently['windSpeed'].toFixed(1)} km/h</p>
@@ -255,7 +256,7 @@
 				status={computeEcosystemStatusClass(ecosystem)}
 				direction="row"
 			>
-				{#if !ecosystem['connected']}
+				{#if !ecosystemIsConnected(ecosystem)}
 					<BoxItem>
 						<p>The ecosystem {name} is not currently connected</p>
 						<p>

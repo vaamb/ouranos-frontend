@@ -2,9 +2,10 @@ import { get } from 'svelte/store';
 
 import humanizeDuration from 'humanize-duration';
 
+import { ECOSYSTEM_CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
 import { serverLastSeen } from '$lib/store.js';
 
-const timeRegex = new RegExp("^([0-9]{2}:){1,2}[0-9]{2}$")
+const timeRegex = new RegExp('^([0-9]{2}:){1,2}[0-9]{2}$');
 
 export const dynamicSort = function (property) {
 	// from https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
@@ -42,7 +43,7 @@ export const isNumber = function (number) {
 };
 
 export const isBool = function (bool) {
-	return bool === "true" || bool === "false"
+	return bool === 'true' || bool === 'false';
 };
 
 export const isObject = function (object) {
@@ -277,4 +278,8 @@ export const getFreshStoreData = function (store, storageKey) {
 export const updateStoreData = function (store, data) {
 	// Utility function to easily update stored data outside .svelte files
 	store.set({ ...get(store), ...data });
+};
+
+export const ecosystemIsConnected = function (ecosystem) {
+	return (new Date() - ecosystem['last_seen']) / 1000 < ECOSYSTEM_CONNECTION_TIMEOUT;
 };

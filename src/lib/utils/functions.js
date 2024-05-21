@@ -135,7 +135,7 @@ export const computeUptime = function (serverLastSeen, serverStartTime) {
 };
 
 export const computeEcosystemStatusClass = function (ecosystem) {
-	if (ecosystem['connected']) {
+	if (ecosystemIsConnected(ecosystem)) {
 		if (ecosystem['status']) {
 			return 'on';
 		} else {

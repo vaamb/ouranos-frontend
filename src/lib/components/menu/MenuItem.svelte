@@ -71,6 +71,7 @@
 						<li>
 							<button
 								class="reset-button menu-item menu-sub-item"
+								style="background-color: {child.color? child.color : 'var(--green)'}"
 								on:click={() => {
 									toggleMenuSubItem(index);
 								}}

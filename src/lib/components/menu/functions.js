@@ -15,12 +15,13 @@ import {
 import { permissions } from '$lib/utils/consts.js';
 import { serviceEnabled } from '$lib/utils/functions.js';
 
-const MenuItem = function (name, path, icon = undefined, children = []) {
+const MenuItem = function (name, path, icon = undefined, children = [], color = undefined) {
 	return {
 		name: name,
 		icon: icon,
 		path: path,
-		children: children
+		children: children,
+		color: color
 	};
 };
 
@@ -138,7 +139,7 @@ export const generateListOfMenuItems = function (
 				);
 			}
 		}
-		ecosystemMenus.push(MenuItem(id['name'], '#', undefined, children));
+		ecosystemMenus.push(MenuItem(id['name'], '#', undefined, children, 'var(--green)'));
 	}
 	if (ecosystemMenus.length > 0) {
 		menuItems.push(MenuItem('Ecosystems', '#', faGlobe, ecosystemMenus));

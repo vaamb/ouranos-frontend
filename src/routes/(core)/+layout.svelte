@@ -13,6 +13,8 @@
 		engines,
 		enginesIds,
 		flashMessage,
+		servers,
+		serversIds,
 		services,
 		warnings
 	} from '$lib/store.js';
@@ -29,7 +31,9 @@
 		ecosystemsManagementValues,
 		ecosystemsValues,
 		servicesValues,
-		warningsValues
+		warningsValues,
+		serversValues,
+		serversIdsValues
 	} = data;
 	calendarEvents.set(calendarEventsValues);
 	engines.set(enginesValues);
@@ -37,6 +41,8 @@
 	ecosystems.set(ecosystemsValues);
 	ecosystemsIds.set(ecosystemsIdsValues);
 	ecosystemsManagement.set(ecosystemsManagementValues);
+	servers.set(serversValues);
+	serversIds.set(serversIdsValues);
 	services.set(servicesValues);
 	warnings.set(warningsValues);
 

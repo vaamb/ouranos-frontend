@@ -394,6 +394,36 @@ export const loadWeatherForecast = async function (include = null) {
 };
 
 // Server-related actions
+export const fetchServers = async function (clientSessionCookie, clientUserAgent) {
+	return axios
+		.get(`${LOCAL_API_URL}/system`, {
+			headers: {
+				Cookie: clientSessionCookie,
+				'User-Agent': clientUserAgent
+			},
+			withCredentials: true
+		})
+		.then((response) => {
+			const data = response.data;
+			const dataObject = data.reduce((a, v) => ({ ...a, [v['system_uid']]: v }), {});
+			const sorted = data.sort(dynamicSort('system_uid'));
+			const IDsArray = sorted.map((obj) => ({
+				uid: obj['system_uid'],
+				name: obj['system_uid'].replace('_', ' ')
+			}));
+			return {
+				servers: dataObject,
+				serversIds: IDsArray
+			};
+		})
+		.catch(() => {
+			return {
+				servers: {},
+				serversIds: []
+			};
+		});
+};
+
 export const fetchServerCurrentData = async function (clientSessionCookie, clientUserAgent) {
 	return axios
 		.get(`${LOCAL_API_URL}/system/data/current`, {

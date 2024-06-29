@@ -244,7 +244,7 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 			return response.data;
 		})
 		.catch(() => {
-			return {};
+			return [];
 		});
 };
 
@@ -274,7 +274,7 @@ export const fetchEcosystemHardware = async function (ecosystemUID) {
 			return response.data;
 		})
 		.catch(() => {
-			return {};
+			return [];
 		});
 };
 

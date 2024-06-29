@@ -1,5 +1,5 @@
 <script>
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 
 	import Fa from 'svelte-fa';
 	import {
@@ -14,8 +14,8 @@
 	import { currentUser } from '$lib/store.js';
 
 	export let tableID;
-	export let columns = [{}]; // [{label: "My column", key: "data_key", isTime: false, isStatus: false}]
-	export let data = [{}]; // [{data_key: data1}, {data_key: data2}]
+	export let columns = []; // [{label: "My column", key: "data_key", isTime: false, isStatus: false}]
+	export let data = []; // [{data_key: data1}, {data_key: data2}]
 	export let editable = false;
 	export let crudOptions = ['create', 'update', 'delete'];
 
@@ -30,21 +30,17 @@
 	};
 
 	const checkCongruency = function () {
-		let mismatch = false;
 		for (const column of columns) {
-			if (mismatch === true) {
-				break;
-			}
 			if (!Object.prototype.hasOwnProperty.call(data[0], column.key)) {
 				console.warn("SimpleTable '" + tableID + "': Columns and data keys do not match");
-				mismatch = true;
+				break;
 			}
 		}
 	};
 
-	onMount(() => {
+	if (data.length > 0) {
 		checkCongruency();
-	});
+	}
 </script>
 
 <div class="table-wrap">

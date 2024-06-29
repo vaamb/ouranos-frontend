@@ -13,6 +13,7 @@ import {
 } from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
 import {
+	capitalize,
 	checkSensorDataRecency,
 	dynamicSort,
 	getFreshStoreData,
@@ -409,7 +410,7 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 			const sorted = data.sort(dynamicSort('system_uid'));
 			const IDsArray = sorted.map((obj) => ({
 				uid: obj['system_uid'],
-				name: obj['system_uid'].replace('_', ' ')
+				name: capitalize(obj['system_uid'].replace('_', ' '))
 			}));
 			return {
 				servers: dataObject,

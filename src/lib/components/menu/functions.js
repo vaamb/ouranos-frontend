@@ -30,7 +30,8 @@ export const generateListOfMenuItems = function (
 	ecosystemsIds,
 	ecosystemsManagement,
 	enginesIds,
-	services
+	services,
+	systemsIds
 ) {
 	let menuItems = [MenuItem('Home', '/', faHome)];
 
@@ -146,11 +147,16 @@ export const generateListOfMenuItems = function (
 	}
 
 	if (currentUser.can(permissions.ADMIN)) {
-		let children = [
-			MenuItem('Server load', '/admin/system/server')
-			// MenuItem('Logs', '/logs')
-		];
-		menuItems.push(MenuItem('System', '#', faDatabase, children));
+		let systemMenus = [];
+		for (const id of systemsIds) {
+			const uid = id['uid'];
+			const children = [
+				MenuItem('Logs', `/admin/systems/${uid}/logs`),
+				MenuItem('Server load', `/admin/systems/${uid}/load`)
+			];
+			systemMenus.push(MenuItem(id['name'], '#', undefined, children, 'var(--derived-50)'));
+		}
+		menuItems.push(MenuItem('Systems', '#', faDatabase, systemMenus));
 	}
 	return menuItems;
 };

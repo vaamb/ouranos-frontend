@@ -85,7 +85,8 @@
 		$ecosystemsIds,
 		$ecosystemsManagement,
 		$enginesIds,
-		$services
+		$services,
+		$serversIds
 	);
 
 	const sliceMessages = function () {

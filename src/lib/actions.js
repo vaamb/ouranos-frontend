@@ -29,6 +29,7 @@ import {
 	ecosystemsSensorsDataHistoric,
 	ecosystemsSensorsSkeleton,
 	flashMessage,
+	serversCurrentData,
 	weatherCurrently,
 	weatherDaily,
 	weatherHourly
@@ -405,9 +406,13 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 			withCredentials: true
 		})
 		.then((response) => {
-			const data = response.data;
-			const dataObject = data.reduce((a, v) => ({ ...a, [v['system_uid']]: v }), {});
-			const sorted = data.sort(dynamicSort('system_uid'));
+			const servers = response.data;
+			servers.forEach((server) => {
+				server['start_time'] = new Date(server['start_time']);
+				server['last_seen'] = new Date();
+			});
+			const dataObject = servers.reduce((a, v) => ({ ...a, [v['system_uid']]: v }), {});
+			const sorted = servers.sort(dynamicSort('system_uid'));
 			const IDsArray = sorted.map((obj) => ({
 				uid: obj['system_uid'],
 				name: capitalize(obj['system_uid'].replace('_', ' '))
@@ -425,23 +430,26 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 		});
 };
 
-export const fetchServerCurrentData = async function (clientSessionCookie, clientUserAgent) {
+export const fetchServerCurrentData = async function (serverUid) {
+	const dataKey = getStoreDataKey(serverUid);
+	const storedData = getFreshStoreData(serversCurrentData, dataKey);
+
+	if (!isEmpty(storedData)) {
+		return storedData;
+	}
+
 	return axios
-		.get(`${LOCAL_API_URL}/system/data/current`, {
-			headers: {
-				Cookie: clientSessionCookie,
-				'User-Agent': clientUserAgent
-			},
+		.get(`${LOCAL_API_URL}/system/${serverUid}/data/current`, {
 			withCredentials: true
 		})
 		.then((response) => {
-			return {
-				serverCurrentData: response.data.values
-			};
+			const data = response['data']['values'];
+			updateStoreData(serversCurrentData, { [dataKey]: data });
+			return data;
 		})
 		.catch(() => {
 			return {
-				serverCurrentData: {}
+				serverCurrentData: []
 			};
 		});
 };

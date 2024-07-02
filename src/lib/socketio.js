@@ -11,9 +11,10 @@ import {
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	engines,
-	serverCurrentData,
-	serverLastSeen,
-	serverLatency
+	servers,
+	serversCurrentData,
+	pingServerLastSeen,
+	pingServerLatency
 } from '$lib/store.js';
 
 let latencyArray = [];
@@ -53,14 +54,14 @@ socketio.on('disconnect', (msg) => {
 // Custom events
 socketio.on('pong', (msg) => {
 	const now = new Date();
-	serverLastSeen.set(now);
+	pingServerLastSeen.set(now);
 	latencyArray.push(now - pingTime);
 	latencyArray = latencyArray.slice(-5);
 	let sum = 0;
 	for (let i = 0; i < latencyArray.length; i++) {
 		sum += latencyArray[i];
 	}
-	serverLatency.set((Math.round((10 * sum) / latencyArray.length) / 10).toFixed(1));
+	pingServerLatency.set((Math.round((10 * sum) / latencyArray.length) / 10).toFixed(1));
 });
 
 socketio.on('ecosystems_heartbeat', (data) => {
@@ -81,7 +82,13 @@ socketio.on('ecosystems_heartbeat', (data) => {
 });
 
 socketio.on('current_server_data', (data) => {
-	serverCurrentData.set(data);
+	//TODO: temporary workaround, to change
+	const serverUid = 'base_server';
+	const dataKey = getStoreDataKey(serverUid);
+	const serversObj = get(servers);
+	serversObj[dataKey]['last_seen'] = new Date();
+	servers.set(serversObj);
+	updateStoreData(serversCurrentData, { [dataKey]: data });
 });
 
 socketio.on('actuator_data', (data) => {

@@ -5,7 +5,7 @@
   import UnreachableScreen from "$lib/components/screens/Unreachable.svelte";
 
   import { connectSocketio, disconnectSocketio } from "$lib/socketio.js";
-  import { currentUser, serverLastSeen } from "$lib/store.js";
+  import { currentUser, pingServerLastSeen } from "$lib/store.js";
   import { APP_MODE, SERVER_STATUS } from "$lib/utils/consts.js";
   import { User } from "$lib/utils/factories.js";
 
@@ -16,7 +16,7 @@
   currentUser.set(user);
 
   if (serverStatus === SERVER_STATUS.connected) {
-    serverLastSeen.set(new Date());
+    pingServerLastSeen.set(new Date());
   }
 
   onMount(async () => {

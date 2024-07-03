@@ -40,27 +40,21 @@
 	};
 
 	const formatHistoricData = function (historicData) {
-		const accumulator = {
-			timestamp: []
-		};
-		for (const key of dataKeys) {
-			accumulator[key] = [];
-		}
-		for (const row of historicData) {
-			accumulator['timestamp'].push(row[0]);
-			for (let i = 0; i < dataKeys.length; i++) {
-				accumulator[dataKeys[i]].push(row[i + 1]);
-			}
-		}
 		const rv = {
-			labels: accumulator['timestamp']
+			labels: []
 		};
 		for (const key of dataKeys) {
 			rv[key] = {
 				label: labels[key],
-				data: accumulator[key],
+				data: [],
 				borderColor: colors[key]
 			};
+		}
+		for (const row of historicData) {
+			rv['labels'].push(row[0]);
+			for (let i = 0; i < dataKeys.length; i++) {
+				rv[dataKeys[i]]['data'].push(row[i + 1]);
+			}
 		}
 		return rv;
 	};
@@ -81,7 +75,7 @@
 							<Gauge
 								value={currentData[dataKey]}
 								unit={units[dataKey]}
-								minValue="0"
+								minValue=0
 								maxValue={getMax(dataKey)}
 							/>
 						</BoxItem>
@@ -90,7 +84,7 @@
 						<Graph
 							datasets={[formattedHistoricData[dataKey]]}
 							labels={formattedHistoricData['labels']}
-							suggestedMin="0"
+							suggestedMin=0
 							suggestedMax={getMax(dataKey)}
 							height="200px"
 						/>

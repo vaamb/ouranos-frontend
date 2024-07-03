@@ -30,10 +30,10 @@
 		ecosystemsIdsValues,
 		ecosystemsManagementValues,
 		ecosystemsValues,
-		servicesValues,
-		warningsValues,
 		serversValues,
-		serversIdsValues
+		serversIdsValues,
+		servicesValues,
+		warningsValues
 	} = data;
 	calendarEvents.set(calendarEventsValues);
 	engines.set(enginesValues);

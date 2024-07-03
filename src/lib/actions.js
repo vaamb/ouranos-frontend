@@ -449,9 +449,9 @@ export const fetchServerCurrentData = async function (serverUid) {
 			return data;
 		})
 		.catch(() => {
-			return {
-				serverCurrentData: []
-			};
+			const data = [];
+			updateStoreData(serversCurrentData, { [dataKey]: data });
+			return data;
 		});
 };
 
@@ -473,7 +473,9 @@ export const fetchServerHistoricData = async function (serverUid) {
 			return data;
 		})
 		.catch(() => {
-			return [];
+			const data = [];
+			updateStoreData(serversHistoricData, { [dataKey]: data });
+			return data;
 		});
 };
 

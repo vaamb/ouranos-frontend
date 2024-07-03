@@ -1,7 +1,10 @@
 import {
 	faCloudArrowDown,
+	faDatabase,
 	faFire,
 	faLightbulb,
+	faMemory,
+	faMicrochip,
 	faSprayCan,
 	faTint,
 	faWind
@@ -45,16 +48,6 @@ export const graphs = {
 			eCO2: ' ppm',
 			TVOC: ' ppm'
 		},
-		max_values: {
-			temperature: 30,
-			humidity: 100,
-			absolute_humidity: 15,
-			dew_point: 30,
-			light: 10000,
-			AQI: 5,
-			eCO2: 1000,
-			TVOC: 1500
-		},
 		min_values: {
 			temperature: 15,
 			humidity: 0,
@@ -65,6 +58,16 @@ export const graphs = {
 			eCO2: 0,
 			TVOC: 0
 		},
+		max_values: {
+			temperature: 30,
+			humidity: 100,
+			absolute_humidity: 15,
+			dew_point: 30,
+			light: 10000,
+			AQI: 5,
+			eCO2: 1000,
+			TVOC: 1500
+		}
 	},
 	plants: {
 		colors: {
@@ -79,14 +82,14 @@ export const graphs = {
 			moisture: ' % RWC',
 			temperature: '°C'
 		},
-		max_values: {
-			moisture: 100,
-			temperature: 35,
-		},
 		min_values: {
 			moisture: 0,
-			temperature: 20,
+			temperature: 20
 		},
+		max_values: {
+			moisture: 100,
+			temperature: 35
+		}
 	},
 	plants_health: {
 		measures: {
@@ -116,34 +119,33 @@ export const graphs = {
 		}
 	},
 	server: {
-		measures: {
+		labels: {
 			CPU_used: 'CPU load',
 			CPU_temp: 'CPU temperature',
-			RAM_used: 'Total RAM usage',
 			RAM_process: 'Process RAM usage',
+			RAM_used: 'Total RAM usage',
 			DISK_used: 'Disk space used'
 		},
 		colors: {
 			CPU_used: colors.blue,
 			CPU_temp: colors.red,
+			RAM_process: colors.blue,
 			RAM_used: colors.blue,
 			DISK_used: colors.blue
 		},
 		icons: {
-			CPU_used: 'fas fa-microchip',
-			CPU_temp: 'fas fa-fire',
-			RAM_used: 'fas fa-memory',
-			DISK_used: 'fas fa-database'
+			CPU_used: faMicrochip,
+			CPU_temp: faFire,
+			RAM_process: faMemory,
+			RAM_used: faMemory,
+			DISK_used: faDatabase
 		},
 		units: {
 			CPU_used: '%',
 			CPU_temp: '°C',
+			RAM_process: 'GB',
 			RAM_used: 'GB',
 			DISK_used: 'GB'
-		},
-		max_values: {
-			CPU_used: 100,
-			CPU_temp: 75
 		}
 	}
 };

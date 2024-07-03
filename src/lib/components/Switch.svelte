@@ -4,14 +4,10 @@
 	import Fa from 'svelte-fa';
 	import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
-	import Box from '$lib/components/layout/Box.svelte';
-
 	import { currentUser } from '$lib/store.js';
 	import { permissions } from '$lib/utils/consts.js';
-	import { capitalize } from '$lib/utils/functions.js';
 
 	export let actuatorType;
-	export let title = capitalize(actuatorType);
 	export let status = false;
 	export let mode = 'automatic';
 
@@ -24,36 +20,32 @@
 	};
 </script>
 
-<div class="outer">
-	<Box {title} direction="row">
-		<div class="fix">
-			<div class="status">
-				<div style="padding-top: 25px">
-					<Fa
-						icon={faSyncAlt}
-						class={status ? 'on' : 'off'}
-						size="6x"
-						spin={mode === 'automatic'}
-					/>
-				</div>
-			</div>
-			<div class="switch-options">
-				{#each turnToOptions as option}
-					<div class="switch">
-						<button
-							on:click={() => emitEvent(option)}
-							disabled={!$currentUser.can(permissions.OPERATE)}
-							title={$currentUser.can(permissions.OPERATE)
-								? ''
-								: 'You need to be logged as an operator to toggle switches'}
-						>
-							{option}
-						</button>
-					</div>
-				{/each}
-			</div>
+<div class="container">
+	<div class="status">
+		<div style="margin: auto">
+			<Fa
+				icon={faSyncAlt}
+				class={status ? 'on' : 'off'}
+				size="6x"
+				spin={mode === 'automatic'}
+			/>
 		</div>
-	</Box>
+	</div>
+	<div class="switch-options">
+		{#each turnToOptions as option}
+			<div class="switch">
+				<button
+					on:click={() => emitEvent(option)}
+					disabled={!$currentUser.can(permissions.OPERATE)}
+					title={$currentUser.can(permissions.OPERATE)
+						? ''
+						: 'You need to be logged as an operator to toggle switches'}
+				>
+					{option}
+				</button>
+			</div>
+		{/each}
+	</div>
 </div>
 
 <style>
@@ -77,19 +69,16 @@
 		cursor: default;
 	}
 
-	.fix {
+	.container {
 		width: 100%;
 		display: flex;
-		background: var(--main-95);
-	}
-
-	.outer {
-		width: 350px;
 	}
 
 	.status {
 		height: 150px;
 		width: 150px;
+		display: flex;
+		padding-right: 10px;
 	}
 
 	.switch-options {

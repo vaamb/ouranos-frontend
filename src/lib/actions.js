@@ -440,7 +440,7 @@ export const fetchServerCurrentData = async function (serverUid) {
 	}
 
 	return axios
-		.get(`${LOCAL_API_URL}/system/${serverUid}/data/current`, {
+		.get(`${API_URL}/system/${serverUid}/data/current`, {
 			withCredentials: true
 		})
 		.then((response) => {
@@ -464,7 +464,7 @@ export const fetchServerHistoricData = async function (serverUid) {
 	}
 
 	return axios
-		.get(`${LOCAL_API_URL}/system/${serverUid}/data/historic`, {
+		.get(`${API_URL}/system/${serverUid}/data/historic`, {
 			withCredentials: true
 		})
 		.then((response) => {

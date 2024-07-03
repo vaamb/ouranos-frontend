@@ -142,7 +142,7 @@
 	};
 
 	onMount(async () => {
-		updateNowInterval = setInterval(updateNow, 15 * 1000)
+		updateNowInterval = setInterval(updateNow, 3 * 1000)
 
 		for (const { uid, name } of $ecosystemsIds) {
 			if (ecosystemIsConnected($ecosystems[uid])) {

@@ -7,9 +7,13 @@
 	export let status = null;
 	export let align = 'left';
 	export let direction = 'column';
+	export let minHeight = null;
+	export let maxHeight = null;
+	export let minWidth = null;
+	export let maxWidth = null;
 </script>
 
-<div class="box">
+<div class="box" style="min-height: {minHeight}; max-height: {maxHeight}; min-width: {minWidth}; max-width: {maxWidth};">
 	<h1 class={align}>
 		{#if status}
 			{title} &nbsp;

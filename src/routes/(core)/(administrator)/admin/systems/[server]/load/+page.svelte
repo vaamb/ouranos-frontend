@@ -68,7 +68,7 @@
 
 <HeaderLine title="Server load of {capitalize(serverName).replace('_', ' ')}" />
 
-{#await fetchServerData(serverName) then _}
+{#await fetchServerData(serverName) then serverData_notUsed}
 	{@const currentData = $serversCurrentData[getStoreDataKey(serverName)]}
 	{@const rawHistoricData = $serversHistoricData[getStoreDataKey(serverName)]}
 	{@const formattedHistoricData = formatHistoricData(rawHistoricData)}

@@ -1,7 +1,10 @@
 import {
 	faCloudArrowDown,
 	faDatabase,
+	faDizzy,
 	faFire,
+	faHeartbeat,
+	faLeaf,
 	faLightbulb,
 	faMemory,
 	faMicrochip,
@@ -103,9 +106,9 @@ export const graphs = {
 			index: '#e9c429'
 		},
 		icons: {
-			green: 'fas fa-leaf',
-			necrosis: 'fas fa-dizzy',
-			index: 'fas fa-heartbeat'
+			green: faLeaf,
+			necrosis: faDizzy,
+			index: faHeartbeat
 		},
 		list_index: {
 			green: 2,

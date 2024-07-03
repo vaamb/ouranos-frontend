@@ -30,6 +30,7 @@ import {
 	ecosystemsSensorsSkeleton,
 	flashMessage,
 	serversCurrentData,
+	serversHistoricData,
 	weatherCurrently,
 	weatherDaily,
 	weatherHourly
@@ -454,24 +455,25 @@ export const fetchServerCurrentData = async function (serverUid) {
 		});
 };
 
-export const fetchServerStartTime = async function (clientSessionCookie, clientUserAgent) {
+export const fetchServerHistoricData = async function (serverUid) {
+	const dataKey = getStoreDataKey(serverUid);
+	const storedData = getFreshStoreData(serversHistoricData, dataKey);
+
+	if (!isEmpty(storedData)) {
+		return storedData;
+	}
+
 	return axios
-		.get(`${LOCAL_API_URL}/system/start_time`, {
-			headers: {
-				Cookie: clientSessionCookie,
-				'User-Agent': clientUserAgent
-			},
+		.get(`${LOCAL_API_URL}/system/${serverUid}/data/historic`, {
 			withCredentials: true
 		})
 		.then((response) => {
-			return {
-				serverStartTime: response.data
-			};
+			const data = response['data']['values'];
+			updateStoreData(serversHistoricData, { [dataKey]: data });
+			return data;
 		})
 		.catch(() => {
-			return {
-				serverStartTime: null
-			};
+			return [];
 		});
 };
 

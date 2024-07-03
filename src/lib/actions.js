@@ -13,6 +13,7 @@ import {
 } from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
 import {
+	capitalize,
 	checkSensorDataRecency,
 	dynamicSort,
 	getFreshStoreData,
@@ -28,6 +29,8 @@ import {
 	ecosystemsSensorsDataHistoric,
 	ecosystemsSensorsSkeleton,
 	flashMessage,
+	serversCurrentData,
+	serversHistoricData,
 	weatherCurrently,
 	weatherDaily,
 	weatherHourly
@@ -394,9 +397,9 @@ export const loadWeatherForecast = async function (include = null) {
 };
 
 // Server-related actions
-export const fetchServerCurrentData = async function (clientSessionCookie, clientUserAgent) {
+export const fetchServers = async function (clientSessionCookie, clientUserAgent) {
 	return axios
-		.get(`${LOCAL_API_URL}/system/data/current`, {
+		.get(`${LOCAL_API_URL}/system`, {
 			headers: {
 				Cookie: clientSessionCookie,
 				'User-Agent': clientUserAgent
@@ -404,35 +407,75 @@ export const fetchServerCurrentData = async function (clientSessionCookie, clien
 			withCredentials: true
 		})
 		.then((response) => {
+			const servers = response.data;
+			servers.forEach((server) => {
+				server['start_time'] = new Date(server['start_time']);
+				server['last_seen'] = new Date();
+			});
+			const dataObject = servers.reduce((a, v) => ({ ...a, [v['system_uid']]: v }), {});
+			const sorted = servers.sort(dynamicSort('system_uid'));
+			const IDsArray = sorted.map((obj) => ({
+				uid: obj['system_uid'],
+				name: capitalize(obj['system_uid'].replace('_', ' '))
+			}));
 			return {
-				serverCurrentData: response.data.values
+				servers: dataObject,
+				serversIds: IDsArray
 			};
 		})
 		.catch(() => {
 			return {
-				serverCurrentData: {}
+				servers: {},
+				serversIds: []
 			};
 		});
 };
 
-export const fetchServerStartTime = async function (clientSessionCookie, clientUserAgent) {
+export const fetchServerCurrentData = async function (serverUid) {
+	const dataKey = getStoreDataKey(serverUid);
+	const storedData = getFreshStoreData(serversCurrentData, dataKey);
+
+	if (!isEmpty(storedData)) {
+		return storedData;
+	}
+
 	return axios
-		.get(`${LOCAL_API_URL}/system/start_time`, {
-			headers: {
-				Cookie: clientSessionCookie,
-				'User-Agent': clientUserAgent
-			},
+		.get(`${LOCAL_API_URL}/system/${serverUid}/data/current`, {
 			withCredentials: true
 		})
 		.then((response) => {
-			return {
-				serverStartTime: response.data
-			};
+			const data = response['data']['values'];
+			updateStoreData(serversCurrentData, { [dataKey]: data });
+			return data;
 		})
 		.catch(() => {
-			return {
-				serverStartTime: null
-			};
+			const data = [];
+			updateStoreData(serversCurrentData, { [dataKey]: data });
+			return data;
+		});
+};
+
+export const fetchServerHistoricData = async function (serverUid) {
+	const dataKey = getStoreDataKey(serverUid);
+	const storedData = getFreshStoreData(serversHistoricData, dataKey);
+
+	if (!isEmpty(storedData)) {
+		return storedData;
+	}
+
+	return axios
+		.get(`${LOCAL_API_URL}/system/${serverUid}/data/historic`, {
+			withCredentials: true
+		})
+		.then((response) => {
+			const data = response['data']['values'];
+			updateStoreData(serversHistoricData, { [dataKey]: data });
+			return data;
+		})
+		.catch(() => {
+			const data = [];
+			updateStoreData(serversHistoricData, { [dataKey]: data });
+			return data;
 		});
 };
 

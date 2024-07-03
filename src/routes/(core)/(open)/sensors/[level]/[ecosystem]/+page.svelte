@@ -76,7 +76,7 @@
 		<h2>{capitalize(sensorsBone.measure.replace("_", " "))}</h2>
 		{#each sensorsBone.sensors as sensor}
 			<Row>
-				{#await fetchSensorData(sensor.uid, sensorsBone.measure) then sensorData}
+				{#await fetchSensorData(sensor.uid, sensorsBone.measure) then sensorData_notUsed}
 					{@const currentSensorsData = $ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
 					{@const historicSensorsData = $ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
 					{#if currentSensorsData || historicSensorsData}

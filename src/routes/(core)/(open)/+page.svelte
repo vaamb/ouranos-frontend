@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
 	import Fa from 'svelte-fa';
 	import { faCircleExclamation, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
@@ -19,9 +19,11 @@
 		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsSkeleton,
-		serverCurrentData,
-		serverLastSeen,
-		serverLatency,
+		pingServerLastSeen,
+		pingServerLatency,
+		servers,
+		serversCurrentData,
+		serversIds,
 		services,
 		warnings,
 		weatherCurrently
@@ -30,7 +32,8 @@
 	import {
 		computeEcosystemStatusClass,
 		computeLightingHours,
-		computeUptime,
+		computePingServerStatusClass,
+		computeServerUptime,
 		isEmpty,
 		ecosystemIsConnected,
 		formatDate,
@@ -47,18 +50,15 @@
 		fetchSensorCurrentData,
 		fetchEcosystemSensorsSkeleton,
 		fetchEcosystemLightData,
+		fetchServerCurrentData,
 		loadWeatherForecast
 	} from '$lib/actions.js';
 
-	export let data;
-	const { serverCurrentDataValues, serverStartTimeValue } = data;
-	serverCurrentData.set(serverCurrentDataValues);
-	const serverStartTime = new Date(serverStartTimeValue);
 	let now = new Date();
-
-	$: weatherEnabled = serviceEnabled($services, 'weather');
-	$: calendarEnabled = serviceEnabled($services, 'calendar');
-	$: uptime = computeUptime($serverLastSeen, serverStartTime);
+	const updateNow = function () {
+		now = new Date();
+	}
+	let updateNowInterval = null;
 
 	const sortWarningsByEcosystem = function (warnings) {
 		const sortedWarnings = {};
@@ -142,15 +142,21 @@
 	};
 
 	onMount(async () => {
+		updateNowInterval = setInterval(updateNow, 15 * 1000)
+
 		for (const { uid, name } of $ecosystemsIds) {
 			if (ecosystemIsConnected($ecosystems[uid])) {
 				await fetchEcosystemActuatorsData(uid);
 			}
 		}
-		if (weatherEnabled) {
+		if (serviceEnabled($services, 'weather')) {
 			await loadWeatherForecast(['hourly', 'daily']);
 		}
 	});
+
+	onDestroy(async () => {
+		clearInterval(updateNowInterval);
+	})
 </script>
 
 <HeaderLine title={'Home'} />
@@ -183,7 +189,7 @@
 			</BoxItem>
 		</a>
 	</Box>
-	{#if weatherEnabled && !isEmpty($weatherCurrently)}
+	{#if serviceEnabled($services, 'weather') && !isEmpty($weatherCurrently)}
 		<Box title="Current weather" align="center">
 			<i class="{getWeatherIcon($weatherCurrently['icon'])} weather-icon" />
 			<BoxItem title={$weatherCurrently['summary']}>
@@ -195,28 +201,44 @@
 			</BoxItem>
 		</Box>
 	{/if}
-	{#if $currentUser.can(permissions.ADMIN) && !isEmpty($serverCurrentData)}
-		<Box title="Server info" align="center">
-			<BoxItem title="Uptime">
-				{uptime}
-			</BoxItem>
+	{#if $currentUser.can(permissions.ADMIN)}
+		<Box title="Server info" align="center" status="{computePingServerStatusClass($pingServerLastSeen, now)}">
 			<BoxItem title="Average latency">
-				<p>{$serverLatency} ms</p>
-			</BoxItem>
-			<BoxItem title="System usage">
-				<p>Average CPU load: {$serverCurrentData.CPU_used} %</p>
-				{#if $serverCurrentData.CPU_temp}
-					<p>CPU temperature: {$serverCurrentData.CPU_temp} °C</p>
+				{#if $pingServerLatency === null}
+					<p>Computing ...</p>
+				{:else}
+					<p>{$pingServerLatency} ms</p>
 				{/if}
-				<p>
-					RAM used:
-					{$serverCurrentData.RAM_used} GB / {$serverCurrentData.RAM_total} GB
-				</p>
-				<p>
-					Disk used:
-					{$serverCurrentData.DISK_used} GB / {$serverCurrentData.DISK_total} GB
-				</p>
 			</BoxItem>
+			{#each $serversIds as serverIds}
+				{@const serverUid = serverIds['uid']}
+				<BoxItem title={serverIds['name']}>
+					{#await fetchServerCurrentData(serverUid) then serverCurrentData_notUsed}
+						{@const server = $servers[serverUid]}
+						{@const serverCurrentData = $serversCurrentData[serverUid]}
+						{#if server && serverCurrentData}
+							<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">Uptime</p>
+							<p>
+								{computeServerUptime(server['start_time'], now)}
+							</p>
+
+							<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">System usage</p>
+								<p>Average CPU load: {serverCurrentData.CPU_used} %</p>
+							{#if serverCurrentData.CPU_temp}
+								<p>CPU temperature: {serverCurrentData.CPU_temp} °C</p>
+							{/if}
+							<p>
+								RAM used:
+								{serverCurrentData.RAM_used} GB / {server.RAM_total} GB
+							</p>
+							<p>
+								Disk used:
+								{serverCurrentData.DISK_used} GB / {server.DISK_total} GB
+							</p>
+						{/if}
+					{/await}
+				</BoxItem>
+			{/each}
 		</Box>
 	{/if}
 	{#if $currentUser.isAuthenticated}

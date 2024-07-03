@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import humanizeDuration from 'humanize-duration';
 
 import { ECOSYSTEM_CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
-import { serverLastSeen } from '$lib/store.js';
+import { pingServerLastSeen } from '$lib/store.js';
 
 const timeRegex = new RegExp('^([0-9]{2}:){1,2}[0-9]{2}$');
 
@@ -119,19 +119,25 @@ export const getWeatherIcon = function (weather) {
 	return weatherIconTranslation[weather];
 };
 
-export const computeUptime = function (serverLastSeen, serverStartTime) {
-	if (serverStartTime) {
-		const now = new Date();
-		if (now - serverLastSeen < 15 * 1000) {
-			return humanizeDuration(now - serverStartTime, {
-				largest: 2,
-				units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
-				maxDecimalPoints: 0,
-				delimiter: ' and '
-			});
-		}
+export const computePingServerStatusClass = function (pingServerLastSeen, now) {
+	if (now - pingServerLastSeen < 60 * 1000) {
+		return 'on';
+	} else {
+		return 'off';
 	}
-	return 'Lost connection with server';
+}
+
+export const computeServerUptime = function (serverStartTime, now) {
+	if (serverStartTime) {
+		return humanizeDuration(now - serverStartTime, {
+			largest: 2,
+			units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
+			maxDecimalPoints: 0,
+			delimiter: ' and '
+		});
+	} else {
+		return 'Not connected';
+	}
 };
 
 export const computeEcosystemStatusClass = function (ecosystem) {
@@ -269,7 +275,7 @@ export const getStoreData = function (store, storageKey) {
 
 export const getFreshStoreData = function (store, storageKey) {
 	const now = new Date();
-	if (now - get(serverLastSeen) > 60000) {
+	if (now - get(pingServerLastSeen) > 60000) {
 		return {};
 	}
 	return getStoreData(store, storageKey);

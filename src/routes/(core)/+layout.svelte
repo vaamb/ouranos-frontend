@@ -13,6 +13,8 @@
 		engines,
 		enginesIds,
 		flashMessage,
+		servers,
+		serversIds,
 		services,
 		warnings
 	} from '$lib/store.js';
@@ -28,6 +30,8 @@
 		ecosystemsIdsValues,
 		ecosystemsManagementValues,
 		ecosystemsValues,
+		serversValues,
+		serversIdsValues,
 		servicesValues,
 		warningsValues
 	} = data;
@@ -37,6 +41,8 @@
 	ecosystems.set(ecosystemsValues);
 	ecosystemsIds.set(ecosystemsIdsValues);
 	ecosystemsManagement.set(ecosystemsManagementValues);
+	servers.set(serversValues);
+	serversIds.set(serversIdsValues);
 	services.set(servicesValues);
 	warnings.set(warningsValues);
 
@@ -79,7 +85,8 @@
 		$ecosystemsIds,
 		$ecosystemsManagement,
 		$enginesIds,
-		$services
+		$services,
+		$serversIds
 	);
 
 	const sliceMessages = function () {

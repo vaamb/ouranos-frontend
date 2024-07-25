@@ -4,6 +4,7 @@ import { goto } from '$app/navigation';
 import axios from 'axios';
 
 import {
+	actuatorTypes,
 	API_URL,
 	APP_MODE,
 	eventLevels,
@@ -258,11 +259,14 @@ export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
 		return storedData;
 	}
 	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_status`)
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_state`)
 		.then((response) => {
 			const data = response.data;
-			delete data['ecosystem_uid'];
-			updateStoreData(ecosystemsActuatorData, { [dataKey]: data });
+			const states = data['actuators_state'].reduce((a, v) => ({ ...a, [v['type']]: v }), {});
+			for (const actuatorType of actuatorTypes) {
+				storedData[actuatorType] = states[actuatorType];
+			}
+			updateStoreData(ecosystemsActuatorData, { [dataKey]: storedData });
 			return data;
 		})
 		.catch(() => {

@@ -15,7 +15,7 @@ export async function load({ cookies, request }) {
 		const clientSessionCookie = 'session=' + sessionCookie;
 		const clientUserAgent = request.headers.get('user-agent');
 		const { currentUserData } = await fetchCurrentUserData(clientSessionCookie, clientUserAgent);
-		rv.userData = new User(currentUserData).flatten();
+		rv.userData = new User(currentUserData, sessionCookie).flatten();
 	} else {
 		rv.userData = new User().flatten();
 	}

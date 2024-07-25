@@ -109,7 +109,7 @@ export const logIn = async function (username, password, remember = false) {
 		})
 		.then((response) => {
 			if (response.status === 200) {
-				const user = User(response.data.user);
+				const user = User(response.data.user, response.data.session_token);
 				currentUser.set(user);
 				const msgs = get(flashMessage);
 				msgs.push(Message('You are now logged in ' + user.username));

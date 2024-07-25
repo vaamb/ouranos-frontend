@@ -25,6 +25,7 @@ import {
 import { logInSocketio, logOutSocketio } from '$lib/socketio.js';
 import {
 	currentUser,
+	ecosystemsActuatorsRecords,
 	ecosystemsActuatorsState,
 	ecosystemsLightData,
 	ecosystemsSensorsDataCurrent,
@@ -271,6 +272,27 @@ export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
 				storedData[actuatorType] = states[actuatorType];
 			}
 			updateStoreData(ecosystemsActuatorsState, { [dataKey]: storedData });
+			return data;
+		})
+		.catch(() => {
+			return {};
+		});
+};
+
+export const fetchEcosystemActuatorRecords = async function (ecosystemUID, actuatorType) {
+	const dataKey = getStoreDataKey(ecosystemUID, actuatorType);
+	const storedData = getFreshStoreData(ecosystemsActuatorsRecords, dataKey);
+	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 1)) {
+		return storedData;
+	}
+	return axios
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuator_records/${actuatorType}`)
+		.then((response) => {
+			const data = {
+				timestamp: new Date(response['data']['span'][1]),
+				values: response['data']['values']
+			};
+			updateStoreData(ecosystemsActuatorsRecords, { [dataKey]: data });
 			return data;
 		})
 		.catch(() => {

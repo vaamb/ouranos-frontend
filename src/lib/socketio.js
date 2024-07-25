@@ -91,9 +91,30 @@ socketio.on('current_server_data', (data) => {
 	updateStoreData(serversCurrentData, { [dataKey]: data });
 });
 
-socketio.on('actuator_data', (data) => {
-	const updatedData = data.reduce((a, v) => ({ ...a, [v['uid']]: v['data'] }), {});
-	updateStoreData(ecosystemsActuatorData, updatedData);
+socketio.on('actuators_data', (data) => {
+	const dataByEcosystem = data.reduce((acc, record) => {
+		const ecosystemUid = record['ecosystem_uid'];
+		if (!acc[ecosystemUid]) {
+			acc[ecosystemUid] = {};
+		}
+		acc[ecosystemUid][record['type']] = {
+			active: record['active'] || false,
+			level: record['level'] || null,
+			mode: record['mode'] || "automatic",
+			status: record['status'] || false,
+			type: record['type'],
+		};
+		return acc;
+	}, {});
+
+	const currentEcosystemsActuatorData = get(ecosystemsActuatorData);
+	for (const ecosystemUid in dataByEcosystem) {
+		currentEcosystemsActuatorData[ecosystemUid] = {
+			...currentEcosystemsActuatorData[ecosystemUid],
+			...dataByEcosystem[ecosystemUid]
+		};
+	}
+	updateStoreData(ecosystemsActuatorData, currentEcosystemsActuatorData);
 });
 
 socketio.on('current_sensors_data', (data) => {

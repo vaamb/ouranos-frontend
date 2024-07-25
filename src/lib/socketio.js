@@ -37,6 +37,31 @@ export const disconnectSocketio = function () {
 	socketio.disconnect();
 };
 
+export const logInSocketio = function (userToken) {
+	socketio.emit('login', userToken);
+}
+
+socketio.on('login_ack', (data) => {
+	if (data["result"] === "failure") {
+		const appMode = getAppMode();
+		if (appMode === APP_MODE.development) {
+			console.log(data);
+		} else {
+			console.log(
+				"There was an issue registering your socketio session. Please contact the administrator."
+			);
+		}
+	}
+});
+
+export const logOutSocketio = function (userToken) {
+	socketio.emit('logout', userToken);
+};
+
+socketio.on('logout_ack', (data) => {
+	// For later use
+});
+
 const pingServer = function () {
 	pingTime = new Date();
 	socketio.emit('ping');

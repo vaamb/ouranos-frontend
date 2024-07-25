@@ -4,7 +4,7 @@
   import MaintenanceScreen from "$lib/components/screens/Maintenance.svelte";
   import UnreachableScreen from "$lib/components/screens/Unreachable.svelte";
 
-  import { connectSocketio, disconnectSocketio } from "$lib/socketio.js";
+  import { connectSocketio, disconnectSocketio, logInSocketio, logOutSocketio } from "$lib/socketio.js";
   import { currentUser, pingServerLastSeen } from "$lib/store.js";
   import { APP_MODE, SERVER_STATUS } from "$lib/utils/consts.js";
   import { User } from "$lib/utils/factories.js";
@@ -22,10 +22,16 @@
   onMount(async () => {
     if (serverStatus === SERVER_STATUS.connected) {
       connectSocketio();
+      if ($currentUser.isAuthenticated) {
+        logInSocketio($currentUser.sessionToken);
+      }
     }
 
     return () => {
       disconnectSocketio();
+      if ($currentUser.isAuthenticated) {
+        logOutSocketio($currentUser.sessionToken);
+      }
     };
   });
 </script>

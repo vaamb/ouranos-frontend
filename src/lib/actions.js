@@ -298,7 +298,7 @@ export const fetchSensorCurrentData = async function (sensorUID, measure) {
 		.then((response) => {
 			const accumulator = {};
 			for (const ecosystem of response['data']) {
-				for (const sensorRecord of ecosystem['data']) {
+				for (const sensorRecord of ecosystem['values']) {
 					const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
 					accumulator[storageKey] = {
 						timestamp: new Date(sensorRecord['timestamp']),

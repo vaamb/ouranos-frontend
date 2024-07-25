@@ -1,8 +1,8 @@
 <script>
 	import { page } from '$app/stores';
 
-	import Box from "$lib/components/layout/Box.svelte";
-	import BoxItem from "$lib/components/layout/BoxItem.svelte";
+	import Box from '$lib/components/layout/Box.svelte';
+	import BoxItem from '$lib/components/layout/BoxItem.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Switch from '$lib/components/Switch.svelte';
 
@@ -20,7 +20,7 @@
 {#await fetchEcosystemActuatorsData(ecosystemUID) then runningActuators}
 	{#each actuatorTypes as actuator}
 		{#if $ecosystemsActuatorData[ecosystemUID][actuator]['active']}
-			<Box title="{capitalize(actuator)}" maxWidth="350px">
+			<Box title={capitalize(actuator)} maxWidth="350px">
 				<BoxItem>
 					<Switch
 						actuatorType={actuator}
@@ -36,7 +36,6 @@
 					/>
 				</BoxItem>
 			</Box>
-
 		{/if}
 	{/each}
 {/await}

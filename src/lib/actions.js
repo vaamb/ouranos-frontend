@@ -22,7 +22,7 @@ import {
 	isEmpty,
 	updateStoreData
 } from '$lib/utils/functions.js';
-import { logInSocketio, logOutSocketio } from "$lib/socketio.js";
+import { logInSocketio, logOutSocketio } from '$lib/socketio.js';
 import {
 	currentUser,
 	ecosystemsActuatorData,
@@ -140,7 +140,7 @@ export const logOut = function () {
 			if (response.status === 200) {
 				const user = get(currentUser);
 				currentUser.set(User());
-				logOutSocketio(user.sessionToken)
+				logOutSocketio(user.sessionToken);
 			}
 		})
 		.catch((error) => {
@@ -249,7 +249,7 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/environment_parameters`)
 		.then((response) => {
-			return response["data"]["environment_parameters"];
+			return response['data']['environment_parameters'];
 		})
 		.catch(() => {
 			return [];
@@ -329,8 +329,8 @@ export const fetchSensorHistoricData = async function (sensorUID, measure) {
 		.get(`${API_URL}/gaia/sensor/u/${sensorUID}/data/${measure}/historic`)
 		.then((response) => {
 			const data = {
-				timestamp: new Date(response["data"]["span"][1]),
-				values: response["data"]["values"]
+				timestamp: new Date(response['data']['span'][1]),
+				values: response['data']['values']
 			};
 			updateStoreData(ecosystemsSensorsDataHistoric, { [dataKey]: data });
 			return data;

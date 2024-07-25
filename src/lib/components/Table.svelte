@@ -92,7 +92,11 @@
 			<tbody>
 				<tr class="table-bigger-line">
 					<td colspan="8" style="text-align: center; vertical-align: middle">
-						<button class="crud-button" style="font-size: 2rem" on:click={() => emitEvent('create')}>
+						<button
+							class="crud-button"
+							style="font-size: 2rem"
+							on:click={() => emitEvent('create')}
+						>
 							<Fa icon={faSquarePlus} />
 						</button>
 					</td>
@@ -101,6 +105,7 @@
 		{/if}
 	</table>
 </div>
+
 <style>
 	.table-wrap {
 		overflow-x: auto;

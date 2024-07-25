@@ -23,12 +23,7 @@
 <div class="container">
 	<div class="status">
 		<div style="margin: auto">
-			<Fa
-				icon={faSyncAlt}
-				class={status ? 'on' : 'off'}
-				size="6x"
-				spin={mode === 'automatic'}
-			/>
+			<Fa icon={faSyncAlt} class={status ? 'on' : 'off'} size="6x" spin={mode === 'automatic'} />
 		</div>
 	</div>
 	<div class="switch-options">

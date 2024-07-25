@@ -19,11 +19,7 @@
 		ecosystemsSensorsDataHistoric,
 		ecosystemsSensorsSkeleton
 	} from '$lib/store.js';
-	import {
-		capitalize,
-		getEcosystemUid,
-		getStoreDataKey
-	} from '$lib/utils/functions.js';
+	import { capitalize, getEcosystemUid, getStoreDataKey } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
 	const generateTitle = function (level, ecosystemName) {
@@ -73,12 +69,14 @@
 <HeaderLine title={pageTitle} />
 {#await fetchEcosystemSensorsSkeleton(ecosystemUid, sensorsLevel) then sensorsSkeleton}
 	{#each $ecosystemsSensorsSkeleton[getStoreDataKey(ecosystemUid, sensorsLevel)] as sensorsBone}
-		<h2>{capitalize(sensorsBone.measure.replace("_", " "))}</h2>
+		<h2>{capitalize(sensorsBone.measure.replace('_', ' '))}</h2>
 		{#each sensorsBone.sensors as sensor}
 			<Row>
 				{#await fetchSensorData(sensor.uid, sensorsBone.measure) then sensorData_notUsed}
-					{@const currentSensorsData = $ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
-					{@const historicSensorsData = $ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
+					{@const currentSensorsData =
+						$ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
+					{@const historicSensorsData =
+						$ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
 					{#if currentSensorsData || historicSensorsData}
 						<Box title={sensor.name} direction="row" icon={icons[sensorsBone.measure]}>
 							{#if currentSensorsData}
@@ -93,7 +91,10 @@
 							{/if}
 							<BoxItem>
 								{#if historicSensorsData && historicSensorsData.values.length > 5}
-									{@const formattedHistoricSensorsData = formatHistoricData(historicSensorsData, sensorsBone.measure)}
+									{@const formattedHistoricSensorsData = formatHistoricData(
+										historicSensorsData,
+										sensorsBone.measure
+									)}
 									<Graph
 										datasets={[formattedHistoricSensorsData.dataset]}
 										labels={formattedHistoricSensorsData.labels}
@@ -103,7 +104,9 @@
 									/>
 								{:else}
 									<div style="margin: auto">
-										<p style="margin-bottom: 0">There is not currently enough data points to draw a graph.</p>
+										<p style="margin-bottom: 0">
+											There is not currently enough data points to draw a graph.
+										</p>
 										<p style="margin-bottom: 0">Please come back later to see your graph.</p>
 									</div>
 								{/if}

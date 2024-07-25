@@ -6,9 +6,9 @@
 
 	export let labels;
 	export let datasets;
-	export let defaultMin = 0
+	export let defaultMin = 0;
 	export let suggestedMin = defaultMin;
-	export let defaultMax = 100
+	export let defaultMax = 100;
 	export let suggestedMax = defaultMax;
 	export let height = 250;
 
@@ -26,7 +26,7 @@
 			y: {
 				display: true,
 				suggestedMin: suggestedMin || defaultMin,
-				suggestedMax: suggestedMax || defaultMax,
+				suggestedMax: suggestedMax || defaultMax
 			}
 		},
 		plugins: {

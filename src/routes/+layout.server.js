@@ -1,5 +1,5 @@
 import { fetchCurrentUserData, fetchServerInfo } from '$lib/actions.js';
-import { getAppMode } from "$lib/utils/consts.js";
+import { getAppMode } from '$lib/utils/consts.js';
 import { User } from '$lib/utils/factories.js';
 
 export async function load({ cookies, request }) {

@@ -13,7 +13,10 @@
 	export let maxWidth = null;
 </script>
 
-<div class="box" style="min-height: {minHeight}; max-height: {maxHeight}; min-width: {minWidth}; max-width: {maxWidth};">
+<div
+	class="box"
+	style="min-height: {minHeight}; max-height: {maxHeight}; min-width: {minWidth}; max-width: {maxWidth};"
+>
 	<h1 class={align}>
 		{#if status}
 			{title} &nbsp;

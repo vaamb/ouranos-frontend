@@ -322,13 +322,11 @@ export const fetchSensorHistoricData = async function (sensorUID, measure) {
 	}
 
 	return axios
-		.get(`${API_URL}/gaia/sensor/u/${sensorUID}/data/historic`, {
-			params: { measures: measure }
-		})
+		.get(`${API_URL}/gaia/sensor/u/${sensorUID}/data/${measure}/historic`)
 		.then((response) => {
 			const data = {
-				timestamp: new Date(response.data[0].span[1]),
-				values: response.data[0].values
+				timestamp: new Date(response["data"]["span"][1]),
+				values: response["data"]["values"]
 			};
 			updateStoreData(ecosystemsSensorsDataHistoric, { [dataKey]: data });
 			return data;

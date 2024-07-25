@@ -245,7 +245,7 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/environment_parameters`)
 		.then((response) => {
-			return response.data;
+			return response["data"]["environment_parameters"];
 		})
 		.catch(() => {
 			return [];

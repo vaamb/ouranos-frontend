@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import { Manager } from 'socket.io-client';
 
-import { BASE_URL } from '$lib/utils/consts.js';
+import { APP_MODE, BASE_URL, getAppMode } from '$lib/utils/consts.js';
 import { getFreshStoreData, getStoreDataKey, updateStoreData } from '$lib/utils/functions.js';
 import {
 	ecosystems,
@@ -37,22 +37,47 @@ export const disconnectSocketio = function () {
 	socketio.disconnect();
 };
 
+export const logInSocketio = function (userToken) {
+	socketio.emit('login', userToken);
+}
+
+socketio.on('login_ack', (data) => {
+	if (data["result"] === "failure") {
+		const appMode = getAppMode();
+		if (appMode === APP_MODE.development) {
+			console.log(data);
+		} else {
+			console.log(
+				"There was an issue registering your socketio session. Please contact the administrator."
+			);
+		}
+	}
+});
+
+export const logOutSocketio = function (userToken) {
+	socketio.emit('logout', userToken);
+};
+
+socketio.on('logout_ack', (data) => {
+	// For later use
+});
+
 const pingServer = function () {
 	pingTime = new Date();
 	socketio.emit('ping');
 };
 
 // Reserved events
-socketio.on('connect', (msg) => {
+socketio.on('connect', () => {
 	pingLoop = setInterval(pingServer, 10000);
 });
 
-socketio.on('disconnect', (msg) => {
+socketio.on('disconnect', () => {
 	clearInterval(pingLoop);
 });
 
 // Custom events
-socketio.on('pong', (msg) => {
+socketio.on('pong', () => {
 	const now = new Date();
 	pingServerLastSeen.set(now);
 	latencyArray.push(now - pingTime);

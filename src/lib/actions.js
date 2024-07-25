@@ -22,6 +22,7 @@ import {
 	isEmpty,
 	updateStoreData
 } from '$lib/utils/functions.js';
+import { logInSocketio, logOutSocketio } from "$lib/socketio.js";
 import {
 	currentUser,
 	ecosystemsActuatorData,
@@ -109,11 +110,13 @@ export const logIn = async function (username, password, remember = false) {
 		})
 		.then((response) => {
 			if (response.status === 200) {
-				const user = User(response.data.user);
+				const sessionToken = response.data.session_token;
+				const user = User(response.data.user, sessionToken);
 				currentUser.set(user);
 				const msgs = get(flashMessage);
 				msgs.push(Message('You are now logged in ' + user.username));
 				flashMessage.set(msgs);
+				logInSocketio(sessionToken);
 				goto('/');
 			}
 		})
@@ -135,8 +138,9 @@ export const logOut = function () {
 		})
 		.then((response) => {
 			if (response.status === 200) {
-				const user = User();
-				currentUser.set(user);
+				const user = get(currentUser);
+				currentUser.set(User());
+				logOutSocketio(user.sessionToken)
 			}
 		})
 		.catch((error) => {

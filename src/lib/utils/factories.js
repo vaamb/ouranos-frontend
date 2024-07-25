@@ -1,4 +1,4 @@
-export function User(userObject = {}) {
+export function User(userObject = {}, sessionToken = null) {
 	const username = userObject['username'] || null;
 	const permissions = userObject['permissions'] || 0;
 	const auth = username ? true : false
@@ -12,6 +12,7 @@ export function User(userObject = {}) {
 		isAnonymous: !auth,
 		isConfirmed: userObject['is_confirmed'] || false,
 		avatar: userObject['avatar'] || 'seedling', // TODO: for later
+		sessionToken: userObject['sessionToken'] || sessionToken,
 		can: function (perm) {
 			if (perm === undefined) {
 				return false;
@@ -28,7 +29,8 @@ export function User(userObject = {}) {
 				isAuthenticated: this.isAuthenticated,
 				isAnonymous: this.isAnonymous,
 				isConfirmed: this.isConfirmed,
-				avatar: this.avatar
+				avatar: this.avatar,
+				sessionToken: this.sessionToken
 			};
 		}
 	};

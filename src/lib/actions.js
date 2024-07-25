@@ -4,6 +4,7 @@ import { goto } from '$app/navigation';
 import axios from 'axios';
 
 import {
+	actuatorTypes,
 	API_URL,
 	APP_MODE,
 	eventLevels,
@@ -244,7 +245,7 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/environment_parameters`)
 		.then((response) => {
-			return response.data;
+			return response["data"]["environment_parameters"];
 		})
 		.catch(() => {
 			return [];
@@ -258,11 +259,14 @@ export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
 		return storedData;
 	}
 	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_status`)
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_state`)
 		.then((response) => {
 			const data = response.data;
-			delete data['ecosystem_uid'];
-			updateStoreData(ecosystemsActuatorData, { [dataKey]: data });
+			const states = data['actuators_state'].reduce((a, v) => ({ ...a, [v['type']]: v }), {});
+			for (const actuatorType of actuatorTypes) {
+				storedData[actuatorType] = states[actuatorType];
+			}
+			updateStoreData(ecosystemsActuatorData, { [dataKey]: storedData });
 			return data;
 		})
 		.catch(() => {
@@ -294,7 +298,7 @@ export const fetchSensorCurrentData = async function (sensorUID, measure) {
 		.then((response) => {
 			const accumulator = {};
 			for (const ecosystem of response['data']) {
-				for (const sensorRecord of ecosystem['data']) {
+				for (const sensorRecord of ecosystem['values']) {
 					const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
 					accumulator[storageKey] = {
 						timestamp: new Date(sensorRecord['timestamp']),
@@ -318,13 +322,11 @@ export const fetchSensorHistoricData = async function (sensorUID, measure) {
 	}
 
 	return axios
-		.get(`${API_URL}/gaia/sensor/u/${sensorUID}/data/historic`, {
-			params: { measures: measure }
-		})
+		.get(`${API_URL}/gaia/sensor/u/${sensorUID}/data/${measure}/historic`)
 		.then((response) => {
 			const data = {
-				timestamp: new Date(response.data[0].span[1]),
-				values: response.data[0].values
+				timestamp: new Date(response["data"]["span"][1]),
+				values: response["data"]["values"]
 			};
 			updateStoreData(ecosystemsSensorsDataHistoric, { [dataKey]: data });
 			return data;

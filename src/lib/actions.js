@@ -25,7 +25,7 @@ import {
 import { logInSocketio, logOutSocketio } from '$lib/socketio.js';
 import {
 	currentUser,
-	ecosystemsActuatorData,
+	ecosystemsActuatorsState,
 	ecosystemsLightData,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
@@ -258,7 +258,7 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 
 export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
 	const dataKey = getStoreDataKey(ecosystemUID);
-	const storedData = getFreshStoreData(ecosystemsActuatorData, dataKey);
+	const storedData = getFreshStoreData(ecosystemsActuatorsState, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
 	}
@@ -270,7 +270,7 @@ export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
 			for (const actuatorType of actuatorTypes) {
 				storedData[actuatorType] = states[actuatorType];
 			}
-			updateStoreData(ecosystemsActuatorData, { [dataKey]: storedData });
+			updateStoreData(ecosystemsActuatorsState, { [dataKey]: storedData });
 			return data;
 		})
 		.catch(() => {

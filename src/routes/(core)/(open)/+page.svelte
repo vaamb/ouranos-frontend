@@ -57,7 +57,7 @@
 	let now = new Date();
 	const updateNow = function () {
 		now = new Date();
-	}
+	};
 	let updateNowInterval = null;
 
 	const sortWarningsByEcosystem = function (warnings) {
@@ -142,7 +142,7 @@
 	};
 
 	onMount(async () => {
-		updateNowInterval = setInterval(updateNow, 3 * 1000)
+		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
 		for (const { uid, name } of $ecosystemsIds) {
 			if (ecosystemIsConnected($ecosystems[uid])) {
@@ -156,7 +156,7 @@
 
 	onDestroy(async () => {
 		clearInterval(updateNowInterval);
-	})
+	});
 </script>
 
 <HeaderLine title={'Home'} />
@@ -202,7 +202,11 @@
 		</Box>
 	{/if}
 	{#if $currentUser.can(permissions.ADMIN)}
-		<Box title="Server info" align="center" status="{computePingServerStatusClass($pingServerLastSeen, now)}">
+		<Box
+			title="Server info"
+			align="center"
+			status={computePingServerStatusClass($pingServerLastSeen, now)}
+		>
 			<BoxItem title="Average latency">
 				{#if $pingServerLatency === null}
 					<p>Computing ...</p>
@@ -223,7 +227,7 @@
 							</p>
 
 							<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">System usage</p>
-								<p>Average CPU load: {serverCurrentData.CPU_used} %</p>
+							<p>Average CPU load: {serverCurrentData.CPU_used} %</p>
 							{#if serverCurrentData.CPU_temp}
 								<p>CPU temperature: {serverCurrentData.CPU_temp} °C</p>
 							{/if}

@@ -75,7 +75,7 @@
 							<Gauge
 								value={currentData[dataKey]}
 								unit={units[dataKey]}
-								minValue=0
+								minValue="0"
 								maxValue={getMax(dataKey)}
 							/>
 						</BoxItem>
@@ -84,7 +84,7 @@
 						<Graph
 							datasets={[formattedHistoricData[dataKey]]}
 							labels={formattedHistoricData['labels']}
-							suggestedMin=0
+							suggestedMin="0"
 							suggestedMax={getMax(dataKey)}
 							height="200px"
 						/>

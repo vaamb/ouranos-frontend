@@ -125,7 +125,7 @@ export const computePingServerStatusClass = function (pingServerLastSeen, now) {
 	} else {
 		return 'off';
 	}
-}
+};
 
 export const computeServerUptime = function (serverStartTime, now) {
 	if (serverStartTime) {

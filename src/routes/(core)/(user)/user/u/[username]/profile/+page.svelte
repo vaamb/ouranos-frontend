@@ -131,7 +131,7 @@
 	>
 		<p>Confirm {$currentUser['username']}'s account ?</p>
 	</Modal>
-		<Modal
+	<Modal
 		bind:closeModal={closeModals['delete']}
 		showModal={crudAction === 'delete'}
 		on:close={resetCrudAction}

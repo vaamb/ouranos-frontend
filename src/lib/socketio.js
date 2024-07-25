@@ -39,16 +39,16 @@ export const disconnectSocketio = function () {
 
 export const logInSocketio = function (userToken) {
 	socketio.emit('login', userToken);
-}
+};
 
 socketio.on('login_ack', (data) => {
-	if (data["result"] === "failure") {
+	if (data['result'] === 'failure') {
 		const appMode = getAppMode();
 		if (appMode === APP_MODE.development) {
 			console.log(data);
 		} else {
 			console.log(
-				"There was an issue registering your socketio session. Please contact the administrator."
+				'There was an issue registering your socketio session. Please contact the administrator.'
 			);
 		}
 	}
@@ -125,9 +125,9 @@ socketio.on('actuators_data', (data) => {
 		acc[ecosystemUid][record['type']] = {
 			active: record['active'] || false,
 			level: record['level'] || null,
-			mode: record['mode'] || "automatic",
+			mode: record['mode'] || 'automatic',
 			status: record['status'] || false,
-			type: record['type'],
+			type: record['type']
 		};
 		return acc;
 	}, {});

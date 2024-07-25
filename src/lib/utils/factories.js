@@ -1,7 +1,7 @@
 export function User(userObject = {}, sessionToken = null) {
 	const username = userObject['username'] || null;
 	const permissions = userObject['permissions'] || 0;
-	const auth = username ? true : false
+	const auth = username ? true : false;
 	return {
 		username: username,
 		firstname: userObject['firstname'] || null,

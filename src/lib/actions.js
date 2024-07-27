@@ -25,7 +25,8 @@ import {
 import { logInSocketio, logOutSocketio } from '$lib/socketio.js';
 import {
 	currentUser,
-	ecosystemsActuatorData,
+	ecosystemsActuatorsRecords,
+	ecosystemsActuatorsState,
 	ecosystemsLightData,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
@@ -256,9 +257,9 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 		});
 };
 
-export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
+export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
 	const dataKey = getStoreDataKey(ecosystemUID);
-	const storedData = getFreshStoreData(ecosystemsActuatorData, dataKey);
+	const storedData = getFreshStoreData(ecosystemsActuatorsState, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
 	}
@@ -270,7 +271,29 @@ export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
 			for (const actuatorType of actuatorTypes) {
 				storedData[actuatorType] = states[actuatorType];
 			}
-			updateStoreData(ecosystemsActuatorData, { [dataKey]: storedData });
+			updateStoreData(ecosystemsActuatorsState, { [dataKey]: storedData });
+			return data;
+		})
+		.catch(() => {
+			return {};
+		});
+};
+
+export const fetchEcosystemActuatorRecords = async function (ecosystemUID, actuatorType) {
+	const dataKey = getStoreDataKey(ecosystemUID, actuatorType);
+	const storedData = getFreshStoreData(ecosystemsActuatorsRecords, dataKey);
+	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 1)) {
+		return storedData;
+	}
+	return axios
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuator_records/${actuatorType}`)
+		.then((response) => {
+			const data = {
+				timestamp: new Date(response['data']['span'][1]),
+				span: response['data']['span'],
+				values: response['data']['values']
+			};
+			updateStoreData(ecosystemsActuatorsRecords, { [dataKey]: data });
 			return data;
 		})
 		.catch(() => {

@@ -5,7 +5,7 @@ import { APP_MODE, BASE_URL, getAppMode } from '$lib/utils/consts.js';
 import { getFreshStoreData, getStoreDataKey, updateStoreData } from '$lib/utils/functions.js';
 import {
 	ecosystems,
-	ecosystemsActuatorData,
+	ecosystemsActuatorsState,
 	ecosystemsLightData,
 	ecosystemsManagement,
 	ecosystemsSensorsDataCurrent,
@@ -132,14 +132,14 @@ socketio.on('actuators_data', (data) => {
 		return acc;
 	}, {});
 
-	const currentEcosystemsActuatorData = get(ecosystemsActuatorData);
+	const currentEcosystemsActuatorData = get(ecosystemsActuatorsState);
 	for (const ecosystemUid in dataByEcosystem) {
 		currentEcosystemsActuatorData[ecosystemUid] = {
 			...currentEcosystemsActuatorData[ecosystemUid],
 			...dataByEcosystem[ecosystemUid]
 		};
 	}
-	updateStoreData(ecosystemsActuatorData, currentEcosystemsActuatorData);
+	updateStoreData(ecosystemsActuatorsState, currentEcosystemsActuatorData);
 });
 
 socketio.on('current_sensors_data', (data) => {

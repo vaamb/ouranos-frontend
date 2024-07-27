@@ -67,6 +67,7 @@
 	.container {
 		width: 100%;
 		display: flex;
+		margin: auto;
 	}
 
 	.status {

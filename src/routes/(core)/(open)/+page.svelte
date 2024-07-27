@@ -14,7 +14,7 @@
 		currentUser,
 		ecosystems,
 		ecosystemsIds,
-		ecosystemsActuatorData,
+		ecosystemsActuatorsState,
 		ecosystemsLightData,
 		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
@@ -46,7 +46,7 @@
 		timeStringToDate
 	} from '$lib/utils/functions.js';
 	import {
-		fetchEcosystemActuatorsData,
+		fetchEcosystemActuatorsState,
 		fetchSensorCurrentData,
 		fetchEcosystemSensorsSkeleton,
 		fetchEcosystemLightData,
@@ -87,8 +87,8 @@
 	};
 	$: sortedCalendarEvents = sortCalendarEventsByHappening($calendarEvents);
 
-	const anyActiveActuator = function (ecosystemsActuatorData, uid) {
-		const actuatorsStatus = ecosystemsActuatorData[uid];
+	const anyActiveActuator = function (ecosystemsActuatorsState, uid) {
+		const actuatorsStatus = ecosystemsActuatorsState[uid];
 		if (!actuatorsStatus) {
 			return false;
 		}
@@ -146,7 +146,7 @@
 
 		for (const { uid, name } of $ecosystemsIds) {
 			if (ecosystemIsConnected($ecosystems[uid])) {
-				await fetchEcosystemActuatorsData(uid);
+				await fetchEcosystemActuatorsState(uid);
 			}
 		}
 		if (serviceEnabled($services, 'weather')) {
@@ -303,7 +303,7 @@
 					</BoxItem>
 				{:else}{@html '<!--Only connected and running ecosystems afterwards-->'}
 					{@const light = getParamStatus($ecosystemsManagement, uid, 'light')}
-					{@const actuator = anyActiveActuator($ecosystemsActuatorData, uid)}
+					{@const actuator = anyActiveActuator($ecosystemsActuatorsState, uid)}
 					{@const environmentData = getParamStatus($ecosystemsManagement, uid, 'environment_data')}
 					{@const plantsData = getParamStatus($ecosystemsManagement, uid, 'plants_data')}
 					{#if !(light || actuator || environmentData || plantsData)}
@@ -335,7 +335,7 @@
 					{#if actuator}
 						<BoxItem title="Actuators">
 							{#each actuatorTypes as actuatorType}
-								{@const actuator = $ecosystemsActuatorData[uid][actuatorType]}
+								{@const actuator = $ecosystemsActuatorsState[uid][actuatorType]}
 								{#if actuator['active']}
 									<p>
 										{capitalize(actuatorType)}:

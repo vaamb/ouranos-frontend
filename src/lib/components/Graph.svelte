@@ -11,26 +11,29 @@
 	export let defaultMax = 100;
 	export let suggestedMax = defaultMax;
 	export let height = 250;
+	export let legend = null;
+	export let xScale = null;
+	export let yScale = null;
 
 	let canvas;
 	let chart;
 
 	const chartLayout = {
 		scales: {
-			x: {
+			x: xScale || {
 				type: 'time',
 				time: {
 					unit: 'day'
 				}
 			},
-			y: {
+			y: yScale || {
 				display: true,
 				suggestedMin: suggestedMin || defaultMin,
 				suggestedMax: suggestedMax || defaultMax
 			}
 		},
 		plugins: {
-			legend: {
+			legend: legend || {
 				display: false
 			}
 		},

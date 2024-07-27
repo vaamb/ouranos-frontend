@@ -28,7 +28,7 @@
 	.box-item {
 		flex: 1;
 		background: var(--main-95);
-		padding-bottom: 17px;
+		padding-bottom: 5px;
 		width: 100%;
 	}
 

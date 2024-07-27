@@ -13,7 +13,7 @@ import {
 	faWind
 } from '@fortawesome/free-solid-svg-icons';
 
-let colors = {
+export let colors = {
 	blue: '#226ba3',
 	red: '#f0341f',
 	yellow: '#e9c429'

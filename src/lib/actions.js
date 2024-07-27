@@ -290,6 +290,7 @@ export const fetchEcosystemActuatorRecords = async function (ecosystemUID, actua
 		.then((response) => {
 			const data = {
 				timestamp: new Date(response['data']['span'][1]),
+				span: response['data']['span'],
 				values: response['data']['values']
 			};
 			updateStoreData(ecosystemsActuatorsRecords, { [dataKey]: data });

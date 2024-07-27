@@ -257,7 +257,7 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 		});
 };
 
-export const fetchEcosystemActuatorsData = async function (ecosystemUID) {
+export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
 	const dataKey = getStoreDataKey(ecosystemUID);
 	const storedData = getFreshStoreData(ecosystemsActuatorsState, dataKey);
 	if (!isEmpty(storedData)) {

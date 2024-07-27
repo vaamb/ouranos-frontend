@@ -46,7 +46,7 @@
 		timeStringToDate
 	} from '$lib/utils/functions.js';
 	import {
-		fetchEcosystemActuatorsData,
+		fetchEcosystemActuatorsState,
 		fetchSensorCurrentData,
 		fetchEcosystemSensorsSkeleton,
 		fetchEcosystemLightData,
@@ -146,7 +146,7 @@
 
 		for (const { uid, name } of $ecosystemsIds) {
 			if (ecosystemIsConnected($ecosystems[uid])) {
-				await fetchEcosystemActuatorsData(uid);
+				await fetchEcosystemActuatorsState(uid);
 			}
 		}
 		if (serviceEnabled($services, 'weather')) {

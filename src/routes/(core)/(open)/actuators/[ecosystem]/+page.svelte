@@ -6,7 +6,7 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Switch from '$lib/components/Switch.svelte';
 
-	import { fetchEcosystemActuatorsData, updateActuatorMode } from '$lib/actions.js';
+	import { fetchEcosystemActuatorsState, updateActuatorMode } from '$lib/actions.js';
 	import { ecosystemsIds, ecosystemsActuatorsState } from '$lib/store.js';
 	import { actuatorTypes } from '$lib/utils/consts.js';
 	import { capitalize, getEcosystemUid } from '$lib/utils/functions.js';
@@ -17,7 +17,7 @@
 
 <HeaderLine title="Actuators in {ecosystemName}" />
 
-{#await fetchEcosystemActuatorsData(ecosystemUID) then runningActuators}
+{#await fetchEcosystemActuatorsState(ecosystemUID) then runningActuators}
 	{#each actuatorTypes as actuator}
 		{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active']}
 			<Box title={capitalize(actuator)} maxWidth="350px">

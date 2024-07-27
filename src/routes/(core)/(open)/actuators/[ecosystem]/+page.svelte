@@ -3,7 +3,7 @@
 
 	import Box from '$lib/components/layout/Box.svelte';
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
-	import Graph from "$lib/components/Graph.svelte";
+	import Graph from '$lib/components/Graph.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Switch from '$lib/components/Switch.svelte';
 
@@ -26,8 +26,8 @@
 	$: ecosystemUID = getEcosystemUid($ecosystemsIds, ecosystemName);
 
 	const convertModeToBool = function (mode) {
-		return mode === "automatic";
-	}
+		return mode === 'automatic';
+	};
 
 	const formatRecords = function (data) {
 		const records = data['values'];
@@ -55,24 +55,24 @@
 			labels: labels,
 			datasets: [
 				{
-					label: "status",
+					label: 'status',
 					data: statuses,
 					borderColor: colors.yellow,
-					backgroundColor: colors.yellow + '60',  // Add alpha
+					backgroundColor: colors.yellow + '60', // Add alpha
 					borderWidth: 0.75,
-					fill: true,
+					fill: true
 				},
 				{
-					label: "mode",
+					label: 'mode',
 					data: modes,
 					borderColor: colors.blue,
-					backgroundColor: colors.blue + '40',  // Add alpha
+					backgroundColor: colors.blue + '40', // Add alpha
 					borderWidth: 0.75,
 					fill: true
 				}
 			]
 		};
-	}
+	};
 </script>
 
 <HeaderLine title="Actuators in {ecosystemName}" />
@@ -97,7 +97,8 @@
 				</BoxItem>
 				<BoxItem>
 					{#await fetchEcosystemActuatorRecords(ecosystemUID, actuator) then ecosystemsActuatorsRecords_notUsed}
-						{@const actuatorRecords = $ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
+						{@const actuatorRecords =
+							$ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
 						{#if actuatorRecords}
 							{@const formattedActuatorRecords = formatRecords(actuatorRecords)}
 							<Graph

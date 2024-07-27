@@ -35,7 +35,7 @@
 		plugins: {
 			legend: legend || {
 				display: false
-			},
+			}
 		},
 		pointRadius: 0,
 		pointHitRadius: 5,

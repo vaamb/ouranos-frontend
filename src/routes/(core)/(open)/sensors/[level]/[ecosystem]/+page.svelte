@@ -48,19 +48,28 @@
 		};
 	};
 
-	const formatHistoricData = function (historicData, measureName) {
-		const labels = [];
-		const data = [];
-		for (const row of historicData['values']) {
-			labels.push(row[0]);
-			data.push(row[1]);
+	const formatHistoricData = function (data, measureName) {
+		const records = data['values'];
+		// Pre-populate data with a first bound (so they all start at the same time)
+		const labels = [new Date(data['span'][0])];
+		const values = [null];
+		// Fill datasets from record data
+		for (const record of records) {
+			labels.push(record[0]);
+			values.push(record[1]);
 		}
+		// Post populate data with a last bound (so they all end at the same time)
+		labels.push(new Date(data['span'][1]));
+		values.push(null);
+
 		return {
-			dataset: {
+			datasets: [{
 				label: measureName,
-				data: data,
-				borderColor: colors[measureName]
-			},
+				data: values,
+				borderColor: colors[measureName],
+				backgroundColor: colors[measureName] + '10',  // Add alpha
+				fill: true
+			}],
 			labels: labels
 		};
 	};
@@ -96,7 +105,7 @@
 										sensorsBone.measure
 									)}
 									<Graph
-										datasets={[formattedHistoricSensorsData.dataset]}
+										datasets={formattedHistoricSensorsData.datasets}
 										labels={formattedHistoricSensorsData.labels}
 										suggestedMin={minValues[sensorsBone.measure]}
 										suggestedMax={maxValues[sensorsBone.measure]}

@@ -29,9 +29,9 @@ export const graphs = {
 			humidity: colors.blue,
 			absolute_humidity: colors.blue,
 			dew_point: colors.red,
-			light: colors.yellow
-			// AQI: ,
-			// eCO2: ,
+			light: colors.yellow,
+			AQI: colors.green,
+			eCO2: colors.orange
 			// TVOC:
 		},
 		icons: {

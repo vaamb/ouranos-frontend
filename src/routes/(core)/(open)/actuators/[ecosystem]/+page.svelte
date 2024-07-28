@@ -95,11 +95,10 @@
 						}}
 					/>
 				</BoxItem>
-				<BoxItem>
-					{#await fetchEcosystemActuatorRecords(ecosystemUID, actuator) then ecosystemsActuatorsRecords_notUsed}
-						{@const actuatorRecords =
-							$ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
-						{#if actuatorRecords}
+				{#await fetchEcosystemActuatorRecords(ecosystemUID, actuator) then ecosystemsActuatorsRecords_notUsed}
+					{@const actuatorRecords = $ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
+					{#if actuatorRecords.values.length >= 3}
+						<BoxItem>
 							{@const formattedActuatorRecords = formatRecords(actuatorRecords)}
 							<Graph
 								datasets={formattedActuatorRecords.datasets}
@@ -111,9 +110,9 @@
 									position: 'right'
 								}}
 							/>
-						{/if}
-					{/await}
-				</BoxItem>
+						</BoxItem>
+					{/if}
+				{/await}
 			</Box>
 		{/if}
 	{/each}

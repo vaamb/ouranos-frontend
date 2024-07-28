@@ -14,21 +14,24 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 export let colors = {
-	blue: '#226ba3',
 	red: '#f0341f',
-	yellow: '#e9c429'
+	orange: '#Ed7c24',
+	yellow: '#e9c429',
+	green: '#88ae60',
+	blue: '#226ba3'
 };
 
 export const graphs = {
 	environment: {
 		colors: {
+			default: colors.blue,
 			temperature: colors.red,
 			humidity: colors.blue,
 			absolute_humidity: colors.blue,
 			dew_point: colors.red,
-			light: colors.yellow
-			// AQI: ,
-			// eCO2: ,
+			light: colors.yellow,
+			AQI: colors.green,
+			eCO2: colors.orange
 			// TVOC:
 		},
 		icons: {

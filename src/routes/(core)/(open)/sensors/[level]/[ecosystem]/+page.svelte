@@ -66,8 +66,8 @@
 			datasets: [{
 				label: measureName,
 				data: values,
-				borderColor: colors[measureName],
-				backgroundColor: colors[measureName] + '10',  // Add alpha
+				borderColor: colors[measureName] || colors['default'],
+				backgroundColor: colors[measureName] + '10' || colors['default'] + '10',  // Add alpha
 				fill: true
 			}],
 			labels: labels

@@ -63,13 +63,17 @@
 		values.push(null);
 
 		return {
-			datasets: [{
-				label: measureName,
-				data: values,
-				borderColor: colors[measureName] || colors['default'],
-				backgroundColor: colors[measureName] + '10' || colors['default'] + '10',  // Add alpha
-				fill: true
-			}],
+			datasets: [
+				{
+					label: measureName,
+					data: values,
+					borderColor: colors[measureName] || colors['default'],
+					backgroundColor: colors[measureName]
+						? colors[measureName] + '10'
+						: colors['default'] + '10', // Add alpha
+					fill: true
+				}
+			],
 			labels: labels
 		};
 	};

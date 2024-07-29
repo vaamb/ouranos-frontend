@@ -80,22 +80,24 @@
 {#await fetchEcosystemActuatorsState(ecosystemUID) then actuatorsState_notUsed}
 	{#each actuatorTypes as actuator}
 		{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active']}
-			<Box title={capitalize(actuator)} direction="row">
-				<BoxItem maxWidth="275px">
-					<Switch
-						actuatorType={actuator}
-						status={$ecosystemsActuatorsState[ecosystemUID][actuator]['status']}
-						mode={$ecosystemsActuatorsState[ecosystemUID][actuator]['mode']}
-						on:switch={(event) => {
-							updateActuatorMode(
-								ecosystemUID,
-								event['detail']['actuatorType'],
-								event['detail']['mode']
-							);
-						}}
-					/>
-				</BoxItem>
-				{#await fetchEcosystemActuatorRecords(ecosystemUID, actuator) then ecosystemsActuatorsRecords_notUsed}
+			{#await fetchEcosystemActuatorRecords(ecosystemUID, actuator) then ecosystemsActuatorsRecords_notUsed}
+				{@const actuatorRecords = $ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
+				{@const drawGraph = actuatorRecords.values.length >= 3}
+				<Box title={capitalize(actuator)} direction="row" maxWidth="{drawGraph? null: '325px'}">
+					<BoxItem maxWidth="{drawGraph? '305px': null}">
+						<Switch
+							actuatorType={actuator}
+							status={$ecosystemsActuatorsState[ecosystemUID][actuator]['status']}
+							mode={$ecosystemsActuatorsState[ecosystemUID][actuator]['mode']}
+							on:switch={(event) => {
+								updateActuatorMode(
+									ecosystemUID,
+									event['detail']['actuatorType'],
+									event['detail']['mode']
+								);
+							}}
+						/>
+					</BoxItem>
 					{@const actuatorRecords = $ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
 					{#if actuatorRecords.values.length >= 3}
 						<BoxItem>
@@ -112,8 +114,8 @@
 							/>
 						</BoxItem>
 					{/if}
-				{/await}
-			</Box>
+				</Box>
+			{/await}
 		{/if}
 	{/each}
 {/await}

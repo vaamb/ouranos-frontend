@@ -166,7 +166,10 @@ socketio.on('historic_sensors_data_update', (data) => {
 		}
 		let values = currentData['values'];
 		values.push([sensorRecord['timestamp'], sensorRecord['value']]);
+		const timestamp = new Date(sensorRecord['timestamp'])
+		const lowerSpan = new Date(timestamp - 1000 * 60 * 60 * 24 * 7);
 		updatedData[storageKey] = {
+			span: [lowerSpan, timestamp],
 			timestamp: new Date(sensorRecord['timestamp']),
 			values: values.slice(-maxValues)
 		};

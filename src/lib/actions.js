@@ -442,11 +442,11 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 				server['start_time'] = new Date(server['start_time']);
 				server['last_seen'] = new Date();
 			});
-			const dataObject = servers.reduce((a, v) => ({ ...a, [v['system_uid']]: v }), {});
-			const sorted = servers.sort(dynamicSort('system_uid'));
+			const dataObject = servers.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
+			const sorted = servers.sort(dynamicSort('uid'));
 			const IDsArray = sorted.map((obj) => ({
-				uid: obj['system_uid'],
-				name: capitalize(obj['system_uid'].replace('_', ' '))
+				uid: obj['uid'],
+				name: capitalize(obj['uid'].replace('_', ' '))
 			}));
 			return {
 				servers: dataObject,

@@ -111,9 +111,11 @@ socketio.on('current_server_data', (data) => {
 	const serverUid = 'base_server';
 	const dataKey = getStoreDataKey(serverUid);
 	const serversObj = get(servers);
-	serversObj[dataKey]['last_seen'] = new Date();
-	servers.set(serversObj);
-	updateStoreData(serversCurrentData, { [dataKey]: data });
+	if (serversObj[dataKey]) {
+		serversObj[dataKey]['last_seen'] = new Date();
+		servers.set(serversObj);
+		updateStoreData(serversCurrentData, { [dataKey]: data });
+	}
 });
 
 socketio.on('actuators_data', (data) => {
@@ -166,7 +168,7 @@ socketio.on('historic_sensors_data_update', (data) => {
 		}
 		let values = currentData['values'];
 		values.push([sensorRecord['timestamp'], sensorRecord['value']]);
-		const timestamp = new Date(sensorRecord['timestamp'])
+		const timestamp = new Date(sensorRecord['timestamp']);
 		const lowerSpan = new Date(timestamp - 1000 * 60 * 60 * 24 * 7);
 		updatedData[storageKey] = {
 			span: [lowerSpan, timestamp],

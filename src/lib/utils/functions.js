@@ -119,14 +119,6 @@ export const getWeatherIcon = function (weather) {
 	return weatherIconTranslation[weather];
 };
 
-export const computePingServerStatusClass = function (pingServerLastSeen, now) {
-	if (now - pingServerLastSeen < 60 * 1000) {
-		return 'on';
-	} else {
-		return 'off';
-	}
-};
-
 export const computeServerUptime = function (serverStartTime, now) {
 	if (serverStartTime) {
 		return humanizeDuration(now - serverStartTime, {

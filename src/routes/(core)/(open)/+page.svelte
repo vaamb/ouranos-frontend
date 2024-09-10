@@ -19,7 +19,7 @@
 		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsSkeleton,
-		pingServerLastSeen,
+		pingServerIsConnected,
 		pingServerLatency,
 		servers,
 		serversCurrentData,
@@ -32,7 +32,6 @@
 	import {
 		computeEcosystemStatusClass,
 		computeLightingHours,
-		computePingServerStatusClass,
 		computeServerUptime,
 		isEmpty,
 		ecosystemIsConnected,
@@ -205,7 +204,7 @@
 		<Box
 			title="Server info"
 			align="center"
-			status={computePingServerStatusClass($pingServerLastSeen, now)}
+			status={$pingServerIsConnected? 'on': 'off'}
 		>
 			<BoxItem title="Average latency">
 				{#if $pingServerLatency === null}

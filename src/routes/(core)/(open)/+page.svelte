@@ -204,7 +204,6 @@
 		<Box
 			title="Server info"
 			align="center"
-			status={$pingServerIsConnected? 'on': 'off'}
 		>
 			<BoxItem title="Average latency">
 				{#if $pingServerLatency === null}

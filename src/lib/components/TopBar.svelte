@@ -1,16 +1,19 @@
 <script>
 	import Fa from 'svelte-fa';
-	import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+	import { faCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 	import { logOut } from '$lib/actions.js';
 	import { permissions } from '$lib/utils/consts.js';
-	import { currentUser, warnings } from '$lib/store.js';
+	import { currentUser, pingServerIsConnected, warnings } from '$lib/store.js';
 
 	export let development;
 </script>
 
 <div class="top-bar">
 	<div class="left">
+		<div style="margin-right: 10px">
+			<Fa icon={faCircle} class={$pingServerIsConnected ? 'on' : 'deco'} />
+		</div>
 		{#if $currentUser.can(permissions.ADMIN)}
 			<div>Logged as Admin</div>
 		{:else if $currentUser.can(permissions.OPERATE)}

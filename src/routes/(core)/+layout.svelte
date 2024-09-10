@@ -13,12 +13,15 @@
 		engines,
 		enginesIds,
 		flashMessage,
+		pingServerIsConnected,
+		pingServerLastSeen,
 		servers,
 		serversIds,
 		services,
 		warnings
 	} from '$lib/store.js';
 	import { APP_MODE } from '$lib/utils/consts.js';
+	import { onDestroy, onMount } from "svelte";
 
 	export let data;
 
@@ -94,6 +97,23 @@
 		msgs.shift();
 		flashMessage.set(msgs);
 	};
+
+	const updatePingServerIsConnected = function () {
+		if ((new Date() - $pingServerLastSeen) < 30 * 1000) {
+			pingServerIsConnected.set(true)
+		} else {
+			pingServerIsConnected.set(false)
+		}
+	};
+	let updatePingServerIsConnectedInterval = undefined;
+
+	onMount(async () => {
+		updatePingServerIsConnectedInterval = setInterval(updatePingServerIsConnected, 5 * 1000);
+	});
+
+	onDestroy(async () => {
+		clearInterval(updatePingServerIsConnectedInterval);
+	});
 </script>
 
 <Modal

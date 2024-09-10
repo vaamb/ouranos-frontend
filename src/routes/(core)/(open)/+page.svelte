@@ -201,10 +201,7 @@
 		</Box>
 	{/if}
 	{#if $currentUser.can(permissions.ADMIN)}
-		<Box
-			title="Server info"
-			align="center"
-		>
+		<Box title="Server info" align="center">
 			<BoxItem title="Average latency">
 				{#if $pingServerLatency === null}
 					<p>Computing ...</p>

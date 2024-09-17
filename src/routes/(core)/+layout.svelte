@@ -126,39 +126,22 @@
 </Modal>
 
 <Menu items={menuItems} width={menuWidth} />
-<div class="container" style="--margin-width:{menuWidth}">
-	<TopBar development={appMode === APP_MODE.development} />
-	<div class="main">
-		<slot />
-	</div>
+<TopBar development={appMode === APP_MODE.development} {menuWidth} />
+<div class="main" style="--margin-width:{menuWidth}">
+	<slot />
 </div>
 
 <style>
-	.container {
-		position: absolute;
-		left: 0;
-		right: 0;
-		margin-left: 0;
-		display: flex;
-		flex-direction: column;
-		background-color: var(--main-95);
-	}
-
 	.main {
-		min-height: calc(
-			100vh - 141px
-		); /* 141px = Nav bar (65) + Top bar (45) + border (1) + padding (10+20) */
+		min-height: calc(100vh - 141px); /* 141px = Nav bar (65) + Top bar (45) + border (1) + padding (10+20) */
 		padding: 10px 20px 20px 20px;
-		position: relative;
 	}
 
 	/* Large devices (laptops/desktops, 992px and up) */
 	@media only screen and (min-width: 992px) {
-		.container {
-			margin-left: calc(var(--margin-width) * 1px);
-		}
-
 		.main {
+			margin-top: 46px; /* Top bar (45) + border (1) */
+			margin-left: calc(var(--margin-width) * 1px);
 			min-height: calc(100vh - 76px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
 			padding-right: 45px;
 		}

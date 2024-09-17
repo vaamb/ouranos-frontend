@@ -7,9 +7,10 @@
 	import { currentUser, pingServerIsConnected, warnings } from '$lib/store.js';
 
 	export let development;
+	export let menuWidth = 210;
 </script>
 
-<div class="top-bar">
+<div class="top-bar" style="--menu-width:{menuWidth}">
 	<div class="left">
 		<div style="margin-right: 10px">
 			<Fa icon={faCircle} class={$pingServerIsConnected ? 'on' : 'deco'} />
@@ -63,6 +64,8 @@
 	}
 
 	.top-bar {
+		position: sticky;
+		top: 0;
 		display: flex;
 		font-size: 1rem;
 		font-weight: bold;
@@ -144,6 +147,12 @@
 	}
 
 	@media only screen and (min-width: 992px) {
+		.top-bar {
+			width: calc(100% - var(--menu-width) * 1px);
+			margin-left: calc(var(--menu-width) * 1px);
+			position: fixed;
+		}
+
 		.left {
 			display: inherit;
 		}

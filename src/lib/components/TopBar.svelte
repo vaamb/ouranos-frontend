@@ -186,10 +186,6 @@
 			display: inherit;
 		}
 
-		.right {
-			width: 210px;
-		}
-
 		.warning-button {
 			color: var(--red);
 			text-align: center;

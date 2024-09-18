@@ -20,6 +20,7 @@ export const servers = writable({});
 export const serversIds = writable([]);
 export const serversCurrentData = writable({});
 export const serversHistoricData = writable({});
+export const pingServerIsConnected = writable(true);
 export const pingServerLastSeen = writable(new Date(0));
 export const pingServerLatency = writable(null);
 export const services = writable();

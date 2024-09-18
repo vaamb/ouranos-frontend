@@ -106,6 +106,7 @@
 	}
 
 	nav {
+		top: 0;
 		background-color: var(--main-25);
 		color: var(--main-95);
 		display: flex;

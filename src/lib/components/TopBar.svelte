@@ -15,19 +15,23 @@
 		<div style="margin-right: 10px">
 			<Fa icon={faCircle} class={$pingServerIsConnected ? 'on' : 'deco'} />
 		</div>
-		{#if $currentUser.can(permissions.ADMIN)}
-			<div>Logged as Admin</div>
-		{:else if $currentUser.can(permissions.OPERATE)}
-			<div>Logged as Operator</div>
-		{/if}
+		<div class="user-permission">
+			{#if $currentUser.can(permissions.ADMIN)}
+				<div>Logged as Admin</div>
+			{:else if $currentUser.can(permissions.OPERATE)}
+				<div>Logged as Operator</div>
+			{/if}
+		</div>
 	</div>
 	<div class="center">
-		{#if development}
-			<div style="color: var(--red)">Development mode</div>
-		{/if}
+		<div class="development-warning">
+			{#if development}
+				<div class="small-screen">Dev mode</div>
+				<div class="big-screen">Development mode</div>
+			{/if}
+		</div>
 	</div>
 	<div class="right">
-		<div style="margin: auto" />
 		<div class="dropdown">
 			{#if $currentUser.isAnonymous}
 				<a href="/auth/login">
@@ -64,8 +68,6 @@
 	}
 
 	.top-bar {
-		position: sticky;
-		top: 0;
 		display: flex;
 		font-size: 1rem;
 		font-weight: bold;
@@ -76,17 +78,31 @@
 	}
 
 	.left {
-		width: 250px;
+		display: flex;
 		margin: auto 0 auto 20px;
+	}
+
+	.user-permission {
 		display: none;
 	}
 
 	.center {
-		margin: auto auto auto 20px;
+		margin: auto;
+	}
+
+	.development-warning {
+		color: var(--red);
+	}
+
+	.small-screen {
+		display: inherit;
+	}
+
+	.big-screen {
+		display: none;
 	}
 
 	.right {
-		width: 150px;
 		display: flex;
 	}
 
@@ -95,7 +111,7 @@
 	}
 
 	.dropdown {
-		width: 55px;
+		width: 104px;
 		height: 100%;
 		justify-content: center;
 		display: block;
@@ -115,16 +131,16 @@
 		position: absolute;
 		color: var(--derived-50);
 		background-color: var(--main-95);
-		width: 113px;
+		width: 163px; /* dropdown width (104px) + padding (2 * 30px) - border (1px) */
 		z-index: 10;
 		right: 0;
-		border: thin solid var(--main-40);
+		border: 1px solid var(--main-40);
 		margin-top: 26px;
 	}
 
 	.dropdown-content > div {
 		padding: 0 16px;
-		width: 81px;
+		width: 131px /* dropdown-content (163) - padding (2 * 16px) */;
 		display: block;
 		line-height: 45px;
 	}
@@ -148,21 +164,30 @@
 
 	@media only screen and (min-width: 992px) {
 		.top-bar {
+			position: sticky;
+			top: 0;
 			width: calc(100% - var(--menu-width) * 1px);
 			margin-left: calc(var(--menu-width) * 1px);
-			position: fixed;
 		}
 
 		.left {
+			width: 210px;
+		}
+
+		.user-permission {
 			display: inherit;
 		}
 
-		.center {
-			margin: auto;
+		.small-screen {
+			display: none;
+		}
+
+		.big-screen {
+			display: inherit;
 		}
 
 		.right {
-			width: 250px;
+			width: 210px;
 		}
 
 		.warning-button {

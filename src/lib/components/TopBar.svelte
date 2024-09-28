@@ -35,7 +35,11 @@
 		<div class="dropdown">
 			{#if $currentUser.isAnonymous}
 				<a href="/auth/login">
-					<div class="center-content">Log in</div>
+					<div class="center-content" style="display: flex">
+						<div style="margin: auto">
+							Log in
+						</div>
+					</div>
 				</a>
 			{:else}
 				<button class="reset-button dropdown-button center-content">

@@ -39,25 +39,17 @@ export const generateListOfMenuItems = function (
 		menuItems.push(MenuItem('Weather Forecast', '/weather', faCloud));
 	}
 
-	/*
-	let submenus = {
-		environment_data: [],
-		plants_data: [],
-		health: [],
-		actuators: [],
-		webcam: []
-	};
-	for (const id of ecosystemsIds) {
-		for (const submenu of Object.keys(submenus)) {
-			const ecosystemManagement = ecosystemsManagement[id.uid] || {};
-			if (ecosystemManagement[submenu]) {
-				submenus[submenu].push({ uid: id.uid, name: id.name });
+	if (currentUser.can(permissions.OPERATE)) {
+		if (enginesIds.length > 0) {
+			let children = [MenuItem('Overview', '/engine/overview/settings')];
+			for (const id of enginesIds) {
+				children.push(MenuItem(id.uid, `/engine/${id.uid}/settings`));
 			}
+			menuItems.push(MenuItem('Engines', '#', faServer, children));
 		}
 	}
-	*/
 
-	let ecosystemMenuItems = [
+	let ecosystemMenuItemsAvailable = [
 		{
 			name: 'Environment',
 			icon: faThermometerHalf,
@@ -90,31 +82,6 @@ export const generateListOfMenuItems = function (
 		}
 	];
 
-	/*
-	for (const menuItem of ecosystemMenuItems) {
-		const management = menuItem.management;
-		if (Object.prototype.hasOwnProperty.call(submenus, management)) {
-			if (submenus[management].length > 0) {
-				let children = [];
-				for (const ecosystemId of submenus[management]) {
-					children.push(MenuItem(ecosystemId.name, menuItem.path + '/' + ecosystemId.name));
-				}
-				menuItems.push(MenuItem(menuItem.name, menuItem.path, menuItem.icon, children));
-			}
-		}
-	}
-	 */
-
-	if (currentUser.can(permissions.OPERATE)) {
-		if (enginesIds.length > 0) {
-			let children = [MenuItem('Overview', '/engine/overview/settings')];
-			for (const id of enginesIds) {
-				children.push(MenuItem(id.uid, `/engine/${id.uid}/settings`));
-			}
-			menuItems.push(MenuItem('Engines', '#', faServer, children));
-		}
-	}
-
 	let ecosystemMenus = [];
 	for (const id of ecosystemsIds) {
 		const uid = id['uid'];
@@ -123,11 +90,11 @@ export const generateListOfMenuItems = function (
 		if (currentUser.can(permissions.OPERATE)) {
 			children.push(MenuItem('Settings', `/ecosystem/${id['name']}/settings`, faCog));
 		}
-		for (const menuItem of ecosystemMenuItems) {
-			const management = menuItem['management'];
+		for (const menuItemAvailable of ecosystemMenuItemsAvailable) {
+			const management = menuItemAvailable['management'];
 			if (ecosystemManagement[management]) {
 				children.push(
-					MenuItem(menuItem['name'], `/ecosystem/${id['name']}/${menuItem['path']}`, menuItem['icon'])
+					MenuItem(menuItemAvailable['name'], `/ecosystem/${id['name']}/${menuItemAvailable['path']}`, menuItemAvailable['icon'])
 				);
 			}
 		}

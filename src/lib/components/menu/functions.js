@@ -61,31 +61,31 @@ export const generateListOfMenuItems = function (
 		{
 			name: 'Environment',
 			icon: faThermometerHalf,
-			path: '/sensors/environment',
+			path: 'sensors/environment',
 			management: 'environment_data'
 		},
 		{
 			name: 'Plants',
 			icon: faSeedling,
-			path: '/sensors/plants',
+			path: 'sensors/plants',
 			management: 'plants_data'
 		},
 		{
 			name: 'Plant health',
 			icon: faHeartbeat,
-			path: '/health',
+			path: 'health',
 			management: 'health'
 		},
 		{
 			name: 'Actuators',
 			icon: faToggleOff,
-			path: '/actuators',
+			path: 'actuators',
 			management: 'switches'
 		},
 		{
 			name: 'Pictures',
 			icon: faVideo,
-			path: '/pictures',
+			path: 'pictures',
 			management: 'pictures'
 		}
 	];
@@ -107,21 +107,12 @@ export const generateListOfMenuItems = function (
 
 	if (currentUser.can(permissions.OPERATE)) {
 		if (enginesIds.length > 0) {
-			let children = [MenuItem('Overview', '/settings/engine/overview')];
+			let children = [MenuItem('Overview', '/engine/overview/settings')];
 			for (const id of enginesIds) {
-				children.push(MenuItem(id.uid, '/settings/engine/' + id.uid));
+				children.push(MenuItem(id.uid, `/engine/${id.uid}/settings`));
 			}
 			menuItems.push(MenuItem('Engines', '#', faServer, children));
 		}
-		/*
-		if (ecosystemsIds.length > 0) {
-			let children = [];
-			for (const id of ecosystemsIds) {
-				children.push(MenuItem(id.name, '/settings/ecosystem/' + id.name));
-			}
-			menuItems.push(MenuItem('Ecosystems', '/settings/ecosystem', faCog, children));
-		}
-		*/
 	}
 
 	let ecosystemMenus = [];
@@ -130,13 +121,13 @@ export const generateListOfMenuItems = function (
 		const ecosystemManagement = ecosystemsManagement[uid];
 		let children = [];
 		if (currentUser.can(permissions.OPERATE)) {
-			children.push(MenuItem('Settings', '/settings/ecosystem/' + id.name, faCog));
+			children.push(MenuItem('Settings', `/ecosystem/${id['name']}/settings`, faCog));
 		}
 		for (const menuItem of ecosystemMenuItems) {
 			const management = menuItem['management'];
 			if (ecosystemManagement[management]) {
 				children.push(
-					MenuItem(menuItem['name'], menuItem['path'] + '/' + id['name'], menuItem['icon'])
+					MenuItem(menuItem['name'], `/ecosystem/${id['name']}/${menuItem['path']}`, menuItem['icon'])
 				);
 			}
 		}

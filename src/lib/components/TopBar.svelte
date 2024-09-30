@@ -1,10 +1,10 @@
 <script>
 	import Fa from 'svelte-fa';
-	import { faCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+	import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 	import { logOut } from '$lib/actions.js';
 	import { permissions } from '$lib/utils/consts.js';
-	import { currentUser, pingServerIsConnected, warnings } from '$lib/store.js';
+	import { currentUser, warnings } from '$lib/store.js';
 
 	export let development;
 	export let menuWidth = 210;
@@ -12,9 +12,7 @@
 
 <div class="top-bar" style="--menu-width:{menuWidth}">
 	<div class="left">
-		<div style="margin-right: 10px">
-			<Fa icon={faCircle} class={$pingServerIsConnected ? 'on' : 'deco'} />
-		</div>
+		<div style="margin-right: 10px"></div>
 		<div class="user-permission">
 			{#if $currentUser.can(permissions.ADMIN)}
 				<div>Logged as Admin</div>

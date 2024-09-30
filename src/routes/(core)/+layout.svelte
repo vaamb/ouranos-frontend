@@ -1,4 +1,5 @@
 <script>
+	import BottomBar from "$lib/components/BottomBar.svelte";
 	import Menu from '$lib/components/menu/Menu.svelte';
 	import { generateListOfMenuItems } from '$lib/components/menu/functions.js';
 	import Modal from '$lib/components/Modal.svelte';
@@ -130,6 +131,7 @@
 <div class="main" style="--margin-width:{menuWidth}">
 	<slot />
 </div>
+<BottomBar {menuWidth} />
 
 <style>
 	.main {

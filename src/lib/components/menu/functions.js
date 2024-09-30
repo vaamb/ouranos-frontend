@@ -109,8 +109,8 @@ export const generateListOfMenuItems = function (
 		for (const id of systemsIds) {
 			const uid = id['uid'];
 			const children = [
-				MenuItem('Logs', `/admin/systems/${uid}/logs`),
-				MenuItem('Server load', `/admin/systems/${uid}/load`)
+				MenuItem('Logs', `/admin/system/${uid}/logs`),
+				MenuItem('Server load', `/admin/system/${uid}/load`)
 			];
 			systemMenus.push(MenuItem(id['name'], '#', undefined, children, 'var(--derived-50)'));
 		}

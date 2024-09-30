@@ -291,7 +291,7 @@
 						{#if $currentUser.can(permissions.OPERATE)}
 							<p>
 								Click
-								<a href="/settings/ecosystem/{name}">here</a>
+								<a href="/ecosystem/{name}/settings">here</a>
 								to configure {name}
 							</p>
 						{/if}
@@ -307,7 +307,7 @@
 							{#if $currentUser.can(permissions.OPERATE)}
 								<p>
 									Click
-									<a href="/settings/ecosystem/{name}">here</a>
+									<a href="/ecosystem/{name}/settings">here</a>
 									to configure {name}
 								</p>
 							{/if}

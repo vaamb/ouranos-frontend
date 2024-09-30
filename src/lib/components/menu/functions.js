@@ -39,90 +39,48 @@ export const generateListOfMenuItems = function (
 		menuItems.push(MenuItem('Weather Forecast', '/weather', faCloud));
 	}
 
-	/*
-	let submenus = {
-		environment_data: [],
-		plants_data: [],
-		health: [],
-		actuators: [],
-		webcam: []
-	};
-	for (const id of ecosystemsIds) {
-		for (const submenu of Object.keys(submenus)) {
-			const ecosystemManagement = ecosystemsManagement[id.uid] || {};
-			if (ecosystemManagement[submenu]) {
-				submenus[submenu].push({ uid: id.uid, name: id.name });
+	if (currentUser.can(permissions.OPERATE)) {
+		if (enginesIds.length > 0) {
+			let children = [MenuItem('Overview', '/engine/overview/settings')];
+			for (const id of enginesIds) {
+				children.push(MenuItem(id.uid, `/engine/${id.uid}/settings`));
 			}
+			menuItems.push(MenuItem('Engines', '#', faServer, children));
 		}
 	}
-	*/
 
-	let ecosystemMenuItems = [
+	let ecosystemMenuItemsAvailable = [
 		{
 			name: 'Environment',
 			icon: faThermometerHalf,
-			path: '/sensors/environment',
+			path: 'sensors/environment',
 			management: 'environment_data'
 		},
 		{
 			name: 'Plants',
 			icon: faSeedling,
-			path: '/sensors/plants',
+			path: 'sensors/plants',
 			management: 'plants_data'
 		},
 		{
 			name: 'Plant health',
 			icon: faHeartbeat,
-			path: '/health',
+			path: 'health',
 			management: 'health'
 		},
 		{
 			name: 'Actuators',
 			icon: faToggleOff,
-			path: '/actuators',
+			path: 'actuators',
 			management: 'switches'
 		},
 		{
 			name: 'Pictures',
 			icon: faVideo,
-			path: '/pictures',
+			path: 'pictures',
 			management: 'pictures'
 		}
 	];
-
-	/*
-	for (const menuItem of ecosystemMenuItems) {
-		const management = menuItem.management;
-		if (Object.prototype.hasOwnProperty.call(submenus, management)) {
-			if (submenus[management].length > 0) {
-				let children = [];
-				for (const ecosystemId of submenus[management]) {
-					children.push(MenuItem(ecosystemId.name, menuItem.path + '/' + ecosystemId.name));
-				}
-				menuItems.push(MenuItem(menuItem.name, menuItem.path, menuItem.icon, children));
-			}
-		}
-	}
-	 */
-
-	if (currentUser.can(permissions.OPERATE)) {
-		if (enginesIds.length > 0) {
-			let children = [MenuItem('Overview', '/settings/engine/overview')];
-			for (const id of enginesIds) {
-				children.push(MenuItem(id.uid, '/settings/engine/' + id.uid));
-			}
-			menuItems.push(MenuItem('Engines', '#', faServer, children));
-		}
-		/*
-		if (ecosystemsIds.length > 0) {
-			let children = [];
-			for (const id of ecosystemsIds) {
-				children.push(MenuItem(id.name, '/settings/ecosystem/' + id.name));
-			}
-			menuItems.push(MenuItem('Ecosystems', '/settings/ecosystem', faCog, children));
-		}
-		*/
-	}
 
 	let ecosystemMenus = [];
 	for (const id of ecosystemsIds) {
@@ -130,13 +88,13 @@ export const generateListOfMenuItems = function (
 		const ecosystemManagement = ecosystemsManagement[uid];
 		let children = [];
 		if (currentUser.can(permissions.OPERATE)) {
-			children.push(MenuItem('Settings', '/settings/ecosystem/' + id.name, faCog));
+			children.push(MenuItem('Settings', `/ecosystem/${id['name']}/settings`, faCog));
 		}
-		for (const menuItem of ecosystemMenuItems) {
-			const management = menuItem['management'];
+		for (const menuItemAvailable of ecosystemMenuItemsAvailable) {
+			const management = menuItemAvailable['management'];
 			if (ecosystemManagement[management]) {
 				children.push(
-					MenuItem(menuItem['name'], menuItem['path'] + '/' + id['name'], menuItem['icon'])
+					MenuItem(menuItemAvailable['name'], `/ecosystem/${id['name']}/${menuItemAvailable['path']}`, menuItemAvailable['icon'])
 				);
 			}
 		}
@@ -151,8 +109,8 @@ export const generateListOfMenuItems = function (
 		for (const id of systemsIds) {
 			const uid = id['uid'];
 			const children = [
-				MenuItem('Logs', `/admin/systems/${uid}/logs`),
-				MenuItem('Server load', `/admin/systems/${uid}/load`)
+				MenuItem('Logs', `/admin/system/${uid}/logs`),
+				MenuItem('Server load', `/admin/system/${uid}/load`)
 			];
 			systemMenus.push(MenuItem(id['name'], '#', undefined, children, 'var(--derived-50)'));
 		}

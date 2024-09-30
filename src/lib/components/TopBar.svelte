@@ -168,7 +168,7 @@
 
 	@media only screen and (min-width: 992px) {
 		.top-bar {
-			position: sticky;
+			position: fixed;
 			top: 0;
 			width: calc(100% - var(--menu-width) * 1px);
 			margin-left: calc(var(--menu-width) * 1px);

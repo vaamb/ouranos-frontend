@@ -32,17 +32,17 @@
 		</div>
 	</div>
 	<div class="right">
-		<div class="dropdown">
+		<div class="user-menu">
 			{#if $currentUser.isAnonymous}
 				<a href="/auth/login">
-					<div class="center-content" style="display: flex">
+					<div class="center-button" style="display: flex">
 						<div style="margin: auto">
 							Log in
 						</div>
 					</div>
 				</a>
 			{:else}
-				<button class="reset-button dropdown-button center-content">
+				<button class="reset-button dropdown-button center-button">
 					{$currentUser.username}
 				</button>
 				<div class="dropdown-content" id="userDropdownContent">
@@ -114,7 +114,7 @@
 		cursor: pointer;
 	}
 
-	.dropdown {
+	.user-menu {
 		width: 104px;
 		height: 100%;
 		justify-content: center;
@@ -122,6 +122,13 @@
 		background-color: var(--main-40);
 		color: var(--main-95);
 		padding: 0 30px;
+		position: relative;
+	}
+
+	.center-button {
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 		position: relative;
 	}
 
@@ -153,7 +160,7 @@
 		background-color: var(--main-90);
 	}
 
-	.dropdown:hover .dropdown-content {
+	.user-menu:hover .dropdown-content {
 		display: block;
 	}
 

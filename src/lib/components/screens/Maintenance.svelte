@@ -13,10 +13,4 @@
 	p {
 		font-size: 1.5rem;
 	}
-	.center-content {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 100vh;
-	}
 </style>

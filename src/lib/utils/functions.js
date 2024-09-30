@@ -52,7 +52,7 @@ export const isObject = function (object) {
 
 export const capitalize = function (string) {
 	if (typeof string !== 'string') return '';
-	return string.charAt(0).toUpperCase() + string.slice(1);
+	return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 };
 
 export const formatDateTime = function (date) {

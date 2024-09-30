@@ -19,7 +19,6 @@
 		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsSkeleton,
-		pingServerIsConnected,
 		pingServerLatency,
 		servers,
 		serversCurrentData,

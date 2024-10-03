@@ -62,6 +62,40 @@ socketio.on('logout_ack', (data) => {
 	// For later use
 });
 
+export const joinRoom = function (roomName) {
+	socketio.emit('join_room', roomName);
+};
+
+socketio.on('join_room_ack', (data) => {
+	if (data['result'] === 'failure') {
+		const appMode = getAppMode();
+		if (appMode === APP_MODE.development) {
+			console.log(data);
+		} else {
+			console.log(
+				'There was an issue joining the requested room. Please contact the administrator.'
+			);
+		}
+	}
+});
+
+export const leaveRoom = function (roomName) {
+	socketio.emit('leave_room', roomName);
+};
+
+socketio.on('leave_room_ack', (data) => {
+	if (data['result'] === 'failure') {
+		const appMode = getAppMode();
+		if (appMode === APP_MODE.development) {
+			console.log(data);
+		} else {
+			console.log(
+				'There was an issue leaving the requested room. Please contact the administrator.'
+			);
+		}
+	}
+});
+
 const pingServer = function () {
 	pingTime = new Date();
 	socketio.emit('ping');

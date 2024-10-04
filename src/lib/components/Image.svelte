@@ -14,6 +14,10 @@
 	let loaded = false;
 	let error = false;
 
+	export const refresh = function () {
+		image.src = source + '?' + new Date().getTime();
+	};
+
 	onMount(() => {
 		loading = true;
 

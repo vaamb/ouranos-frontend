@@ -384,6 +384,34 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 		});
 };
 
+export const fetchCameraPicturesInfo = async function (ecosystemUID) {
+	return axios
+		.get(`${API_URL}/gaia/camera_picture_info/u/${ecosystemUID}`)
+		.then((response) => {
+			const cameraPicturesInfo = response['data'];
+			cameraPicturesInfo.forEach((info) => {
+				info['timestamp'] = new Date(info['timestamp']);
+			});
+			const dataObject = cameraPicturesInfo.reduce((a, v) => ({ ...a, [v['camera_uid']]: v }), {});
+			const sorted = cameraPicturesInfo.sort(dynamicSort('camera_name'));
+			const IDsArray = sorted.map((obj) => ({
+				uid: obj['camera_uid'],
+				name: capitalize(obj['camera_name'].replace('_', ' '))
+			}));
+
+			return {
+				cameraPicturesInfo: dataObject,
+				cameraIDs: IDsArray
+			};
+		})
+		.catch(() => {
+			return {
+				cameraPicturesInfo: {},
+				cameraIDs: []
+			};
+		});
+};
+
 // Weather-related actions
 export const loadWeatherForecast = async function (include = null) {
 	if (include === null) {

@@ -27,7 +27,7 @@ const manager = new Manager(BASE_URL, {
 	transports: ['websocket', 'polling']
 });
 
-const socketio = manager.socket('/');
+export const socketio = manager.socket('/');
 
 export const connectSocketio = function () {
 	socketio.connect();

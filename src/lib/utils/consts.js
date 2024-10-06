@@ -2,6 +2,7 @@ import { PUBLIC_APP_MODE, PUBLIC_BASE_URL, PUBLIC_LOCAL_API_URL } from '$env/sta
 
 export const BASE_URL = PUBLIC_BASE_URL;
 export const API_URL = BASE_URL + '/api';
+export const STATIC_URL = BASE_URL + '/static'
 export const LOCAL_API_URL = PUBLIC_LOCAL_API_URL;
 
 export const SERVER_STATUS = {

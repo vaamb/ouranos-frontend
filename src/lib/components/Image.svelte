@@ -14,6 +14,10 @@
 	let loaded = false;
 	let error = false;
 
+	export const refresh = function () {
+		image.src = source + '?' + new Date().getTime();
+	};
+
 	onMount(() => {
 		loading = true;
 
@@ -77,7 +81,7 @@
 		padding: 3px;
 		background-color: rgba(0, 0, 0, 35%);
 		color: var(--gray-90);
-		font-size: small;
+		font-size: x-small;
 	}
 
 	.image-icon {

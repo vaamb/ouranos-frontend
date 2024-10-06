@@ -75,9 +75,9 @@ export const generateListOfMenuItems = function (
 			management: 'switches'
 		},
 		{
-			name: 'Pictures',
+			name: 'Camera',
 			icon: faVideo,
-			path: 'pictures',
+			path: 'camera',
 			management: 'pictures'
 		}
 	];

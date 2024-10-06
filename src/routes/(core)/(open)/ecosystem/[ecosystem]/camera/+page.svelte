@@ -60,7 +60,7 @@
 	});
 </script>
 
-<HeaderLine title="Camera picture stream from {ecosystemName}" />
+<HeaderLine title="Camera stream from {ecosystemName}" />
 
 {#each cameraIDs as cameraID}
 	{@const pictureInfo = cameraPicturesInfo[cameraID['uid']]}

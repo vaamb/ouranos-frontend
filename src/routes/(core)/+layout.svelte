@@ -21,6 +21,7 @@
 	} from '$lib/store.js';
 	import { APP_MODE } from '$lib/utils/consts.js';
 
+	// Fill stores with pre-fetched data
 	export let data;
 
 	const {
@@ -57,29 +58,8 @@
 	};
 	addEcosystemNameToWarnings($warnings, $ecosystems);
 
+	// Menu-related parameters
 	let menuWidth = 210;
-
-	const anyMessage = function (flashMessage) {
-		return flashMessage.length > 0;
-	};
-
-	let showModal;
-	$: showModal = anyMessage($flashMessage);
-
-	const getMessage = function (flashMessage) {
-		if (showModal) {
-			return {
-				title: flashMessage[0].title,
-				message: flashMessage[0].message,
-				timeOut: flashMessage[0].timeOut
-			};
-		}
-		return {
-			title: undefined,
-			message: undefined,
-			timeOut: undefined
-		};
-	};
 
 	$: menuItems = generateListOfMenuItems(
 		$currentUser,
@@ -90,20 +70,22 @@
 		$serversIds
 	);
 
-	const sliceMessages = function () {
-		let msgs = $flashMessage;
-		msgs.shift();
-		flashMessage.set(msgs);
+	// Modal-related functions and parameters
+	const anyMessage = function (flashMessage) {
+		return flashMessage.length > 0;
 	};
+
+	let showModal;
+	$: showModal = anyMessage($flashMessage);
 </script>
 
 <Modal
 	bind:showModal
-	on:close={sliceMessages}
-	title={getMessage($flashMessage)['title']}
-	timeOut={getMessage($flashMessage)['timeOut']}
+	on:close={() => $flashMessage.shift()}
+	title={$flashMessage[0]? $flashMessage[0]['title']: ''}
+	timeOut={$flashMessage[0]? $flashMessage[0]['timeOut']: undefined}
 >
-	{getMessage($flashMessage)['message']}
+	{$flashMessage[0]? $flashMessage[0]['message']: ''}
 </Modal>
 
 <Menu items={menuItems} width={menuWidth} />

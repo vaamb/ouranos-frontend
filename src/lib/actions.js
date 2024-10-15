@@ -150,21 +150,15 @@ export const logOut = function () {
 		});
 };
 
-const extractEngineOrEcosystemData = function (dataArray, engineOrEcosystem) {
-	dataArray.forEach((element) => {
+const formatEngineOrEcosystemData = function (rawData) {
+	rawData.forEach((element) => {
 		element['last_seen'] = new Date(element['last_seen']);
-		element['connected'] = element['connected'] ? CONNECTION_STATUS.CONNECTED : CONNECTION_STATUS.DISCONNECTED;
+		element['connected'] = element['connected']
+			? CONNECTION_STATUS.CONNECTED
+			: CONNECTION_STATUS.DISCONNECTED;
 		element['registration_date'] = new Date(element['registration_date']);
 	});
-	const dataObject = dataArray.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
-	const sortKey = engineOrEcosystem === 'engine' ? 'uid' : 'name';
-	const sorted = dataArray.sort(dynamicSort(sortKey));
-	const secKey = engineOrEcosystem === 'engine' ? 'sid' : 'name';
-	const IDsArray = sorted.map((obj) => ({ uid: obj['uid'], [secKey]: obj[secKey] }));
-	return {
-		dataObject: dataObject,
-		IDsArray: IDsArray
-	};
+	return rawData.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
 };
 
 // Engines-related actions
@@ -174,18 +168,10 @@ export const fetchEngines = async function () {
 			params: { engines_id: 'recent' }
 		})
 		.then((response) => {
-			const data = response.data;
-			const extracted = extractEngineOrEcosystemData(data, 'engine');
-			return {
-				engines: extracted['dataObject'],
-				enginesIds: extracted['IDsArray']
-			};
+			return formatEngineOrEcosystemData(response.data);
 		})
 		.catch(() => {
-			return {
-				engines: {},
-				enginesIds: []
-			};
+			return {};
 		});
 };
 
@@ -196,18 +182,10 @@ export const fetchEcosystems = async function () {
 			params: { ecosystems_id: 'recent' }
 		})
 		.then((response) => {
-			const data = response.data;
-			const extracted = extractEngineOrEcosystemData(data, 'ecosystem');
-			return {
-				ecosystems: extracted['dataObject'],
-				ecosystemsIds: extracted['IDsArray']
-			};
+			return formatEngineOrEcosystemData(response.data);
 		})
 		.catch(() => {
-			return {
-				ecosystems: {},
-				ecosystemsIds: []
-			};
+			return {};
 		});
 };
 
@@ -217,15 +195,10 @@ export const fetchEcosystemsManagement = async function () {
 			params: { ecosystems: 'recent' }
 		})
 		.then((response) => {
-			const object = response.data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
-			return {
-				ecosystemsManagement: object
-			};
+			return response.data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
 		})
 		.catch(() => {
-			return {
-				ecosystemsManagement: {}
-			};
+			return {};
 		});
 };
 
@@ -468,26 +441,15 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 		})
 		.then((response) => {
 			const servers = response.data;
-			servers.forEach((server) => {
-				server['start_time'] = new Date(server['start_time']);
-				server['last_seen'] = new Date();
-			});
-			const dataObject = servers.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
-			const sorted = servers.sort(dynamicSort('uid'));
-			const IDsArray = sorted.map((obj) => ({
-				uid: obj['uid'],
-				name: capitalize(obj['uid'].replace('_', ' '))
-			}));
-			return {
-				servers: dataObject,
-				serversIds: IDsArray
-			};
+			servers
+				.forEach((server) => {
+					server['start_time'] = new Date(server['start_time']);
+					server['last_seen'] = new Date();
+				})
+			return servers.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
 		})
 		.catch(() => {
-			return {
-				servers: {},
-				serversIds: []
-			};
+			return {};
 		});
 };
 
@@ -543,14 +505,10 @@ export const fetchServices = async function () {
 	return axios
 		.get(`${LOCAL_API_URL}/app/services`)
 		.then((response) => {
-			return {
-				services: response.data
-			};
+			return response.data;
 		})
 		.catch(() => {
-			return {
-				services: []
-			};
+			return [];
 		});
 };
 
@@ -569,14 +527,10 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 				warning['created_on'] = new Date(warning['created_on']);
 				warning['level'] = eventLevels[warning['level']];
 			});
-			return {
-				warnings: warnings
-			};
+			return warnings;
 		})
 		.catch(() => {
-			return {
-				warnings: []
-			};
+			return [];
 		});
 };
 
@@ -596,14 +550,10 @@ export const fetchCalendarEvents = async function (clientSessionCookie, clientUs
 				event['end_time'] = new Date(event['end_time']);
 				event['level'] = eventLevels[event['level']];
 			});
-			return {
-				events: events
-			};
+			return events;
 		})
 		.catch(() => {
-			return {
-				events: []
-			};
+			return [];
 		});
 };
 

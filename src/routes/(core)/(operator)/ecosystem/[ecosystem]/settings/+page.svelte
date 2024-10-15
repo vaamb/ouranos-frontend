@@ -14,8 +14,8 @@
 	import { permissions } from '$lib/utils/consts.js';
 	import {
 		capitalize,
+		computeEcosystemStatusClass,
 		getEcosystemUid,
-		getStatusClass,
 		isNumber,
 		isTime,
 		timeStringToDate
@@ -28,12 +28,12 @@
 	} from '$lib/actions.js';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
-	const ecosystemName = $page['params']['ecosystem'];
-	const ecosystemUID = getEcosystemUid($ecosystemsIds, ecosystemName);
-	const ecosystem = { ...$ecosystems[ecosystemUID] };
+	$: ecosystemName = $page['params']['ecosystem'];
+	$: ecosystemUID = getEcosystemUid($ecosystemsIds, ecosystemName);
+	$: ecosystem = { ...$ecosystems[ecosystemUID] };
 
 	// Management crud-related function
-	let ecosystemManagement = { ...$ecosystemsManagement[ecosystemUID] };
+	$: ecosystemManagement = { ...$ecosystemsManagement[ecosystemUID] };
 
 	const managementChoices = [
 		'sensors',
@@ -95,7 +95,7 @@
 				<td>Name</td>
 				<td>
 					{ecosystem['name']} &nbsp;
-					<Fa icon={faCircle} class={getStatusClass(ecosystem)} />
+					<Fa icon={faCircle} class={computeEcosystemStatusClass(ecosystem)} />
 				</td>
 			</tr>
 			<tr>

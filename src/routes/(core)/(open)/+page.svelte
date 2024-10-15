@@ -29,7 +29,7 @@
 	} from '$lib/store.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
-		computeConnectableStatusClass,
+		computeEcosystemStatusClass,
 		computeLightingHours,
 		computeServerUptime,
 		isConnected,
@@ -273,27 +273,35 @@
 			<Box
 				title={name}
 				align="center"
-				status={computeConnectableStatusClass(ecosystem)}
+				status={computeEcosystemStatusClass(ecosystem)}
 				direction="row"
 			>
-				{#if !isConnected(ecosystem)}
+				{#if !ecosystem['status']}
+					<BoxItem>
+						{#if isConnected(ecosystem)}
+							<p>The ecosystem '{name}' is not currently running</p>
+							{#if $currentUser.can(permissions.OPERATE)}
+								<p>
+									Click
+									<a href="/ecosystem/{name}/settings">here</a>
+									to configure '{name}'
+								</p>
+							{/if}
+						{:else}
+							<p>The ecosystem '{name}' is not currently running and is not connected</p>
+							<p>
+								Last connection to the server on
+								{formatDateTime(ecosystem['last_seen'])}
+							</p>
+						{/if}
+					</BoxItem>
+				{:else if !isConnected(ecosystem)}
 					<BoxItem>
 						<p>The ecosystem {name} is not currently connected</p>
 						<p>
 							Last connection to the server on
 							{formatDateTime(ecosystem['last_seen'])}
 						</p>
-					</BoxItem>
-				{:else if !ecosystem['status']}
-					<BoxItem>
-						<p>The ecosystem {name} is not currently running</p>
-						{#if $currentUser.can(permissions.OPERATE)}
-							<p>
-								Click
-								<a href="/ecosystem/{name}/settings">here</a>
-								to configure {name}
-							</p>
-						{/if}
 					</BoxItem>
 				{:else}{@html '<!--Only connected and running ecosystems afterwards-->'}
 					{@const light = getParamStatus($ecosystemsManagement, uid, 'light')}

@@ -136,15 +136,17 @@ export const isConnected = function (connectable) {
 	return connectable['connected'] !== CONNECTION_STATUS.DISCONNECTED;
 };
 
-export const computeConnectableStatusClass = function (connectable) {
-	if (isConnected(connectable)) {
-		if (connectable['status']) {
+export const computeEcosystemStatusClass = function (ecosystem) {
+	// Ecosystems that are not running do not ping GAIA and will be marked as
+	// disconnected. Mark them as 'deco' before looking if it is connected
+	if (!ecosystem['status']) {
+		return 'deco';
+	} else {
+		if (isConnected(ecosystem)) {
 			return 'on';
 		} else {
 			return 'off';
 		}
-	} else {
-		return 'deco';
 	}
 };
 

@@ -65,7 +65,7 @@
 				<td
 					>{engineUID} &nbsp; <Fa
 						icon={faCircle}
-						class={getStatusClass(engine)}
+						class={getStatusClass(engine['connected'])}
 					/></td
 				>
 			</tr>

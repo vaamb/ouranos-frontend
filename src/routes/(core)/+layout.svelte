@@ -71,21 +71,19 @@
 	);
 
 	// Modal-related functions and parameters
-	const anyMessage = function (flashMessage) {
-		return flashMessage.length > 0;
-	};
-
 	let showModal;
-	$: showModal = anyMessage($flashMessage);
+	$: showModal = $flashMessage.length > 0;
 </script>
 
 <Modal
 	bind:showModal
-	on:close={() => $flashMessage.shift()}
-	title={$flashMessage[0]? $flashMessage[0]['title']: ''}
-	timeOut={$flashMessage[0]? $flashMessage[0]['timeOut']: undefined}
+	on:close={() => {
+		$flashMessage.shift();
+	}}
+	title={$flashMessage.length > 0 ? $flashMessage[0]['title'] : ''}
+	timeOut={$flashMessage.length > 0 ? $flashMessage[0]['timeOut'] : undefined}
 >
-	{$flashMessage[0]? $flashMessage[0]['message']: ''}
+	{$flashMessage.length > 0 ? $flashMessage[0]['message'] : ''}
 </Modal>
 
 <Menu items={menuItems} width={menuWidth} />

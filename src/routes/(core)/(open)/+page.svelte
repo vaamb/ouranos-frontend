@@ -29,7 +29,7 @@
 	} from '$lib/store.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
-		computeStatusClass,
+		computeConnectableStatusClass,
 		computeLightingHours,
 		computeServerUptime,
 		isConnected,
@@ -273,7 +273,7 @@
 			<Box
 				title={name}
 				align="center"
-				status={computeStatusClass(ecosystem)}
+				status={computeConnectableStatusClass(ecosystem)}
 				direction="row"
 			>
 				{#if !isConnected(ecosystem)}

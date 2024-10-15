@@ -132,15 +132,27 @@ export const computeServerUptime = function (serverStartTime, now) {
 	}
 };
 
-export const computeStatusClass = function (ecosystem) {
-	if (isConnected(ecosystem)) {
-		if (ecosystem['status']) {
+export const isConnected = function (connectable) {
+	return connectable['connected'] !== CONNECTION_STATUS.DISCONNECTED;
+};
+
+export const computeConnectableStatusClass = function (connectable) {
+	if (isConnected(connectable)) {
+		if (connectable['status']) {
 			return 'on';
 		} else {
 			return 'off';
 		}
 	} else {
 		return 'deco';
+	}
+};
+
+export const getStatusClass = function (status) {
+	if (status) {
+		return 'on';
+	} else {
+		return 'off';
 	}
 };
 
@@ -213,14 +225,6 @@ export const setCookie = function (name, value, expDays = 90) {
 	document.cookie = name + '=' + value + '; ' + expires + '; path=/;SameSite=Lax';
 };
 
-export const getStatusClass = function (status) {
-	if (status) {
-		return 'on';
-	} else {
-		return 'off';
-	}
-};
-
 export const getEcosystemUid = function (ecosystemIds, ecosystemName) {
 	const Ids = ecosystemIds.find((id) => {
 		return id.name === ecosystemName;
@@ -276,8 +280,4 @@ export const getFreshStoreData = function (store, storageKey) {
 export const updateStoreData = function (store, data) {
 	// Utility function to easily update stored data outside .svelte files
 	store.set({ ...get(store), ...data });
-};
-
-export const isConnected = function (ecosystem) {
-	return ecosystem['connected'] !== CONNECTION_STATUS.DISCONNECTED;
 };

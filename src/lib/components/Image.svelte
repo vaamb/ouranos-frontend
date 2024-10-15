@@ -6,8 +6,8 @@
 	export let source;
 	export let width;
 	export let height;
-	export let alt;
-	export let caption;
+	export let alt = '';
+	export let caption = undefined;
 
 	let image = new Image(); // bound to the image container
 	let loading = false;

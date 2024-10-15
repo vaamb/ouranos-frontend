@@ -142,6 +142,8 @@
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
+		await fetchSensorCurrentData('priming', undefined)
+
 		for (const { uid, name } of $ecosystemsIds) {
 			if (isConnected($ecosystems[uid])) {
 				await fetchEcosystemActuatorsState(uid);

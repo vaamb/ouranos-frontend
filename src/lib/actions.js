@@ -39,6 +39,7 @@ import {
 	weatherDaily,
 	weatherHourly
 } from '$lib/store.js';
+import { tr } from 'date-fns/locale';
 
 const ERROR_MSG =
 	'There was one or more error(s) while processing your request. Please contact the administrator.';
@@ -308,6 +309,13 @@ export const fetchSensorCurrentData = async function (sensorUID, measure) {
 					};
 				}
 			}
+			// Special case when 'priming' the store
+			if (sensorUID === 'priming') {
+				accumulator[dataKey] = {
+					timestamp: new Date(),
+					value: true
+				};
+			}
 			updateStoreData(ecosystemsSensorsDataCurrent, accumulator);
 			return accumulator[dataKey];
 		})
@@ -441,11 +449,10 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 		})
 		.then((response) => {
 			const servers = response.data;
-			servers
-				.forEach((server) => {
-					server['start_time'] = new Date(server['start_time']);
-					server['last_seen'] = new Date();
-				})
+			servers.forEach((server) => {
+				server['start_time'] = new Date(server['start_time']);
+				server['last_seen'] = new Date();
+			});
 			return servers.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
 		})
 		.catch(() => {

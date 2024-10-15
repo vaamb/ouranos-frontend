@@ -14,7 +14,6 @@
 	import { permissions } from '$lib/utils/consts.js';
 	import {
 		capitalize,
-		ecosystemIsConnected,
 		getEcosystemUid,
 		getStatusClass,
 		isNumber,
@@ -96,7 +95,7 @@
 				<td>Name</td>
 				<td>
 					{ecosystem['name']} &nbsp;
-					<Fa icon={faCircle} class={getStatusClass(ecosystemIsConnected(ecosystem))} />
+					<Fa icon={faCircle} class={getStatusClass(ecosystem)} />
 				</td>
 			</tr>
 			<tr>

@@ -29,11 +29,11 @@
 	} from '$lib/store.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
-		computeEcosystemStatusClass,
+		computeStatusClass,
 		computeLightingHours,
 		computeServerUptime,
+		isConnected,
 		isEmpty,
-		ecosystemIsConnected,
 		formatDate,
 		formatDateTime,
 		getWeatherIcon,
@@ -143,7 +143,7 @@
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
 		for (const { uid, name } of $ecosystemsIds) {
-			if (ecosystemIsConnected($ecosystems[uid])) {
+			if (isConnected($ecosystems[uid])) {
 				await fetchEcosystemActuatorsState(uid);
 			}
 		}
@@ -273,10 +273,10 @@
 			<Box
 				title={name}
 				align="center"
-				status={computeEcosystemStatusClass(ecosystem)}
+				status={computeStatusClass(ecosystem)}
 				direction="row"
 			>
-				{#if !ecosystemIsConnected(ecosystem)}
+				{#if !isConnected(ecosystem)}
 					<BoxItem>
 						<p>The ecosystem {name} is not currently connected</p>
 						<p>
@@ -330,7 +330,7 @@
 						<BoxItem title="Actuators">
 							{#each actuatorTypes as actuatorType}
 								{@const actuator = $ecosystemsActuatorsState[uid][actuatorType]}
-								{#if actuator['active']}
+								{#if actuator && actuator['active']}
 									<p>
 										{capitalize(actuatorType)}:
 										<Fa

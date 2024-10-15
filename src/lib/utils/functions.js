@@ -2,7 +2,7 @@ import { get } from 'svelte/store';
 
 import humanizeDuration from 'humanize-duration';
 
-import { ECOSYSTEM_CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
+import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 import { pingServerLastSeen } from '$lib/store.js';
 
 const timeRegex = new RegExp('^([0-9]{2}:){1,2}[0-9]{2}$');
@@ -132,8 +132,8 @@ export const computeServerUptime = function (serverStartTime, now) {
 	}
 };
 
-export const computeEcosystemStatusClass = function (ecosystem) {
-	if (ecosystemIsConnected(ecosystem)) {
+export const computeStatusClass = function (ecosystem) {
+	if (isConnected(ecosystem)) {
 		if (ecosystem['status']) {
 			return 'on';
 		} else {
@@ -214,7 +214,7 @@ export const setCookie = function (name, value, expDays = 90) {
 };
 
 export const getStatusClass = function (status) {
-	if (status === true) {
+	if (status) {
 		return 'on';
 	} else {
 		return 'off';
@@ -278,6 +278,6 @@ export const updateStoreData = function (store, data) {
 	store.set({ ...get(store), ...data });
 };
 
-export const ecosystemIsConnected = function (ecosystem) {
-	return (new Date() - ecosystem['last_seen']) / 1000 < ECOSYSTEM_CONNECTION_TIMEOUT;
+export const isConnected = function (ecosystem) {
+	return ecosystem['connected'] !== CONNECTION_STATUS.DISCONNECTED;
 };

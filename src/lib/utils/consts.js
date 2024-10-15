@@ -11,6 +11,12 @@ export const SERVER_STATUS = {
 	connected: 1
 };
 
+export const CONNECTION_STATUS = {
+	DISCONNECTED: 0,
+	RECONNECTED: -1,
+	CONNECTED: 1,
+};
+
 export const CONTENT = {
 	maintenance: -1,
 	loading: 0,
@@ -46,7 +52,7 @@ export const getAppMode = function () {
 	}
 };
 
-export const ECOSYSTEM_CONNECTION_TIMEOUT = 90;
+export const ECOSYSTEM_CONNECTION_TIMEOUT = 30;
 
 export const climateParameters = ['temperature', 'humidity', 'light'];
 

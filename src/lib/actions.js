@@ -7,6 +7,7 @@ import {
 	actuatorTypes,
 	API_URL,
 	APP_MODE,
+	CONNECTION_STATUS,
 	eventLevels,
 	getAppMode,
 	LOCAL_API_URL,
@@ -152,6 +153,7 @@ export const logOut = function () {
 const extractEngineOrEcosystemData = function (dataArray, engineOrEcosystem) {
 	dataArray.forEach((element) => {
 		element['last_seen'] = new Date(element['last_seen']);
+		element['connected'] = element['connected'] ? CONNECTION_STATUS.CONNECTED : CONNECTION_STATUS.DISCONNECTED;
 		element['registration_date'] = new Date(element['registration_date']);
 	});
 	const dataObject = dataArray.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});

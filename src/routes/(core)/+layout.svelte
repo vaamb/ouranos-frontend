@@ -1,9 +1,13 @@
 <script>
-	import BottomBar from "$lib/components/BottomBar.svelte";
+	import { onDestroy, onMount } from 'svelte';
+
+	import BottomBar from '$lib/components/BottomBar.svelte';
 	import Menu from '$lib/components/menu/Menu.svelte';
 	import { generateListOfMenuItems } from '$lib/components/menu/functions.js';
 	import Modal from '$lib/components/Modal.svelte';
 	import TopBar from '$lib/components/TopBar.svelte';
+
+	import { CONNECTION_STATUS, ECOSYSTEM_CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
 
 	import {
 		calendarEvents,
@@ -14,6 +18,8 @@
 		engines,
 		enginesIds,
 		flashMessage,
+		pingServerLastSeen,
+		pingServerStatus,
 		servers,
 		serversIds,
 		services,
@@ -73,6 +79,47 @@
 	// Modal-related functions and parameters
 	let showModal;
 	$: showModal = $flashMessage.length > 0;
+
+	// Server, engine and ecosystem connection status
+	const updateStatus = function () {
+		// Utility function
+		const getStatus = function (lastSeen, previousStatus) {
+			if (new Date() - lastSeen < ECOSYSTEM_CONNECTION_TIMEOUT * 1000) {
+				return previousStatus === CONNECTION_STATUS.DISCONNECTED
+					? CONNECTION_STATUS.RECONNECTED
+					: CONNECTION_STATUS.CONNECTED;
+			} else {
+				return CONNECTION_STATUS.DISCONNECTED;
+			}
+		};
+
+		// Ping server
+		$pingServerStatus = getStatus($pingServerLastSeen, $pingServerStatus);
+
+		// Engines
+		for (const engineUID in $engines) {
+			const engine = $engines[engineUID];
+			$engines[engineUID]['connected'] = getStatus(engine['last_seen'], engine['connected']);
+		}
+
+		// Ecosystems
+		for (const ecosystemUID in $ecosystems) {
+			const ecosystem = $ecosystems[ecosystemUID];
+			$ecosystems[ecosystemUID]['connected'] = getStatus(ecosystem['last_seen'], ecosystem['connected']);
+		}
+	};
+
+	let updateStatusInterval = undefined;
+
+	onMount(async () => {
+		updateStatusInterval = setInterval(updateStatus, 5 * 1000);
+	});
+
+	onDestroy(() => {
+		if (updateStatusInterval) {
+			clearInterval(updateStatusInterval);
+		}
+	});
 </script>
 
 <Modal

@@ -1,9 +1,9 @@
 <script>
 	import { page } from '$app/stores';
 
-	import { ecosystems, ecosystemsIds, engines, pingServerStatus } from '$lib/store.js';
+	import { ecosystems, engines, pingServerStatus } from '$lib/store.js';
 	import { CONNECTION_STATUS } from '$lib/utils/consts.js';
-	import { getEcosystemUid } from '$lib/utils/functions.js';
+	import { getEcosystemUID } from '$lib/utils/functions.js';
 
 	export let menuWidth = 210;
 
@@ -20,7 +20,7 @@
 
 	const computePageType = function (url) {
 		if (url.includes('/ecosystem/')) {
-			ecosystemOrEngineUID = getEcosystemUid($ecosystemsIds, $page.params['ecosystem']);
+			ecosystemOrEngineUID = getEcosystemUID($ecosystems, $page.params['ecosystem']);
 			return PAGE_TYPE.ECOSYSTEM;
 		} else if (url.includes('/engine/')) {
 			ecosystemOrEngineUID = $page.params['engine'];  // Rem: will be undefined for overview page

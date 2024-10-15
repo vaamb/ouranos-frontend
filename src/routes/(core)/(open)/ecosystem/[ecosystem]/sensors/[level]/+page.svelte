@@ -14,12 +14,12 @@
 		fetchEcosystemSensorsSkeleton
 	} from '$lib/actions.js';
 	import {
-		ecosystemsIds,
+		ecosystems,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsDataHistoric,
 		ecosystemsSensorsSkeleton
 	} from '$lib/store.js';
-	import { capitalize, getEcosystemUid, getStoreDataKey } from '$lib/utils/functions.js';
+	import { capitalize, getEcosystemUID, getStoreDataKey } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
 	const generateTitle = function (level, ecosystemName) {
@@ -37,7 +37,7 @@
 	$: colors = graphs[sensorsLevel].colors;
 	$: minValues = graphs[sensorsLevel].min_values;
 	$: maxValues = graphs[sensorsLevel].max_values;
-	$: ecosystemUid = getEcosystemUid($ecosystemsIds, ecosystemName);
+	$: ecosystemUid = getEcosystemUID($ecosystems, ecosystemName);
 
 	const fetchSensorData = async function (sensorUid, measure) {
 		const current = await fetchSensorCurrentData(sensorUid, measure);

@@ -13,17 +13,17 @@
 		updateActuatorMode
 	} from '$lib/actions.js';
 	import {
-		ecosystemsIds,
+		ecosystems,
 		ecosystemsActuatorsRecords,
 		ecosystemsActuatorsState
 	} from '$lib/store.js';
 
 	import { actuatorTypes } from '$lib/utils/consts.js';
-	import { capitalize, getStoreDataKey, getEcosystemUid } from '$lib/utils/functions.js';
+	import { capitalize, getStoreDataKey, getEcosystemUID } from '$lib/utils/functions.js';
 	import { colors } from '$lib/utils/styling.js';
 
 	$: ecosystemName = $page['params']['ecosystem'];
-	$: ecosystemUID = getEcosystemUid($ecosystemsIds, ecosystemName);
+	$: ecosystemUID = getEcosystemUID($ecosystems, ecosystemName);
 
 	const hasBeenActive = function (ecosystemsActuatorsRecords) {
 		const active = (element) => element[1]

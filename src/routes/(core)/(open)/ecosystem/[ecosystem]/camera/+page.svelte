@@ -9,12 +9,12 @@
 
 	import { fetchCameraPicturesInfo } from '$lib/actions.js';
 	import { STATIC_URL } from '$lib/utils/consts.js';
-	import { getEcosystemUid } from '$lib/utils/functions.js';
+	import { getEcosystemUID } from '$lib/utils/functions.js';
 	import { joinRoom, leaveRoom, socketio } from '$lib/socketio.js';
-	import { ecosystemsIds } from '$lib/store.js';
+	import { ecosystems } from '$lib/store.js';
 
 	$: ecosystemName = $page['params']['ecosystem'];
-	$: ecosystemUID = getEcosystemUid($ecosystemsIds, ecosystemName);
+	$: ecosystemUID = getEcosystemUID($ecosystems, ecosystemName);
 
 	let cameraIDs = [];
 	let cameraPicturesInfo = {};

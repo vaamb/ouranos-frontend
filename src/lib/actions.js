@@ -446,8 +446,7 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 					server['start_time'] = new Date(server['start_time']);
 					server['last_seen'] = new Date();
 				})
-				.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
-			return servers;
+			return servers.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
 		})
 		.catch(() => {
 			return {};

@@ -47,6 +47,7 @@
 	servers.set(serversValues);
 	services.set(servicesValues);
 	warnings.set(warningsValues);
+
 	const addEcosystemNameToWarnings = function (warnings, ecosystems) {
 		warnings.forEach((warning) => {
 			if (ecosystems[warning['created_by']]) {

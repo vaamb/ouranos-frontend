@@ -33,27 +33,20 @@
 	const {
 		appMode,
 		calendarEventsValues,
-		enginesIdsValues,
 		enginesValues,
-		ecosystemsIdsValues,
 		ecosystemsManagementValues,
 		ecosystemsValues,
 		serversValues,
-		serversIdsValues,
 		servicesValues,
 		warningsValues
 	} = data;
 	calendarEvents.set(calendarEventsValues);
 	engines.set(enginesValues);
-	enginesIds.set(enginesIdsValues);
 	ecosystems.set(ecosystemsValues);
-	ecosystemsIds.set(ecosystemsIdsValues);
 	ecosystemsManagement.set(ecosystemsManagementValues);
 	servers.set(serversValues);
-	serversIds.set(serversIdsValues);
 	services.set(servicesValues);
 	warnings.set(warningsValues);
-
 	const addEcosystemNameToWarnings = function (warnings, ecosystems) {
 		warnings.forEach((warning) => {
 			if (ecosystems[warning['created_by']]) {

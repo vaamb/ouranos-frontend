@@ -7,7 +7,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import TopBar from '$lib/components/TopBar.svelte';
 
-	import { CONNECTION_STATUS, ECOSYSTEM_CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
+	import { CONNECTION_STATUS, CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
 
 	import {
 		calendarEvents,
@@ -80,11 +80,11 @@
 	let showModal;
 	$: showModal = $flashMessage.length > 0;
 
-	// Server, engine and ecosystem connection status
+	// Ping server, engine and ecosystem connection status
 	const updateStatus = function () {
 		// Utility function
 		const getStatus = function (lastSeen, previousStatus) {
-			if (new Date() - lastSeen < ECOSYSTEM_CONNECTION_TIMEOUT * 1000) {
+			if (new Date() - lastSeen < CONNECTION_TIMEOUT * 1000) {
 				return previousStatus === CONNECTION_STATUS.DISCONNECTED
 					? CONNECTION_STATUS.RECONNECTED
 					: CONNECTION_STATUS.CONNECTED;

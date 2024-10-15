@@ -52,7 +52,7 @@ export const getAppMode = function () {
 	}
 };
 
-export const ECOSYSTEM_CONNECTION_TIMEOUT = 30;
+export const CONNECTION_TIMEOUT = 40;  // 2 * heartbeat + 10 secs
 
 export const climateParameters = ['temperature', 'humidity', 'light'];
 

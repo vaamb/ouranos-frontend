@@ -1,10 +1,9 @@
 <script>
-	import { writable } from 'svelte/store';
 	import { page } from '$app/stores';
 
-	import { ecosystems, ecosystemsIds, engines, pingServerLastSeen } from '$lib/store.js';
+	import { ecosystems, ecosystemsIds, engines, pingServerStatus } from '$lib/store.js';
+	import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 	import { getEcosystemUid } from '$lib/utils/functions.js';
-	import { onDestroy, onMount } from 'svelte';
 
 	export let menuWidth = 210;
 
@@ -16,13 +15,6 @@
 		ECOSYSTEM: 2
 	};
 
-	const CONNECTION_STATUS = {
-		DISCONNECTED: -1,
-		RECONNECTED: 0,
-		CONNECTED: 1,
-		NOT_NEEDED: 1
-	};
-
 	// Page type and UID
 	let ecosystemOrEngineUID = undefined;
 
@@ -30,9 +22,8 @@
 		if (url.includes('/ecosystem/')) {
 			ecosystemOrEngineUID = getEcosystemUid($ecosystemsIds, $page.params['ecosystem']);
 			return PAGE_TYPE.ECOSYSTEM;
-		}
-		if (url.includes('/engine/')) {
-			ecosystemOrEngineUID = $page.params['engine'];
+		} else if (url.includes('/engine/')) {
+			ecosystemOrEngineUID = $page.params['engine'];  // Rem: will be undefined for overview page
 			return PAGE_TYPE.ENGINE;
 		} else {
 			ecosystemOrEngineUID = undefined;
@@ -41,85 +32,32 @@
 	};
 
 	$: pageType = computePageType($page.url.pathname);
-
-	// Server status
-	const serverStatus = writable(CONNECTION_STATUS.CONNECTED);
-
-	const updateServerStatus = function () {
-		if (new Date() - $pingServerLastSeen < 30 * 1000) {
-			if ($serverStatus === CONNECTION_STATUS.DISCONNECTED) {
-				serverStatus.set(CONNECTION_STATUS.RECONNECTED);
-			} else {
-				serverStatus.set(CONNECTION_STATUS.CONNECTED);
-			}
-		} else {
-			serverStatus.set(CONNECTION_STATUS.DISCONNECTED);
-		}
-	};
-
-	let updateServerStatusInterval = undefined;
-
-	// Ecosystem or engine status
-	const ecosystemOrEngineStatus = writable(CONNECTION_STATUS.NOT_NEEDED);
-
-	const updateEcosystemOrEngineStatus = function () {
-		if (pageType === PAGE_TYPE.DEFAULT) {
-			ecosystemOrEngineStatus.set(CONNECTION_STATUS.NOT_NEEDED);
-		} else {
-			// Get the last time the ecosystem or engine was seen
-			let lastSeen;
-			if (pageType === PAGE_TYPE.ECOSYSTEM) {
-				lastSeen = $ecosystems[ecosystemOrEngineUID]
-					? $ecosystems[ecosystemOrEngineUID]['last_seen']
-					: new Date(0);
-			} else if (pageType === PAGE_TYPE.ENGINE) {
-				lastSeen = $engines[ecosystemOrEngineUID]
-					? $engines[ecosystemOrEngineUID]['last_seen']
-					: new Date(0);
-			}
-			// Compute its status
-			if (new Date() - lastSeen < 30 * 1000) {
-				if ($ecosystemOrEngineStatus === CONNECTION_STATUS.DISCONNECTED) {
-					ecosystemOrEngineStatus.set(CONNECTION_STATUS.RECONNECTED);
-				} else {
-					ecosystemOrEngineStatus.set(CONNECTION_STATUS.CONNECTED);
-				}
-			} else {
-				ecosystemOrEngineStatus.set(CONNECTION_STATUS.DISCONNECTED);
-			}
-		}
-	};
-
-	let updateEcosystemOrEngineStatusInterval = undefined;
-
-	// Mount and destroy
-	onMount(async () => {
-		updateServerStatusInterval = setInterval(updateServerStatus, 5 * 1000);
-		updateEcosystemOrEngineStatusInterval = setInterval(updateEcosystemOrEngineStatus, 5 * 1000);
-	});
-
-	onDestroy(async () => {
-		clearInterval(updateServerStatusInterval);
-		clearInterval(updateEcosystemOrEngineStatusInterval);
-	});
 </script>
 
 <div class="bottom-bar" style="--menu-width:{menuWidth}">
-	{#if $serverStatus !== CONNECTION_STATUS.CONNECTED}
-		{#if $serverStatus === CONNECTION_STATUS.RECONNECTED}
-			<div class="reconnecting center-content">Reconnected to the server</div>
-		{:else}
-			<div class="disconnected center-content">Disconnected from the server</div>
+	{#if $pingServerStatus === CONNECTION_STATUS.DISCONNECTED}
+		<div class="disconnected center-content">Disconnected from the server</div>
+	{:else if $pingServerStatus === CONNECTION_STATUS.RECONNECTED}
+		<div class="reconnecting center-content">Reconnected to the server</div>
+	{:else if pageType === PAGE_TYPE.ENGINE && ecosystemOrEngineUID !== undefined}
+		{@const connectionStatus = $engines[ecosystemOrEngineUID]
+			? $engines[ecosystemOrEngineUID]['connected']
+			: CONNECTION_STATUS.DISCONNECTED}
+		{#if connectionStatus === CONNECTION_STATUS.DISCONNECTED}
+			<div class="disconnected center-content">The engine is currently disconnected from GAIA</div>
+		{:else if connectionStatus === CONNECTION_STATUS.RECONNECTED}
+			<div class="reconnecting center-content">The engine has reconnected to GAIA</div>
 		{/if}
-	{:else if pageType !== PAGE_TYPE.DEFAULT && $ecosystemOrEngineStatus !== CONNECTION_STATUS.CONNECTED}
-		{#if $ecosystemOrEngineStatus === CONNECTION_STATUS.RECONNECTED}
-			<div class="reconnecting center-content">
-				The {pageType === PAGE_TYPE.ECOSYSTEM ? 'ecosystem' : 'engine'} has reconnected to GAIA
-			</div>
-		{:else}
+	{:else if pageType === PAGE_TYPE.ECOSYSTEM}
+		{@const connectionStatus = $ecosystems[ecosystemOrEngineUID]
+			? $ecosystems[ecosystemOrEngineUID]['connected']
+			: CONNECTION_STATUS.DISCONNECTED}
+		{#if connectionStatus === CONNECTION_STATUS.DISCONNECTED}
 			<div class="disconnected center-content">
-				The {pageType === PAGE_TYPE.ECOSYSTEM ? 'ecosystem' : 'engine'} is currently disconnected from GAIA
+				The ecosystem is currently disconnected from GAIA
 			</div>
+		{:else if connectionStatus === CONNECTION_STATUS.RECONNECTED}
+			<div class="reconnecting center-content">The ecosystem has reconnected to GAIA</div>
 		{/if}
 	{/if}
 </div>

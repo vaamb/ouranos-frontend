@@ -32,8 +32,8 @@
 		computeEcosystemStatusClass,
 		computeLightingHours,
 		computeServerUptime,
+		isConnected,
 		isEmpty,
-		ecosystemIsConnected,
 		formatDate,
 		formatDateTime,
 		getWeatherIcon,
@@ -143,7 +143,7 @@
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
 		for (const { uid, name } of $ecosystemsIds) {
-			if (ecosystemIsConnected($ecosystems[uid])) {
+			if (isConnected($ecosystems[uid])) {
 				await fetchEcosystemActuatorsState(uid);
 			}
 		}
@@ -276,24 +276,32 @@
 				status={computeEcosystemStatusClass(ecosystem)}
 				direction="row"
 			>
-				{#if !ecosystemIsConnected(ecosystem)}
+				{#if !ecosystem['status']}
+					<BoxItem>
+						{#if isConnected(ecosystem)}
+							<p>The ecosystem '{name}' is not currently running</p>
+							{#if $currentUser.can(permissions.OPERATE)}
+								<p>
+									Click
+									<a href="/ecosystem/{name}/settings">here</a>
+									to configure '{name}'
+								</p>
+							{/if}
+						{:else}
+							<p>The ecosystem '{name}' is not currently running and is not connected</p>
+							<p>
+								Last connection to the server on
+								{formatDateTime(ecosystem['last_seen'])}
+							</p>
+						{/if}
+					</BoxItem>
+				{:else if !isConnected(ecosystem)}
 					<BoxItem>
 						<p>The ecosystem {name} is not currently connected</p>
 						<p>
 							Last connection to the server on
 							{formatDateTime(ecosystem['last_seen'])}
 						</p>
-					</BoxItem>
-				{:else if !ecosystem['status']}
-					<BoxItem>
-						<p>The ecosystem {name} is not currently running</p>
-						{#if $currentUser.can(permissions.OPERATE)}
-							<p>
-								Click
-								<a href="/ecosystem/{name}/settings">here</a>
-								to configure {name}
-							</p>
-						{/if}
 					</BoxItem>
 				{:else}{@html '<!--Only connected and running ecosystems afterwards-->'}
 					{@const light = getParamStatus($ecosystemsManagement, uid, 'light')}
@@ -330,7 +338,7 @@
 						<BoxItem title="Actuators">
 							{#each actuatorTypes as actuatorType}
 								{@const actuator = $ecosystemsActuatorsState[uid][actuatorType]}
-								{#if actuator['active']}
+								{#if actuator && actuator['active']}
 									<p>
 										{capitalize(actuatorType)}:
 										<Fa

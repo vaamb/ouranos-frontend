@@ -12,7 +12,6 @@
 	import { currentUser, ecosystems, engines } from '$lib/store.js';
 	import { permissions } from '$lib/utils/consts.js';
 	import {
-		ecosystemIsConnected,
 		getStatusClass,
 		isEmpty,
 		isTime,
@@ -66,7 +65,7 @@
 				<td
 					>{engineUID} &nbsp; <Fa
 						icon={faCircle}
-						class={getStatusClass(ecosystemIsConnected(engine))}
+						class={getStatusClass(engine['connected'])}
 					/></td
 				>
 			</tr>

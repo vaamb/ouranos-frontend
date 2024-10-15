@@ -2,7 +2,7 @@ import { get } from 'svelte/store';
 
 import humanizeDuration from 'humanize-duration';
 
-import { ECOSYSTEM_CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
+import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 import { pingServerLastSeen } from '$lib/store.js';
 
 const timeRegex = new RegExp('^([0-9]{2}:){1,2}[0-9]{2}$');
@@ -132,15 +132,29 @@ export const computeServerUptime = function (serverStartTime, now) {
 	}
 };
 
+export const isConnected = function (connectable) {
+	return connectable['connected'] !== CONNECTION_STATUS.DISCONNECTED;
+};
+
 export const computeEcosystemStatusClass = function (ecosystem) {
-	if (ecosystemIsConnected(ecosystem)) {
-		if (ecosystem['status']) {
+	// Ecosystems that are not running do not ping GAIA and will be marked as
+	// disconnected. Mark them as 'deco' before looking if it is connected
+	if (!ecosystem['status']) {
+		return 'deco';
+	} else {
+		if (isConnected(ecosystem)) {
 			return 'on';
 		} else {
 			return 'off';
 		}
+	}
+};
+
+export const getStatusClass = function (status) {
+	if (status) {
+		return 'on';
 	} else {
-		return 'deco';
+		return 'off';
 	}
 };
 
@@ -213,14 +227,6 @@ export const setCookie = function (name, value, expDays = 90) {
 	document.cookie = name + '=' + value + '; ' + expires + '; path=/;SameSite=Lax';
 };
 
-export const getStatusClass = function (status) {
-	if (status === true) {
-		return 'on';
-	} else {
-		return 'off';
-	}
-};
-
 export const getEcosystemUid = function (ecosystemIds, ecosystemName) {
 	const Ids = ecosystemIds.find((id) => {
 		return id.name === ecosystemName;
@@ -276,8 +282,4 @@ export const getFreshStoreData = function (store, storageKey) {
 export const updateStoreData = function (store, data) {
 	// Utility function to easily update stored data outside .svelte files
 	store.set({ ...get(store), ...data });
-};
-
-export const ecosystemIsConnected = function (ecosystem) {
-	return (new Date() - ecosystem['last_seen']) / 1000 < ECOSYSTEM_CONNECTION_TIMEOUT;
 };

@@ -10,12 +10,12 @@
 	import SlideButton from '$lib/components/SlideButton.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { currentUser, ecosystems, ecosystemsIds, ecosystemsManagement } from '$lib/store.js';
+	import { currentUser, ecosystems, ecosystemsManagement } from '$lib/store.js';
 	import { permissions } from '$lib/utils/consts.js';
 	import {
 		capitalize,
 		computeEcosystemStatusClass,
-		getEcosystemUid,
+		getEcosystemUID,
 		isNumber,
 		isTime,
 		timeStringToDate
@@ -29,7 +29,7 @@
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
 	$: ecosystemName = $page['params']['ecosystem'];
-	$: ecosystemUID = getEcosystemUid($ecosystemsIds, ecosystemName);
+	$: ecosystemUID = getEcosystemUID($ecosystems, ecosystemName);
 	$: ecosystem = { ...$ecosystems[ecosystemUID] };
 
 	// Management crud-related function

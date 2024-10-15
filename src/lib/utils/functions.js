@@ -227,8 +227,8 @@ export const setCookie = function (name, value, expDays = 90) {
 	document.cookie = name + '=' + value + '; ' + expires + '; path=/;SameSite=Lax';
 };
 
-export const getEcosystemUid = function (ecosystemIds, ecosystemName) {
-	const Ids = ecosystemIds.find((id) => {
+export const getEcosystemUID = function (ecosystems, ecosystemName) {
+	const Ids = Object.values(ecosystems).find((id) => {
 		return id.name === ecosystemName;
 	});
 	if (!isEmpty(Ids)) {

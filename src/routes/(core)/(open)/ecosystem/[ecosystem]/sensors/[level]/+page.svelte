@@ -1,4 +1,5 @@
 <script>
+	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
 	import Box from '$lib/components/layout/Box.svelte';
@@ -77,6 +78,10 @@
 			labels: labels
 		};
 	};
+
+	onMount(async () => {
+		await fetchSensorCurrentData('priming', undefined);
+	});
 </script>
 
 <HeaderLine title={pageTitle} />

@@ -79,4 +79,6 @@
 			</BoxItem>
 		</Box>
 	{/if}
+{:else}
+	<p>There is currently no camera stream available, please come back later</p>
 {/each}

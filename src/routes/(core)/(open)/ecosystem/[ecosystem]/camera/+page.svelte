@@ -69,7 +69,7 @@
 			<BoxItem>
 				<div style="margin: auto">
 					<Image
-						source={`${STATIC_URL}/${pictureInfo['path']}`}
+						source={`${STATIC_URL}/${pictureInfo['path']}?${new Date().getTime()}`}
 						height="250"
 						width="375"
 						bind:caption={captions[cameraID['uid']]}

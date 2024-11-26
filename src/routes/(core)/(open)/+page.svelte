@@ -98,10 +98,10 @@
 		return false;
 	};
 
-	const fetchSensorsCurrentDataForMeasure = async function (measure, sensors) {
+	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {
 		let rv = [];
 		for (const sensor of sensors) {
-			const data = await fetchSensorCurrentData(sensor['uid'], measure.replace(' ', '_'));
+			const data = await fetchSensorCurrentData(ecosystemUID, sensor['uid'], measure.replace(' ', '_'));
 			rv.push(data);
 		}
 		return rv;
@@ -142,7 +142,7 @@
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
-		await fetchSensorCurrentData('priming', undefined)
+		await fetchSensorCurrentData(undefined, 'priming', undefined)
 
 		for (const { uid, name } of $ecosystemsIds) {
 			if (isConnected($ecosystems[uid])) {
@@ -359,7 +359,7 @@
 								<p>Collecting environment's data from the ecosystem</p>
 							{:then sensorsSkeleton}
 								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'environment')] as sensorsBone}
-									{#await fetchSensorsCurrentDataForMeasure(sensorsBone.measure, sensorsBone.sensors)}
+									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then sensorsData}
 										{@const averageData = computeAverageSensorsCurrentDataForMeasure(

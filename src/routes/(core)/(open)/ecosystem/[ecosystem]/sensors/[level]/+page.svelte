@@ -40,9 +40,9 @@
 	$: maxValues = graphs[sensorsLevel].max_values;
 	$: ecosystemUid = getEcosystemUID($ecosystems, ecosystemName);
 
-	const fetchSensorData = async function (sensorUid, measure) {
-		const current = await fetchSensorCurrentData(sensorUid, measure);
-		const historic = await fetchSensorHistoricData(sensorUid, measure);
+	const fetchSensorData = async function (ecosystemUID, sensorUid, measure) {
+		const current = await fetchSensorCurrentData(ecosystemUID, sensorUid, measure);
+		const historic = await fetchSensorHistoricData(ecosystemUID, sensorUid, measure);
 		return {
 			current: current,
 			historic: historic
@@ -80,7 +80,7 @@
 	};
 
 	onMount(async () => {
-		await fetchSensorCurrentData('priming', undefined);
+		await fetchSensorCurrentData(undefined, 'priming', undefined);
 	});
 </script>
 
@@ -90,7 +90,7 @@
 		<h2>{capitalize(sensorsBone.measure.replace('_', ' '))}</h2>
 		{#each sensorsBone.sensors as sensor}
 			<Row>
-				{#await fetchSensorData(sensor.uid, sensorsBone.measure) then sensorData_notUsed}
+				{#await fetchSensorData(ecosystemUid, sensor.uid, sensorsBone.measure) then sensorData_notUsed}
 					{@const currentSensorsData =
 						$ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
 					{@const historicSensorsData =

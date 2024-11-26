@@ -39,7 +39,6 @@ import {
 	weatherDaily,
 	weatherHourly
 } from '$lib/store.js';
-import { tr } from 'date-fns/locale';
 
 const ERROR_MSG =
 	'There was one or more error(s) while processing your request. Please contact the administrator.';
@@ -224,7 +223,7 @@ export const fetchEcosystemLightData = async function (ecosystemUID) {
 
 export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID) {
 	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/environment_parameters`)
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/environment_parameter`)
 		.then((response) => {
 			return response['data']['environment_parameters'];
 		})
@@ -262,7 +261,7 @@ export const fetchEcosystemActuatorRecords = async function (ecosystemUID, actua
 		return storedData;
 	}
 	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuator_records/${actuatorType}`)
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuator_records/u/${actuatorType}`)
 		.then((response) => {
 			const data = {
 				timestamp: new Date(response['data']['span'][1]),
@@ -288,14 +287,14 @@ export const fetchEcosystemHardware = async function (ecosystemUID) {
 		});
 };
 
-export const fetchSensorCurrentData = async function (sensorUID, measure) {
+export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, measure) {
 	const dataKey = getStoreDataKey(sensorUID, measure);
 	const storedData = getFreshStoreData(ecosystemsSensorsDataCurrent, dataKey);
 	if (checkSensorDataRecency(storedData, 1)) {
 		return storedData;
 	}
 	return axios
-		.get(`${API_URL}/gaia/ecosystem/current_data`, {
+		.get(`${API_URL}/gaia/ecosystem/sensor/data/current`, {
 			params: { ecosystems: 'recent' }
 		})
 		.then((response) => {
@@ -324,7 +323,7 @@ export const fetchSensorCurrentData = async function (sensorUID, measure) {
 		});
 };
 
-export const fetchSensorHistoricData = async function (sensorUID, measure) {
+export const fetchSensorHistoricData = async function (ecosystemUID, sensorUID, measure) {
 	const dataKey = getStoreDataKey(sensorUID, measure);
 	const storedData = getFreshStoreData(ecosystemsSensorsDataHistoric, dataKey);
 	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 10)) {
@@ -332,7 +331,7 @@ export const fetchSensorHistoricData = async function (sensorUID, measure) {
 	}
 
 	return axios
-		.get(`${API_URL}/gaia/sensor/u/${sensorUID}/data/${measure}/historic`)
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensorUID}/data/${measure}/historic`)
 		.then((response) => {
 			const data = {
 				timestamp: new Date(response['data']['span'][1]),
@@ -354,7 +353,7 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 		return storedData;
 	}
 	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensors_skeleton`, {
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/skeleton`, {
 			params: { level: level }
 		})
 		.then((response) => {
@@ -369,7 +368,7 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 
 export const fetchCameraPicturesInfo = async function (ecosystemUID) {
 	return axios
-		.get(`${API_URL}/gaia/camera_picture_info/u/${ecosystemUID}`)
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/image_info`)
 		.then((response) => {
 			const cameraPicturesInfo = response['data'];
 			cameraPicturesInfo.forEach((info) => {

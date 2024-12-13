@@ -607,13 +607,13 @@ export const crudRequest = function (relRoute, action, payload = undefined) {
 		});
 };
 
-export const updateActuatorMode = function (ecosystemUID, actuatorType, mode) {
-	return axios(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/turn_actuator`, {
+export const updateActuatorMode = function (ecosystemUID, actuatorType, mode, countdown = null) {
+	return axios(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/turn_actuator/u/${actuatorType}`, {
 		method: 'put',
 		withCredentials: true,
 		data: {
-			actuator: actuatorType,
-			mode: mode
+			mode: mode,
+			countdown: countdown || 0
 		}
 	})
 		.then((response) => {

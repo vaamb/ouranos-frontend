@@ -387,7 +387,7 @@
 								<p>Collecting environment's data from the ecosystem</p>
 							{:then sensorsSkeleton}
 								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'plants')] as sensorsBone}
-									{#await fetchSensorsCurrentDataForMeasure(sensorsBone.measure, sensorsBone.sensors)}
+									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then sensorsData}
 										{@const averageData = computeAverageSensorsCurrentDataForMeasure(

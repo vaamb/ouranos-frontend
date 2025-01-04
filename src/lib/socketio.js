@@ -1,9 +1,10 @@
-import { get } from 'svelte/store';
-import { Manager } from 'socket.io-client';
+import {get} from 'svelte/store';
+import {Manager} from 'socket.io-client';
 
-import { APP_MODE, BASE_URL, getAppMode } from '$lib/utils/consts.js';
-import { getFreshStoreData, getStoreDataKey, updateStoreData } from '$lib/utils/functions.js';
+import {APP_MODE, BASE_URL, getAppMode} from '$lib/utils/consts.js';
+import {getFreshStoreData, getStoreDataKey, updateStoreData} from '$lib/utils/functions.js';
 import {
+	currentUser,
 	ecosystems,
 	ecosystemsActuatorsState,
 	ecosystemsLightData,
@@ -11,10 +12,10 @@ import {
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	engines,
-	servers,
-	serversCurrentData,
 	pingServerLastSeen,
-	pingServerLatency
+	pingServerLatency,
+	servers,
+	serversCurrentData
 } from '$lib/store.js';
 
 // Socket.IO manager, connection and disconnection
@@ -65,12 +66,23 @@ socketio.on('pong', () => {
 });
 
 // User-related events
+let userHeartbeatLoop = null;
+
+const userHeartbeat = function (userToken) {
+	return function () {
+		socketio.emit('heartbeat_user', userToken);
+	};
+};
+
 export const logInSocketio = function (userToken) {
 	socketio.emit('login', userToken);
+	userHeartbeat(userToken)();
+	userHeartbeatLoop = setInterval(userHeartbeat(userToken), 30000);
 };
 
 socketio.on('login_ack', (data) => {
 	if (data['result'] === 'failure') {
+		clearInterval(userHeartbeatLoop);
 		const appMode = getAppMode();
 		if (appMode === APP_MODE.development) {
 			console.log(data);
@@ -84,10 +96,18 @@ socketio.on('login_ack', (data) => {
 
 export const logOutSocketio = function (userToken) {
 	socketio.emit('logout', userToken);
+	userHeartbeat(userToken)();
+	clearInterval(userHeartbeatLoop);
 };
 
 socketio.on('logout_ack', (data) => {
 	// For later use
+});
+
+socketio.on('heartbeat_ack', () => {
+	const user = get(currentUser);
+	user.last_seen = new Date();
+	currentUser.set(user);
 });
 
 export const joinRoom = function (roomName) {

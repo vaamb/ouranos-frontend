@@ -15,6 +15,9 @@
 	$: username = $page['params']['username'];
 
 	const seenLastly = function (userDescription) {
+		if (!userDescription['last_seen']) {
+			return false;
+		}
 		return new Date() - new Date(userDescription['last_seen']) < 1000 * 60 * 2;
 	};
 

@@ -14,13 +14,13 @@
 
 	$: username = $page['params']['username'];
 
-	const seenLastly = function(userDescription) {
-		return new Date() - new Date(userDescription['last_seen']) < 1000 * 60 * 2
-	}
+	const seenLastly = function (userDescription) {
+		return new Date() - new Date(userDescription['last_seen']) < 1000 * 60 * 2;
+	};
 
-	const emptyIfNull = function(maybeStr) {
-		return maybeStr ? maybeStr : ''
-	}
+	const emptyIfNull = function (maybeStr) {
+		return maybeStr ? maybeStr : '';
+	};
 
 	// Modal-related variables and functions
 	let closeModals = {};

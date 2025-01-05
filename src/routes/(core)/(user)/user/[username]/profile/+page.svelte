@@ -18,6 +18,10 @@
 		return new Date() - new Date(userDescription['last_seen']) < 1000 * 60 * 2
 	}
 
+	const emptyIfNull = function(maybeStr) {
+		return maybeStr ? maybeStr : ''
+	}
+
 	// Modal-related variables and functions
 	let closeModals = {};
 	let crudAction = undefined;
@@ -44,11 +48,11 @@
 			</tr>
 			<tr>
 				<td>Firstname</td>
-				<td>{userDescription['firstname']}</td>
+				<td>{emptyIfNull(userDescription['firstname'])}</td>
 			</tr>
 			<tr>
 				<td>Lastname</td>
-				<td>{userDescription['lastname']}</td>
+				<td>{emptyIfNull(userDescription['lastname'])}</td>
 			</tr>
 			<tr>
 				<td>Role</td>

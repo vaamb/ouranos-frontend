@@ -1,23 +1,24 @@
 export function User(userObject = {}, sessionToken = null) {
 	const username = userObject['username'] || null;
-	const permissions = userObject['permissions'] || 0;
-	const auth = username ? true : false;
+	const isAuthenticated = userObject['isAuthenticated'] || userObject['is_authenticated'] || false;
+	const lastSeen = userObject['lastSeen'] || userObject['last_seen'] || null;
 	return {
 		username: username,
 		firstname: userObject['firstname'] || null,
 		lastname: userObject['lastname'] || null,
-		permissions: permissions,
+		permissions: userObject['permissions'] || 0,
 		iat: userObject.iat || null,
-		isAuthenticated: auth,
-		isAnonymous: !auth,
-		isConfirmed: userObject['is_confirmed'] || false,
+		isAuthenticated: isAuthenticated,
+		isAnonymous: !isAuthenticated,
+		isConfirmed: userObject['isConfirmed'] || userObject['is_confirmed'] || false,
+		lastSeen: lastSeen ? new Date(lastSeen) : null,
 		avatar: userObject['avatar'] || 'seedling', // TODO: for later
 		sessionToken: userObject['sessionToken'] || sessionToken,
 		can: function (perm) {
 			if (perm === undefined) {
 				return false;
 			}
-			return (permissions & perm) === perm;
+			return (this.permissions & perm) === perm;
 		},
 		flatten: function () {
 			return {
@@ -29,6 +30,7 @@ export function User(userObject = {}, sessionToken = null) {
 				isAuthenticated: this.isAuthenticated,
 				isAnonymous: this.isAnonymous,
 				isConfirmed: this.isConfirmed,
+				lastSeen: this.lastSeen,
 				avatar: this.avatar,
 				sessionToken: this.sessionToken
 			};

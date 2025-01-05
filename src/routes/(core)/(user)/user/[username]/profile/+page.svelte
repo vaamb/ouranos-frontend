@@ -1,4 +1,6 @@
 <script>
+	import { page } from '$app/stores';
+
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -9,6 +11,19 @@
 	import { crudRequest, fetchUserDescription } from '$lib/actions.js';
 	import { currentUser } from '$lib/store.js';
 	import { capitalize, getStatusClass, timeStringToDate } from '$lib/utils/functions.js';
+
+	$: username = $page['params']['username'];
+
+	const seenLastly = function (userDescription) {
+		if (!userDescription['last_seen']) {
+			return false;
+		}
+		return new Date() - new Date(userDescription['last_seen']) < 1000 * 60 * 2;
+	};
+
+	const emptyIfNull = function (maybeStr) {
+		return maybeStr ? maybeStr : '';
+	};
 
 	// Modal-related variables and functions
 	let closeModals = {};
@@ -23,24 +38,24 @@
 	};
 </script>
 
-<HeaderLine title="{$currentUser['username']}'s profile" />
-{#await fetchUserDescription($currentUser['username']) then userDescription}
+<HeaderLine title="{username}'s profile" />
+{#await fetchUserDescription(username) then userDescription}
 	<table class="table-base table-narrow">
 		<tbody>
 			<tr>
 				<td>Username</td>
 				<td>
 					{userDescription['username']} &nbsp;
-					<Fa icon={faCircle} class={getStatusClass(userDescription['confirmed'])} />
+					<Fa icon={faCircle} class={getStatusClass(seenLastly(userDescription))} />
 				</td>
 			</tr>
 			<tr>
 				<td>Firstname</td>
-				<td>{userDescription['firstname']}</td>
+				<td>{emptyIfNull(userDescription['firstname'])}</td>
 			</tr>
 			<tr>
 				<td>Lastname</td>
-				<td>{userDescription['lastname']}</td>
+				<td>{emptyIfNull(userDescription['lastname'])}</td>
 			</tr>
 			<tr>
 				<td>Role</td>

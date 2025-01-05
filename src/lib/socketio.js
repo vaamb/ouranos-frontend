@@ -4,6 +4,7 @@ import { Manager } from 'socket.io-client';
 import { APP_MODE, BASE_URL, getAppMode } from '$lib/utils/consts.js';
 import { getFreshStoreData, getStoreDataKey, updateStoreData } from '$lib/utils/functions.js';
 import {
+	currentUser,
 	ecosystems,
 	ecosystemsActuatorsState,
 	ecosystemsLightData,
@@ -11,16 +12,13 @@ import {
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	engines,
-	servers,
-	serversCurrentData,
 	pingServerLastSeen,
-	pingServerLatency
+	pingServerLatency,
+	servers,
+	serversCurrentData
 } from '$lib/store.js';
 
-let latencyArray = [];
-let pingTime = null;
-let pingLoop = null;
-
+// Socket.IO manager, connection and disconnection
 const manager = new Manager(BASE_URL, {
 	autoConnect: false,
 	reconnectionDelayMax: 30000,
@@ -37,12 +35,54 @@ export const disconnectSocketio = function () {
 	socketio.disconnect();
 };
 
+// Ping-related events
+let latencyArray = [];
+let pingTime = null;
+let pingLoop = null;
+
+const pingServer = function () {
+	pingTime = new Date();
+	socketio.emit('ping');
+};
+
+socketio.on('connect', () => {
+	pingLoop = setInterval(pingServer, 10000);
+});
+
+socketio.on('disconnect', () => {
+	clearInterval(pingLoop);
+});
+
+socketio.on('pong', () => {
+	const now = new Date();
+	pingServerLastSeen.set(now);
+	latencyArray.push(now - pingTime);
+	latencyArray = latencyArray.slice(-5);
+	let sum = 0;
+	for (let i = 0; i < latencyArray.length; i++) {
+		sum += latencyArray[i];
+	}
+	pingServerLatency.set((Math.round((10 * sum) / latencyArray.length) / 10).toFixed(1));
+});
+
+// User-related events
+let userHeartbeatLoop = null;
+
+const userHeartbeat = function (userToken) {
+	return function () {
+		socketio.emit('heartbeat_user', userToken);
+	};
+};
+
 export const logInSocketio = function (userToken) {
 	socketio.emit('login', userToken);
+	userHeartbeat(userToken)();
+	userHeartbeatLoop = setInterval(userHeartbeat(userToken), 30000);
 };
 
 socketio.on('login_ack', (data) => {
 	if (data['result'] === 'failure') {
+		clearInterval(userHeartbeatLoop);
 		const appMode = getAppMode();
 		if (appMode === APP_MODE.development) {
 			console.log(data);
@@ -56,10 +96,18 @@ socketio.on('login_ack', (data) => {
 
 export const logOutSocketio = function (userToken) {
 	socketio.emit('logout', userToken);
+	userHeartbeat(userToken)();
+	clearInterval(userHeartbeatLoop);
 };
 
 socketio.on('logout_ack', (data) => {
 	// For later use
+});
+
+socketio.on('heartbeat_ack', () => {
+	const user = get(currentUser);
+	user.last_seen = new Date();
+	currentUser.set(user);
 });
 
 export const joinRoom = function (roomName) {
@@ -96,33 +144,6 @@ socketio.on('leave_room_ack', (data) => {
 	}
 });
 
-const pingServer = function () {
-	pingTime = new Date();
-	socketio.emit('ping');
-};
-
-// Reserved events
-socketio.on('connect', () => {
-	pingLoop = setInterval(pingServer, 10000);
-});
-
-socketio.on('disconnect', () => {
-	clearInterval(pingLoop);
-});
-
-// Custom events
-socketio.on('pong', () => {
-	const now = new Date();
-	pingServerLastSeen.set(now);
-	latencyArray.push(now - pingTime);
-	latencyArray = latencyArray.slice(-5);
-	let sum = 0;
-	for (let i = 0; i < latencyArray.length; i++) {
-		sum += latencyArray[i];
-	}
-	pingServerLatency.set((Math.round((10 * sum) / latencyArray.length) / 10).toFixed(1));
-});
-
 socketio.on('ecosystems_heartbeat', (data) => {
 	const now = new Date();
 	const enginesObj = get(engines);
@@ -140,6 +161,7 @@ socketio.on('ecosystems_heartbeat', (data) => {
 	ecosystems.set(ecosystemsObj);
 });
 
+// Data events
 socketio.on('current_server_data', (data) => {
 	//TODO: temporary workaround, to change
 	const serverUid = 'base_server';

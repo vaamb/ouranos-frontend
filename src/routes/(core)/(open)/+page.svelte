@@ -49,7 +49,7 @@
 		fetchEcosystemSensorsSkeleton,
 		fetchEcosystemLightData,
 		fetchServerCurrentData,
-		loadWeatherForecast
+		fetchWeatherForecast
 	} from '$lib/actions.js';
 
 	let now = new Date();
@@ -150,7 +150,7 @@
 			}
 		}
 		if (serviceEnabled($services, 'weather')) {
-			await loadWeatherForecast(['hourly', 'daily']);
+			await fetchWeatherForecast();
 		}
 	});
 

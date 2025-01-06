@@ -8,6 +8,7 @@
 	import Row from '$lib/components/layout/Row.svelte';
 	import Box from '$lib/components/layout/Box.svelte';
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
+	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
 	import {
 		calendarEvents,
@@ -36,7 +37,6 @@
 		isEmpty,
 		formatDate,
 		formatDateTime,
-		getWeatherIcon,
 		serviceEnabled,
 		getParamStatus,
 		capitalize,
@@ -191,7 +191,7 @@
 	</Box>
 	{#if serviceEnabled($services, 'weather') && !isEmpty($weatherCurrently)}
 		<Box title="Current weather" align="center">
-			<i class="{getWeatherIcon($weatherCurrently['icon'])} weather-icon" />
+			<WeatherIcon icon={$weatherCurrently['icon']} />
 			<BoxItem title={$weatherCurrently['summary']}>
 				<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
 				<p>Wind: {$weatherCurrently['windSpeed'].toFixed(1)} km/h</p>

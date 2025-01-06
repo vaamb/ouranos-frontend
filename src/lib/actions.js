@@ -1,5 +1,4 @@
 import { get } from 'svelte/store';
-import { goto } from '$app/navigation';
 
 import axios from 'axios';
 
@@ -119,15 +118,29 @@ export const logIn = async function (username, password, remember = false) {
 				msgs.push(Message('You are now logged in ' + user.username));
 				flashMessage.set(msgs);
 				logInSocketio(sessionToken);
-				goto('/');
+				return {
+					success: true,
+					msg: null
+				};
+			} else {
+				return {
+					success: false,
+					msg: ERROR_MSG
+				};
 			}
 		})
 		.catch((error) => {
 			if (error.response) {
 				if (error.response.status === 401) {
-					return error.response.data.detail;
+					return {
+						success: false,
+						msg: error.response.data.detail
+					};
 				} else if (error.response.status === 500) {
-					return 'It seems like we have an issue on our side';
+					return {
+						success: false,
+						msg: ERROR_MSG
+					};
 				}
 			}
 		});

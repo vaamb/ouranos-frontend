@@ -13,6 +13,8 @@
 	} from '@fortawesome/free-solid-svg-icons';
 
 	export let icon;
+	export let height = '115px';
+	export let size = '70px';
 
 	const weatherIconTranslation = {
 		'01d': faSun,
@@ -40,15 +42,15 @@
 	};
 </script>
 
-<div class="weather-icon">
+<div class="weather-icon" style="--icon-height: {height}; --icon-size: {size}">
 	<Fa icon={getWeatherIcon(icon)} />
 </div>
 
 <style>
 	.weather-icon {
-		height: 115px;
-		line-height: 115px;
-		font-size: 70px;
+		height: var(--icon-height);
+		line-height: var(--icon-height);
+		font-size: var(--icon-size);
 		background: var(--main-95);
 		margin-bottom: -1px;
 	}

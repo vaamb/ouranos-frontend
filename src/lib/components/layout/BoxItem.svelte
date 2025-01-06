@@ -1,10 +1,11 @@
 <script>
 	export let title = null;
+	export let minWidth = '200px';
 	export let maxWidth = 'auto';
 	export let direction = 'column';
 </script>
 
-<div class="box-item" style="--max-width:{maxWidth}; height=100%">
+<div class="box-item" style="--min-width: {minWidth}; --max-width: {maxWidth}; height=100%">
 	<div class="top-fix">
 		{#if title}
 			<h1>{title}</h1>
@@ -47,7 +48,7 @@
 
 	@media only screen and (min-width: 768px) {
 		.box-item {
-			min-width: 200px;
+			min-width: var(--min-width);
 			max-width: var(--max-width);
 		}
 	}

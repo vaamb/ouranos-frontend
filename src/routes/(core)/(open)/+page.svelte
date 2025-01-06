@@ -191,14 +191,16 @@
 	</Box>
 	{#if serviceEnabled($services, 'weather') && !isEmpty($weatherCurrently)}
 		<Box title="Current weather" align="center">
-			<WeatherIcon icon={$weatherCurrently['icon']} />
-			<BoxItem title={$weatherCurrently['summary']}>
-				<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
-				<p>Wind: {$weatherCurrently['windSpeed'].toFixed(1)} km/h</p>
-				<p>Precipitation:{($weatherCurrently['precipProbability'] * 100).toFixed(1)} %</p>
-				<p>Humidity: {($weatherCurrently['humidity'] * 100).toFixed(1)} %</p>
-				<p>Cloud cover:{($weatherCurrently['cloudCover'] * 100).toFixed(1)} %</p>
-			</BoxItem>
+			<a href="/weather" style="display: inherit; flex-direction: inherit">
+				<WeatherIcon icon={$weatherCurrently['icon']} />
+				<BoxItem title={capitalize($weatherCurrently['summary'])}>
+					<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
+					<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
+					<!--<p>Precipitation: {$weatherCurrently['precipitation_probability'].toFixed(1)} %</p>-->
+					<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
+					<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
+				</BoxItem>
+			</a>
 		</Box>
 	{/if}
 	{#if $currentUser.can(permissions.ADMIN)}
@@ -418,13 +420,5 @@
 <style>
 	p {
 		margin-bottom: 0;
-	}
-
-	.weather-icon {
-		height: 115px;
-		line-height: 115px;
-		font-size: 70px;
-		background: inherit;
-		margin-bottom: -1px;
 	}
 </style>

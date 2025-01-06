@@ -1,5 +1,11 @@
 <script>
+	import { goto } from '$app/navigation';
+	import { navigating } from '$app/stores';
+
 	import { logIn } from '$lib/actions.js';
+
+	// Need to store the previous page as it is set to null when using `logIn`
+	const previousPage = $navigating ? $navigating.from.url.pathname : '/';
 
 	let errors = {};
 	const resetErrors = function () {
@@ -22,7 +28,12 @@
 			errors.password = 'Password required';
 		}
 		if (!errors.username && !errors.password) {
-			errors.server = await logIn(username, password, remember);
+			const logResponse = await logIn(username, password, remember);
+			if (logResponse.success) {
+				goto(previousPage);
+			} else {
+				errors.server = logResponse.msg;
+			}
 		}
 	};
 </script>

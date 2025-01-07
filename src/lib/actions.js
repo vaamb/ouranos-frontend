@@ -408,44 +408,56 @@ export const fetchCameraPicturesInfo = async function (ecosystemUID) {
 };
 
 // Weather-related actions
-export const loadWeatherForecast = async function (include = null) {
-	if (include === null) {
-		include = ['currently', 'hourly', 'daily'];
-	}
-	if (include.includes('currently') && !isEmpty(get(weatherCurrently))) {
-		include.filter((element) => element !== 'currently');
-	}
-	if (include.includes('hourly') && get(weatherHourly).length > 0) {
-		include.filter((element) => element !== 'hourly');
-	}
-	if (include.includes('daily') && get(weatherDaily).length > 0) {
-		include.filter((element) => element !== 'daily');
-	}
-
+export const fetchWeatherForecast = async function (include = ['currently', 'hourly', 'daily']) {
 	let exclude = ['currently', 'hourly', 'daily'];
-	exclude.filter((element) => !include.includes(element));
+
+	// TODO: check for data recency
+	if (include.includes('currently') && isEmpty(get(weatherCurrently))) {
+		exclude = exclude.filter((element) => element !== 'currently');
+	}
+	if (include.includes('hourly') && !get(weatherHourly).length > 0) {
+		exclude = exclude.filter((element) => element !== 'hourly');
+	}
+	if (include.includes('daily') && !get(weatherDaily).length > 0) {
+		exclude = exclude.filter((element) => element !== 'daily');
+	}
 
 	if (exclude.length >= 3) {
 		return; // Useless call, already have all the data
 	}
 
+	let params = new URLSearchParams();
+	if (exclude.length > 0) {
+		for (const param of exclude) {
+			params.append('exclude', param);
+		}
+	}
+
 	return axios
-		.get(`${API_URL}/weather/forecast`, {
-			params: { exclude: exclude.join(',') }
+		.get(`${API_URL}/app/services/weather/forecast`, {
+			params: params
 		})
 		.then((response) => {
-			if (Object.prototype.hasOwnProperty.call(response.data, 'currently')) {
-				weatherCurrently.set(response.data['currently']);
+			if (response['data']['currently']) {
+				weatherCurrently.set(response['data']['currently']);
 			}
-			if (Object.prototype.hasOwnProperty.call(response.data, 'hourly')) {
-				weatherHourly.set(response.data['hourly']);
+			if (response['data']['hourly']) {
+				weatherHourly.set(response['data']['hourly']);
 			}
-			if (Object.prototype.hasOwnProperty.call(response.data, 'daily')) {
-				weatherDaily.set(response.data['daily']);
+			if (response['data']['daily']) {
+				weatherDaily.set(response['data']['daily']);
 			}
 		})
 		.catch(() => {
-			// TODO: handle
+			if (!exclude.includes('currently')) {
+				weatherCurrently.set({});
+			}
+			if (!exclude.includes('hourly')) {
+				weatherHourly.set([]);
+			}
+			if (!exclude.includes('daily')) {
+				weatherDaily.set([]);
+			}
 		});
 };
 

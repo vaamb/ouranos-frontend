@@ -15,7 +15,10 @@ import {
 	pingServerLastSeen,
 	pingServerLatency,
 	servers,
-	serversCurrentData
+	serversCurrentData,
+	weatherCurrently,
+	weatherDaily,
+	weatherHourly
 } from '$lib/store.js';
 
 // Socket.IO manager, connection and disconnection
@@ -110,6 +113,7 @@ socketio.on('user_heartbeat_ack', () => {
 	currentUser.set(user);
 });
 
+// Rooms
 export const joinRoom = function (roomName) {
 	socketio.emit('join_room', roomName);
 };
@@ -144,6 +148,20 @@ socketio.on('leave_room_ack', (data) => {
 	}
 });
 
+// Weather
+socketio.on('weather_current', (data) => {
+	weatherCurrently.set(data);
+});
+
+socketio.on('weather_hourly', (data) => {
+	weatherHourly.set(data);
+});
+
+socketio.on('weather_daily', (data) => {
+	weatherDaily.set(data);
+});
+
+// Ecosystems
 socketio.on('ecosystems_heartbeat', (data) => {
 	const now = new Date();
 	const enginesObj = get(engines);
@@ -161,7 +179,6 @@ socketio.on('ecosystems_heartbeat', (data) => {
 	ecosystems.set(ecosystemsObj);
 });
 
-// Data events
 socketio.on('current_server_data', (data) => {
 	//TODO: temporary workaround, to change
 	const serverUid = 'base_server';

@@ -89,11 +89,11 @@ p {
 	background-color: var(--derived-50);
 	border: none;
 	color: var(--main-95);
-	padding: 0.7em 1.4em;
-	margin: 0 25px;
+	padding: 0.6em 1.2em;
+	margin: 0 15px;
 	text-align: center;
 	border-radius: 7px;
-	font-size: 1rem;
+	font-size: 0.85rem;
 	cursor: pointer;
 }
 

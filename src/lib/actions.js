@@ -435,7 +435,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 
 	return axios
 		.get(`${API_URL}/app/services/weather/forecast`, {
-			 params: params
+			params: params
 		})
 		.then((response) => {
 			if (response['data']['currently']) {

@@ -90,7 +90,13 @@
 		{#if !isEmpty($weatherHourly)}
 			<div style="display: flex; margin-bottom: 12px">
 				{#each measures as measure}
-					<button on:click={setcurrentMeasure(measure)} class="text-button">
+					<button
+						on:click={setcurrentMeasure(measure)}
+						class="text-button"
+						style={measure !== currentMeasure
+							? 'background-color: var(--derived-60)'
+							: 'background-color: var(--main-40)'}
+					>
 						{capitalize(measure).replace('_', ' ')}
 					</button>
 				{/each}

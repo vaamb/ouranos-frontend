@@ -70,7 +70,7 @@ let userHeartbeatLoop = null;
 
 const userHeartbeat = function (userToken) {
 	return function () {
-		socketio.emit('heartbeat_user', userToken);
+		socketio.emit('user_heartbeat', userToken);
 	};
 };
 
@@ -104,7 +104,7 @@ socketio.on('logout_ack', (data) => {
 	// For later use
 });
 
-socketio.on('heartbeat_ack', () => {
+socketio.on('user_heartbeat_ack', () => {
 	const user = get(currentUser);
 	user.last_seen = new Date();
 	currentUser.set(user);

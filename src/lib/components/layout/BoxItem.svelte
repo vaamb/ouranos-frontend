@@ -1,8 +1,11 @@
 <script>
-	export let title = null;
-	export let minWidth = '200px';
-	export let maxWidth = 'auto';
-	export let direction = 'column';
+	let {
+		title = null,
+        minWidth = '200px',
+		maxWidth = 'auto',
+		direction = 'column',
+		children
+	} = $props();
 </script>
 
 <div class="box-item" style="--min-width: {minWidth}; --max-width: {maxWidth}; height=100%">
@@ -12,7 +15,7 @@
 		{/if}
 	</div>
 	<div class="box-item-content {direction}" style="height: 100%; display: flex">
-		<slot />
+		{@render children?.()}
 	</div>
 </div>
 

@@ -63,7 +63,7 @@
 		crudIndex = undefined;
 	};
 
-	let closeModals = {};
+	let modals = {};
 
 	// Data to populate the tables and modals
 	let environmentParameters = undefined;
@@ -142,7 +142,7 @@
 	</table>
 </div>
 <Modal
-	bind:closeModal={closeModals['base_info']}
+	bind:this={modals['base_info']}
 	showModal={crudTable === 'base_info'}
 	title="Update {ecosystemName}' base info"
 	on:close={resetCrudData}
@@ -174,9 +174,9 @@
 		on:confirm={(event) => {
 			const payload = event.detail;
 			crudRequest(`gaia/ecosystem/u/${ecosystemUID}`, 'update', payload);
-			closeModals['base_info']();
+			modals['base_info'].closeModal();
 		}}
-		on:cancel={closeModals['base_info']}
+		on:cancel={() => modals['base_info'].closeModal()}
 	/>
 </Modal>
 
@@ -217,14 +217,14 @@
 	</table>
 </div>
 <Modal
-	bind:closeModal={closeModals['management']}
+	bind:this={modals['management']}
 	showModal={crudTable === 'management'}
 	title="Update {ecosystemName}' management"
 	confirmationButtons={true}
 	on:close={resetCrudData}
 	on:confirm={() => {
 		crudRequest(`gaia/ecosystem/u/${ecosystemUID}/management`, 'update', ecosystemManagement);
-		closeModals['management']();
+		modals['management'].closeModal();
 	}}
 >
 	<p>Are you sure you want to update {ecosystemName}' subroutines management?</p>
@@ -247,7 +247,7 @@
 		}}
 	/>
 	<Modal
-		bind:closeModal={closeModals['climate_parameter_create']}
+		bind:this={modals['climate_parameter_create']}
 		showModal={crudTable === 'climate_parameter' && crudAction === 'create'}
 		title="Add a new environment parameter"
 		on:close={resetCrudData}
@@ -262,13 +262,13 @@
 			on:confirm={(event) => {
 				const payload = event.detail;
 				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameters`, 'create', payload);
-				closeModals['climate_parameter_create']();
+				modals['climate_parameter_create'].closeModal();
 			}}
-			on:cancel={closeModals['climate_parameter_create']}
+			on:cancel={() => modals['climate_parameter_create'].closeModal()}
 		/>
 	</Modal>
 	<Modal
-		bind:closeModal={closeModals['climate_parameter_update']}
+		bind:this={modals['climate_parameter_update']}
 		showModal={crudTable === 'climate_parameter' && crudAction === 'update'}
 		title="Update {environmentParameter['parameter']} environment parameter"
 		on:close={resetCrudData}
@@ -308,13 +308,13 @@
 					'update',
 					payload
 				);
-				closeModals['climate_parameter_update']();
+				modals['climate_parameter_update'].closeModal();
 			}}
-			on:cancel={closeModals['climate_parameter_update']}
+			on:cancel={() => modals['climate_parameter_update'].closeModal()}
 		/>
 	</Modal>
 	<Modal
-		bind:closeModal={closeModals['climate_parameter_delete']}
+		bind:this={modals['climate_parameter_delete']}
 		showModal={crudTable === 'climate_parameter' && crudAction === 'delete'}
 		title="Delete {environmentParameter['parameter']} environment parameter"
 		confirmationButtons={true}
@@ -322,7 +322,7 @@
 		on:confirm={() => {
 			const parameter = environmentParameter['parameter'];
 			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameters/${parameter}`, 'delete');
-			closeModals['climate_parameter_delete']();
+			modals['climate_parameter_delete'].closeModal();
 		}}
 	>
 		<p>
@@ -351,7 +351,7 @@
 		}}
 	/>
 	<Modal
-		bind:closeModal={closeModals['hardware_create']}
+		bind:this={modals['hardware_create']}
 		showModal={crudTable === 'hardware' && crudAction === 'create'}
 		title="Add a new hardware"
 		on:close={resetCrudData}
@@ -367,13 +367,13 @@
 			on:confirm={(event) => {
 				const payload = event.detail;
 				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/hardware`, 'create', payload);
-				closeModals['hardware_create']();
+				modals['hardware_create'].closeModal();
 			}}
-			on:cancel={closeModals['hardware_create']}
+			on:cancel={() => modals['hardware_create'].closeModal()}
 		/>
 	</Modal>
 	<Modal
-		bind:closeModal={closeModals['hardware_update']}
+		bind:this={modals['hardware_update']}
 		showModal={crudTable === 'hardware' && crudAction === 'update'}
 		title="Update '{hardware['name']}' hardware"
 		on:close={resetCrudData}
@@ -402,13 +402,13 @@
 				const uid = hardware['uid'];
 				const payload = event.detail;
 				crudRequest(`gaia/hardware/u/${uid}`, 'update', payload);
-				closeModals['hardware_update']();
+				modals['hardware_update'].closeModal();
 			}}
-			on:cancel={closeModals['hardware_update']}
+			on:cancel={() => modals['hardware_update'].closeModal()}
 		/>
 	</Modal>
 	<Modal
-		bind:closeModal={closeModals['hardware_delete']}
+		bind:this={modals['hardware_delete']}
 		showModal={crudTable === 'hardware' && crudAction === 'delete'}
 		title="Delete '{hardware['name']}' hardware"
 		confirmationButtons={true}
@@ -416,7 +416,7 @@
 		on:confirm={() => {
 			const uid = hardware['uid'];
 			crudRequest(`gaia/hardware/u/${uid}`, 'delete');
-			closeModals['hardware_delete']();
+			modals['hardware_delete'].closeModal();
 		}}
 	>
 		<p>Are you sure you want to delete '{hardware['name']}' hardware ?</p>

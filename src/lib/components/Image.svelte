@@ -3,20 +3,23 @@
 	import Fa from 'svelte-fa';
 	import { faNotdef, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-	export let source;
-	export let width;
-	export let height;
-	export let alt = '';
-	export let caption = undefined;
-
-	let image = new Image(); // bound to the image container
-	let loading = false;
-	let loaded = false;
-	let error = false;
+	let {
+		source,
+		width,
+		height,
+		alt = $bindable(''),
+		caption = $bindable(undefined)
+	} = $props();
 
 	export const refresh = function () {
-		image.src = source + '?' + new Date().getTime();
+		const rootSource = source.split('?')[0];
+		image.src = rootSource + '?' + new Date().getTime();
 	};
+
+	let image = $state(new Image()); // bound to the image container
+	let loading = $state(false);
+	let loaded = $state(false);
+	let error = $state(false);
 
 	onMount(() => {
 		loading = true;

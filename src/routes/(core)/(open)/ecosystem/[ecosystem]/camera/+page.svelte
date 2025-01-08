@@ -19,7 +19,7 @@
 	let cameraIDs = [];
 	let cameraPicturesInfo = {};
 	let captions = {};
-	let refreshImage = {};
+	let images = {};
 
 	const createCaptions = function (cameraPicturesInfo) {
 		const rv = {};
@@ -32,8 +32,8 @@
 
 	onMount(async () => {
 		const data = await fetchCameraPicturesInfo(ecosystemUID);
-		cameraPicturesInfo = data.cameraPicturesInfo;
 		cameraIDs = data.cameraIDs;
+		cameraPicturesInfo = data.cameraPicturesInfo;
 		captions = createCaptions(cameraPicturesInfo);
 
 		joinRoom('camera_stream');
@@ -42,11 +42,11 @@
 				for (const updatedInfo of data['updated_pictures']) {
 					if (
 						cameraPicturesInfo.hasOwnProperty(updatedInfo['camera_uid']) &&
-						refreshImage.hasOwnProperty(updatedInfo['camera_uid'])
+						images.hasOwnProperty(updatedInfo['camera_uid'])
 					) {
 						const cameraPictureInfo = cameraPicturesInfo[updatedInfo['camera_uid']];
 						cameraPictureInfo['timestamp'] = new Date(updatedInfo['timestamp']);
-						refreshImage[updatedInfo['camera_uid']]();
+						images[updatedInfo['camera_uid']].refresh();
 					}
 				}
 			}
@@ -72,8 +72,9 @@
 						source={`${STATIC_URL}/${pictureInfo['path']}?${new Date().getTime()}`}
 						height="250"
 						width="375"
+						bind:this={images[cameraID['uid']]}
 						bind:caption={captions[cameraID['uid']]}
-						bind:refresh={refreshImage[cameraID['uid']]}
+						bind:alt={cameraID['uid']}
 					/>
 				</div>
 			</BoxItem>

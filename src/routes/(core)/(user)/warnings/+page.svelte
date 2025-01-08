@@ -7,7 +7,7 @@
 	import { warnings } from '$lib/store.js';
 
 	// Crud-related variables and functions
-	let closeModal;
+	let modal;
 	let crudDataIndex = null;
 
 	const setCrudData = function (rowIndex) {
@@ -39,7 +39,7 @@
 		}}
 	/>
 	<Modal
-		bind:closeModal
+		bind:this={modal}
 		showModal={crudDataIndex !== null}
 		title="Remove a warning"
 		on:close={resetCrudData}
@@ -47,7 +47,7 @@
 		on:confirm={() => {
 			const warningID = $warnings[crudDataIndex]['id'];
 			crudRequest(`gaia/warning/u/${warningID}/mark_as_solved`, 'create');
-			closeModal();
+			modal.closeModal();
 		}}
 	>
 		Are you sure you want to remove the warning '{$warnings[crudDataIndex]

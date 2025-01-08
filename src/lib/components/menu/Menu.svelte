@@ -10,17 +10,25 @@
 	import { permissions } from '$lib/utils/consts.js';
 	import { currentUser, ecosystemsIds } from '$lib/store.js';
 
-	export let items; // [MenuItem(), MenuItem()]
-	export let width = 210;
+	let { items, width = 210 } = $props();
 
-	$: outerWidth = 0;
+	let outerWidth = $state(0);
 
-	let showMenu = false;
+	let showMenu = $state(false);
 	let toggleMenu = function () {
 		showMenu = !showMenu;
 	};
 
-	let toggledMenuItemIndex = null;
+	// Menu item to open
+	let toggledMenuItemIndex = $state(null);
+	// Pre-open ecosystems submenu if there are less than 3 ecosystems
+	if ($ecosystemsIds.length < 3) {
+		const index = items.findIndex(item => item.name === 'Ecosystems');
+		if (index !== -1) {
+			toggledMenuItemIndex = index;
+		}
+	}
+
 	let toggleMenuItem = function (index) {
 		if (toggledMenuItemIndex === index) {
 			toggledMenuItemIndex = null;
@@ -29,13 +37,15 @@
 		}
 	};
 
-	$: if ($navigating) {
-		// Close menu when changing page
-		if (outerWidth < 992) {
-			showMenu = false;
-			toggledMenuItemIndex = null;
+	$effect(() => {
+		// Close menu when changing page if screen is smaller than 992px
+		if ($navigating) {
+			if (outerWidth < 992) {
+				showMenu = false;
+				//toggledMenuItemIndex = null;
+			}
 		}
-	}
+	});
 </script>
 
 <svelte:window bind:outerWidth />
@@ -46,8 +56,8 @@
 		tabindex="0"
 		role="button"
 		aria-pressed="false"
-		on:click={toggleMenu}
-		on:keypress={toggleMenu}
+		onclick={toggleMenu}
+		onkeypress={toggleMenu}
 	>
 		<div class="menu-title">
 			<h1>GAIA</h1>
@@ -71,9 +81,6 @@
 	<div class="toggle-accordion" class:show={showMenu === true}>
 		<ul class="accordion">
 			{#each items as item, index}
-				{#if $ecosystemsIds.length <= 3 && item['name'] === 'Ecosystems'}
-					<template>{toggleMenuItem(index)}</template>
-				{/if}
 				<MenuItem
 					{item}
 					open={toggledMenuItemIndex === index}
@@ -87,7 +94,7 @@
 				<a href="/user/settings"><Fa icon={faUserCog} /></a>
 			{/if}
 			{#if $currentUser.can(permissions.ADMIN)}
-				<button class="reset-button" on:click={restartServer}><Fa icon={faPowerOff} /></button>
+				<button class="reset-button" onclick={restartServer}><Fa icon={faPowerOff} /></button>
 			{/if}
 		</div>
 	</div>

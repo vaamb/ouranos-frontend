@@ -4,19 +4,21 @@
 	import { Chart } from 'chart.js/auto';
 	import 'chartjs-adapter-date-fns';
 
-	export let labels;
-	export let datasets;
-	export let defaultMin = 0;
-	export let suggestedMin = defaultMin;
-	export let defaultMax = 100;
-	export let suggestedMax = defaultMax;
-	export let height = 250;
-	export let legend = null;
-	export let xScale = null;
-	export let yScale = null;
+	let {
+		labels,
+		datasets,
+		defaultMin = 0,
+		suggestedMin = defaultMin,
+		defaultMax = 100,
+		suggestedMax = defaultMax,
+		height = 250,
+		legend = null,
+		xScale = null,
+		yScale = null
+	} = $props();
 
-	let canvas;
-	let chart;
+	let canvas = $state();
+	let chart = $state();
 
 	const chartLayout = {
 		scales: {
@@ -43,13 +45,13 @@
 		responsive: true
 	};
 
-	$: {
+	$effect(() => {
 		if (chart) {
 			chart.data.labels = labels;
 			chart.data.datasets = datasets;
 			chart.update();
 		}
-	}
+	});
 
 	onMount(async () => {
 		const ctx = canvas.getContext('2d');
@@ -65,5 +67,5 @@
 </script>
 
 <div class="container" style="height:{height}">
-	<canvas bind:this={canvas} width="clientWidth" height="clientHeight" />
+	<canvas bind:this={canvas} width="clientWidth" height="clientHeight"></canvas>
 </div>

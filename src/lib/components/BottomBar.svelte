@@ -5,7 +5,7 @@
 	import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 	import { getEcosystemUID } from '$lib/utils/functions.js';
 
-	export let menuWidth = 210;
+	let { menuWidth = 210 } = $props();
 
 	// Enums
 	const PAGE_TYPE = {
@@ -15,23 +15,26 @@
 		ECOSYSTEM: 2
 	};
 
-	// Page type and UID
-	let ecosystemOrEngineUID = undefined;
-
+	// Page type
 	const computePageType = function (url) {
 		if (url.includes('/ecosystem/')) {
-			ecosystemOrEngineUID = getEcosystemUID($ecosystems, $page.params['ecosystem']);
-			return PAGE_TYPE.ECOSYSTEM;
+			return {
+				pageType: PAGE_TYPE.ECOSYSTEM,
+				ecosystemOrEngineUID: getEcosystemUID($ecosystems, $page.params['ecosystem']),
+			};
 		} else if (url.includes('/engine/')) {
-			ecosystemOrEngineUID = $page.params['engine'];  // Rem: will be undefined for overview page
-			return PAGE_TYPE.ENGINE;
+			return {
+				pageType: PAGE_TYPE.ENGINE,
+				ecosystemOrEngineUID: $page.params['engine'],
+			};
 		} else {
-			ecosystemOrEngineUID = undefined;
-			return PAGE_TYPE.DEFAULT;
+			return {
+				pageType: PAGE_TYPE.DEFAULT,
+				ecosystemOrEngineUID: undefined,
+			};
 		}
 	};
-
-	$: pageType = computePageType($page.url.pathname);
+	let {pageType, ecosystemOrEngineUID} = $derived(computePageType($page.url.pathname));
 </script>
 
 <div class="bottom-bar" style="--menu-width:{menuWidth}">

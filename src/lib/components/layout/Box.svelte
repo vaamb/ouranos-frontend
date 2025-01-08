@@ -2,15 +2,18 @@
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
-	export let title;
-	export let icon = null;
-	export let status = null;
-	export let align = 'left';
-	export let direction = 'column';
-	export let minHeight = null;
-	export let maxHeight = null;
-	export let minWidth = null;
-	export let maxWidth = null;
+	let {
+		title,
+		icon = null,
+		status = null,
+		align = 'left',
+		direction = 'column',
+		minHeight = null,
+		maxHeight = null,
+		minWidth = null,
+		maxWidth = null,
+		children
+	} = $props();
 </script>
 
 <div
@@ -29,7 +32,7 @@
 		{/if}
 	</h1>
 	<div class="box-content {direction}">
-		<slot />
+		{@render children?.()}
 	</div>
 </div>
 

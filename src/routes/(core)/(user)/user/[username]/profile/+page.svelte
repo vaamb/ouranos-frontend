@@ -26,7 +26,7 @@
 	};
 
 	// Modal-related variables and functions
-	let closeModals = {};
+	let modals = {};
 	let crudAction = undefined;
 
 	const setCrudAction = function (action) {
@@ -112,7 +112,7 @@
 		</tbody>
 	</table>
 	<Modal
-		bind:closeModal={closeModals['update']}
+		bind:this={modals['update']}
 		showModal={crudAction === 'update'}
 		on:close={resetCrudAction}
 		title="Update {$currentUser['username']}'s user info"
@@ -128,33 +128,33 @@
 			on:confirm={(event) => {
 				const payload = event.detail;
 				crudRequest(`user/u/${$currentUser['username']}`, 'update', payload);
-				closeModals['update']();
+				modals['update'].closeModal();
 			}}
-			on:cancel={closeModals['update']}
+			on:cancel={() => modals['update'].closeModal()}
 		/>
 	</Modal>
 	<Modal
-		bind:closeModal={closeModals['confirm']}
+		bind:this={modals['confirm']}
 		showModal={crudAction === 'confirm'}
 		on:close={resetCrudAction}
 		title="Confirm {$currentUser['username']}'s account"
 		confirmationButtons={true}
 		on:confirm={() => {
 			crudRequest(`user/u/${$currentUser['username']}/confirm`, 'create');
-			closeModals['update']();
+			modals['confirm'].closeModal();
 		}}
 	>
 		<p>Confirm {$currentUser['username']}'s account ?</p>
 	</Modal>
 	<Modal
-		bind:closeModal={closeModals['delete']}
+		bind:this={modals['delete']}
 		showModal={crudAction === 'delete'}
 		on:close={resetCrudAction}
 		title="Delete {$currentUser['username']}'s account"
 		confirmationButtons={true}
 		on:confirm={() => {
 			crudRequest(`user/u/${$currentUser['username']}/delete`, 'create');
-			closeModals['delete']();
+			modals['delete'].closeModal();
 		}}
 	>
 		<p>Are you sure you want to delete {$currentUser['username']}'s account ?</p>

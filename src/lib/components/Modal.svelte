@@ -5,18 +5,21 @@
 	import { faXmark } from '@fortawesome/free-solid-svg-icons';
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 
-	export let dialog; // HTMLDialogElement
-	export let showModal = false;
-	export let title = undefined;
-	export let confirmationButtons = false;
-	export let timeOut = undefined;
+	let {
+		showModal = $bindable(false),
+		title = undefined,
+		confirmationButtons = false,
+		timeOut = undefined,
+		children
+	} = $props();
+
+	let dialog = $state(); // HTMLDialogElement
+
+	$effect(() => {
+		if (showModal) displayModal();
+	});
 
 	const dispatch = createEventDispatcher();
-
-	export const closeModal = function () {
-		dialog.close();
-		dispatch('close');
-	};
 
 	const displayModal = function () {
 		dialog.showModal();
@@ -27,13 +30,25 @@
 		}
 	};
 
-	$: if (dialog && showModal) displayModal();
+	export const closeModal = function () {
+		dialog.close();
+		dispatch('close');
+	};
 </script>
 
-<dialog bind:this={dialog} on:close={() => (showModal = false)} on:click|self={closeModal}>
-	<div on:click|stopPropagation style="font-size: 1.05rem">
+<dialog
+	bind:this={dialog}
+	onclose={() => {
+		showModal = false;
+	}}
+	onclick={(e) => {
+		if (e.target === dialog) closeModal();
+	}}
+>
+	<div style="font-size: 1.05rem">
+		<!--The `showModal` is required to update the content when displaying several modals one after the other-->
 		{#if showModal}
-			<button class="reset-button close" on:click={closeModal}>
+			<button class="reset-button close" onclick={closeModal}>
 				<Fa icon={faXmark} />
 			</button>
 			{#if title}
@@ -42,7 +57,7 @@
 				</h1>
 			{/if}
 			<div class="content">
-				<slot />
+				{@render children?.()}
 			</div>
 			{#if confirmationButtons}
 				<ConfirmButtons

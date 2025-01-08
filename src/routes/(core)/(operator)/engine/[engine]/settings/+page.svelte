@@ -52,7 +52,7 @@
 		crudEcosystemName = '';
 	};
 
-	let closeModals = {};
+	let modals = {};
 </script>
 
 <HeaderLine title="{engineUID} engine" />
@@ -99,7 +99,7 @@
 	</table>
 </div>
 <Modal
-	bind:closeModal={closeModals['base_info']}
+	bind:this={modals['base_info']}
 	showModal={crudAction === 'base_info'}
 	title="Update {engineUID}' base info"
 	on:close={resetCrudData}
@@ -109,9 +109,9 @@
 		on:confirm={(event) => {
 			const payload = event.detail;
 			crudRequest(`gaia/engine/u/${engineUID}`, 'update', payload);
-			closeModals['base_info']();
+			modals['base_info'].closeModal();
 		}}
-		on:cancel={closeModals['base_info']}
+		on:cancel={() => modals['base_info'].closeModal()}
 	/>
 </Modal>
 
@@ -143,7 +143,7 @@
 		}}
 	/>
 	<Modal
-		bind:closeModal={closeModals['create']}
+		bind:this={modals['create']}
 		showModal={crudAction === 'create'}
 		title="Create a new ecosystem"
 		on:close={resetCrudData}
@@ -169,20 +169,20 @@
 				const payload = event.detail;
 				payload['engine_uid'] = engineUID;
 				crudRequest(`gaia/ecosystem/u`, 'create', payload);
-				closeModals['create']();
+				modals['create'].closeModal();
 			}}
-			on:cancel={closeModals['create']}
+			on:cancel={() => modals['create'].closeModal()}
 		/>
 	</Modal>
 	<Modal
-		bind:closeModal={closeModals['delete']}
+		bind:this={modals['delete']}
 		showModal={crudAction === 'delete'}
 		title="Delete {crudEcosystemName}"
 		on:close={resetCrudData}
 		confirmationButtons={true}
 		on:confirm={() => {
 			crudRequest(`gaia/ecosystem/u/${crudEcosystemUID}`, 'delete');
-			closeModals['delete']();
+			modals['delete'].closeModal();
 		}}
 	>
 		<p>

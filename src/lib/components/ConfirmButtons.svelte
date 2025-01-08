@@ -1,6 +1,7 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	export let disabled = false;
+
+	let { disabled = false } = $props();
 
 	const dispatch = createEventDispatcher();
 
@@ -14,8 +15,8 @@
 </script>
 
 <div style="display: flex; justify-content: center; margin-top: 10px">
-	<button class="confirm" on:click={confirm} {disabled}> Confirm </button>
-	<button class="cancel" on:click={cancel}>Cancel</button>
+	<button class="confirm" onclick={confirm} {disabled}> Confirm </button>
+	<button class="cancel" onclick={cancel}>Cancel</button>
 </div>
 
 <style>

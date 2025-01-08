@@ -6,15 +6,13 @@
 	import Fa from 'svelte-fa';
 	import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-	export let item; // {name: "Item name", icon: Fa icon, path: "/path", children: [item11, item12]}
+	let { item, open = false } = $props();
 
-	export let open = false;
-
-	let anyItemClicked = false;
+	let anyItemClicked = $state(false);
 
 	const dispatch = createEventDispatcher();
 
-	let toggledMenuSubItemIndex = null;
+	let toggledMenuSubItemIndex = $state(null);
 	const toggleMenuSubItem = function (index) {
 		anyItemClicked = true;
 		if (toggledMenuSubItemIndex === index) {
@@ -46,7 +44,7 @@
 	</li>
 {:else}
 	<li>
-		<button class="reset-button menu-item" on:click={toggleMenuItem}>
+		<button class="reset-button menu-item" onclick={toggleMenuItem}>
 			<div class="left-ico">
 				{#if item.icon !== undefined}
 					<Fa icon={item.icon} />
@@ -72,7 +70,7 @@
 							<button
 								class="reset-button menu-item menu-sub-item"
 								style="background-color: {child.color ? child.color : 'var(--green)'}"
-								on:click={() => {
+								onclick={() => {
 									toggleMenuSubItem(index);
 								}}
 							>

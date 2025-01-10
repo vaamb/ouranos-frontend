@@ -28,12 +28,12 @@
 	} from '$lib/actions.js';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
-	$: ecosystemName = $page['params']['ecosystem'];
-	$: ecosystemUID = getEcosystemUID($ecosystems, ecosystemName);
-	$: ecosystem = { ...$ecosystems[ecosystemUID] };
+	let ecosystemName = $derived($page['params']['ecosystem']);
+	let ecosystemUID = $derived(getEcosystemUID($ecosystems, ecosystemName));
+	let ecosystem = $derived({ ...$ecosystems[ecosystemUID] });
 
 	// Management crud-related function
-	$: ecosystemManagement = { ...$ecosystemsManagement[ecosystemUID] };
+	let ecosystemManagement = $derived({ ...$ecosystemsManagement[ecosystemUID] });
 
 	const managementChoices = [
 		'sensors',
@@ -47,9 +47,9 @@
 	];
 
 	// General crud-related variables and functions
-	let crudAction = undefined;
-	let crudTable = undefined;
-	let crudIndex = undefined;
+	let crudAction = $state(undefined);
+	let crudTable = $state(undefined);
+	let crudIndex = $state(undefined);
 
 	const setCrudData = function (parameter, action, rowIndex) {
 		crudAction = action;
@@ -63,22 +63,22 @@
 		crudIndex = undefined;
 	};
 
-	let modals = {};
+	let modals = $state({});
 
 	// Data to populate the tables and modals
-	let environmentParameters = undefined;
-	$: environmentParameter =
-		environmentParameters !== undefined &&
+	let environmentParameters = $state(undefined);
+	let environmentParameter =
+		$derived(environmentParameters !== undefined &&
 		crudTable === 'climate_parameter' &&
 		crudIndex !== undefined
 			? environmentParameters[crudIndex]
-			: {};
+			: {});
 
-	let hardwareObjects = undefined;
-	$: hardware =
-		hardwareObjects !== undefined && crudTable === 'hardware' && crudIndex !== undefined
+	let hardwareObjects = $state(undefined);
+	let hardware =
+		$derived(hardwareObjects !== undefined && crudTable === 'hardware' && crudIndex !== undefined
 			? hardwareObjects[crudIndex]
-			: {};
+			: {});
 
 	onMount(async () => {
 		environmentParameters = await fetchEcosystemEnvironmentParameters(ecosystemUID);
@@ -129,7 +129,7 @@
 					<td colspan="2" style="text-align: center; vertical-align: middle">
 						<button
 							class="text-button"
-							on:click={() => {
+							onclick={() => {
 								setCrudData('base_info', undefined, undefined);
 							}}
 						>
@@ -204,7 +204,7 @@
 					<td colspan="2" style="text-align: center; vertical-align: middle">
 						<button
 							class="text-button"
-							on:click={() => {
+							onclick={() => {
 								setCrudData('management', undefined, undefined);
 							}}
 						>

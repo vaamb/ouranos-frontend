@@ -27,16 +27,17 @@
 		return array.filter((ecosystem) => ecosystem['engine_uid'] === engineUID);
 	};
 
-	$: engineUID = $page['params']['engine'];
-	$: engine = $engines[engineUID];
-	$: ecosystemsArray = getEcosystemsArray(engineUID, $ecosystems);
-	$: ecosystemArray = crudIndex !== undefined ? ecosystemsArray[crudIndex] : [];
+	let engineUID = $derived($page['params']['engine']);
+	let engine = $derived($engines[engineUID]);
+  let ecosystemsArray = $derived(getEcosystemsArray(engineUID, $ecosystems));
+
+	let modals = $state({});
 
 	// Crud-related variables and functions
-	let crudAction = undefined;
-	let crudIndex = undefined;
-	let crudEcosystemUID = '';
-	let crudEcosystemName = '';
+	let crudAction = $state(undefined);
+	let crudIndex = $state(undefined);
+	let crudEcosystemUID = $state('');
+	let crudEcosystemName = $state('');
 
 	const setCrudData = function (action, index, ecosystemUID, ecosystemName) {
 		crudAction = action;
@@ -52,7 +53,7 @@
 		crudEcosystemName = '';
 	};
 
-	let modals = {};
+	let ecosystemArray = $derived(crudIndex !== undefined ? ecosystemsArray[crudIndex] : []);
 </script>
 
 <HeaderLine title="{engineUID} engine" />
@@ -87,7 +88,7 @@
 				<td colspan="2" style="text-align: center; vertical-align: middle">
 					<button
 						class="text-button"
-						on:click={() => {
+						onclick={() => {
 							setCrudData('base_info', undefined, undefined, undefined);
 						}}
 					>

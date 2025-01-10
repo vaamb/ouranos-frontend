@@ -7,8 +7,8 @@
 	import { warnings } from '$lib/store.js';
 
 	// Crud-related variables and functions
-	let modal;
-	let crudDataIndex = null;
+	let modal = $state();
+	let crudDataIndex = $state(null);
 
 	const setCrudData = function (rowIndex) {
 		crudDataIndex = rowIndex !== undefined ? rowIndex : null;

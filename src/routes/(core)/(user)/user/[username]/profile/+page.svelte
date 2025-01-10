@@ -12,7 +12,7 @@
 	import { currentUser } from '$lib/store.js';
 	import { capitalize, getStatusClass, timeStringToDate } from '$lib/utils/functions.js';
 
-	$: username = $page['params']['username'];
+	let username = $derived($page['params']['username']);
 
 	const seenLastly = function (userDescription) {
 		if (!userDescription['last_seen']) {
@@ -26,8 +26,8 @@
 	};
 
 	// Modal-related variables and functions
-	let modals = {};
-	let crudAction = undefined;
+	let modals = $state({});
+	let crudAction = $state(undefined);
 
 	const setCrudAction = function (action) {
 		crudAction = action;
@@ -75,7 +75,7 @@
 				<td colspan="2" style="text-align: center; vertical-align: middle">
 					<button
 						class="text-button"
-						on:click={() => {
+						onclick={() => {
 							setCrudAction('update');
 						}}
 					>
@@ -88,7 +88,7 @@
 					<td colspan="2" style="text-align: center; vertical-align: middle">
 						<button
 							class="text-button"
-							on:click={() => {
+							onclick={() => {
 								setCrudAction('confirm');
 							}}
 						>
@@ -101,7 +101,7 @@
 				<td colspan="2" style="text-align: center; vertical-align: middle">
 					<button
 						class="text-button"
-						on:click={() => {
+						onclick={() => {
 							setCrudAction('delete');
 						}}
 					>

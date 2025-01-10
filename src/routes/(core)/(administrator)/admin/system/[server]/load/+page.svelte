@@ -13,8 +13,8 @@
 	import { capitalize, getStoreDataKey } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
-	$: serverName = $page.params.server;
-	$: serverInfo = $servers[serverName];
+	let serverName = $derived($page.params.server);
+	let serverInfo = $derived($servers[serverName]);
 
 	const fetchServerData = async function (serverName) {
 		await fetchServerCurrentData(serverName);

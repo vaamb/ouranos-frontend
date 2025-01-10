@@ -7,7 +7,7 @@
 	// Need to store the previous page as it is set to null when using `logIn`
 	const previousPage = $navigating ? $navigating.from.url.pathname : '/';
 
-	let errors = {};
+	let errors = $state({});
 	const resetErrors = function () {
 		errors.username = null;
 		errors.password = null;
@@ -15,9 +15,9 @@
 	};
 	resetErrors();
 
-	let username;
-	let password;
-	let remember;
+	let username = $state();
+	let password = $state();
+	let remember = $state();
 
 	const validate = async function () {
 		resetErrors();
@@ -39,7 +39,7 @@
 </script>
 
 <h1>Sign In</h1>
-<form on:submit={validate}>
+<form onsubmit={validate}>
 	<input id="csrf_token" type="hidden" value="text" />
 	{#if errors.server}
 		<div class="input-group">

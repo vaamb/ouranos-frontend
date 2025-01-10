@@ -13,13 +13,13 @@
 	import { joinRoom, leaveRoom, socketio } from '$lib/socketio.js';
 	import { ecosystems } from '$lib/store.js';
 
-	$: ecosystemName = $page['params']['ecosystem'];
-	$: ecosystemUID = getEcosystemUID($ecosystems, ecosystemName);
+	let ecosystemName = $derived($page['params']['ecosystem']);
+	let ecosystemUID = $derived(getEcosystemUID($ecosystems, ecosystemName));
 
-	let cameraIDs = [];
-	let cameraPicturesInfo = {};
-	let captions = {};
-	let images = {};
+	let cameraPicturesInfo = $state({});
+	let cameraIDs = $state([]);
+	let captions = $state({});
+	let images = $state({});
 
 	const createCaptions = function (cameraPicturesInfo) {
 		const rv = {};

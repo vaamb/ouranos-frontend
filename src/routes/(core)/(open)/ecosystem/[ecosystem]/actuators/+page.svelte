@@ -22,8 +22,8 @@
 	import { capitalize, getStoreDataKey, getEcosystemUID } from '$lib/utils/functions.js';
 	import { colors } from '$lib/utils/styling.js';
 
-	$: ecosystemName = $page['params']['ecosystem'];
-	$: ecosystemUID = getEcosystemUID($ecosystems, ecosystemName);
+	let ecosystemName = $derived($page['params']['ecosystem']);
+	let ecosystemUID = $derived(getEcosystemUID($ecosystems, ecosystemName));
 
 	const hasBeenActive = function (ecosystemsActuatorsRecords) {
 		const active = (element) => element[1]

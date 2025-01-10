@@ -52,7 +52,7 @@
 		fetchWeatherForecast
 	} from '$lib/actions.js';
 
-	let now = new Date();
+	let now = $state(new Date());
 	const updateNow = function () {
 		now = new Date();
 	};
@@ -66,7 +66,7 @@
 		}
 		return sortedWarnings;
 	};
-	$: sortedWarnings = sortWarningsByEcosystem($warnings);
+	let sortedWarnings = $derived(sortWarningsByEcosystem($warnings));
 
 	const sortCalendarEventsByHappening = function (calendarEvents) {
 		const sortedEvents = {
@@ -83,7 +83,7 @@
 		}
 		return sortedEvents;
 	};
-	$: sortedCalendarEvents = sortCalendarEventsByHappening($calendarEvents);
+	let sortedCalendarEvents = $derived(sortCalendarEventsByHappening($calendarEvents));
 
 	const anyActiveActuator = function (ecosystemsActuatorsState, uid) {
 		const actuatorsStatus = ecosystemsActuatorsState[uid];

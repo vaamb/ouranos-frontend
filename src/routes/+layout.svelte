@@ -14,7 +14,7 @@
 	import { APP_MODE, SERVER_STATUS } from '$lib/utils/consts.js';
 	import { User } from '$lib/utils/factories.js';
 
-	export let data;
+	let { data, children } = $props();
 	const { appMode, serverStatus, userData } = data;
 
 	const user = User(userData);
@@ -44,7 +44,7 @@
 {#if appMode === APP_MODE.maintenance}
 	<MaintenanceScreen />
 {:else if serverStatus === SERVER_STATUS.connected}
-	<slot />
+	{@render children?.()}
 {:else}
 	<UnreachableScreen />
 {/if}

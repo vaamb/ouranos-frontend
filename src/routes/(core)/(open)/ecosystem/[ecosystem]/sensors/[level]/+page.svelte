@@ -31,14 +31,14 @@
 		}
 	};
 
-	$: sensorsLevel = $page.params.level;
-	$: ecosystemName = $page.params.ecosystem;
-	$: pageTitle = generateTitle(sensorsLevel, ecosystemName);
-	$: icons = graphs[sensorsLevel].icons;
-	$: colors = graphs[sensorsLevel].colors;
-	$: minValues = graphs[sensorsLevel].min_values;
-	$: maxValues = graphs[sensorsLevel].max_values;
-	$: ecosystemUid = getEcosystemUID($ecosystems, ecosystemName);
+	let sensorsLevel = $derived($page.params.level);
+	let ecosystemName = $derived($page.params.ecosystem);
+	let pageTitle = $derived(generateTitle(sensorsLevel, ecosystemName));
+	let icons = $derived(graphs[sensorsLevel].icons);
+	let colors = $derived(graphs[sensorsLevel].colors);
+	let minValues = $derived(graphs[sensorsLevel].min_values);
+	let maxValues = $derived(graphs[sensorsLevel].max_values);
+	let ecosystemUid = $derived(getEcosystemUID($ecosystems, ecosystemName));
 
 	const fetchSensorData = async function (ecosystemUID, sensorUid, measure) {
 		const current = await fetchSensorCurrentData(ecosystemUID, sensorUid, measure);

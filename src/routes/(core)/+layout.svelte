@@ -28,7 +28,7 @@
 	import { APP_MODE } from '$lib/utils/consts.js';
 
 	// Fill stores with pre-fetched data
-	export let data;
+	let { data, children } = $props();
 
 	const {
 		appMode,
@@ -61,18 +61,27 @@
 	// Menu-related parameters
 	let menuWidth = 210;
 
-	$: menuItems = generateListOfMenuItems(
+	let menuItems = $derived(generateListOfMenuItems(
 		$currentUser,
 		$ecosystemsIds,
 		$ecosystemsManagement,
 		$enginesIds,
 		$services,
 		$serversIds
-	);
+	));
 
 	// Modal-related functions and parameters
-	let showModal;
-	$: showModal = $flashMessage.length > 0;
+	let showModal = $state($flashMessage.length > 0);
+
+	$effect(() => {
+		showModal = $flashMessage.length > 0;
+		// Hack required to update `showModal` after shifting the messages
+		showModal
+	})
+
+	const refreshModal = function () {
+		$flashMessage.shift();
+	}
 
 	// Ping server, engine and ecosystem connection status
 	const updateStatus = function () {
@@ -118,9 +127,7 @@
 
 <Modal
 	bind:showModal
-	on:close={() => {
-		$flashMessage.shift();
-	}}
+	on:close={refreshModal}
 	title={$flashMessage.length > 0 ? $flashMessage[0]['title'] : ''}
 	timeOut={$flashMessage.length > 0 ? $flashMessage[0]['timeOut'] : undefined}
 >
@@ -130,7 +137,7 @@
 <Menu items={menuItems} width={menuWidth} />
 <TopBar development={appMode === APP_MODE.development} {menuWidth} />
 <div class="main" style="--margin-width:{menuWidth}">
-	<slot />
+	{@render children?.()}
 </div>
 <BottomBar {menuWidth} />
 

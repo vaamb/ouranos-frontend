@@ -387,23 +387,10 @@ export const fetchCameraPicturesInfo = async function (ecosystemUID) {
 			cameraPicturesInfo.forEach((info) => {
 				info['timestamp'] = new Date(info['timestamp']);
 			});
-			const dataObject = cameraPicturesInfo.reduce((a, v) => ({ ...a, [v['camera_uid']]: v }), {});
-			const sorted = cameraPicturesInfo.sort(dynamicSort('camera_name'));
-			const IDsArray = sorted.map((obj) => ({
-				uid: obj['camera_uid'],
-				name: capitalize(obj['camera_name'].replace('_', ' '))
-			}));
-
-			return {
-				cameraPicturesInfo: dataObject,
-				cameraIDs: IDsArray
-			};
+			return cameraPicturesInfo.reduce((a, v) => ({ ...a, [v['camera_uid']]: v }), {});
 		})
 		.catch(() => {
-			return {
-				cameraPicturesInfo: {},
-				cameraIDs: []
-			};
+			return {};
 		});
 };
 

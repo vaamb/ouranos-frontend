@@ -7,8 +7,8 @@
 		source,
 		width,
 		height,
-		alt = $bindable(''),
-		caption = $bindable(undefined)
+		alt = '',
+		caption = undefined
 	} = $props();
 
 	export const refresh = function () {

@@ -41,8 +41,8 @@
 	let role = tokenRole || 'User';
 	let email = $state(tokenEmail);
 	let telegramId = $state();
-	let password1 = $state();
-	let password2 = $state();
+	let password1 = $state(null);
+	let password2 = $state(null);
 
 	// Data validation
 	let errors = $state({});
@@ -57,29 +57,9 @@
 	const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 	const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-+_!$&?.,])[^ ]{8,20}$/;
 
-	const checkValidEmail = function (email) {
-		if (!email) {
-			return null;
-		}
-		return regexEmail.test(email);
-	};
-	let validEmail = $derived(checkValidEmail(email));
-
-	const checkValidPassword = function (password) {
-		if (!password) {
-			return null;
-		}
-		return regexPassword.test(password);
-	};
-	let validPassword = $derived(checkValidPassword(password1));
-
-	const checkSamePassword = function (password1, password2) {
-		if (!password1 || !password2) {
-			return null;
-		}
-		return password1 === password2;
-	};
-	let samePassword = $derived(checkSamePassword(password1, password2));
+	let validEmail = $derived(!email ? null : regexEmail.test(email));
+	let validPassword = $derived(!password1 ? null : regexPassword.test(password1));
+	let samePassword = $derived(!password1 || !password2 ? null : password1 === password2);
 
 	const validateRegistration = function () {
 		resetErrors();

@@ -28,7 +28,7 @@
 		services,
 		warnings,
 		weatherCurrently
-	} from '$lib/store.js';
+	} from '$lib/store.svelte.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
 		computeEcosystemStatusClass,

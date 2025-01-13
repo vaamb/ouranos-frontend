@@ -20,7 +20,7 @@
 		ecosystemsSensorsDataHistoric,
 		ecosystemsSensorsSkeleton,
 		getStoreDataKey
-	} from '$lib/store.js';
+	} from '$lib/store.svelte.js';
 	import { capitalize, getEcosystemUID } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 

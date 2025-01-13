@@ -24,7 +24,7 @@
 		serversIds,
 		services,
 		warnings
-	} from '$lib/store.js';
+	} from '$lib/store.svelte.js';
 	import { APP_MODE } from '$lib/utils/consts.js';
 
 	// Fill stores with pre-fetched data

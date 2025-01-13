@@ -8,7 +8,7 @@
 	import { restartServer } from '$lib/components/menu/functions.js';
 
 	import { permissions } from '$lib/utils/consts.js';
-	import { currentUser, ecosystemsIds } from '$lib/store.js';
+	import { currentUser, ecosystemsIds } from '$lib/store.svelte.js';
 
 	let { items, width = 210 } = $props();
 

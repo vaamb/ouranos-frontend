@@ -17,7 +17,7 @@
 		ecosystemsActuatorsRecords,
 		ecosystemsActuatorsState,
 		getStoreDataKey
-	} from '$lib/store.js';
+	} from '$lib/store.svelte.js';
 
 	import { actuatorTypes } from '$lib/utils/consts.js';
 	import { capitalize, getEcosystemUID } from '$lib/utils/functions.js';

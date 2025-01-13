@@ -11,7 +11,7 @@
 
 	import { permissions } from '$lib/utils/consts.js';
 	import { getStatusClass, timeStringToDate } from '$lib/utils/functions.js';
-	import { currentUser } from '$lib/store.js';
+	import { currentUser } from '$lib/store.svelte.js';
 
 	let {
 		tableID,

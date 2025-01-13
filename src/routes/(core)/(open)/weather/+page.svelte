@@ -8,7 +8,7 @@
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
 	import { fetchWeatherForecast } from '$lib/actions.svelte.js';
-	import { services, weatherCurrently, weatherDaily, weatherHourly } from '$lib/store.js';
+	import { services, weatherCurrently, weatherDaily, weatherHourly } from '$lib/store.svelte.js';
 	import {
 		capitalize,
 		formatDate,

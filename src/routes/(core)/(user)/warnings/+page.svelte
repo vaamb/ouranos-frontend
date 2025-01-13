@@ -4,7 +4,7 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
-	import { warnings } from '$lib/store.js';
+	import { warnings } from '$lib/store.svelte.js';
 
 	// Crud-related variables and functions
 	let modal = $state();

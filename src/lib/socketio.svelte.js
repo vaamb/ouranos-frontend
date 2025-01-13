@@ -21,7 +21,7 @@ import {
 	weatherCurrently,
 	weatherDaily,
 	weatherHourly
-} from '$lib/store.js';
+} from '$lib/store.svelte.js';
 
 // Socket.IO manager, connection and disconnection
 const manager = new Manager(BASE_URL, {

@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 
-	import { ecosystems, engines, pingServerStatus } from '$lib/store.js';
+	import { ecosystems, engines, pingServerStatus } from '$lib/store.svelte.js';
 	import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 	import { getEcosystemUID } from '$lib/utils/functions.js';
 

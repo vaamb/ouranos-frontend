@@ -10,7 +10,7 @@
 		logInSocketio,
 		logOutSocketio
 	} from '$lib/socketio.svelte.js';
-	import { currentUser, pingServerLastSeen } from '$lib/store.js';
+	import { currentUser, pingServerLastSeen } from '$lib/store.svelte.js';
 	import { APP_MODE, SERVER_STATUS } from '$lib/utils/consts.js';
 	import { User } from '$lib/utils/factories.js';
 

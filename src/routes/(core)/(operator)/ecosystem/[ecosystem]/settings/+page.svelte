@@ -10,7 +10,7 @@
 	import SlideButton from '$lib/components/SlideButton.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { currentUser, ecosystems, ecosystemsManagement } from '$lib/store.js';
+	import { currentUser, ecosystems, ecosystemsManagement } from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 	import {
 		capitalize,

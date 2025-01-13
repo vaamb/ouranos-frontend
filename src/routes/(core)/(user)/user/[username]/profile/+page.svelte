@@ -9,7 +9,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	import { crudRequest, fetchUserDescription } from '$lib/actions.svelte.js';
-	import { currentUser } from '$lib/store.js';
+	import { currentUser } from '$lib/store.svelte.js';
 	import { capitalize, getStatusClass, timeStringToDate } from '$lib/utils/functions.js';
 
 	let username = $derived($page['params']['username']);

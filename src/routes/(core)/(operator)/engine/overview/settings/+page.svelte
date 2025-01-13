@@ -2,7 +2,7 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { engines, enginesIds } from '$lib/store.js';
+	import { engines, enginesIds } from '$lib/store.svelte.js';
 </script>
 
 <HeaderLine title="Ecosystem engines overview" />

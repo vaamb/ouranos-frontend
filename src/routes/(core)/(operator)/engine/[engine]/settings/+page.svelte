@@ -9,7 +9,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { currentUser, ecosystems, engines } from '$lib/store.js';
+	import { currentUser, ecosystems, engines } from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 	import {
 		getStatusClass,

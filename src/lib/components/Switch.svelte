@@ -4,7 +4,7 @@
 	import Fa from 'svelte-fa';
 	import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
-	import { currentUser } from '$lib/store.js';
+	import { currentUser } from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 
 	let {

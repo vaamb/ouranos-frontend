@@ -34,7 +34,7 @@ import {
 	weatherCurrently,
 	weatherDaily,
 	weatherHourly
-} from '$lib/store.js';
+} from '$lib/store.svelte.js';
 
 // Flash messages utility functions
 const ERROR_MSG =

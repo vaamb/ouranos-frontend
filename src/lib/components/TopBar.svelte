@@ -4,7 +4,7 @@
 
 	import { logOut } from '$lib/actions.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
-	import { currentUser, warnings } from '$lib/store.js';
+	import { currentUser, warnings } from '$lib/store.svelte.js';
 
 	let {
 		development,

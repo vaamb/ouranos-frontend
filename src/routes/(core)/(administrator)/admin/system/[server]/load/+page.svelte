@@ -9,7 +9,7 @@
 	import Row from '$lib/components/layout/Row.svelte';
 
 	import { fetchServerCurrentData, fetchServerHistoricData } from '$lib/actions.svelte.js';
-	import { getStoreDataKey, servers, serversCurrentData, serversHistoricData } from '$lib/store.js';
+	import { getStoreDataKey, servers, serversCurrentData, serversHistoricData } from '$lib/store.svelte.js';
 	import { capitalize } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 

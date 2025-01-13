@@ -11,7 +11,7 @@
 		fetchEcosystemActuatorRecords,
 		fetchEcosystemActuatorsState,
 		updateActuatorMode
-	} from '$lib/actions.js';
+	} from '$lib/actions.svelte.js';
 	import {
 		ecosystems,
 		ecosystemsActuatorsRecords,

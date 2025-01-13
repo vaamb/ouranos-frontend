@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { navigating } from '$app/stores';
 
-	import { logIn } from '$lib/actions.js';
+	import { logIn } from '$lib/actions.svelte.js';
 
 	// Need to store the previous page as it is set to null when using `logIn`
 	const previousPage = $navigating ? $navigating.from.url.pathname : '/';

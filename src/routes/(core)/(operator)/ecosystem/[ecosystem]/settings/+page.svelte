@@ -25,7 +25,7 @@
 		fetchEcosystemEnvironmentParameters,
 		fetchEcosystemHardware,
 		crudRequest
-	} from '$lib/actions.js';
+	} from '$lib/actions.svelte.js';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
 	let ecosystemName = $derived($page['params']['ecosystem']);

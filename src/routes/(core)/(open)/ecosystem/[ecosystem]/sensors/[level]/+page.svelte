@@ -13,7 +13,7 @@
 		fetchSensorCurrentData,
 		fetchSensorHistoricData,
 		fetchEcosystemSensorsSkeleton
-	} from '$lib/actions.js';
+	} from '$lib/actions.svelte.js';
 	import {
 		ecosystems,
 		ecosystemsSensorsDataCurrent,

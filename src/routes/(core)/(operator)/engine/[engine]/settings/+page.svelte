@@ -17,7 +17,7 @@
 		isTime,
 		timeStringToDate
 	} from '$lib/utils/functions.js';
-	import { crudRequest } from '$lib/actions.js';
+	import { crudRequest } from '$lib/actions.svelte.js';
 
 	const getEcosystemsArray = function (engineUID, ecosystemsStore) {
 		if (!ecosystemsStore) {

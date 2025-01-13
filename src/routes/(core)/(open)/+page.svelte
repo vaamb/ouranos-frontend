@@ -50,7 +50,7 @@
 		fetchEcosystemLightData,
 		fetchServerCurrentData,
 		fetchWeatherForecast
-	} from '$lib/actions.js';
+	} from '$lib/actions.svelte.js';
 
 	let now = $state(new Date());
 	const updateNow = function () {

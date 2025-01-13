@@ -3,7 +3,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { crudRequest } from '$lib/actions.js';
+	import { crudRequest } from '$lib/actions.svelte.js';
 	import { warnings } from '$lib/store.js';
 
 	// Crud-related variables and functions

@@ -7,7 +7,7 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Image from '$lib/components/Image.svelte';
 
-	import { fetchCameraPicturesInfo } from '$lib/actions.js';
+	import { fetchCameraPicturesInfo } from '$lib/actions.svelte.js';
 	import { joinRoom, leaveRoom, socketio } from '$lib/socketio.js';
 	import { ecosystems } from '$lib/store.js';
 	import { STATIC_URL } from '$lib/utils/consts.js';

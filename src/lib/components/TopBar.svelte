@@ -2,7 +2,7 @@
 	import Fa from 'svelte-fa';
 	import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-	import { logOut } from '$lib/actions.js';
+	import { logOut } from '$lib/actions.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 	import { currentUser, warnings } from '$lib/store.js';
 

@@ -6,7 +6,7 @@ import {
 	fetchServers,
 	fetchServices,
 	fetchWarnings
-} from '$lib/actions.js';
+} from '$lib/actions.svelte.js';
 import { User } from '$lib/utils/factories.js';
 
 export async function load({ cookies, request, parent }) {

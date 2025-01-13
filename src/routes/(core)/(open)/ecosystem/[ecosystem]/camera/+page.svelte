@@ -8,7 +8,7 @@
 	import Image from '$lib/components/Image.svelte';
 
 	import { fetchCameraPicturesInfo } from '$lib/actions.svelte.js';
-	import { joinRoom, leaveRoom, socketio } from '$lib/socketio.js';
+	import { joinRoom, leaveRoom, socketio } from '$lib/socketio.svelte.js';
 	import { ecosystems } from '$lib/store.js';
 	import { STATIC_URL } from '$lib/utils/consts.js';
 	import { capitalize, dynamicSort, getEcosystemUID } from '$lib/utils/functions.js';

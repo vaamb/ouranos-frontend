@@ -16,7 +16,7 @@ import { Message, User } from '$lib/utils/factories.js';
 import {
 	isEmpty
 } from '$lib/utils/functions.js';
-import { logInSocketio, logOutSocketio } from '$lib/socketio.js';
+import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
 	currentUser,
 	ecosystemsActuatorsRecords,

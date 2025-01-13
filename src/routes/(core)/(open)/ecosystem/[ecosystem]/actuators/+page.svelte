@@ -15,11 +15,12 @@
 	import {
 		ecosystems,
 		ecosystemsActuatorsRecords,
-		ecosystemsActuatorsState
+		ecosystemsActuatorsState,
+		getStoreDataKey
 	} from '$lib/store.js';
 
 	import { actuatorTypes } from '$lib/utils/consts.js';
-	import { capitalize, getStoreDataKey, getEcosystemUID } from '$lib/utils/functions.js';
+	import { capitalize, getEcosystemUID } from '$lib/utils/functions.js';
 	import { colors } from '$lib/utils/styling.js';
 
 	let ecosystemName = $derived($page['params']['ecosystem']);

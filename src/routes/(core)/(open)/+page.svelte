@@ -20,6 +20,7 @@
 		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsSkeleton,
+		getStoreDataKey,
 		pingServerLatency,
 		servers,
 		serversCurrentData,
@@ -40,7 +41,6 @@
 		serviceEnabled,
 		getParamStatus,
 		capitalize,
-		getStoreDataKey,
 		timeStringToDate
 	} from '$lib/utils/functions.js';
 	import {

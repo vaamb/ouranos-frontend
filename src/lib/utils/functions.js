@@ -1,9 +1,6 @@
-import { get } from 'svelte/store';
-
 import humanizeDuration from 'humanize-duration';
 
 import { CONNECTION_STATUS } from '$lib/utils/consts.js';
-import { pingServerLastSeen } from '$lib/store.js';
 
 const timeRegex = new RegExp('^([0-9]{2}:){1,2}[0-9]{2}$');
 
@@ -215,52 +212,4 @@ export const getEcosystemUID = function (ecosystems, ecosystemName) {
 	if (!isEmpty(Ids)) {
 		return Ids.uid;
 	}
-};
-
-export const checkSensorDataRecency = function (sensorData, minuteModulo) {
-	if (!isEmpty(sensorData)) {
-		const timestamp = new Date(sensorData['timestamp']);
-		const timeSinceLastRecordThreshold = timestamp % (minuteModulo * 60 * 1000);
-		const lastRecordThreshold = timestamp - timeSinceLastRecordThreshold;
-		const now = new Date();
-		return now - lastRecordThreshold <= (minuteModulo + 1) * 60 * 1000;
-	} else {
-		return false;
-	}
-};
-
-export const getStoreDataKey = function () {
-	if (arguments.length <= 1) {
-		return arguments[0];
-	} else {
-		let rv = arguments[0];
-		const remainingArgs = Array.prototype.slice.call(arguments, 1);
-		for (const value of Object.values(remainingArgs)) {
-			rv = rv + '_' + value;
-		}
-		return rv;
-	}
-};
-
-export const getStoreData = function (store, storageKey) {
-	// Utility function to easily access stored data outside .svelte files
-	const storeData = get(store)[storageKey];
-	if (storeData) {
-		return storeData;
-	} else {
-		return {};
-	}
-};
-
-export const getFreshStoreData = function (store, storageKey) {
-	const now = new Date();
-	if (now - get(pingServerLastSeen) > 60000) {
-		return {};
-	}
-	return getStoreData(store, storageKey);
-};
-
-export const updateStoreData = function (store, data) {
-	// Utility function to easily update stored data outside .svelte files
-	store.set({ ...get(store), ...data });
 };

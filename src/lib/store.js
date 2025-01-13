@@ -1,4 +1,4 @@
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 
 import { User } from '$lib/utils/factories.js';
 import { CONNECTION_STATUS } from '$lib/utils/consts.js';
@@ -47,3 +47,40 @@ export const serversIds = derived(servers, (servers) => {
 		.sort(dynamicSort('uid'))
 		.map((obj) => ({ uid: obj['uid'], name: capitalize(obj['uid'].replace('_', ' ')) }));
 });
+
+// Store-related utility functions
+export const getStoreDataKey = function () {
+	if (arguments.length <= 1) {
+		return arguments[0];
+	} else {
+		let rv = arguments[0];
+		const remainingArgs = Array.prototype.slice.call(arguments, 1);
+		for (const value of Object.values(remainingArgs)) {
+			rv = rv + '_' + value;
+		}
+		return rv;
+	}
+};
+
+export const getStoreData = function (store, storageKey) {
+	// Utility function to easily access stored data outside .svelte files
+	const storeData = get(store)[storageKey];
+	if (storeData) {
+		return storeData;
+	} else {
+		return {};
+	}
+};
+
+export const getFreshStoreData = function (store, storageKey) {
+	const now = new Date();
+	if (now - get(pingServerLastSeen) > 60000) {
+		return {};
+	}
+	return getStoreData(store, storageKey);
+};
+
+export const updateStoreData = function (store, data) {
+	// Utility function to easily update stored data outside .svelte files
+	store.set({ ...get(store), ...data });
+};

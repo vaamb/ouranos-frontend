@@ -18,9 +18,10 @@
 		ecosystems,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsDataHistoric,
-		ecosystemsSensorsSkeleton
+		ecosystemsSensorsSkeleton,
+		getStoreDataKey
 	} from '$lib/store.js';
-	import { capitalize, getEcosystemUID, getStoreDataKey } from '$lib/utils/functions.js';
+	import { capitalize, getEcosystemUID } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
 	const generateTitle = function (level, ecosystemName) {

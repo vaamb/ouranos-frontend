@@ -9,8 +9,8 @@
 	import Row from '$lib/components/layout/Row.svelte';
 
 	import { fetchServerCurrentData, fetchServerHistoricData } from '$lib/actions.js';
-	import { servers, serversCurrentData, serversHistoricData } from '$lib/store.js';
-	import { capitalize, getStoreDataKey } from '$lib/utils/functions.js';
+	import { getStoreDataKey, servers, serversCurrentData, serversHistoricData } from '$lib/store.js';
+	import { capitalize } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
 	let serverName = $derived($page.params.server);

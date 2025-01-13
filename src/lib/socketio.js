@@ -2,7 +2,6 @@ import { get } from 'svelte/store';
 import { Manager } from 'socket.io-client';
 
 import { APP_MODE, BASE_URL, getAppMode } from '$lib/utils/consts.js';
-import { getFreshStoreData, getStoreDataKey, updateStoreData } from '$lib/utils/functions.js';
 import {
 	currentUser,
 	ecosystems,
@@ -12,10 +11,13 @@ import {
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	engines,
+	getFreshStoreData,
+	getStoreDataKey,
 	pingServerLastSeen,
 	pingServerLatency,
 	servers,
 	serversCurrentData,
+	updateStoreData,
 	weatherCurrently,
 	weatherDaily,
 	weatherHourly

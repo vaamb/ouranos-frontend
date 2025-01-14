@@ -7,6 +7,6 @@ export async function load({ parent }) {
 	const currentUser = User(data.userData);
 
 	if (currentUser.isAnonymous) {
-		throw redirect(307, '/');
+		redirect(307, '/');
 	}
 }

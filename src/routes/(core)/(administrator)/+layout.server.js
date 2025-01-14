@@ -8,6 +8,6 @@ export async function load({ parent }) {
 	const currentUser = User(data.userData);
 
 	if (!currentUser.can(permissions.ADMIN)) {
-		throw redirect(307, '/');
+		redirect(307, '/');
 	}
 }

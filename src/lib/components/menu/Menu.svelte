@@ -23,7 +23,7 @@
 	let toggledMenuItemIndex = $state(null);
 	// Pre-open ecosystems submenu if there are less than 3 ecosystems
 	if ($ecosystemsIds.length < 3) {
-		const index = items.findIndex(item => item.name === 'Ecosystems');
+		const index = items.findIndex((item) => item.name === 'Ecosystems');
 		if (index !== -1) {
 			toggledMenuItemIndex = index;
 		}

@@ -1,7 +1,7 @@
 <script>
 	let {
 		title = null,
-        minWidth = '200px',
+		minWidth = '200px',
 		maxWidth = 'auto',
 		direction = 'column',
 		children

@@ -94,7 +94,11 @@ export const generateListOfMenuItems = function (
 			const management = menuItemAvailable['management'];
 			if (ecosystemManagement[management]) {
 				children.push(
-					MenuItem(menuItemAvailable['name'], `/ecosystem/${id['name']}/${menuItemAvailable['path']}`, menuItemAvailable['icon'])
+					MenuItem(
+						menuItemAvailable['name'],
+						`/ecosystem/${id['name']}/${menuItemAvailable['path']}`,
+						menuItemAvailable['icon']
+					)
 				);
 			}
 		}

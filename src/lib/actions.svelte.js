@@ -13,9 +13,7 @@ import {
 	SERVER_STATUS
 } from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
-import {
-	isEmpty
-} from '$lib/utils/functions.js';
+import { isEmpty } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
 	currentUser,

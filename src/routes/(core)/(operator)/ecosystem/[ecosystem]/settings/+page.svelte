@@ -67,18 +67,20 @@
 
 	// Data to populate the tables and modals
 	let environmentParameters = $state(undefined);
-	let environmentParameter =
-		$derived(environmentParameters !== undefined &&
-		crudTable === 'climate_parameter' &&
-		crudIndex !== undefined
+	let environmentParameter = $derived(
+		environmentParameters !== undefined &&
+			crudTable === 'climate_parameter' &&
+			crudIndex !== undefined
 			? environmentParameters[crudIndex]
-			: {});
+			: {}
+	);
 
 	let hardwareObjects = $state(undefined);
-	let hardware =
-		$derived(hardwareObjects !== undefined && crudTable === 'hardware' && crudIndex !== undefined
+	let hardware = $derived(
+		hardwareObjects !== undefined && crudTable === 'hardware' && crudIndex !== undefined
 			? hardwareObjects[crudIndex]
-			: {});
+			: {}
+	);
 
 	onMount(async () => {
 		environmentParameters = await fetchEcosystemEnvironmentParameters(ecosystemUID);

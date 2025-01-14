@@ -29,7 +29,7 @@
 
 	let engineUID = $derived($page['params']['engine']);
 	let engine = $derived($engines[engineUID]);
-  let ecosystemsArray = $derived(getEcosystemsArray(engineUID, $ecosystems));
+	let ecosystemsArray = $derived(getEcosystemsArray(engineUID, $ecosystems));
 
 	let modals = $state({});
 
@@ -63,12 +63,10 @@
 		<tbody>
 			<tr>
 				<td>UID</td>
-				<td
-					>{engineUID} &nbsp; <Fa
-						icon={faCircle}
-						class={getStatusClass(engine['connected'])}
-					/></td
-				>
+				<td>
+					{engineUID} &nbsp;
+					<Fa icon={faCircle} class={getStatusClass(engine['connected'])} />
+				</td>
 			</tr>
 			<tr>
 				<td>SID</td>

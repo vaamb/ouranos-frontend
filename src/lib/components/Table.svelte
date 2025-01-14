@@ -15,8 +15,8 @@
 
 	let {
 		tableID,
-		columns = [],
-		data = [],
+		columns = [], // [{label: "My column", key: "data_key", isTime: false, isStatus: false}]
+		data = [], // [{data_key: data1}, {data_key: data2}]
 		editable = false,
 		crudOptions = ['create', 'update', 'delete']
 	} = $props();

@@ -20,21 +20,21 @@
 		if (url.includes('/ecosystem/')) {
 			return {
 				pageType: PAGE_TYPE.ECOSYSTEM,
-				ecosystemOrEngineUID: getEcosystemUID($ecosystems, $page.params['ecosystem']),
+				ecosystemOrEngineUID: getEcosystemUID($ecosystems, $page.params['ecosystem'])
 			};
 		} else if (url.includes('/engine/')) {
 			return {
 				pageType: PAGE_TYPE.ENGINE,
-				ecosystemOrEngineUID: $page.params['engine'],
+				ecosystemOrEngineUID: $page.params['engine']
 			};
 		} else {
 			return {
 				pageType: PAGE_TYPE.DEFAULT,
-				ecosystemOrEngineUID: undefined,
+				ecosystemOrEngineUID: undefined
 			};
 		}
 	};
-	let {pageType, ecosystemOrEngineUID} = $derived(computePageType($page.url.pathname));
+	let { pageType, ecosystemOrEngineUID } = $derived(computePageType($page.url.pathname));
 </script>
 
 <div class="bottom-bar" style="--menu-width:{menuWidth}">

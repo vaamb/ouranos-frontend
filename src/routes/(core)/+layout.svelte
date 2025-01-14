@@ -61,14 +61,16 @@
 	// Menu-related parameters
 	let menuWidth = 210;
 
-	let menuItems = $derived(generateListOfMenuItems(
-		$currentUser,
-		$ecosystemsIds,
-		$ecosystemsManagement,
-		$enginesIds,
-		$services,
-		$serversIds
-	));
+	let menuItems = $derived(
+		generateListOfMenuItems(
+			$currentUser,
+			$ecosystemsIds,
+			$ecosystemsManagement,
+			$enginesIds,
+			$services,
+			$serversIds
+		)
+	);
 
 	// Modal-related functions and parameters
 	let showModal = $state($flashMessage.length > 0);
@@ -76,12 +78,12 @@
 	$effect(() => {
 		showModal = $flashMessage.length > 0;
 		// Hack required to update `showModal` after shifting the messages
-		showModal
-	})
+		showModal;
+	});
 
 	const refreshModal = function () {
 		$flashMessage.shift();
-	}
+	};
 
 	// Ping server, engine and ecosystem connection status
 	const updateStatus = function () {
@@ -108,7 +110,10 @@
 		// Ecosystems
 		for (const ecosystemUID in $ecosystems) {
 			const ecosystem = $ecosystems[ecosystemUID];
-			$ecosystems[ecosystemUID]['connected'] = getStatus(ecosystem['last_seen'], ecosystem['connected']);
+			$ecosystems[ecosystemUID]['connected'] = getStatus(
+				ecosystem['last_seen'],
+				ecosystem['connected']
+			);
 		}
 	};
 

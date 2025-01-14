@@ -101,7 +101,11 @@
 	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {
 		let rv = [];
 		for (const sensor of sensors) {
-			const data = await fetchSensorCurrentData(ecosystemUID, sensor['uid'], measure.replace(' ', '_'));
+			const data = await fetchSensorCurrentData(
+				ecosystemUID,
+				sensor['uid'],
+				measure.replace(' ', '_')
+			);
 			rv.push(data);
 		}
 		return rv;
@@ -142,7 +146,7 @@
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
-		await fetchSensorCurrentData(undefined, 'priming', undefined)
+		await fetchSensorCurrentData(undefined, 'priming', undefined);
 
 		for (const { uid, name } of $ecosystemsIds) {
 			if (isConnected($ecosystems[uid])) {

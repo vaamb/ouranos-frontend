@@ -7,32 +7,45 @@
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
-	import { currentUser, flashMessage } from '$lib/store.js';
+	import { currentUser, flashMessage } from '$lib/store.svelte.js';
 	import { API_URL } from '$lib/utils/consts.js';
 	import { Message, User } from '$lib/utils/factories.js';
 
-	let token = $page.url.searchParams.get('token');
+	// Get token, verify it and extract the pre-assigned user info
+	let token = $state($page.url.searchParams.get('token'));
 
-	let tokenUsername;
-	let tokenFirstname;
-	let tokenLastname;
-	let tokenRole;
-	let tokenEmail;
-	try {
-		const data = jwt_decode(token);
-		tokenUsername = data['username'];
-		tokenFirstname = data['firstname'];
-		tokenLastname = data['lastname'];
-		tokenRole = data['role'];
-		tokenEmail = data['email'];
-	} catch (error) {
-		token = null;
+	let tokenUsername = $state();
+	let tokenFirstname = $state();
+	let tokenLastname = $state();
+	let tokenRole = $state();
+	let tokenEmail = $state();
+
+	// Token validation should be done only once
+	if (token) {
+		try {
+			const data = jwt_decode(token);
+			tokenUsername = data['username'];
+			tokenFirstname = data['firstname'];
+			tokenLastname = data['lastname'];
+			tokenRole = data['role'];
+			tokenEmail = data['email'];
+		} catch (error) {
+			token = null;
+		}
 	}
 
-	const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-	const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-+_!$&?.,])[^ ]{8,20}$/;
+	// Prefill user data with pre-assigned user info
+	let username = $state(tokenUsername);
+	let firstname = $state(tokenFirstname);
+	let lastname = $state(tokenLastname);
+	let role = tokenRole || 'User';
+	let email = $state(tokenEmail);
+	let telegramId = $state();
+	let password1 = $state(null);
+	let password2 = $state(null);
 
-	let errors = {};
+	// Data validation
+	let errors = $state({});
 	const resetErrors = function () {
 		errors.email = null;
 		errors.password1 = null;
@@ -41,41 +54,12 @@
 	};
 	resetErrors();
 
-	let username = tokenUsername;
-	let firstname = tokenFirstname;
-	let lastname = tokenLastname;
-	let role = tokenRole || 'User';
-	let email = tokenEmail;
-	let telegramId;
-	let password1;
-	let password2;
+	const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+	const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-+_!$&?.,])[^ ]{8,20}$/;
 
-	const checkValidEmail = function (email) {
-		if (!email) {
-			return null;
-		}
-		return regexEmail.test(email);
-	};
-
-	$: validEmail = checkValidEmail(email);
-
-	const checkValidPassword = function (password) {
-		if (!password) {
-			return null;
-		}
-		return regexPassword.test(password);
-	};
-
-	$: validPassword = checkValidPassword(password1);
-
-	const checkSamePassword = function (password1, password2) {
-		if (!password1 || !password2) {
-			return null;
-		}
-		return password1 === password2;
-	};
-
-	$: samePassword = checkSamePassword(password1, password2);
+	let validEmail = $derived(!email ? null : regexEmail.test(email));
+	let validPassword = $derived(!password1 ? null : regexPassword.test(password1));
+	let samePassword = $derived(!password1 || !password2 ? null : password1 === password2);
 
 	const validateRegistration = function () {
 		resetErrors();
@@ -119,6 +103,7 @@
 				}
 			});
 	};
+
 	const getValidationColorClass = function (validationCode) {
 		if (validationCode === null) {
 			return 'hidden';
@@ -134,7 +119,7 @@
 	<p>Get a valid token and enter it <a href="/auth/invitation">here</a></p>
 {:else}
 	<h1>Register</h1>
-	<form on:submit={validateRegistration}>
+	<form onsubmit={validateRegistration}>
 		{#if errors.server}
 			<div class="input-group">
 				<div class="error">{errors.server}</div>
@@ -190,8 +175,8 @@
 		<div class="input-group">
 			<label for="password1">Password</label> <br />
 			<input id="password1" size="32" type="password" bind:value={password1} />
-			<div style="display: {validPassword !== null ? 'auto' : 'none'}" />
 			<Fa icon={faCircle} class={getValidationColorClass(validPassword)} />
+			<div style="display: {validPassword !== null ? 'auto' : 'none'}"></div>
 			{#if errors.password1}
 				<br />
 				<div class="error">{errors.password1}</div>

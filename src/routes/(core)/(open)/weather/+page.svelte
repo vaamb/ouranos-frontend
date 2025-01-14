@@ -7,8 +7,8 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
-	import { fetchWeatherForecast } from '$lib/actions.js';
-	import { services, weatherCurrently, weatherDaily, weatherHourly } from '$lib/store.js';
+	import { fetchWeatherForecast } from '$lib/actions.svelte.js';
+	import { services, weatherCurrently, weatherDaily, weatherHourly } from '$lib/store.svelte.js';
 	import {
 		capitalize,
 		formatDate,
@@ -26,7 +26,7 @@
 
 	// Hourly forecast switch
 	const measures = ['temperature', 'humidity', 'precipitation_probability'];
-	let currentMeasure = measures[0];
+	let currentMeasure = $state(measures[0]);
 
 	const setcurrentMeasure = function (newMeasure) {
 		return function () {
@@ -91,7 +91,7 @@
 			<div style="display: flex; margin-bottom: 12px">
 				{#each measures as measure}
 					<button
-						on:click={setcurrentMeasure(measure)}
+						onclick={setcurrentMeasure(measure)}
 						class="text-button"
 						style={measure !== currentMeasure
 							? 'background-color: var(--derived-60)'

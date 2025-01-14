@@ -11,13 +11,15 @@
 
 	import { permissions } from '$lib/utils/consts.js';
 	import { getStatusClass, timeStringToDate } from '$lib/utils/functions.js';
-	import { currentUser } from '$lib/store.js';
+	import { currentUser } from '$lib/store.svelte.js';
 
-	export let tableID;
-	export let columns = []; // [{label: "My column", key: "data_key", isTime: false, isStatus: false}]
-	export let data = []; // [{data_key: data1}, {data_key: data2}]
-	export let editable = false;
-	export let crudOptions = ['create', 'update', 'delete'];
+	let {
+		tableID,
+		columns = [], // [{label: "My column", key: "data_key", isTime: false, isStatus: false}]
+		data = [], // [{data_key: data1}, {data_key: data2}]
+		editable = false,
+		crudOptions = ['create', 'update', 'delete']
+	} = $props();
 
 	const dispatch = createEventDispatcher();
 
@@ -73,12 +75,12 @@
 						<td>
 							<div>
 								{#if crudOptions.includes('update')}
-									<button class="crud-button" on:click={() => emitEvent('update', rowIndex)}>
+									<button class="crud-button" onclick={() => emitEvent('update', rowIndex)}>
 										<Fa icon={faPenToSquare} />
 									</button>
 								{/if}
 								{#if crudOptions.includes('delete')}
-									<button class="crud-button" on:click={() => emitEvent('delete', rowIndex)}>
+									<button class="crud-button" onclick={() => emitEvent('delete', rowIndex)}>
 										<Fa icon={faTrashCan} />
 									</button>
 								{/if}
@@ -95,7 +97,7 @@
 						<button
 							class="crud-button"
 							style="font-size: 2rem"
-							on:click={() => emitEvent('create')}
+							onclick={() => emitEvent('create')}
 						>
 							<Fa icon={faSquarePlus} />
 						</button>

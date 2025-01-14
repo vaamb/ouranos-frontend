@@ -20,6 +20,7 @@
 		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsSkeleton,
+		getStoreDataKey,
 		pingServerLatency,
 		servers,
 		serversCurrentData,
@@ -27,7 +28,7 @@
 		services,
 		warnings,
 		weatherCurrently
-	} from '$lib/store.js';
+	} from '$lib/store.svelte.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
 		computeEcosystemStatusClass,
@@ -40,7 +41,6 @@
 		serviceEnabled,
 		getParamStatus,
 		capitalize,
-		getStoreDataKey,
 		timeStringToDate
 	} from '$lib/utils/functions.js';
 	import {
@@ -50,9 +50,9 @@
 		fetchEcosystemLightData,
 		fetchServerCurrentData,
 		fetchWeatherForecast
-	} from '$lib/actions.js';
+	} from '$lib/actions.svelte.js';
 
-	let now = new Date();
+	let now = $state(new Date());
 	const updateNow = function () {
 		now = new Date();
 	};
@@ -66,7 +66,7 @@
 		}
 		return sortedWarnings;
 	};
-	$: sortedWarnings = sortWarningsByEcosystem($warnings);
+	let sortedWarnings = $derived(sortWarningsByEcosystem($warnings));
 
 	const sortCalendarEventsByHappening = function (calendarEvents) {
 		const sortedEvents = {
@@ -83,7 +83,7 @@
 		}
 		return sortedEvents;
 	};
-	$: sortedCalendarEvents = sortCalendarEventsByHappening($calendarEvents);
+	let sortedCalendarEvents = $derived(sortCalendarEventsByHappening($calendarEvents));
 
 	const anyActiveActuator = function (ecosystemsActuatorsState, uid) {
 		const actuatorsStatus = ecosystemsActuatorsState[uid];
@@ -101,7 +101,11 @@
 	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {
 		let rv = [];
 		for (const sensor of sensors) {
-			const data = await fetchSensorCurrentData(ecosystemUID, sensor['uid'], measure.replace(' ', '_'));
+			const data = await fetchSensorCurrentData(
+				ecosystemUID,
+				sensor['uid'],
+				measure.replace(' ', '_')
+			);
 			rv.push(data);
 		}
 		return rv;
@@ -142,7 +146,7 @@
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
-		await fetchSensorCurrentData(undefined, 'priming', undefined)
+		await fetchSensorCurrentData(undefined, 'priming', undefined);
 
 		for (const { uid, name } of $ecosystemsIds) {
 			if (isConnected($ecosystems[uid])) {

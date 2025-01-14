@@ -8,13 +8,18 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Row from '$lib/components/layout/Row.svelte';
 
-	import { fetchServerCurrentData, fetchServerHistoricData } from '$lib/actions.js';
-	import { servers, serversCurrentData, serversHistoricData } from '$lib/store.js';
-	import { capitalize, getStoreDataKey } from '$lib/utils/functions.js';
+	import { fetchServerCurrentData, fetchServerHistoricData } from '$lib/actions.svelte.js';
+	import {
+		getStoreDataKey,
+		servers,
+		serversCurrentData,
+		serversHistoricData
+	} from '$lib/store.svelte.js';
+	import { capitalize } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
-	$: serverName = $page.params.server;
-	$: serverInfo = $servers[serverName];
+	let serverName = $derived($page.params.server);
+	let serverInfo = $derived($servers[serverName]);
 
 	const fetchServerData = async function (serverName) {
 		await fetchServerCurrentData(serverName);

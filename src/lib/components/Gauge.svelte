@@ -3,15 +3,17 @@
 
 	import { Gauge } from 'gaugeJS';
 
-	export let defaultMin = 0;
-	export let value = 50;
-	export let minValue = defaultMin;
-	export let defaultMax = 100;
-	export let maxValue = defaultMax;
-	export let unit = '';
+	let {
+		defaultMin = 0,
+		value = 50,
+		minValue = defaultMin,
+		defaultMax = 100,
+		maxValue = defaultMax,
+		unit = ''
+	} = $props();
 
-	let canvas;
-	let gauge;
+	let canvas = $state();
+	let gauge = $state();
 
 	const gaugeOpts = {
 		lines: 12,
@@ -32,11 +34,11 @@
 		highDpiSupport: true // High resolution support
 	};
 
-	$: {
+	$effect(() => {
 		if (gauge) {
 			gauge.set(value);
 		}
-	}
+	});
 
 	onMount(async () => {
 		gauge = new Gauge(canvas);
@@ -48,7 +50,7 @@
 </script>
 
 <div class="container">
-	<canvas bind:this={canvas} />
+	<canvas bind:this={canvas}></canvas>
 
 	<span class="value">{value} {unit}</span>
 </div>

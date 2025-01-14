@@ -3,7 +3,8 @@
 
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import { isEmpty, isObject } from '$lib/utils/functions.js';
-	export let data;
+
+	let { data } = $props();
 	// [{
 	//   label: "The input", key: "the_input", value: "the value", hint: "This is what you should enter"
 	//   selectFrom: [{ label: "The input", value: "the_value" }]
@@ -37,7 +38,7 @@
 		return true;
 	};
 
-	$: disabledSubmit = !canSubmit(values);
+	let disabledSubmit = $derived(!canSubmit(values));
 
 	const dispatch = createEventDispatcher();
 
@@ -61,7 +62,7 @@
 				<td>
 					<label for={row['key']}>{row['label'] || row['key']}</label>
 				</td>
-				<td style="width: 10px" />
+				<td style="width: 10px"></td>
 				<td>
 					{#if isEmpty(row['selectFrom'])}
 						<input

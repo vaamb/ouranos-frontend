@@ -12,9 +12,15 @@
 		faSun
 	} from '@fortawesome/free-solid-svg-icons';
 
-	export let icon;
-	export let height = '115px';
-	export let size = '70px';
+	/**
+	 * @typedef {Object} Props
+	 * @property {any} icon
+	 * @property {string} [height]
+	 * @property {string} [size]
+	 */
+
+	/** @type {Props} */
+	let { icon, height = '115px', size = '70px' } = $props();
 
 	const weatherIconTranslation = {
 		'01d': faSun,

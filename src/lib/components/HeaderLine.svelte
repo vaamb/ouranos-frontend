@@ -1,6 +1,5 @@
 <script>
-	export let title;
-	export let info = null;
+	let { title, info = null } = $props();
 </script>
 
 <svelte:head>

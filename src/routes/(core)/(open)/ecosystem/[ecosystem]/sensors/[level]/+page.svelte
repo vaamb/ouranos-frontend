@@ -13,14 +13,15 @@
 		fetchSensorCurrentData,
 		fetchSensorHistoricData,
 		fetchEcosystemSensorsSkeleton
-	} from '$lib/actions.js';
+	} from '$lib/actions.svelte.js';
 	import {
 		ecosystems,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsDataHistoric,
-		ecosystemsSensorsSkeleton
-	} from '$lib/store.js';
-	import { capitalize, getEcosystemUID, getStoreDataKey } from '$lib/utils/functions.js';
+		ecosystemsSensorsSkeleton,
+		getStoreDataKey
+	} from '$lib/store.svelte.js';
+	import { capitalize, getEcosystemUID } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
 	const generateTitle = function (level, ecosystemName) {
@@ -31,14 +32,14 @@
 		}
 	};
 
-	$: sensorsLevel = $page.params.level;
-	$: ecosystemName = $page.params.ecosystem;
-	$: pageTitle = generateTitle(sensorsLevel, ecosystemName);
-	$: icons = graphs[sensorsLevel].icons;
-	$: colors = graphs[sensorsLevel].colors;
-	$: minValues = graphs[sensorsLevel].min_values;
-	$: maxValues = graphs[sensorsLevel].max_values;
-	$: ecosystemUid = getEcosystemUID($ecosystems, ecosystemName);
+	let sensorsLevel = $derived($page.params.level);
+	let ecosystemName = $derived($page.params.ecosystem);
+	let pageTitle = $derived(generateTitle(sensorsLevel, ecosystemName));
+	let icons = $derived(graphs[sensorsLevel].icons);
+	let colors = $derived(graphs[sensorsLevel].colors);
+	let minValues = $derived(graphs[sensorsLevel].min_values);
+	let maxValues = $derived(graphs[sensorsLevel].max_values);
+	let ecosystemUid = $derived(getEcosystemUID($ecosystems, ecosystemName));
 
 	const fetchSensorData = async function (ecosystemUID, sensorUid, measure) {
 		const current = await fetchSensorCurrentData(ecosystemUID, sensorUid, measure);

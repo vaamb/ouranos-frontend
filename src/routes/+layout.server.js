@@ -1,4 +1,4 @@
-import { fetchCurrentUserData, fetchServerInfo } from '$lib/actions.js';
+import { fetchCurrentUserData, fetchServerInfo } from '$lib/actions.svelte.js';
 import { getAppMode } from '$lib/utils/consts.js';
 import { User } from '$lib/utils/factories.js';
 

@@ -1,5 +1,5 @@
 <script>
-	import { onMount, onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { page } from '$app/stores';
 
 	import Box from '$lib/components/layout/Box.svelte';
@@ -7,50 +7,51 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Image from '$lib/components/Image.svelte';
 
-	import { fetchCameraPicturesInfo } from '$lib/actions.js';
+	import { fetchCameraPicturesInfo } from '$lib/actions.svelte.js';
+	import { joinRoom, leaveRoom, socketio } from '$lib/socketio.svelte.js';
+	import { ecosystems } from '$lib/store.svelte.js';
 	import { STATIC_URL } from '$lib/utils/consts.js';
-	import { getEcosystemUID } from '$lib/utils/functions.js';
-	import { joinRoom, leaveRoom, socketio } from '$lib/socketio.js';
-	import { ecosystems } from '$lib/store.js';
+	import { capitalize, dynamicSort, getEcosystemUID } from '$lib/utils/functions.js';
 
-	$: ecosystemName = $page['params']['ecosystem'];
-	$: ecosystemUID = getEcosystemUID($ecosystems, ecosystemName);
+	let ecosystemName = $derived($page['params']['ecosystem']);
+	let ecosystemUID = $derived(getEcosystemUID($ecosystems, ecosystemName));
 
-	let cameraIDs = [];
-	let cameraPicturesInfo = {};
-	let captions = {};
-	let refreshImage = {};
+	let images = $state({});
+	let cameraPicturesInfo = $state({});
+	let cameraIDs = $derived(
+		Object.values(cameraPicturesInfo)
+			.sort(dynamicSort('camera_name'))
+			.map((obj) => ({
+				uid: obj['camera_uid'],
+				name: capitalize(obj['camera_name'].replace('_', ' '))
+			}))
+	);
 
-	const createCaptions = function (cameraPicturesInfo) {
-		const rv = {};
-		for (const cameraUID in cameraPicturesInfo) {
-			const pictureInfo = cameraPicturesInfo[cameraUID];
-			rv[cameraUID] = `Taken on ${pictureInfo['timestamp']}`;
+	const getCaption = function (cameraPicturesInfo, cameraUID) {
+		if (Object.prototype.hasOwnProperty.call(cameraPicturesInfo, cameraUID)) {
+			return `Taken on ${cameraPicturesInfo[cameraUID]['timestamp']}`;
 		}
-		return rv;
+		return '';
 	};
 
 	onMount(async () => {
-		const data = await fetchCameraPicturesInfo(ecosystemUID);
-		cameraPicturesInfo = data.cameraPicturesInfo;
-		cameraIDs = data.cameraIDs;
-		captions = createCaptions(cameraPicturesInfo);
+		cameraPicturesInfo = await fetchCameraPicturesInfo(ecosystemUID);
 
 		joinRoom('camera_stream');
 		socketio.on('pictures_update', (data) => {
 			if (data['ecosystem_uid'] === ecosystemUID) {
+				// TODO: add new images if available
 				for (const updatedInfo of data['updated_pictures']) {
+					const cameraUid = updatedInfo['camera_uid'];
 					if (
-						cameraPicturesInfo.hasOwnProperty(updatedInfo['camera_uid']) &&
-						refreshImage.hasOwnProperty(updatedInfo['camera_uid'])
+						Object.prototype.hasOwnProperty.call(cameraPicturesInfo, cameraUid) &&
+						Object.prototype.hasOwnProperty.call(images, cameraUid)
 					) {
-						const cameraPictureInfo = cameraPicturesInfo[updatedInfo['camera_uid']];
-						cameraPictureInfo['timestamp'] = new Date(updatedInfo['timestamp']);
-						refreshImage[updatedInfo['camera_uid']]();
+						cameraPicturesInfo[cameraUid]['timestamp'] = new Date(updatedInfo['timestamp']);
+						images[cameraUid].refresh();
 					}
 				}
 			}
-			captions = createCaptions(cameraPicturesInfo);
 		});
 	});
 
@@ -69,11 +70,12 @@
 			<BoxItem>
 				<div style="margin: auto">
 					<Image
+						bind:this={images[cameraID['uid']]}
 						source={`${STATIC_URL}/${pictureInfo['path']}?${new Date().getTime()}`}
 						height="250"
 						width="375"
-						bind:caption={captions[cameraID['uid']]}
-						bind:refresh={refreshImage[cameraID['uid']]}
+						caption={getCaption(cameraPicturesInfo, cameraID['uid'])}
+						alt={`A picture taken by the camera '${cameraID['name']}'`}
 					/>
 				</div>
 			</BoxItem>

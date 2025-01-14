@@ -11,24 +11,25 @@
 		fetchEcosystemActuatorRecords,
 		fetchEcosystemActuatorsState,
 		updateActuatorMode
-	} from '$lib/actions.js';
+	} from '$lib/actions.svelte.js';
 	import {
 		ecosystems,
 		ecosystemsActuatorsRecords,
-		ecosystemsActuatorsState
-	} from '$lib/store.js';
+		ecosystemsActuatorsState,
+		getStoreDataKey
+	} from '$lib/store.svelte.js';
 
 	import { actuatorTypes } from '$lib/utils/consts.js';
-	import { capitalize, getStoreDataKey, getEcosystemUID } from '$lib/utils/functions.js';
+	import { capitalize, getEcosystemUID } from '$lib/utils/functions.js';
 	import { colors } from '$lib/utils/styling.js';
 
-	$: ecosystemName = $page['params']['ecosystem'];
-	$: ecosystemUID = getEcosystemUID($ecosystems, ecosystemName);
+	let ecosystemName = $derived($page['params']['ecosystem']);
+	let ecosystemUID = $derived(getEcosystemUID($ecosystems, ecosystemName));
 
 	const hasBeenActive = function (ecosystemsActuatorsRecords) {
-		const active = (element) => element[1]
-		return ecosystemsActuatorsRecords['values'].some(active)
-	}
+		const active = (element) => element[1];
+		return ecosystemsActuatorsRecords['values'].some(active);
+	};
 
 	const convertModeToBool = function (mode) {
 		return mode === 'automatic';
@@ -88,9 +89,9 @@
 			{#if hasBeenActive($ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)])}
 				{@const actuatorRecords = $ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
 				{@const drawGraph = actuatorRecords.values.length >= 3}
-				<Box title={capitalize(actuator)} direction="row" maxWidth="{drawGraph? null: '325px'}">
+				<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>
 					{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active']}
-						<BoxItem maxWidth="{drawGraph? '305px': null}">
+						<BoxItem maxWidth={drawGraph ? '305px' : null}>
 							<Switch
 								actuatorType={actuator}
 								status={$ecosystemsActuatorsState[ecosystemUID][actuator]['status']}

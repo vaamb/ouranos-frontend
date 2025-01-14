@@ -2,12 +2,14 @@
 	import Fa from 'svelte-fa';
 	import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
-	import { logOut } from '$lib/actions.js';
+	import { logOut } from '$lib/actions.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
-	import { currentUser, warnings } from '$lib/store.js';
+	import { currentUser, warnings } from '$lib/store.svelte.js';
 
-	export let development;
-	export let menuWidth = 210;
+	let {
+		development,
+		menuWidth = 210
+	} = $props();
 </script>
 
 <div class="top-bar" style="--menu-width:{menuWidth}">
@@ -48,7 +50,7 @@
 						<a href="/user/{$currentUser.username}/profile">Profile</a>
 					</div>
 					<div>
-						<button class="reset-button clickable" on:click={logOut}>Log out</button>
+						<button class="reset-button clickable" onclick={logOut}>Log out</button>
 					</div>
 				</div>
 			{/if}

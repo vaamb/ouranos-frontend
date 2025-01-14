@@ -13,16 +13,8 @@ import {
 	SERVER_STATUS
 } from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
-import {
-	capitalize,
-	checkSensorDataRecency,
-	dynamicSort,
-	getFreshStoreData,
-	getStoreDataKey,
-	isEmpty,
-	updateStoreData
-} from '$lib/utils/functions.js';
-import { logInSocketio, logOutSocketio } from '$lib/socketio.js';
+import { isEmpty } from '$lib/utils/functions.js';
+import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
 	currentUser,
 	ecosystemsActuatorsRecords,
@@ -32,13 +24,17 @@ import {
 	ecosystemsSensorsDataHistoric,
 	ecosystemsSensorsSkeleton,
 	flashMessage,
+	getFreshStoreData,
+	getStoreDataKey,
 	serversCurrentData,
 	serversHistoricData,
+	updateStoreData,
 	weatherCurrently,
 	weatherDaily,
 	weatherHourly
-} from '$lib/store.js';
+} from '$lib/store.svelte.js';
 
+// Flash messages utility functions
 const ERROR_MSG =
 	'There was one or more error(s) while processing your request. Please contact the administrator.';
 
@@ -56,6 +52,7 @@ const setFlashMsgError = function (error) {
 	flashMessage.set(msgs);
 };
 
+// Server-related actions
 export const fetchServerInfo = async function () {
 	return await axios
 		.get(`${LOCAL_API_URL}/app/version`)
@@ -163,6 +160,7 @@ export const logOut = function () {
 		});
 };
 
+// Engines and Ecosystems related utility functions
 const formatEngineOrEcosystemData = function (rawData) {
 	rawData.forEach((element) => {
 		element['last_seen'] = new Date(element['last_seen']);
@@ -172,6 +170,18 @@ const formatEngineOrEcosystemData = function (rawData) {
 		element['registration_date'] = new Date(element['registration_date']);
 	});
 	return rawData.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
+};
+
+const checkSensorDataRecency = function (sensorData, minuteModulo) {
+	if (!isEmpty(sensorData)) {
+		const timestamp = new Date(sensorData['timestamp']);
+		const timeSinceLastRecordThreshold = timestamp % (minuteModulo * 60 * 1000);
+		const lastRecordThreshold = timestamp - timeSinceLastRecordThreshold;
+		const now = new Date();
+		return now - lastRecordThreshold <= (minuteModulo + 1) * 60 * 1000;
+	} else {
+		return false;
+	}
 };
 
 // Engines-related actions
@@ -387,23 +397,10 @@ export const fetchCameraPicturesInfo = async function (ecosystemUID) {
 			cameraPicturesInfo.forEach((info) => {
 				info['timestamp'] = new Date(info['timestamp']);
 			});
-			const dataObject = cameraPicturesInfo.reduce((a, v) => ({ ...a, [v['camera_uid']]: v }), {});
-			const sorted = cameraPicturesInfo.sort(dynamicSort('camera_name'));
-			const IDsArray = sorted.map((obj) => ({
-				uid: obj['camera_uid'],
-				name: capitalize(obj['camera_name'].replace('_', ' '))
-			}));
-
-			return {
-				cameraPicturesInfo: dataObject,
-				cameraIDs: IDsArray
-			};
+			return cameraPicturesInfo.reduce((a, v) => ({ ...a, [v['camera_uid']]: v }), {});
 		})
 		.catch(() => {
-			return {
-				cameraPicturesInfo: {},
-				cameraIDs: []
-			};
+			return {};
 		});
 };
 

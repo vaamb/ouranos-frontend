@@ -4,12 +4,14 @@
 	import Fa from 'svelte-fa';
 	import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
-	import { currentUser } from '$lib/store.js';
+	import { currentUser } from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 
-	export let actuatorType;
-	export let status = false;
-	export let mode = 'automatic';
+	let {
+		actuatorType,
+		status = false,
+		mode = 'automatic'
+	} = $props();
 
 	const turnToOptions = ['on', 'off', 'automatic'];
 
@@ -30,7 +32,7 @@
 		{#each turnToOptions as option}
 			<div class="switch">
 				<button
-					on:click={() => emitEvent(option)}
+					onclick={() => emitEvent(option)}
 					disabled={!$currentUser.can(permissions.OPERATE)}
 					title={$currentUser.can(permissions.OPERATE)
 						? ''

@@ -3,8 +3,8 @@
 
 	import jwt_decode from 'jwt-decode';
 
-	let invitationToken;
-	let invitationError = null;
+	let invitationToken = $state();
+	let invitationError = $state(null);
 
 	const validateToken = function () {
 		invitationError = null;
@@ -27,7 +27,7 @@
 </script>
 
 <h1>Enter your registration token</h1>
-<form on:submit={validateToken}>
+<form onsubmit={validateToken}>
 	<div class="input-group">
 		{#if invitationError}
 			<div class="error">{invitationError}</div>

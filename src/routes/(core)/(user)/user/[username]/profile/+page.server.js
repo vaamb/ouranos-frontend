@@ -10,6 +10,6 @@ export async function load({ parent, url }) {
 	username = username.replace('/user/u/', '');
 	username = username.replace('/profile', '');
 	if (currentUser['username'] !== username && !currentUser.can(permissions.ADMIN)) {
-		throw redirect(307, '/');
+		redirect(307, '/');
 	}
 }

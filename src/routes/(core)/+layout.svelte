@@ -88,8 +88,8 @@
 	// Ping server, engine and ecosystem connection status
 	const updateStatus = function () {
 		// Utility function
-		const getStatus = function (lastSeen, previousStatus) {
-			if (new Date() - lastSeen < CONNECTION_TIMEOUT * 1000) {
+		const getStatus = function (lastSeen, previousStatus, timeout = CONNECTION_TIMEOUT) {
+			if (new Date() - lastSeen < timeout * 1000) {
 				return previousStatus === CONNECTION_STATUS.DISCONNECTED
 					? CONNECTION_STATUS.RECONNECTED
 					: CONNECTION_STATUS.CONNECTED;
@@ -104,7 +104,7 @@
 		// Engines
 		for (const engineUID in $engines) {
 			const engine = $engines[engineUID];
-			$engines[engineUID]['connected'] = getStatus(engine['last_seen'], engine['connected']);
+			$engines[engineUID]['connected'] = getStatus(engine['last_seen'], engine['connected'], 90);
 		}
 
 		// Ecosystems
@@ -112,7 +112,8 @@
 			const ecosystem = $ecosystems[ecosystemUID];
 			$ecosystems[ecosystemUID]['connected'] = getStatus(
 				ecosystem['last_seen'],
-				ecosystem['connected']
+				ecosystem['connected'],
+				90
 			);
 		}
 	};

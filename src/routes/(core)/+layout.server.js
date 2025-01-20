@@ -1,5 +1,4 @@
 import {
-	fetchCalendarEvents,
 	fetchEcosystems,
 	fetchEcosystemsManagement,
 	fetchEngines,
@@ -16,19 +15,16 @@ export async function load({ cookies, request, parent }) {
 	const ecosystemsManagement = await fetchEcosystemsManagement();
 	const engines = await fetchEngines();
 	const services = await fetchServices();
-	let events = [];
 	let warnings = [];
 	let servers = {};
 	if (currentUser.isAuthenticated) {
 		const clientSessionCookie = 'session=' + cookies.get('session');
 		const clientUserAgent = request.headers.get('user-agent');
-		events = await fetchCalendarEvents(clientSessionCookie, clientUserAgent);
 		warnings = await fetchWarnings(clientSessionCookie, clientUserAgent);
 		servers = await fetchServers(clientSessionCookie, clientUserAgent);
 	}
 
 	return {
-		calendarEventsValues: events,
 		ecosystemsValues: ecosystems,
 		ecosystemsManagementValues: ecosystemsManagement,
 		enginesValues: engines,

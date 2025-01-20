@@ -11,7 +11,6 @@
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
 	import {
-		calendarEvents,
 		currentUser,
 		ecosystems,
 		ecosystemsIds,
@@ -44,6 +43,7 @@
 		timeStringToDate
 	} from '$lib/utils/functions.js';
 	import {
+		fetchCalendarEvents,
 		fetchEcosystemActuatorsState,
 		fetchSensorCurrentData,
 		fetchEcosystemSensorsSkeleton,
@@ -68,13 +68,14 @@
 	};
 	let sortedWarnings = $derived(sortWarningsByEcosystem($warnings));
 
-	const sortCalendarEventsByHappening = function (calendarEvents) {
+	let calendarEvents = $state([]);
+	const sortCalendarEventsByHappening = function (events) {
 		const sortedEvents = {
 			happening: [],
 			future: []
 		};
 		const now = new Date();
-		for (const event of calendarEvents) {
+		for (const event of events) {
 			if (event['start_time'] <= now && now <= event['end_time']) {
 				sortedEvents['happening'].push(event);
 			} else if (now <= event['start_time']) {
@@ -83,7 +84,7 @@
 		}
 		return sortedEvents;
 	};
-	let sortedCalendarEvents = $derived(sortCalendarEventsByHappening($calendarEvents));
+	let sortedCalendarEvents = $derived(sortCalendarEventsByHappening(calendarEvents));
 
 	const anyActiveActuator = function (ecosystemsActuatorsState, uid) {
 		const actuatorsStatus = ecosystemsActuatorsState[uid];
@@ -155,6 +156,10 @@
 		}
 		if (serviceEnabled($services, 'weather')) {
 			await fetchWeatherForecast();
+		}
+
+		if (serviceEnabled($services, 'calendar')) {
+			calendarEvents = await fetchCalendarEvents();
 		}
 	});
 

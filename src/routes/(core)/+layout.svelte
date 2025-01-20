@@ -10,7 +10,6 @@
 	import { CONNECTION_STATUS, CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
 
 	import {
-		calendarEvents,
 		currentUser,
 		ecosystems,
 		ecosystemsIds,
@@ -32,7 +31,6 @@
 
 	const {
 		appMode,
-		calendarEventsValues,
 		enginesValues,
 		ecosystemsManagementValues,
 		ecosystemsValues,
@@ -40,7 +38,6 @@
 		servicesValues,
 		warningsValues
 	} = data;
-	calendarEvents.set(calendarEventsValues);
 	engines.set(enginesValues);
 	ecosystems.set(ecosystemsValues);
 	ecosystemsManagement.set(ecosystemsManagementValues);

@@ -5,7 +5,6 @@ import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 
 // Writable stores
-export const calendarEvents = writable([]);
 export const currentUser = writable(User());
 export const ecosystems = writable({});
 export const ecosystemsActuatorsRecords = writable({});

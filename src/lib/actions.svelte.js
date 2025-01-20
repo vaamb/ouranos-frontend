@@ -562,12 +562,14 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 		});
 };
 
-export const fetchCalendarEvents = async function (clientSessionCookie, clientUserAgent) {
+// Calendar-related actions
+export const fetchCalendarEvents = async function (startTime=undefined, endTime=undefined, limit=10) {
 	return axios
-		.get(`${LOCAL_API_URL}/app/services/calendar`, {
-			headers: {
-				Cookie: clientSessionCookie,
-				'User-Agent': clientUserAgent
+		.get(`${API_URL}/app/services/calendar`, {
+			params: {
+				start_time: startTime,
+				end_time: endTime,
+				limit: limit
 			},
 			withCredentials: true
 		})

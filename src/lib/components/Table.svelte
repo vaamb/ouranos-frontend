@@ -15,7 +15,7 @@
 
 	let {
 		tableID,
-		columns = [], // [{label: "My column", key: "data_key", isTime: false, isStatus: false}]
+		columns = [], // [{label: "My column", key: "data_key", isTime: false, isStatus: false, customFunction: function()}]
 		data = [], // [{data_key: data1}, {data_key: data2}]
 		editable = false,
 		crudOptions = ['create', 'update', 'delete']
@@ -66,6 +66,8 @@
 								<Fa icon={faCircle} class={getStatusClass(row[column.key])} />
 							{:else if column['isTime'] === true}
 								{timeStringToDate(row[column.key])}
+							{:else if column['customFunction'] !== undefined}
+								{column['customFunction'](row[column.key])}
 							{:else}
 								{row[column.key]}
 							{/if}

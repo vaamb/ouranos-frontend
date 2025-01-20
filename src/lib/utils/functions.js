@@ -72,9 +72,9 @@ export const timeStringToDate = function (timeString) {
 	}
 };
 
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-const months = [
+export const months = [
 	'January',
 	'February',
 	'March',

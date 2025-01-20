@@ -62,4 +62,4 @@ export const actuatorTypes = ['light', 'heater', 'cooler', 'humidifier', 'dehumi
 
 export const hardwareTypes = ['sensor', ...actuatorTypes];
 
-export const eventLevels = ['Low', 'Elevated', 'High', 'Severe', 'Critical'];
+export const eventLevels = ['low', 'moderate', 'high', 'severe', 'critical'];

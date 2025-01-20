@@ -2,13 +2,20 @@
 	import Fa from 'svelte-fa';
 	import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-	import { days, months } from '$lib/utils/functions.js';
+	import Form from '$lib/components/Form.svelte';
+	import Modal from '$lib/components/Modal.svelte';
+
+	import { days, formatDate, isDate, months } from '$lib/utils/functions.js';
+	import Table from '$lib/components/Table.svelte';
+	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
+	import { eventLevels } from '$lib/utils/consts.js';
 
 	const now = new Date();
 	let {
 		month = $bindable(now.getMonth()), // 0-indexed month
 		year = $bindable(now.getFullYear()),
-		events = []
+		events = [],
+		handleCrudEvent
 	} = $props();
 
 	let today = $derived(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
@@ -96,6 +103,21 @@
 	};
 	let colorsIndex = $derived(computeColorsIndex(events));
 
+	const getDayEventsID = function (day) {
+		const dayStart = new Date(day.getFullYear(), day.getMonth(), day.getDate());
+		const dayEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1);
+		return (
+			events
+				// Keep only index of events that fall between dayStart and dayEnd
+				.map((event, i) =>
+					dayStart <= event['end_time'] && event['start_time'] <= dayEnd ? i : undefined
+				)
+				.filter((i) => i !== undefined)
+				// Get the IDs of the events
+				.map((i) => events[i]['id'])
+		);
+	};
+
 	const computeEventsDepths = function (events, month, year) {
 		const firstDayOfMonth = new Date(year, month);
 		const lastDayOfMonth = new Date(year, month + 1, 0);
@@ -105,16 +127,7 @@
 
 		for (let date = firstDayOfMonth.getDate(); date <= lastDayOfMonth.getDate(); date++) {
 			const day = new Date(year, month, date);
-			const dayStart = new Date(day.getFullYear(), day.getMonth(), date);
-			const dayEnd = new Date(day.getFullYear(), day.getMonth(), date + 1);
-			const dayEventsID = events
-				// Keep only index of events that fall between dayStart and dayEnd
-				.map((event, i) =>
-					dayStart <= event['end_time'] && event['start_time'] <= dayEnd ? i : undefined
-				)
-				.filter((i) => i !== undefined)
-				// Get the IDs of the events
-				.map((i) => events[i]['id']);
+			const dayEventsID = getDayEventsID(day);
 			if (dayEventsID.length === 0) {
 				continue;
 			}
@@ -135,6 +148,18 @@
 		return days;
 	};
 	let eventsDepths = $derived(computeEventsDepths(events, month, year));
+
+	// Modal
+	let modal = $state();
+	let modalDay = $state(undefined);
+	let crudAction = $state(undefined);
+	let crudIndex = $state(undefined);
+
+	const resetModal = function () {
+		modalDay = undefined;
+		crudAction = undefined;
+		crudIndex = undefined;
+	};
 </script>
 
 <svelte:window bind:outerWidth />
@@ -171,6 +196,9 @@
 										{day.getTime() === today.getTime() ? 'today' : ''}
 										{day.getTime() < today.getTime() ? 'past' : ''}
 									"
+									onclick={() => {
+										modalDay = day;
+									}}
 								>
 									<div class="date">{day.getDate()}</div>
 									{#each depths as depth}
@@ -198,6 +226,101 @@
 		</tbody>
 	</table>
 </div>
+
+<Modal
+	bind:this={modal}
+	showModal={modalDay !== undefined}
+	on:close={resetModal}
+	title={modalDay !== undefined ? formatDate(modalDay) : ''}
+>
+	{#if modalDay !== undefined}
+		{@const eventsID = getDayEventsID(modalDay)}
+		{@const filteredEventsArray = eventsID.map((eventID) => eventsByID[eventID])}
+		<div style="width: 800px">
+			{#if crudAction === undefined}
+				<Table
+					tableID="events"
+					columns={[
+						{ label: 'Title', key: 'title' },
+						{ label: 'Start', key: 'start_time', isTime: true },
+						{ label: 'End', key: 'end_time', isTime: true },
+						{ label: 'Level', key: 'level' },
+						{ label: 'Description', key: 'description' }
+					]}
+					data={filteredEventsArray}
+					editable={true}
+					on:crud={(event) => {
+						crudAction = event['detail']['action'];
+						crudIndex = event['detail']['rowIndex'];
+					}}
+				/>
+			{:else if crudAction === 'create'}
+				<Form
+					data={[
+						{ label: 'Title', key: 'title' },
+						{ label: 'Start', key: 'start_time', validate: isDate },
+						{ label: 'End', key: 'end_time', validate: isDate },
+						{ label: 'Description', key: 'description' },
+						{ label: 'Level', key: 'level', selectFrom: eventLevels }
+					]}
+					on:confirm={(event) => {
+						const payload = event.detail;
+						handleCrudEvent('create', payload);
+						modal.closeModal();
+					}}
+					on:cancel={modal.closeModal}
+				/>
+			{:else if crudAction === 'update'}
+				<Form
+					data={[
+						{ label: 'Title', key: 'title', value: filteredEventsArray[crudIndex]['title'] },
+						{
+							label: 'Start',
+							key: 'start_time',
+							value: filteredEventsArray[crudIndex]['start_time'],
+							validate: isDate
+						},
+						{
+							label: 'End',
+							key: 'end_time',
+							value: filteredEventsArray[crudIndex]['end_time'],
+							validate: isDate
+						},
+						{
+							label: 'Description',
+							key: 'description',
+							value: filteredEventsArray[crudIndex]['description']
+						},
+						{
+							label: 'Level',
+							key: 'level',
+							value: filteredEventsArray[crudIndex]['level'],
+							selectFrom: eventLevels
+						}
+					]}
+					on:confirm={(event) => {
+						const payload = event.detail;
+						handleCrudEvent('update', {
+							eventID: filteredEventsArray[crudIndex]['id'],
+							...payload
+						});
+						modal.closeModal();
+					}}
+					on:cancel={modal.closeModal}
+				/>
+			{:else if crudAction === 'delete'}
+				<p>Delete '{filteredEventsArray[crudIndex]['title']}' event ?</p>
+				<ConfirmButtons
+					on:confirm={() => {
+						handleCrudEvent('delete', { eventID: filteredEventsArray[crudIndex]['id'] });
+						modal.closeModal();
+					}}
+					on:cancel={modal.closeModal}
+				/>
+			{/if}
+		</div>
+	{/if}
+</Modal>
 
 <style>
 	table {

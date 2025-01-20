@@ -2,7 +2,8 @@ import humanizeDuration from 'humanize-duration';
 
 import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 
-const timeRegex = new RegExp('^([0-9]{2}:){1,2}[0-9]{2}$');
+const dateRegex = new RegExp('^[0-9]{2}[-\/][0-9]{2}-([0-9]{2}|[0-9]{4})$');
+const timeRegex = new RegExp('^[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?$');
 
 export const dynamicSort = function (property) {
 	// from https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
@@ -28,7 +29,7 @@ export const isEmpty = function (obj) {
 };
 
 export const isDate = function (date) {
-	return Object.prototype.toString.call(date) === '[object Date]';
+	return dateRegex.test(date);
 };
 
 export const isTime = function (time) {
@@ -52,8 +53,12 @@ export const capitalize = function (string) {
 	return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 };
 
+export const isDateObject = function (date) {
+	return Object.prototype.toString.call(date) === '[object Date]';
+};
+
 export const formatDateTime = function (date) {
-	if (isDate(date)) {
+	if (isDateObject(date)) {
 		return (
 			date.toLocaleDateString('en-GB') +
 			', ' +

@@ -12,6 +12,7 @@
 	// [{
 	//   label: "The input", key: "the_input", value: "the value", hint: String
 	//   type: undefined | String, min: undefined | Number, max: undefined | Number, step: undefined | Number,
+    //   serializer: undefined | function(value), deserializer: undefined | function(value),
 	//   pattern: undefined | regex, selectFrom: [{ label: "The input", value: "the_value" }]
 	//   validate: undefined | function(value) { return value === "validated" },
 	// }]
@@ -23,9 +24,12 @@
 	const getValues = function (data) {
 		const rv = {};
 		for (const row of data) {
+			const serializer = row['serializer'] !== undefined ? row['serializer'] : (value) => { return value };
+			const deserializer = row['deserializer'] !== undefined ? row['deserializer'] : (value) => { return value };
 			rv[row['key']] = {
-				value: row['value'] !== undefined ? row['value'] : '',
-				validate: row['validate'] !== undefined ? row['validate'] : notEmptyValue
+				value: row['value'] !== undefined ? serializer(row['value']) : '',
+				validate: row['validate'] !== undefined ? row['validate'] : notEmptyValue,
+				deserializer: deserializer
 			};
 		}
 		return rv;
@@ -54,7 +58,7 @@
 	const confirm = function () {
 		const payload = {};
 		for (const [key, obj] of Object.entries(values)) {
-			payload[key] = obj['value'];
+			payload[key] = obj['deserializer'](obj['value']);
 		}
 		dispatch('confirm', payload);
 	};

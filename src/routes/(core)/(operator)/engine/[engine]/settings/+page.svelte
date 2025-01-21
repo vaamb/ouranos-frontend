@@ -14,8 +14,7 @@
 	import {
 		formatDateTime,
 		getStatusClass,
-		isEmpty,
-		timeStringToDate
+		isEmpty
 	} from '$lib/utils/functions.js';
 	import { crudRequest } from '$lib/actions.svelte.js';
 
@@ -74,11 +73,11 @@
 			</tr>
 			<tr>
 				<td>Registration date</td>
-				<td>{timeStringToDate(engine['registration_date'])}</td>
+				<td>{formatDateTime(engine['registration_date'])}</td>
 			</tr>
 			<tr>
 				<td>Last seen</td>
-				<td>{timeStringToDate(engine['last_seen'])}</td>
+				<td>{formatDateTime(engine['last_seen'])}</td>
 			</tr>
 		</tbody>
 		<tbody>

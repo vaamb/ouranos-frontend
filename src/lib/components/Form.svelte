@@ -27,7 +27,7 @@
 		return rv;
 	};
 
-	const values = getValues(data);
+	let values = $state(getValues(data));
 
 	const canSubmit = function (data) {
 		for (const [_, obj] of Object.entries(data)) {

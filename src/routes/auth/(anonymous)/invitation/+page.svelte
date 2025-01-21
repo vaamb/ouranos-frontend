@@ -44,3 +44,16 @@
 		/>
 	</div>
 </form>
+
+<style>
+	h1 {
+	font-size: 1.8rem;
+		font-weight: 500;
+		margin-bottom: 7px;
+	}
+
+	input {
+		height: 1.3rem;
+		font-size: 0.95rem;
+	}
+</style>

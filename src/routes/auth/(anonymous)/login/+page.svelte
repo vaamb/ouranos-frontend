@@ -75,3 +75,20 @@
 	New User?
 	<a href="/auth/invitation"> Click here to register! </a>
 </p>
+
+<style>
+	h1 {
+		font-size: 1.8rem;
+		font-weight: 500;
+		margin-bottom: 7px;
+	}
+
+	label {
+		font-size: 1.15rem;
+	}
+
+	input {
+		height: 1.3rem;
+		font-size: 0.95rem;
+	}
+</style>

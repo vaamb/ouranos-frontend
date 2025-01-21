@@ -6,6 +6,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	import {
+		capitalize,
 		days,
 		deserializeDatetime,
 		formatDate,
@@ -251,7 +252,7 @@
 						{ label: 'Title', key: 'title' },
 						{ label: 'Start', key: 'start_time', serializer: formatDateTime },
 						{ label: 'End', key: 'end_time', serializer: formatDateTime },
-						{ label: 'Level', key: 'level' },
+						{ label: 'Level', key: 'level', serializer: (value) => capitalize(value) },
 						{ label: 'Description', key: 'description' }
 					]}
 					data={filteredEventsArray}

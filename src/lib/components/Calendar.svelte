@@ -5,7 +5,7 @@
 	import Form from '$lib/components/Form.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 
-	import { days, formatDate, isDate, months } from '$lib/utils/functions.js';
+	import { days, deserializeDatetime, formatDate, months, serializeDatetime } from '$lib/utils/functions.js';
 	import Table from '$lib/components/Table.svelte';
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import { eventLevels } from '$lib/utils/consts.js';
@@ -258,10 +258,10 @@
 				<Form
 					data={[
 						{ label: 'Title', key: 'title' },
-						{ label: 'Start', key: 'start_time', validate: isDate },
-						{ label: 'End', key: 'end_time', validate: isDate },
+						{ label: 'Start', key: 'start_time', type: 'datetime-local', deserializer: deserializeDatetime },
+						{ label: 'End', key: 'end_time', type: 'datetime-local', deserializer: deserializeDatetime },
 						{ label: 'Description', key: 'description' },
-						{ label: 'Level', key: 'level', selectFrom: eventLevels }
+						{ label: 'Level', key: 'level', value: eventLevels[0], selectFrom: eventLevels }
 					]}
 					on:confirm={(event) => {
 						const payload = event.detail;
@@ -277,14 +277,18 @@
 						{
 							label: 'Start',
 							key: 'start_time',
+							type: 'datetime-local',
 							value: filteredEventsArray[crudIndex]['start_time'],
-							validate: isDate
+							serializer: serializeDatetime,
+							deserializer: deserializeDatetime
 						},
 						{
 							label: 'End',
 							key: 'end_time',
+							type: 'datetime-local',
 							value: filteredEventsArray[crudIndex]['end_time'],
-							validate: isDate
+							serializer: serializeDatetime,
+							deserializer: deserializeDatetime
 						},
 						{
 							label: 'Description',

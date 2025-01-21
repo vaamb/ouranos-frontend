@@ -153,13 +153,13 @@
 				{
 					label: 'Day start',
 					key: 'day_start',
-					validate: isTime,
+					type: 'time',
 					hint: 'Time in the HH:MM format'
 				},
 				{
 					label: 'Night start',
 					key: 'night_start',
-					validate: isTime,
+					type: 'time',
 					hint: 'Time in the HH:MM format'
 				},
 				{ label: 'Status', key: 'status', value: true, selectFrom: [true, false] }

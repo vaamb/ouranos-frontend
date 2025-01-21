@@ -45,7 +45,7 @@
 		if (e.target === dialog) closeModal();
 	}}
 >
-	<div style="font-size: 1.05rem">
+	<div>
 		<!--The `showModal` is required to update the content when displaying several modals one after the other-->
 		{#if showModal}
 			<button class="reset-button close" onclick={closeModal}>

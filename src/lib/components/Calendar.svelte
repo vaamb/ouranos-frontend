@@ -244,8 +244,8 @@
 	{#if modalDay !== undefined}
 		{@const eventsID = getDayEventsID(modalDay)}
 		{@const filteredEventsArray = eventsID.map((eventID) => eventsByID[eventID])}
-		<div style="width: 800px">
-			{#if crudAction === undefined}
+		{#if crudAction === undefined}
+			<div class="wrapper">
 				<Table
 					tableID="events"
 					columns={[
@@ -262,75 +262,75 @@
 						crudIndex = event['detail']['rowIndex'];
 					}}
 				/>
-			{:else if crudAction === 'create'}
-				<Form
-					data={[
-						{ label: 'Title', key: 'title' },
-						{ label: 'Start', key: 'start_time', type: 'datetime-local', deserializer: deserializeDatetime },
-						{ label: 'End', key: 'end_time', type: 'datetime-local', deserializer: deserializeDatetime },
-						{ label: 'Description', key: 'description' },
-						{ label: 'Level', key: 'level', value: eventLevels[0], selectFrom: eventLevels }
-					]}
-					on:confirm={(event) => {
-						const payload = event.detail;
-						handleCrudEvent('create', payload);
-						modal.closeModal();
-					}}
-					on:cancel={modal.closeModal}
-				/>
-			{:else if crudAction === 'update'}
-				<Form
-					data={[
-						{ label: 'Title', key: 'title', value: filteredEventsArray[crudIndex]['title'] },
-						{
-							label: 'Start',
-							key: 'start_time',
-							type: 'datetime-local',
-							value: filteredEventsArray[crudIndex]['start_time'],
-							serializer: serializeDatetime,
-							deserializer: deserializeDatetime
-						},
-						{
-							label: 'End',
-							key: 'end_time',
-							type: 'datetime-local',
-							value: filteredEventsArray[crudIndex]['end_time'],
-							serializer: serializeDatetime,
-							deserializer: deserializeDatetime
-						},
-						{
-							label: 'Description',
-							key: 'description',
-							value: filteredEventsArray[crudIndex]['description']
-						},
-						{
-							label: 'Level',
-							key: 'level',
-							value: filteredEventsArray[crudIndex]['level'],
-							selectFrom: eventLevels
-						}
-					]}
-					on:confirm={(event) => {
-						const payload = event.detail;
-						handleCrudEvent('update', {
-							eventID: filteredEventsArray[crudIndex]['id'],
-							...payload
-						});
-						modal.closeModal();
-					}}
-					on:cancel={modal.closeModal}
-				/>
-			{:else if crudAction === 'delete'}
-				<p>Delete '{filteredEventsArray[crudIndex]['title']}' event ?</p>
-				<ConfirmButtons
-					on:confirm={() => {
-						handleCrudEvent('delete', { eventID: filteredEventsArray[crudIndex]['id'] });
-						modal.closeModal();
-					}}
-					on:cancel={modal.closeModal}
-				/>
-			{/if}
-		</div>
+			</div>
+		{:else if crudAction === 'create'}
+			<Form
+				data={[
+					{ label: 'Title', key: 'title' },
+					{ label: 'Start', key: 'start_time', type: 'datetime-local', deserializer: deserializeDatetime },
+					{ label: 'End', key: 'end_time', type: 'datetime-local', deserializer: deserializeDatetime },
+					{ label: 'Description', key: 'description' },
+					{ label: 'Level', key: 'level', value: eventLevels[0], selectFrom: eventLevels }
+				]}
+				on:confirm={(event) => {
+					const payload = event.detail;
+					handleCrudEvent('create', payload);
+					modal.closeModal();
+				}}
+				on:cancel={modal.closeModal}
+			/>
+		{:else if crudAction === 'update'}
+			<Form
+				data={[
+					{ label: 'Title', key: 'title', value: filteredEventsArray[crudIndex]['title'] },
+					{
+						label: 'Start',
+						key: 'start_time',
+						type: 'datetime-local',
+						value: filteredEventsArray[crudIndex]['start_time'],
+						serializer: serializeDatetime,
+						deserializer: deserializeDatetime
+					},
+					{
+						label: 'End',
+						key: 'end_time',
+						type: 'datetime-local',
+						value: filteredEventsArray[crudIndex]['end_time'],
+						serializer: serializeDatetime,
+						deserializer: deserializeDatetime
+					},
+					{
+						label: 'Description',
+						key: 'description',
+						value: filteredEventsArray[crudIndex]['description']
+					},
+					{
+						label: 'Level',
+						key: 'level',
+						value: filteredEventsArray[crudIndex]['level'],
+						selectFrom: eventLevels
+					}
+				]}
+				on:confirm={(event) => {
+					const payload = event.detail;
+					handleCrudEvent('update', {
+						eventID: filteredEventsArray[crudIndex]['id'],
+						...payload
+					});
+					modal.closeModal();
+				}}
+				on:cancel={modal.closeModal}
+			/>
+		{:else if crudAction === 'delete'}
+			<p>Delete '{filteredEventsArray[crudIndex]['title']}' event ?</p>
+			<ConfirmButtons
+				on:confirm={() => {
+					handleCrudEvent('delete', { eventID: filteredEventsArray[crudIndex]['id'] });
+					modal.closeModal();
+				}}
+				on:cancel={modal.closeModal}
+			/>
+		{/if}
 	{/if}
 </Modal>
 
@@ -409,5 +409,11 @@
 
 	.event-extra {
 		background: var(--main-80);
+	}
+
+	@media only screen and (min-width: 1200px) {
+		.wrapper {
+			min-width: 1000px;
+		}
 	}
 </style>

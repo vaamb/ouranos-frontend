@@ -12,9 +12,9 @@
 	import { currentUser, ecosystems, engines } from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 	import {
+		formatDateTime,
 		getStatusClass,
 		isEmpty,
-		isTime,
 		timeStringToDate
 	} from '$lib/utils/functions.js';
 	import { crudRequest } from '$lib/actions.svelte.js';
@@ -122,7 +122,7 @@
 			{ label: 'Name', key: 'name' },
 			{ label: 'UID', key: 'uid' },
 			{ label: 'Status', key: 'status', isStatus: true },
-			{ label: 'Last Seen', key: 'last_seen', isTime: true }
+			{ label: 'Last Seen', key: 'last_seen', serializer: formatDateTime }
 		]}
 		data={ecosystemsArray}
 		editable={true}

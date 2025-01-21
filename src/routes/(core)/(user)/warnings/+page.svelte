@@ -5,6 +5,7 @@
 
 	import { crudRequest } from '$lib/actions.svelte.js';
 	import { warnings } from '$lib/store.svelte.js';
+	import { capitalize, formatDateTime } from "$lib/utils/functions.js";
 
 	// Crud-related variables and functions
 	let modal = $state();
@@ -25,11 +26,11 @@
 	<Table
 		tableID="warnings"
 		columns={[
-			{ label: 'Level', key: 'level' },
+			{ label: 'Level', key: 'level', serializer: (value) => capitalize(value) },
 			{ label: 'Ecosystem', key: 'created_by' },
 			{ label: 'Title', key: 'title' },
 			{ label: 'Description', key: 'description' },
-			{ label: 'Created on', key: 'created_on', isTime: true }
+			{ label: 'Created on', key: 'created_on', serializer: formatDateTime }
 		]}
 		data={$warnings}
 		editable={true}

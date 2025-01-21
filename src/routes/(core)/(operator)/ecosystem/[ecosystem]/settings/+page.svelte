@@ -15,9 +15,9 @@
 	import {
 		capitalize,
 		computeEcosystemStatusClass,
+		formatDateTime,
 		getEcosystemUID,
 		isNumber,
-		isTime,
 		timeStringToDate
 	} from '$lib/utils/functions.js';
 	import { climateParameters, hardwareLevels, hardwareTypes } from '$lib/utils/consts.js';
@@ -114,7 +114,7 @@
 			</tr>
 			<tr>
 				<td>Lighting method</td>
-				<td>{ecosystem['lighting_method']}</td>
+				<td>{capitalize(ecosystem['lighting_method'])}</td>
 			</tr>
 			<tr>
 				<td>Day start</td>
@@ -235,10 +235,10 @@
 	<Table
 		tableID="environmentParametersTable"
 		columns={[
-			{ label: 'Parameter', key: 'parameter' },
-			{ label: 'Day', key: 'day' },
-			{ label: 'Night', key: 'night' },
-			{ label: 'Hysteresis', key: 'hysteresis' }
+			{ label: 'Parameter', key: 'parameter', serializer: (value) => capitalize(value) },
+			{ label: 'Day', key: 'day', serializer: (value) => value.toFixed(1) },
+			{ label: 'Night', key: 'night', serializer: (value) => value.toFixed(1) },
+			{ label: 'Hysteresis', key: 'hysteresis', serializer: (value) => value.toFixed(1) }
 		]}
 		data={environmentParameters}
 		editable={true}
@@ -346,11 +346,11 @@
 		columns={[
 			{ label: 'Name', key: 'name' },
 			{ label: 'UID', key: 'uid' },
-			{ label: 'Level', key: 'level' },
-			{ label: 'Type', key: 'type' },
+			{ label: 'Level', key: 'level', serializer: (value) => capitalize(value) },
+			{ label: 'Type', key: 'type', serializer: (value) => capitalize(value) },
 			{ label: 'Model', key: 'model' },
 			{ label: 'Address', key: 'address' },
-			{ label: 'Last log entry', key: 'last_log', isTime: true }
+			{ label: 'Last log entry', key: 'last_log', serializer: formatDateTime }
 		]}
 		data={hardwareObjects}
 		editable={true}

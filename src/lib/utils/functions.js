@@ -99,6 +99,14 @@ export const formatDate = function (date) {
 	}
 };
 
+export const serializeDatetime = function (value) {
+	return `${value.getFullYear()}-${(value.getMonth() + 1).toString().padStart(2, '0')}-${value.getDate().toString().padStart(2, '0')}T${value.getHours().toString().padStart(2, '0')}:${value.getMinutes().toString().padStart(2, '0')}:${value.getSeconds().toString().padStart(2, '0')}`;
+};
+
+export const deserializeDatetime = function (value) {
+	return new Date(value);
+};
+
 export const computeServerUptime = function (serverStartTime, now) {
 	if (serverStartTime) {
 		return humanizeDuration(now - serverStartTime, {

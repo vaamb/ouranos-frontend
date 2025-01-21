@@ -10,10 +10,10 @@
 
 	let { data } = $props();
 	// [{
-	//   label: "The input", key: "the_input", value: "the value", hint: "This is what you should enter"
-	//   type: "text",
-	//   selectFrom: [{ label: "The input", value: "the_value" }]
-	//   validate: function(value) { return value === "validated" },
+	//   label: "The input", key: "the_input", value: "the value", hint: String
+	//   type: undefined | String, min: undefined | Number, max: undefined | Number, step: undefined | Number,
+	//   pattern: undefined | regex, selectFrom: [{ label: "The input", value: "the_value" }]
+	//   validate: undefined | function(value) { return value === "validated" },
 	// }]
 
 	const notEmptyValue = function (value) {
@@ -74,15 +74,19 @@
 							id={row['key']}
 							type={row['type'] !== undefined ? row['type'] : null}
 							bind:value={values[row['key']]['value']}
+							min={row['min'] !== undefined ? row['min'] : null}
+							max={row['max'] !== undefined ? row['max'] : null}
+							step={row['step'] !== undefined ? row['step'] : null}
+							pattern={row['pattern'] !== undefined ? row['pattern'] : null}
 							disabled={row['disabled']}
-							placeholder={row['hint'] ? row['hint'] : ''}
+							placeholder={row['hint'] ? row['hint'] : null}
 						/>
 					{:else}
 						<select
 							id={row['key']}
 							bind:value={values[row['key']]['value']}
 							disabled={row['disabled']}
-							title={row['hint'] ? row['hint'] : ''}
+							title={row['hint'] ? row['hint'] : null}
 						>
 							{#if !row['value']}
 								<option disabled value="">Select one</option>
@@ -117,14 +121,18 @@
 	input {
 		height: 1.3rem;
 		width: 216px;
+		font-family: inherit;
 	}
 
 	select {
 		height: 1.5rem;
 		width: 218px;
+		font-family: inherit;
 	}
+
 	option {
 		height: 1.5rem;
+		font-family: inherit;
 	}
 
 	input:disabled {

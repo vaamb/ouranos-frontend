@@ -153,7 +153,7 @@
 	/* Large devices (laptops/desktops, 992px and up) */
 	@media only screen and (min-width: 992px) {
 		.main {
-			margin-top: 46px; /* Top bar (45) + border (1) */
+			padding-top: 56px; /* Top bar (45) + border (1) + base padding (10) */
 			margin-left: calc(var(--margin-width) * 1px);
 			min-height: calc(100vh - 76px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
 			padding-right: 45px;

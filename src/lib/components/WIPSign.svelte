@@ -23,7 +23,7 @@
 	/* Large devices (laptops/desktops, 992px and up) */
 	@media only screen and (min-width: 992px) {
 		.center-wip {
-			height: calc(100vh - 141px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
+			height: calc(100vh - 76px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
 		}
 	}
 </style>

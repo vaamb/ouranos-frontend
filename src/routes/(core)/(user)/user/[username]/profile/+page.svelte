@@ -10,7 +10,7 @@
 
 	import { crudRequest, fetchUserDescription } from '$lib/actions.svelte.js';
 	import { currentUser } from '$lib/store.svelte.js';
-	import { capitalize, getStatusClass, timeStringToDate } from '$lib/utils/functions.js';
+	import { capitalize, getStatusClass, formatDateTime } from '$lib/utils/functions.js';
 
 	let username = $derived($page['params']['username']);
 
@@ -67,7 +67,7 @@
 			</tr>
 			<tr>
 				<td>Registration date</td>
-				<td>{timeStringToDate(userDescription['registration_datetime'])}</td>
+				<td>{formatDateTime(new Date(userDescription['registration_datetime']))}</td>
 			</tr>
 		</tbody>
 		<tbody>

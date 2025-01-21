@@ -57,26 +57,6 @@ export const isDateObject = function (date) {
 	return Object.prototype.toString.call(date) === '[object Date]';
 };
 
-export const formatDateTime = function (date, timeStyle = 'medium') {
-	if (isDateObject(date)) {
-		return (
-			date.toLocaleDateString('en-GB') +
-			' ' +
-			date.toLocaleTimeString([], { timeStyle: timeStyle, hour12: false })
-		);
-	} else {
-		return '';
-	}
-};
-
-export const timeStringToDate = function (timeString) {
-	if (timeString !== null) {
-		return formatDateTime(new Date(timeString));
-	} else {
-		return 'NA';
-	}
-};
-
 export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export const months = [
@@ -95,10 +75,22 @@ export const months = [
 ];
 
 export const formatDate = function (date) {
-	if (isDate(date)) {
+	if (isDateObject(date)) {
 		const day = days[date.getDay()];
 		const month = months[date.getMonth()];
 		return ''.concat(day, ' ', date.getDate(), ' ', month);
+	} else {
+		return '';
+	}
+};
+
+export const formatDateTime = function (date, timeStyle = 'medium') {
+	if (isDateObject(date)) {
+		return (
+			date.toLocaleDateString('en-GB') +
+			' ' +
+			date.toLocaleTimeString([], { timeStyle: timeStyle, hour12: false })
+		);
 	} else {
 		return '';
 	}

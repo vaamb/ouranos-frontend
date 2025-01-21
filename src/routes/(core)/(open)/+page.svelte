@@ -30,6 +30,7 @@
 	} from '$lib/store.svelte.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
+		capitalize,
 		computeEcosystemStatusClass,
 		computeLightingHours,
 		computeServerUptime,
@@ -38,9 +39,7 @@
 		formatDate,
 		formatDateTime,
 		serviceEnabled,
-		getParamStatus,
-		capitalize,
-		timeStringToDate
+		getParamStatus
 	} from '$lib/utils/functions.js';
 	import {
 		fetchCalendarEvents,
@@ -264,7 +263,7 @@
 									{@const color = getLevelColor(warning['level'])}
 									<p style="text-align: left">
 										<Fa icon={faCircleExclamation} style="color: var({color});" />
-										On {timeStringToDate(warning['created_on'])}: {warning['title']}
+										On {formatDateTime(warning['created_on'])}: {warning['title']}
 									</p>
 								{/each}
 							</BoxItem>

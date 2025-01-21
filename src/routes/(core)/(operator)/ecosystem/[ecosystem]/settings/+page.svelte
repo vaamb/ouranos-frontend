@@ -17,8 +17,7 @@
 		computeEcosystemStatusClass,
 		formatDateTime,
 		getEcosystemUID,
-		isNumber,
-		timeStringToDate
+		isNumber
 	} from '$lib/utils/functions.js';
 	import { climateParameters, hardwareLevels, hardwareTypes } from '$lib/utils/consts.js';
 	import {
@@ -106,11 +105,11 @@
 			</tr>
 			<tr>
 				<td>Registration date</td>
-				<td>{timeStringToDate(ecosystem['registration_date'])}</td>
+				<td>{formatDateTime(ecosystem['registration_date'])}</td>
 			</tr>
 			<tr>
 				<td>Last seen</td>
-				<td>{timeStringToDate(ecosystem['last_seen'])}</td>
+				<td>{formatDateTime(ecosystem['last_seen'])}</td>
 			</tr>
 			<tr>
 				<td>Lighting method</td>

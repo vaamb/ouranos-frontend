@@ -10,7 +10,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 
 	import { permissions } from '$lib/utils/consts.js';
-	import { getStatusClass, timeStringToDate } from '$lib/utils/functions.js';
+	import { getStatusClass } from '$lib/utils/functions.js';
 	import { currentUser } from '$lib/store.svelte.js';
 
 	let {

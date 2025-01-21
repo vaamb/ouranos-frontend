@@ -57,12 +57,12 @@ export const isDateObject = function (date) {
 	return Object.prototype.toString.call(date) === '[object Date]';
 };
 
-export const formatDateTime = function (date) {
+export const formatDateTime = function (date, timeStyle = 'medium') {
 	if (isDateObject(date)) {
 		return (
 			date.toLocaleDateString('en-GB') +
-			', ' +
-			date.toLocaleTimeString([], { timeStyle: 'short', hour12: false })
+			' ' +
+			date.toLocaleTimeString([], { timeStyle: timeStyle, hour12: false })
 		);
 	} else {
 		return '';

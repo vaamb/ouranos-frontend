@@ -10,13 +10,17 @@
 	let year = $state(now.getFullYear());
 	let events = $state([]);
 
+	const refreshEvents = function () {
+		fetchCalendarEvents(new Date(year, month, 1), new Date(year, month + 1, 1), null).then(
+			(data) => {
+				events = data;
+			}
+		);
+	};
+
 	$effect(() => {
 		if ($currentUser.isAuthenticated) {
-			fetchCalendarEvents(new Date(year, month, 1), new Date(year, month + 1, 1), null).then(
-				(data) => {
-					events = data;
-				}
-			);
+			refreshEvents()
 		}
 	});
 </script>
@@ -30,13 +34,16 @@
 	handleCrudEvent={(event, detail) => {
 		if (event === 'create') {
 			crudRequest('app/services/calendar/u', 'create', detail);
+			refreshEvents()
 		} else if (event === 'update') {
 			const eventID = detail['eventID'];
 			delete detail['eventID'];
 			crudRequest(`app/services/calendar/u/${eventID}`, 'update', detail);
+			refreshEvents()
 		} else if (event === 'delete') {
 			const eventID = detail['eventID'];
 			crudRequest(`app/services/calendar/u/${eventID}`, 'delete');
+			refreshEvents()
 		}
 	}}
 />

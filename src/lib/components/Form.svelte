@@ -7,6 +7,7 @@
 	let { data } = $props();
 	// [{
 	//   label: "The input", key: "the_input", value: "the value", hint: "This is what you should enter"
+	//   type: "text",
 	//   selectFrom: [{ label: "The input", value: "the_value" }]
 	//   validate: function(value) { return value === "validated" },
 	// }]
@@ -67,6 +68,7 @@
 					{#if isEmpty(row['selectFrom'])}
 						<input
 							id={row['key']}
+							type={row['type'] !== undefined ? row['type'] : null}
 							bind:value={values[row['key']]['value']}
 							disabled={row['disabled']}
 							placeholder={row['hint'] ? row['hint'] : ''}

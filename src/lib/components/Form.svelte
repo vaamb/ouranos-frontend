@@ -1,7 +1,11 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 
+	import Fa from 'svelte-fa';
+	import { faCircle } from '@fortawesome/free-solid-svg-icons';
+
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
+
 	import { isEmpty, isObject } from '$lib/utils/functions.js';
 
 	let { data } = $props();
@@ -95,6 +99,12 @@
 								{/if}
 							{/each}
 						</select>
+					{/if}
+				</td>
+				<td>
+					{#if values[row['key']] !== ''}
+						&nbsp;
+						<Fa icon={faCircle} class={values[row['key']]['validate'](values[row['key']]['value']) ? 'on' : 'off'} />
 					{/if}
 				</td>
 			</tr>

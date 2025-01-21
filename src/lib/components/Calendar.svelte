@@ -5,7 +5,14 @@
 	import Form from '$lib/components/Form.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 
-	import { days, deserializeDatetime, formatDate, months, serializeDatetime } from '$lib/utils/functions.js';
+	import {
+		days,
+		deserializeDatetime,
+		formatDate,
+		formatDateTime,
+		months,
+		serializeDatetime,
+	} from '$lib/utils/functions.js';
 	import Table from '$lib/components/Table.svelte';
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import { eventLevels } from '$lib/utils/consts.js';
@@ -242,8 +249,8 @@
 					tableID="events"
 					columns={[
 						{ label: 'Title', key: 'title' },
-						{ label: 'Start', key: 'start_time', isTime: true },
-						{ label: 'End', key: 'end_time', isTime: true },
+						{ label: 'Start', key: 'start_time', serializer: formatDateTime },
+						{ label: 'End', key: 'end_time', serializer: formatDateTime },
 						{ label: 'Level', key: 'level' },
 						{ label: 'Description', key: 'description' }
 					]}

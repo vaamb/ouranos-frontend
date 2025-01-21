@@ -15,9 +15,9 @@
 	import {
 		capitalize,
 		computeEcosystemStatusClass,
+		formatDateTime,
 		getEcosystemUID,
 		isNumber,
-		isTime,
 		timeStringToDate
 	} from '$lib/utils/functions.js';
 	import { climateParameters, hardwareLevels, hardwareTypes } from '$lib/utils/consts.js';
@@ -350,7 +350,7 @@
 			{ label: 'Type', key: 'type' },
 			{ label: 'Model', key: 'model' },
 			{ label: 'Address', key: 'address' },
-			{ label: 'Last log entry', key: 'last_log', isTime: true }
+			{ label: 'Last log entry', key: 'last_log', serializer: formatDateTime }
 		]}
 		data={hardwareObjects}
 		editable={true}

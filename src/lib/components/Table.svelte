@@ -64,8 +64,6 @@
 						<td>
 							{#if column['isStatus'] === true}
 								<Fa icon={faCircle} class={getStatusClass(row[column.key])} />
-							{:else if column['isTime'] === true}
-								{timeStringToDate(row[column.key])}
 							{:else if column['serializer'] !== undefined}
 								{column['serializer'](row[column.key])}
 							{:else}

@@ -1,14 +1,20 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 
+	import Fa from 'svelte-fa';
+	import { faCircle } from '@fortawesome/free-solid-svg-icons';
+
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
+
 	import { isEmpty, isObject } from '$lib/utils/functions.js';
 
 	let { data } = $props();
 	// [{
-	//   label: "The input", key: "the_input", value: "the value", hint: "This is what you should enter"
-	//   selectFrom: [{ label: "The input", value: "the_value" }]
-	//   validate: function(value) { return value === "validated" },
+	//   label: "The input", key: "the_input", value: "the value", hint: String
+	//   type: undefined | String, min: undefined | Number, max: undefined | Number, step: undefined | Number,
+	//   serializer: undefined | function(value), deserializer: undefined | function(value),
+	//   pattern: undefined | regex, selectFrom: [{ label: "The input", value: "the_value" }]
+	//   validate: undefined | function(value) { return value === "validated" },
 	// }]
 
 	const notEmptyValue = function (value) {
@@ -18,15 +24,28 @@
 	const getValues = function (data) {
 		const rv = {};
 		for (const row of data) {
+			const serializer =
+				row['serializer'] !== undefined
+					? row['serializer']
+					: (value) => {
+							return value;
+						};
+			const deserializer =
+				row['deserializer'] !== undefined
+					? row['deserializer']
+					: (value) => {
+							return value;
+						};
 			rv[row['key']] = {
-				value: row['value'] !== undefined ? row['value'] : '',
-				validate: row['validate'] !== undefined ? row['validate'] : notEmptyValue
+				value: row['value'] !== undefined ? serializer(row['value']) : '',
+				validate: row['validate'] !== undefined ? row['validate'] : notEmptyValue,
+				deserializer: deserializer
 			};
 		}
 		return rv;
 	};
 
-	const values = getValues(data);
+	let values = $state(getValues(data));
 
 	const canSubmit = function (data) {
 		for (const [_, obj] of Object.entries(data)) {
@@ -49,7 +68,7 @@
 	const confirm = function () {
 		const payload = {};
 		for (const [key, obj] of Object.entries(values)) {
-			payload[key] = obj['value'];
+			payload[key] = obj['deserializer'](obj['value']);
 		}
 		dispatch('confirm', payload);
 	};
@@ -67,16 +86,21 @@
 					{#if isEmpty(row['selectFrom'])}
 						<input
 							id={row['key']}
+							type={row['type'] !== undefined ? row['type'] : null}
 							bind:value={values[row['key']]['value']}
+							min={row['min'] !== undefined ? row['min'] : null}
+							max={row['max'] !== undefined ? row['max'] : null}
+							step={row['step'] !== undefined ? row['step'] : null}
+							pattern={row['pattern'] !== undefined ? row['pattern'] : null}
 							disabled={row['disabled']}
-							placeholder={row['hint'] ? row['hint'] : ''}
+							placeholder={row['hint'] ? row['hint'] : null}
 						/>
 					{:else}
 						<select
 							id={row['key']}
 							bind:value={values[row['key']]['value']}
 							disabled={row['disabled']}
-							title={row['hint'] ? row['hint'] : ''}
+							title={row['hint'] ? row['hint'] : null}
 						>
 							{#if !row['value']}
 								<option disabled value="">Select one</option>
@@ -95,6 +119,15 @@
 						</select>
 					{/if}
 				</td>
+				<td>
+					{#if values[row['key']] !== ''}
+						&nbsp;
+						<Fa
+							icon={faCircle}
+							class={values[row['key']]['validate'](values[row['key']]['value']) ? 'on' : 'off'}
+						/>
+					{/if}
+				</td>
 			</tr>
 		{/each}
 	</tbody>
@@ -102,17 +135,25 @@
 <ConfirmButtons disabled={disabledSubmit} on:confirm={confirm} on:cancel={cancel} />
 
 <style>
+	label {
+		font-size: 1.15rem;
+	}
+
 	input {
 		height: 1.3rem;
 		width: 216px;
+		font-family: inherit;
 	}
 
 	select {
 		height: 1.5rem;
 		width: 218px;
+		font-family: inherit;
 	}
+
 	option {
 		height: 1.5rem;
+		font-family: inherit;
 	}
 
 	input:disabled {

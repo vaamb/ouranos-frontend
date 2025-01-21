@@ -161,16 +161,14 @@
 			{
 				label: 'Day start',
 				key: 'day_start',
+				type: 'time',
 				value: ecosystem['day_start'],
-				validate: isTime,
-				hint: 'Time in the HH:MM format'
 			},
 			{
 				label: 'Day end',
 				key: 'night_start',
+				type: 'time',
 				value: ecosystem['night_start'],
-				validate: isTime,
-				hint: 'Time in the HH:MM format'
 			}
 		]}
 		on:confirm={(event) => {
@@ -257,9 +255,9 @@
 		<Form
 			data={[
 				{ label: 'Parameter', key: 'parameter', selectFrom: climateParameters },
-				{ label: 'Day', key: 'day', validate: isNumber },
-				{ label: 'Night', key: 'night', validate: isNumber },
-				{ label: 'Hysteresis', key: 'hysteresis', validate: isNumber }
+				{ label: 'Day', key: 'day', type: 'number', step: '0.1' },
+				{ label: 'Night', key: 'night', type: 'number', step: '0.1' },
+				{ label: 'Hysteresis', key: 'hysteresis', type: 'number', min: '0', step: '0.1' }
 			]}
 			on:confirm={(event) => {
 				const payload = event.detail;
@@ -281,23 +279,31 @@
 					label: 'Parameter',
 					key: 'parameter',
 					value: environmentParameter['parameter'],
+					selectFrom: climateParameters,
 					disabled: true
 				},
 				{
 					label: 'Day',
 					key: 'day',
+					type: 'number',
+					step: '0.1',
 					value: environmentParameter['day'],
 					validate: isNumber
 				},
 				{
 					label: 'Night',
 					key: 'night',
+					type: 'number',
+					step: '0.1',
 					value: environmentParameter['night'],
 					validate: isNumber
 				},
 				{
 					label: 'Hysteresis',
 					key: 'hysteresis',
+					type: 'number',
+					min: '0',
+					step: '0.1',
 					value: environmentParameter['hysteresis'],
 					validate: isNumber
 				}

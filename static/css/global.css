@@ -75,6 +75,11 @@ p {
 	margin-bottom: 1rem;
 }
 
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
 .center-content {
 	display: flex;
 	justify-content: center;
@@ -111,6 +116,20 @@ p {
 	background-color: var(--gray-50);
 	color: var(--main-95);
 	cursor: default;
+}
+
+.submit-button {
+	background-color: var(--main-25);
+	border: none;
+	color: var(--derived-50);
+	padding: 5px 10px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 15px;
+	font-weight: bold;
+	margin: 10px 2px;
+	cursor: pointer;
 }
 
 .text {
@@ -194,6 +213,10 @@ p {
 	background-color: #f3f3f3;
 }
 
+.input-group + .input-group {
+	margin-top: 0.66em;
+}
+
 @media only screen and (min-width: 992px) {
 	.table-narrow {
 		max-width: 35%;
@@ -214,4 +237,8 @@ p {
 
 .hidden {
 	color: transparent;
+}
+
+.error {
+	color: var(--red);
 }

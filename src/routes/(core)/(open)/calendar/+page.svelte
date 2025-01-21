@@ -33,7 +33,7 @@
 		} else if (event === 'update') {
 			const eventID = detail['eventID'];
 			delete detail['eventID'];
-			crudRequest(`app/services/calendar/u/${eventID}`, 'update');
+			crudRequest(`app/services/calendar/u/${eventID}`, 'update', detail);
 		} else if (event === 'delete') {
 			const eventID = detail['eventID'];
 			crudRequest(`app/services/calendar/u/${eventID}`, 'delete');

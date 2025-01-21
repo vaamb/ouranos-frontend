@@ -12,7 +12,7 @@
 	// [{
 	//   label: "The input", key: "the_input", value: "the value", hint: String
 	//   type: undefined | String, min: undefined | Number, max: undefined | Number, step: undefined | Number,
-    //   serializer: undefined | function(value), deserializer: undefined | function(value),
+	//   serializer: undefined | function(value), deserializer: undefined | function(value),
 	//   pattern: undefined | regex, selectFrom: [{ label: "The input", value: "the_value" }]
 	//   validate: undefined | function(value) { return value === "validated" },
 	// }]
@@ -24,8 +24,18 @@
 	const getValues = function (data) {
 		const rv = {};
 		for (const row of data) {
-			const serializer = row['serializer'] !== undefined ? row['serializer'] : (value) => { return value };
-			const deserializer = row['deserializer'] !== undefined ? row['deserializer'] : (value) => { return value };
+			const serializer =
+				row['serializer'] !== undefined
+					? row['serializer']
+					: (value) => {
+							return value;
+						};
+			const deserializer =
+				row['deserializer'] !== undefined
+					? row['deserializer']
+					: (value) => {
+							return value;
+						};
 			rv[row['key']] = {
 				value: row['value'] !== undefined ? serializer(row['value']) : '',
 				validate: row['validate'] !== undefined ? row['validate'] : notEmptyValue,
@@ -112,7 +122,10 @@
 				<td>
 					{#if values[row['key']] !== ''}
 						&nbsp;
-						<Fa icon={faCircle} class={values[row['key']]['validate'](values[row['key']]['value']) ? 'on' : 'off'} />
+						<Fa
+							icon={faCircle}
+							class={values[row['key']]['validate'](values[row['key']]['value']) ? 'on' : 'off'}
+						/>
 					{/if}
 				</td>
 			</tr>

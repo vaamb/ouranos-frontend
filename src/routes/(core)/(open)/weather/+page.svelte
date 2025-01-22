@@ -88,14 +88,17 @@
 	</BoxItem>
 	<BoxItem>
 		{#if !isEmpty($weatherHourly)}
-			<div style="display: flex; margin-bottom: 12px">
+			<div style="display: flex; margin-bottom: 6px; flex-flow: row wrap">
 				{#each measures as measure}
 					<button
 						onclick={setcurrentMeasure(measure)}
 						class="text-button"
-						style={measure !== currentMeasure
-							? 'background-color: var(--derived-60)'
-							: 'background-color: var(--main-40)'}
+						style="
+							margin-bottom: 6px;
+							{measure !== currentMeasure
+							? 'background-color: var(--derived-60);'
+							: 'background-color: var(--main-40);'}
+						"
 					>
 						{capitalize(measure).replace('_', ' ')}
 					</button>

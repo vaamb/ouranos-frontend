@@ -338,7 +338,7 @@
 								<p>Fetching data</p>
 							{:then ecosystemLightData_notUsed}
 								{@const lightData = $ecosystemsLightData[getStoreDataKey(uid)]}
-								{#each computeLightingHours(lightData) as lightingHours}
+								{#each computeLightingHours(lightData, 'short') as lightingHours}
 									<p>{lightingHours}</p>
 								{:else}
 									<p>No lighting needed</p>

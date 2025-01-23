@@ -148,20 +148,20 @@ const strHoursToDate = function (strHour) {
 	return now;
 };
 
-export const computeLightingHours = function (ecosystemLight) {
+export const computeLightingHours = function (ecosystemLight, timeStyle = 'medium') {
 	let rv = [];
-	if (['fixed', 'mimic'].includes(ecosystemLight['method'])) {
+	if (ecosystemLight['lighting'] === 'fixed') {
 		const start = strHoursToDate(ecosystemLight['morning_start']);
 		const end = strHoursToDate(ecosystemLight['evening_end']);
 		rv.push(
 			`${
 				'Lighting from ' +
-				start.toLocaleTimeString([], { timeStyle: 'short' }) +
+				start.toLocaleTimeString([], { timeStyle: timeStyle, hour12: false }) +
 				' to ' +
-				end.toLocaleTimeString([], { timeStyle: 'short' })
+				end.toLocaleTimeString([], { timeStyle: timeStyle, hour12: false })
 			}`
 		);
-	} else if (ecosystemLight['method'] === 'elongate') {
+	} else if (ecosystemLight['lighting'] === 'elongate') {
 		for (const TOD of ['morning', 'evening']) {
 			if (ecosystemLight[TOD + '_start'] && ecosystemLight[TOD + '_end']) {
 				const start = strHoursToDate(ecosystemLight[TOD + '_start']);
@@ -171,9 +171,9 @@ export const computeLightingHours = function (ecosystemLight) {
 						`${
 							capitalize(TOD) +
 							' lighting from ' +
-							start.toLocaleTimeString([], { timeStyle: 'short' }) +
+							start.toLocaleTimeString([], { timeStyle: timeStyle, hour12: false }) +
 							' to ' +
-							end.toLocaleTimeString([], { timeStyle: 'short' })
+							end.toLocaleTimeString([], { timeStyle: timeStyle, hour12: false })
 						}`
 					);
 				}

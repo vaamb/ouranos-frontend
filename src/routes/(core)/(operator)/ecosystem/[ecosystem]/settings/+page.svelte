@@ -40,7 +40,11 @@
 	let ecosystem = $derived({ ...$ecosystems[ecosystemUID] });
 
 	// Management crud-related function
-	let ecosystemManagement = $derived({ ...$ecosystemsManagement[ecosystemUID] });
+	let ecosystemManagement = $state({ ...$ecosystemsManagement[ecosystemUID] });
+
+	$effect(() => {
+		ecosystemManagement = { ...$ecosystemsManagement[ecosystemUID] }
+	});
 
 	const managementChoices = [
 		'sensors',

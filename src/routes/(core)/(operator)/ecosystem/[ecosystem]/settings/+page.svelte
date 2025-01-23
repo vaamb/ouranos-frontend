@@ -10,20 +10,28 @@
 	import SlideButton from '$lib/components/SlideButton.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { currentUser, ecosystems, ecosystemsManagement } from '$lib/store.svelte.js';
+	import {
+		currentUser,
+		ecosystems,
+		ecosystemsLightData,
+		ecosystemsManagement,
+		getStoreDataKey
+	} from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 	import {
 		capitalize,
 		computeEcosystemStatusClass,
+		computeLightingHours,
 		formatDateTime,
 		getEcosystemUID,
 		isNumber
 	} from '$lib/utils/functions.js';
 	import { climateParameters, hardwareLevels, hardwareTypes } from '$lib/utils/consts.js';
 	import {
+		crudRequest,
 		fetchEcosystemEnvironmentParameters,
 		fetchEcosystemHardware,
-		crudRequest
+		fetchEcosystemLightData
 	} from '$lib/actions.svelte.js';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -82,6 +90,7 @@
 	);
 
 	onMount(async () => {
+		await fetchEcosystemLightData(ecosystemUID);
 		environmentParameters = await fetchEcosystemEnvironmentParameters(ecosystemUID);
 		hardwareObjects = await fetchEcosystemHardware(ecosystemUID);
 	});
@@ -90,7 +99,7 @@
 <HeaderLine title="{ecosystemName} settings" />
 <h2>Base info</h2>
 <div style="overflow-x: auto">
-	<table class="table-base table-alternate-colors table-narrow" style="padding-bottom: 35px;">
+	<table class="table-base table-spaced table-alternate-colors table-narrow" style="padding-bottom: 35px;">
 		<tbody>
 			<tr>
 				<td>Name</td>
@@ -110,18 +119,6 @@
 			<tr>
 				<td>Last seen</td>
 				<td>{formatDateTime(ecosystem['last_seen'])}</td>
-			</tr>
-			<tr>
-				<td>Lighting method</td>
-				<td>{capitalize(ecosystem['lighting_method'])}</td>
-			</tr>
-			<tr>
-				<td>Day start</td>
-				<td>{ecosystem['day_start']}</td>
-			</tr>
-			<tr>
-				<td>Day end</td>
-				<td>{ecosystem['night_start']}</td>
 			</tr>
 		</tbody>
 		{#if $currentUser.can(permissions.OPERATE)}
@@ -151,24 +148,7 @@
 	<Form
 		data={[
 			{ label: 'Name', key: 'name', value: ecosystem['name'] },
-			{
-				label: 'Lighting method',
-				key: 'lighting_method',
-				value: ecosystem['lighting_method'],
-				selectFrom: ['fixed', 'elongate', 'mimic']
-			},
-			{
-				label: 'Day start',
-				key: 'day_start',
-				type: 'time',
-				value: ecosystem['day_start'],
-			},
-			{
-				label: 'Day end',
-				key: 'night_start',
-				type: 'time',
-				value: ecosystem['night_start'],
-			}
+			{ label: 'Status', key: 'status', value: ecosystem['status'], selectFrom: [true, false] }
 		]}
 		on:confirm={(event) => {
 			const payload = event.detail;
@@ -178,6 +158,109 @@
 		on:cancel={() => modals['base_info'].closeModal()}
 	/>
 </Modal>
+
+{#if $ecosystemsLightData[getStoreDataKey(ecosystemUID)]}
+	{@const lightData = $ecosystemsLightData[getStoreDataKey(ecosystemUID)]}
+	<h2>Nycthemeral cycle info</h2>
+	<div style="overflow-x: auto">
+		<table class="table-base table-spaced table-alternate-colors table-narrow" style="padding-bottom: 35px;">
+			<tbody>
+				<tr>
+					<td>Span method</td>
+					<td>{capitalize(lightData['span'])}</td>
+				</tr>
+				<tr>
+					<td>Span target</td>
+					<td>{lightData['target'] ? capitalize(lightData['target']) : 'No target'}</td>
+				</tr>
+				<tr>
+					<td>Day start</td>
+					<td>{lightData['day']}</td>
+				</tr>
+				<tr>
+					<td>Night start</td>
+					<td>{lightData['night']}</td>
+				</tr>
+				<tr>
+					<td>Lighting method</td>
+					<td>{capitalize(lightData['lighting'])}</td>
+				</tr>
+				<tr>
+					<td>Lighting hours</td>
+					<td>
+						{#each computeLightingHours(lightData) as lightingHours}
+							<p style="margin-bottom: 0">{lightingHours}</p>
+						{/each}
+					</td>
+				</tr>
+			</tbody>
+			{#if $currentUser.can(permissions.OPERATE)}
+				<tbody>
+					<tr>
+						<td colspan="2" style="text-align: center; vertical-align: middle">
+							<button
+								class="text-button"
+								onclick={() => {
+									setCrudData('nycthemeral_info', undefined, undefined);
+								}}
+							>
+								Modify the nycthemeral info
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			{/if}
+		</table>
+	</div>
+	<Modal
+		bind:this={modals['nycthemeral_info']}
+		showModal={crudTable === 'nycthemeral_info'}
+		title="Update {ecosystemName}' nycthemeral info"
+		on:close={resetCrudData}
+	>
+		<Form
+			data={[
+				{
+					label: 'Span method',
+					key: 'span',
+					value: lightData['span'],
+					selectFrom: ['fixed', 'mimic'],
+					disabled: true,
+				},
+				{
+					label: 'Span target',
+					key: 'target',
+					value: lightData['target'],
+					disabled: true,
+				},
+				{
+					label: 'Lighting method',
+					key: 'lighting',
+					value: lightData['lighting'],
+					selectFrom: ['fixed', 'elongate']
+				},
+				{
+					label: 'Day start fallback value',
+					key: 'day',
+					type: 'time',
+					value: lightData['day']
+				},
+				{
+					label: 'Day end fallback value',
+					key: 'night',
+					type: 'time',
+					value: lightData['night']
+				}
+			]}
+			on:confirm={(event) => {
+				const payload = event.detail;
+				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/light`, 'update', payload);
+				modals['nycthemeral_info'].closeModal();
+			}}
+			on:cancel={() => modals['nycthemeral_info'].closeModal()}
+		/>
+	</Modal>
+{/if}
 
 <h2>Managements</h2>
 <div style="overflow-x: auto">

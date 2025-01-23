@@ -254,7 +254,7 @@ socketio.on('historic_sensors_data_update', (data) => {
 	updateStoreData(ecosystemsSensorsDataHistoric, updatedData);
 });
 
-socketio.on('on_light_data', (data) => {
+socketio.on('nycthemeral_info', (data) => {
 	const updatedData = data.reduce((a, v) => ({ ...a, [v['uid']]: v['data'] }), {});
 	updateStoreData(ecosystemsNycthemeralCycle, updatedData);
 });

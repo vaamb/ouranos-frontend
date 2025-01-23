@@ -95,7 +95,7 @@ export const months = [
 ];
 
 export const formatDate = function (date) {
-	if (isDate(date)) {
+	if (isDateObject(date)) {
 		const day = days[date.getDay()];
 		const month = months[date.getMonth()];
 		return ''.concat(day, ' ', date.getDate(), ' ', month);

@@ -15,7 +15,7 @@
 		ecosystems,
 		ecosystemsIds,
 		ecosystemsActuatorsState,
-		ecosystemsLightData,
+		ecosystemsNycthemeralCycle,
 		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsSkeleton,
@@ -46,7 +46,7 @@
 		fetchEcosystemActuatorsState,
 		fetchSensorCurrentData,
 		fetchEcosystemSensorsSkeleton,
-		fetchEcosystemLightData,
+		fetchEcosystemNycthemeralCycleData,
 		fetchServerCurrentData,
 		fetchWeatherForecast
 	} from '$lib/actions.svelte.js';
@@ -334,11 +334,11 @@
 					{/if}
 					{#if light}
 						<BoxItem title="Lighting">
-							{#await fetchEcosystemLightData(uid)}
+							{#await fetchEcosystemNycthemeralCycleData(uid)}
 								<p>Fetching data</p>
 							{:then ecosystemLightData_notUsed}
-								{@const lightData = $ecosystemsLightData[getStoreDataKey(uid)]}
-								{#each computeLightingHours(lightData) as lightingHours}
+								{@const nycthemeralCycle = $ecosystemsNycthemeralCycle[getStoreDataKey(uid)]}
+								{#each computeLightingHours(nycthemeralCycle, 'short') as lightingHours}
 									<p>{lightingHours}</p>
 								{:else}
 									<p>No lighting needed</p>

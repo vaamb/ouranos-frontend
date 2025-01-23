@@ -19,7 +19,7 @@ import {
 	currentUser,
 	ecosystemsActuatorsRecords,
 	ecosystemsActuatorsState,
-	ecosystemsLightData,
+	ecosystemsNycthemeralCycle,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	ecosystemsSensorsSkeleton,
@@ -225,9 +225,9 @@ export const fetchEcosystemsManagement = async function () {
 		});
 };
 
-export const fetchEcosystemLightData = async function (ecosystemUID) {
+export const fetchEcosystemNycthemeralCycleData = async function (ecosystemUID) {
 	const dataKey = getStoreDataKey(ecosystemUID);
-	const storedData = getFreshStoreData(ecosystemsLightData, dataKey);
+	const storedData = getFreshStoreData(ecosystemsNycthemeralCycle, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
 	}
@@ -236,7 +236,7 @@ export const fetchEcosystemLightData = async function (ecosystemUID) {
 		.then((response) => {
 			const data = response.data;
 			delete data['ecosystem_uid'];
-			updateStoreData(ecosystemsLightData, { [dataKey]: data });
+			updateStoreData(ecosystemsNycthemeralCycle, { [dataKey]: data });
 			return data;
 		})
 		.catch(() => {

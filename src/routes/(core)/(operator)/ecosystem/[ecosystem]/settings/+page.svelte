@@ -13,7 +13,7 @@
 	import {
 		currentUser,
 		ecosystems,
-		ecosystemsLightData,
+		ecosystemsNycthemeralCycle,
 		ecosystemsManagement,
 		getStoreDataKey
 	} from '$lib/store.svelte.js';
@@ -31,7 +31,7 @@
 		crudRequest,
 		fetchEcosystemEnvironmentParameters,
 		fetchEcosystemHardware,
-		fetchEcosystemLightData
+		fetchEcosystemNycthemeralCycleData
 	} from '$lib/actions.svelte.js';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -90,7 +90,7 @@
 	);
 
 	onMount(async () => {
-		await fetchEcosystemLightData(ecosystemUID);
+		await fetchEcosystemNycthemeralCycleData(ecosystemUID);
 		environmentParameters = await fetchEcosystemEnvironmentParameters(ecosystemUID);
 		hardwareObjects = await fetchEcosystemHardware(ecosystemUID);
 	});
@@ -159,36 +159,36 @@
 	/>
 </Modal>
 
-{#if $ecosystemsLightData[getStoreDataKey(ecosystemUID)]}
-	{@const lightData = $ecosystemsLightData[getStoreDataKey(ecosystemUID)]}
+{#if $ecosystemsNycthemeralCycle[getStoreDataKey(ecosystemUID)]}
+	{@const nycthemeralCycle = $ecosystemsNycthemeralCycle[getStoreDataKey(ecosystemUID)]}
 	<h2>Nycthemeral cycle info</h2>
 	<div style="overflow-x: auto">
 		<table class="table-base table-spaced table-alternate-colors table-narrow" style="padding-bottom: 35px;">
 			<tbody>
 				<tr>
 					<td>Span method</td>
-					<td>{capitalize(lightData['span'])}</td>
+					<td>{capitalize(nycthemeralCycle['span'])}</td>
 				</tr>
 				<tr>
 					<td>Span target</td>
-					<td>{lightData['target'] ? capitalize(lightData['target']) : 'No target'}</td>
+					<td>{nycthemeralCycle['target'] ? capitalize(nycthemeralCycle['target']) : 'No target'}</td>
 				</tr>
 				<tr>
 					<td>Day start</td>
-					<td>{lightData['day']}</td>
+					<td>{nycthemeralCycle['day']}</td>
 				</tr>
 				<tr>
 					<td>Night start</td>
-					<td>{lightData['night']}</td>
+					<td>{nycthemeralCycle['night']}</td>
 				</tr>
 				<tr>
 					<td>Lighting method</td>
-					<td>{capitalize(lightData['lighting'])}</td>
+					<td>{capitalize(nycthemeralCycle['lighting'])}</td>
 				</tr>
 				<tr>
 					<td>Lighting hours</td>
 					<td>
-						{#each computeLightingHours(lightData) as lightingHours}
+						{#each computeLightingHours(nycthemeralCycle) as lightingHours}
 							<p style="margin-bottom: 0">{lightingHours}</p>
 						{/each}
 					</td>
@@ -223,33 +223,33 @@
 				{
 					label: 'Span method',
 					key: 'span',
-					value: lightData['span'],
+					value: nycthemeralCycle['span'],
 					selectFrom: ['fixed', 'mimic'],
 					disabled: true,
 				},
 				{
 					label: 'Span target',
 					key: 'target',
-					value: lightData['target'],
+					value: nycthemeralCycle['target'],
 					disabled: true,
 				},
 				{
 					label: 'Lighting method',
 					key: 'lighting',
-					value: lightData['lighting'],
+					value: nycthemeralCycle['lighting'],
 					selectFrom: ['fixed', 'elongate']
 				},
 				{
 					label: 'Day start fallback value',
 					key: 'day',
 					type: 'time',
-					value: lightData['day']
+					value: nycthemeralCycle['day']
 				},
 				{
 					label: 'Day end fallback value',
 					key: 'night',
 					type: 'time',
-					value: lightData['night']
+					value: nycthemeralCycle['night']
 				}
 			]}
 			on:confirm={(event) => {

@@ -6,7 +6,7 @@ import {
 	currentUser,
 	ecosystems,
 	ecosystemsActuatorsState,
-	ecosystemsLightData,
+	ecosystemsNycthemeralCycle,
 	ecosystemsManagement,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
@@ -256,10 +256,10 @@ socketio.on('historic_sensors_data_update', (data) => {
 
 socketio.on('on_light_data', (data) => {
 	const updatedData = data.reduce((a, v) => ({ ...a, [v['uid']]: v['data'] }), {});
-	updateStoreData(ecosystemsLightData, updatedData);
+	updateStoreData(ecosystemsNycthemeralCycle, updatedData);
 });
 
-socketio.on('on_management', (data) => {
+socketio.on('management', (data) => {
 	const updatedData = data.reduce((a, v) => ({ ...a, [v['uid']]: v['data'] }), {});
 	updateStoreData(ecosystemsManagement, updatedData);
 });

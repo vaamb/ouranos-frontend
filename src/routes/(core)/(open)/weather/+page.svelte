@@ -34,10 +34,10 @@
 		};
 	};
 
-	const getHourlyDataset = function (weatherHourly, measure) {
+	const getHourlyDataset = function (weatherHourly, measure, timeScale=23) {
 		return {
 			label: capitalize(measure.replace('_', ' ')),
-			data: weatherHourly.slice(0, 23).map((elem) => elem[measure]),
+			data: weatherHourly.slice(0, timeScale).map((elem) => elem[measure]),
 			borderColor: {
 				temperature: colors.red,
 				humidity: colors.blue,
@@ -79,7 +79,9 @@
 			<h1>{capitalize($weatherCurrently['summary'])}</h1>
 			<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
 			<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
-			<!--<p>Precipitation: {$weatherCurrently['precipitation_probability'].toFixed(1)} %</p>-->
+			{#if !isEmpty($weatherHourly)}
+				<p>Precipitation: {$weatherHourly[0]['precipitation_probability'].toFixed(1)} %</p>
+			{/if}
 			<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
 			<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
 		{:else}
@@ -88,14 +90,17 @@
 	</BoxItem>
 	<BoxItem>
 		{#if !isEmpty($weatherHourly)}
-			<div style="display: flex; margin-bottom: 12px">
+			<div style="display: flex; margin-bottom: 6px; flex-flow: row wrap">
 				{#each measures as measure}
 					<button
 						onclick={setcurrentMeasure(measure)}
 						class="text-button"
-						style={measure !== currentMeasure
-							? 'background-color: var(--derived-60)'
-							: 'background-color: var(--main-40)'}
+						style="
+							margin-bottom: 6px;
+							{measure !== currentMeasure
+							? 'background-color: var(--derived-60);'
+							: 'background-color: var(--main-40);'}
+						"
 					>
 						{capitalize(measure).replace('_', ' ')}
 					</button>
@@ -103,8 +108,8 @@
 			</div>
 			<Graph
 				height="200px"
-				datasets={[getHourlyDataset($weatherHourly, currentMeasure)]}
-				labels={$weatherHourly.slice(0, 23).map((elem) => new Date(elem['timestamp']))}
+				datasets={[getHourlyDataset($weatherHourly, currentMeasure, 47)]}
+				labels={$weatherHourly.slice(0, 47).map((elem) => new Date(elem['timestamp']))}
 				suggestedMin={getSuggestedMin(currentMeasure)}
 				suggestedMax={getSuggestedMax(currentMeasure)}
 			/>

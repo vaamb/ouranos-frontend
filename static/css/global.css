@@ -108,7 +108,7 @@ a {
 	margin: 0 15px;
 	text-align: center;
 	border-radius: 7px;
-	font-size: 0.85rem;
+	font-size: 0.95rem;
 	cursor: pointer;
 }
 
@@ -133,6 +133,7 @@ a {
 }
 
 .text {
+	font-family: EB Garamond, serif;
 	max-width: 800px;
 	margin: auto;
 	line-height: 1.5;
@@ -141,7 +142,7 @@ a {
 }
 
 .text p {
-	font-size: 1.06rem;
+	font-size: 1.2rem;
 	margin-bottom: 1rem;
 }
 
@@ -150,7 +151,7 @@ a {
 	/* table-layout: fixed; */
 	width: 100%;
 	border-collapse: collapse;
-	font-family: sans-serif;
+	font-family: Open Sans, sans-serif;
 	box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 	margin-bottom: 1.5rem;
 }

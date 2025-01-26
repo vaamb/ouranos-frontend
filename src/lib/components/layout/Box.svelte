@@ -39,7 +39,7 @@
 <style>
 	h1 {
 		font-size: 1.15rem;
-		font-weight: bold;
+		font-weight: 500;
 		padding: 8px 5px;
 		border-bottom: 2px solid var(--main-80);
 		margin-bottom: 10px;

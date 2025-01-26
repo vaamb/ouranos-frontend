@@ -133,6 +133,7 @@ a {
 }
 
 .text {
+	font-family: EB Garamond, serif;
 	max-width: 800px;
 	margin: auto;
 	line-height: 1.5;
@@ -141,7 +142,7 @@ a {
 }
 
 .text p {
-	font-size: 1.06rem;
+	font-size: 1.2rem;
 	margin-bottom: 1rem;
 }
 

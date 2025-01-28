@@ -1,6 +1,5 @@
 <script>
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
 
 	import Fa from 'svelte-fa';
 
@@ -23,7 +22,6 @@
 		computeEcosystemStatusClass,
 		computeLightingHours,
 		formatDateTime,
-		getEcosystemUID,
 		isNumber
 	} from '$lib/utils/functions.js';
 	import { climateParameters, hardwareLevels, hardwareTypes } from '$lib/utils/consts.js';
@@ -35,8 +33,10 @@
 	} from '$lib/actions.svelte.js';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
-	let ecosystemName = $derived($page['params']['ecosystem']);
-	let ecosystemUID = $derived(getEcosystemUID($ecosystems, ecosystemName));
+	let { data } = $props();
+
+	let ecosystemName = data['ecosystemName'];
+	let ecosystemUID = data['ecosystemUID'];
 	let ecosystem = $derived({ ...$ecosystems[ecosystemUID] });
 
 	// Management crud-related function

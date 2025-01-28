@@ -93,7 +93,7 @@ export const generateListOfMenuItems = function (
 		const ecosystemManagement = ecosystemsManagement[uid];
 		let children = [];
 		if (currentUser.can(permissions.OPERATE)) {
-			children.push(MenuItem('Settings', `/ecosystem/${id['name']}/settings`, faCog));
+			children.push(MenuItem('Settings', `/ecosystem/${id['name_slug']}/settings`, faCog));
 		}
 		for (const menuItemAvailable of ecosystemMenuItemsAvailable) {
 			const management = menuItemAvailable['management'];
@@ -101,7 +101,7 @@ export const generateListOfMenuItems = function (
 				children.push(
 					MenuItem(
 						menuItemAvailable['name'],
-						`/ecosystem/${id['name']}/${menuItemAvailable['path']}`,
+						`/ecosystem/${id['name_slug']}/${menuItemAvailable['path']}`,
 						menuItemAvailable['icon']
 					)
 				);

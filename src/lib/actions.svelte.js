@@ -13,7 +13,7 @@ import {
 	SERVER_STATUS
 } from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
-import { isEmpty } from '$lib/utils/functions.js';
+import { isEmpty, slugify } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
 	currentUser,
@@ -161,17 +161,6 @@ export const logOut = function () {
 };
 
 // Engines and Ecosystems related utility functions
-const formatEngineOrEcosystemData = function (rawData) {
-	rawData.forEach((element) => {
-		element['last_seen'] = new Date(element['last_seen']);
-		element['connected'] = element['connected']
-			? CONNECTION_STATUS.CONNECTED
-			: CONNECTION_STATUS.DISCONNECTED;
-		element['registration_date'] = new Date(element['registration_date']);
-	});
-	return rawData.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
-};
-
 const checkSensorDataRecency = function (sensorData, minuteModulo) {
 	if (!isEmpty(sensorData)) {
 		const timestamp = new Date(sensorData['timestamp']);
@@ -191,7 +180,15 @@ export const fetchEngines = async function () {
 			params: { engines_id: 'recent' }
 		})
 		.then((response) => {
-			return formatEngineOrEcosystemData(response.data);
+			const data = response['data'];
+			data.forEach((element) => {
+				element['last_seen'] = new Date(element['last_seen']);
+				element['connected'] = element['connected']
+					? CONNECTION_STATUS.CONNECTED
+					: CONNECTION_STATUS.DISCONNECTED;
+				element['registration_date'] = new Date(element['registration_date']);
+			});
+			return data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
 		})
 		.catch(() => {
 			return {};
@@ -205,7 +202,16 @@ export const fetchEcosystems = async function () {
 			params: { ecosystems_id: 'recent' }
 		})
 		.then((response) => {
-			return formatEngineOrEcosystemData(response.data);
+			const data = response['data'];
+			data.forEach((element) => {
+				element['last_seen'] = new Date(element['last_seen']);
+				element['connected'] = element['connected']
+					? CONNECTION_STATUS.CONNECTED
+					: CONNECTION_STATUS.DISCONNECTED;
+				element['registration_date'] = new Date(element['registration_date']);
+				element['name_slug'] = slugify(element['name']);
+			});
+			return data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
 		})
 		.catch(() => {
 			return {};

@@ -29,21 +29,12 @@
 	// Fill stores with pre-fetched data
 	let { data, children } = $props();
 
-	const {
-		appMode,
-		enginesValues,
-		ecosystemsManagementValues,
-		ecosystemsValues,
-		serversValues,
-		servicesValues,
-		warningsValues
-	} = data;
-	engines.set(enginesValues);
-	ecosystems.set(ecosystemsValues);
-	ecosystemsManagement.set(ecosystemsManagementValues);
-	servers.set(serversValues);
-	services.set(servicesValues);
-	warnings.set(warningsValues);
+	engines.set(data.engines);
+	ecosystems.set(data.ecosystems);
+	ecosystemsManagement.set(data.ecosystemsManagement);
+	servers.set(data.servers);
+	services.set(data.services);
+	warnings.set(data.warnings);
 
 	const addEcosystemNameToWarnings = function (warnings, ecosystems) {
 		warnings.forEach((warning) => {
@@ -138,7 +129,7 @@
 </Modal>
 
 <Menu items={menuItems} width={menuWidth} />
-<TopBar development={appMode === APP_MODE.development} {menuWidth} />
+<TopBar development={data.appMode === APP_MODE.development} {menuWidth} />
 <div class="main" style="--margin-width:{menuWidth}">
 	{@render children?.()}
 </div>

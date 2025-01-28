@@ -184,15 +184,10 @@ export const computeLightingHours = function (ecosystemLight, timeStyle = 'mediu
 };
 
 export const serviceEnabled = function (services, serviceName) {
-	const service = services.filter((object) => {
+	const service = services.find((object) => {
 		return object.name === serviceName;
 	});
-	const serviceObj = service[0];
-	if (serviceObj) {
-		return serviceObj.status;
-	} else {
-		return false;
-	}
+	return service['status'] ? service['status'] : false;
 };
 
 export const getParamStatus = function (store, ecosystemUID, param) {

@@ -95,11 +95,13 @@
 								actuatorType={actuator}
 								status={$ecosystemsActuatorsState[ecosystemUID][actuator]['status']}
 								mode={$ecosystemsActuatorsState[ecosystemUID][actuator]['mode']}
+								useTimer={true}
 								on:switch={(event) => {
 									updateActuatorMode(
 										ecosystemUID,
 										event['detail']['actuatorType'],
-										event['detail']['mode']
+										event['detail']['mode'],
+										event['detail']['countdown']
 									);
 								}}
 							/>

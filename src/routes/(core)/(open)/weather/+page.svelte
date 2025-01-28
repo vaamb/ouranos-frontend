@@ -1,13 +1,16 @@
 <script>
 	import { onMount } from 'svelte';
 
+	import Fa from 'svelte-fa';
+	import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+
 	import Box from '$lib/components/layout/Box.svelte';
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
 	import Graph from '$lib/components/Graph.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
-	import { fetchWeatherForecast } from '$lib/actions.svelte.js';
+	import { fetchSuntimes, fetchWeatherForecast } from '$lib/actions.svelte.js';
 	import { services, weatherCurrently, weatherDaily, weatherHourly } from '$lib/store.svelte.js';
 	import {
 		capitalize,
@@ -23,6 +26,8 @@
 		if (!timestamp) return '';
 		return 'Last update: ' + formatDateTime(new Date(timestamp));
 	};
+
+	let suntimes = $state([])
 
 	// Hourly forecast switch
 	const measures = ['temperature', 'humidity', 'precipitation_probability'];
@@ -63,7 +68,7 @@
 
 	const getSuggestedMax = function (measure) {
 		return {
-			temperature: 10,
+			temperature: 25,
 			humidity: 100,
 			precipitation_probability: 100
 		}[measure];
@@ -72,6 +77,10 @@
 	onMount(async () => {
 		if (serviceEnabled($services, 'weather')) {
 			await fetchWeatherForecast();
+		}
+
+		if (serviceEnabled($services, 'suntimes')) {
+			suntimes = await fetchSuntimes();
 		}
 	});
 </script>
@@ -90,6 +99,13 @@
 			{/if}
 			<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
 			<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
+			{#if !isEmpty(suntimes)}
+				<div>
+					<Fa icon={faSun} />&nbsp{suntimes[0]['sunrise'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+					&nbsp; - &nbsp;
+					<Fa icon={faMoon} />&nbsp{suntimes[0]['sunset'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+				</div>
+			{/if}
 		{:else}
 			<p>Loading current weather data ...</p>
 		{/if}
@@ -134,6 +150,13 @@
 				<p>Precipitation: {(weather['precipitation_probability']*100).toFixed(1)} %</p>
 				<p>Wind: {weather['wind_speed'].toFixed(1)} km/h</p>
 				<p>Cloud cover: {weather['cloud_cover']} %</p>
+				{#if !isEmpty(suntimes)}
+					<div>
+						<Fa icon={faSun} />&nbsp{suntimes[index]['sunrise'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+						&nbsp; - &nbsp;
+						<Fa icon={faMoon} />&nbsp{suntimes[index]['sunset'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+					</div>
+				{/if}
 			</BoxItem>
 		{/if}
 	{/each}

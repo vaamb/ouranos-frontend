@@ -464,6 +464,27 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 		});
 };
 
+export const fetchSuntimes = async function () {
+	return axios
+		.get(`${API_URL}/app/services/weather/sun_times`)
+		.then((response) => {
+			let data = response['data'];
+			data.forEach((element) => {
+				const datestamp = element['datestamp'];
+				Object.entries(element).forEach(([key, value]) => {
+					if (key !== 'datestamp') {
+						element[key] = new Date(`${datestamp}T${element[key]}`)
+					}
+				})
+				element['datestamp'] = new Date(datestamp);
+			})
+			return data
+		})
+		.catch(() => {
+			return {};
+		});
+}
+
 // Server-related actions
 export const fetchServers = async function (clientSessionCookie, clientUserAgent) {
 	return axios

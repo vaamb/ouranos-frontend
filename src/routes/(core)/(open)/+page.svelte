@@ -2,7 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 
 	import Fa from 'svelte-fa';
-	import { faCircleExclamation, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+	import { faCircleExclamation, faMoon, faSun, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Row from '$lib/components/layout/Row.svelte';
@@ -26,7 +26,8 @@
 		serversIds,
 		services,
 		warnings,
-		weatherCurrently
+		weatherCurrently,
+		weatherHourly
 	} from '$lib/store.svelte.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
@@ -48,6 +49,7 @@
 		fetchEcosystemSensorsSkeleton,
 		fetchEcosystemNycthemeralCycleData,
 		fetchServerCurrentData,
+		fetchSuntimes,
 		fetchWeatherForecast
 	} from '$lib/actions.svelte.js';
 
@@ -143,6 +145,8 @@
 		}
 	};
 
+	let suntimes = $state([]);
+
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
@@ -155,6 +159,10 @@
 		}
 		if (serviceEnabled($services, 'weather')) {
 			await fetchWeatherForecast();
+		}
+
+		if (serviceEnabled($services, 'suntimes')) {
+			suntimes = await fetchSuntimes();
 		}
 
 		if (serviceEnabled($services, 'calendar')) {
@@ -204,9 +212,18 @@
 				<BoxItem title={capitalize($weatherCurrently['summary'])}>
 					<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
 					<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
-					<!--<p>Precipitation: {$weatherCurrently['precipitation_probability'].toFixed(1)} %</p>-->
+					{#if !isEmpty($weatherHourly)}
+					  <p>Precipitation: {($weatherHourly[0]['precipitation_probability']*100).toFixed(1)} %</p>
+					{/if}
 					<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
 					<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
+					{#if !isEmpty(suntimes)}
+						<div>
+							<Fa icon={faSun} />&nbsp{suntimes[0]['sunrise'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+							&nbsp; - &nbsp;
+						  <Fa icon={faMoon} />&nbsp{suntimes[0]['sunset'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+						</div>
+					{/if}
 				</BoxItem>
 			</a>
 		</Box>

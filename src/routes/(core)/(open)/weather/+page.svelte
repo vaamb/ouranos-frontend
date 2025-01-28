@@ -1,13 +1,16 @@
 <script>
 	import { onMount } from 'svelte';
 
+	import Fa from 'svelte-fa';
+	import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+
 	import Box from '$lib/components/layout/Box.svelte';
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
 	import Graph from '$lib/components/Graph.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
-	import { fetchWeatherForecast } from '$lib/actions.svelte.js';
+	import { fetchSuntimes, fetchWeatherForecast } from '$lib/actions.svelte.js';
 	import { services, weatherCurrently, weatherDaily, weatherHourly } from '$lib/store.svelte.js';
 	import {
 		capitalize,
@@ -24,6 +27,8 @@
 		return 'Last update: ' + formatDateTime(new Date(timestamp));
 	};
 
+	let suntimes = $state([])
+
 	// Hourly forecast switch
 	const measures = ['temperature', 'humidity', 'precipitation_probability'];
 	let currentMeasure = $state(measures[0]);
@@ -35,9 +40,15 @@
 	};
 
 	const getHourlyDataset = function (weatherHourly, measure, timeScale=23) {
+		let data;
+		if (measure === 'precipitation_probability') {
+			data = weatherHourly.slice(0, timeScale).map((elem) => elem[measure] * 100)
+		} else {
+			data = weatherHourly.slice(0, timeScale).map((elem) => elem[measure])
+		}
 		return {
 			label: capitalize(measure.replace('_', ' ')),
-			data: weatherHourly.slice(0, timeScale).map((elem) => elem[measure]),
+			data: data,
 			borderColor: {
 				temperature: colors.red,
 				humidity: colors.blue,
@@ -57,7 +68,7 @@
 
 	const getSuggestedMax = function (measure) {
 		return {
-			temperature: 10,
+			temperature: 25,
 			humidity: 100,
 			precipitation_probability: 100
 		}[measure];
@@ -66,6 +77,10 @@
 	onMount(async () => {
 		if (serviceEnabled($services, 'weather')) {
 			await fetchWeatherForecast();
+		}
+
+		if (serviceEnabled($services, 'suntimes')) {
+			suntimes = await fetchSuntimes();
 		}
 	});
 </script>
@@ -80,10 +95,17 @@
 			<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
 			<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
 			{#if !isEmpty($weatherHourly)}
-				<p>Precipitation: {$weatherHourly[0]['precipitation_probability'].toFixed(1)} %</p>
+				<p>Precipitation: {($weatherHourly[0]['precipitation_probability']*100).toFixed(1)} %</p>
 			{/if}
 			<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
 			<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
+			{#if !isEmpty(suntimes)}
+				<div>
+					<Fa icon={faSun} />&nbsp{suntimes[0]['sunrise'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+					&nbsp; - &nbsp;
+					<Fa icon={faMoon} />&nbsp{suntimes[0]['sunset'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+				</div>
+			{/if}
 		{:else}
 			<p>Loading current weather data ...</p>
 		{/if}
@@ -125,9 +147,16 @@
 				<h1>{capitalize(weather['summary'])}</h1>
 				<p>Temperature: {weather['temperature'].toFixed(1)} °C</p>
 				<p>Humidity: {weather['humidity']} %</p>
-				<p>Precipitation: {weather['precipitation_probability']} %</p>
+				<p>Precipitation: {(weather['precipitation_probability']*100).toFixed(1)} %</p>
 				<p>Wind: {weather['wind_speed'].toFixed(1)} km/h</p>
 				<p>Cloud cover: {weather['cloud_cover']} %</p>
+				{#if !isEmpty(suntimes)}
+					<div>
+						<Fa icon={faSun} />&nbsp{suntimes[index]['sunrise'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+						&nbsp; - &nbsp;
+						<Fa icon={faMoon} />&nbsp{suntimes[index]['sunset'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+					</div>
+				{/if}
 			</BoxItem>
 		{/if}
 	{/each}

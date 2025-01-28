@@ -26,7 +26,8 @@
 		serversIds,
 		services,
 		warnings,
-		weatherCurrently
+		weatherCurrently,
+		weatherHourly
 	} from '$lib/store.svelte.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
@@ -204,7 +205,9 @@
 				<BoxItem title={capitalize($weatherCurrently['summary'])}>
 					<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
 					<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
-					<!--<p>Precipitation: {$weatherCurrently['precipitation_probability'].toFixed(1)} %</p>-->
+					{#if !isEmpty($weatherHourly)}
+					  <p>Precipitation: {($weatherHourly[0]['precipitation_probability']*100).toFixed(1)} %</p>
+					{/if}
 					<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
 					<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
 				</BoxItem>

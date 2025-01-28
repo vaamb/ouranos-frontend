@@ -35,9 +35,15 @@
 	};
 
 	const getHourlyDataset = function (weatherHourly, measure, timeScale=23) {
+		let data;
+		if (measure === 'precipitation_probability') {
+			data = weatherHourly.slice(0, timeScale).map((elem) => elem[measure] * 100)
+		} else {
+			data = weatherHourly.slice(0, timeScale).map((elem) => elem[measure])
+		}
 		return {
 			label: capitalize(measure.replace('_', ' ')),
-			data: weatherHourly.slice(0, timeScale).map((elem) => elem[measure]),
+			data: data,
 			borderColor: {
 				temperature: colors.red,
 				humidity: colors.blue,
@@ -80,7 +86,7 @@
 			<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
 			<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
 			{#if !isEmpty($weatherHourly)}
-				<p>Precipitation: {$weatherHourly[0]['precipitation_probability'].toFixed(1)} %</p>
+				<p>Precipitation: {($weatherHourly[0]['precipitation_probability']*100).toFixed(1)} %</p>
 			{/if}
 			<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
 			<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
@@ -125,7 +131,7 @@
 				<h1>{capitalize(weather['summary'])}</h1>
 				<p>Temperature: {weather['temperature'].toFixed(1)} °C</p>
 				<p>Humidity: {weather['humidity']} %</p>
-				<p>Precipitation: {weather['precipitation_probability']} %</p>
+				<p>Precipitation: {(weather['precipitation_probability']*100).toFixed(1)} %</p>
 				<p>Wind: {weather['wind_speed'].toFixed(1)} km/h</p>
 				<p>Cloud cover: {weather['cloud_cover']} %</p>
 			</BoxItem>

@@ -13,7 +13,7 @@ import {
 	SERVER_STATUS
 } from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
-import { isEmpty } from '$lib/utils/functions.js';
+import { isEmpty, slugify } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
 	currentUser,
@@ -209,6 +209,7 @@ export const fetchEcosystems = async function () {
 					? CONNECTION_STATUS.CONNECTED
 					: CONNECTION_STATUS.DISCONNECTED;
 				element['registration_date'] = new Date(element['registration_date']);
+				element['name_slug'] = slugify(element['name']);
 			});
 			return data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
 		})

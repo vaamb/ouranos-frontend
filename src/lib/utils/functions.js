@@ -218,3 +218,9 @@ export const getEcosystemUID = function (ecosystems, ecosystemName) {
 		return Ids.uid;
 	}
 };
+
+export const slugify = function (str) {
+	return str
+		.toLowerCase()
+		.replace(' ', '_');
+};

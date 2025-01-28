@@ -32,7 +32,7 @@ export const weatherDaily = writable([]);
 export const ecosystemsIds = derived(ecosystems, (ecosystems) => {
 	return Object.values(ecosystems)
 		.sort(dynamicSort('name'))
-		.map((obj) => ({ uid: obj['uid'], name: obj['name'] }));
+		.map((obj) => ({ uid: obj['uid'], name: obj['name'], name_slug: obj['name_slug'] }));
 });
 
 export const enginesIds = derived(engines, (engines) => {

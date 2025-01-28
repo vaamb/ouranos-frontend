@@ -15,13 +15,12 @@
 		fetchEcosystemSensorsSkeleton
 	} from '$lib/actions.svelte.js';
 	import {
-		ecosystems,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsDataHistoric,
 		ecosystemsSensorsSkeleton,
 		getStoreDataKey
 	} from '$lib/store.svelte.js';
-	import { capitalize, getEcosystemUID } from '$lib/utils/functions.js';
+	import { capitalize } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
 	const generateTitle = function (level, ecosystemName) {
@@ -32,14 +31,17 @@
 		}
 	};
 
+	let { data } = $props();
+
+	let ecosystemName = data['ecosystemName'];
+	let ecosystemUID = data['ecosystemUID'];
+
 	let sensorsLevel = $derived($page.params.level);
-	let ecosystemName = $derived($page.params.ecosystem);
 	let pageTitle = $derived(generateTitle(sensorsLevel, ecosystemName));
 	let icons = $derived(graphs[sensorsLevel].icons);
 	let colors = $derived(graphs[sensorsLevel].colors);
 	let minValues = $derived(graphs[sensorsLevel].min_values);
 	let maxValues = $derived(graphs[sensorsLevel].max_values);
-	let ecosystemUid = $derived(getEcosystemUID($ecosystems, ecosystemName));
 
 	const fetchSensorData = async function (ecosystemUID, sensorUid, measure) {
 		const current = await fetchSensorCurrentData(ecosystemUID, sensorUid, measure);
@@ -86,12 +88,12 @@
 </script>
 
 <HeaderLine title={pageTitle} />
-{#await fetchEcosystemSensorsSkeleton(ecosystemUid, sensorsLevel) then sensorsSkeleton}
-	{#each $ecosystemsSensorsSkeleton[getStoreDataKey(ecosystemUid, sensorsLevel)] as sensorsBone}
+{#await fetchEcosystemSensorsSkeleton(ecosystemUID, sensorsLevel) then sensorsSkeleton}
+	{#each $ecosystemsSensorsSkeleton[getStoreDataKey(ecosystemUID, sensorsLevel)] as sensorsBone}
 		<h2>{capitalize(sensorsBone.measure.replace('_', ' '))}</h2>
 		{#each sensorsBone.sensors as sensor}
 			<Row>
-				{#await fetchSensorData(ecosystemUid, sensor.uid, sensorsBone.measure) then sensorData_notUsed}
+				{#await fetchSensorData(ecosystemUID, sensor.uid, sensorsBone.measure) then sensorData_notUsed}
 					{@const currentSensorsData =
 						$ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
 					{@const historicSensorsData =

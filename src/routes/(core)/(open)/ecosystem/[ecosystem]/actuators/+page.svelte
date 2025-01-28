@@ -1,6 +1,4 @@
 <script>
-	import { page } from '$app/stores';
-
 	import Box from '$lib/components/layout/Box.svelte';
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
 	import Graph from '$lib/components/Graph.svelte';
@@ -13,18 +11,19 @@
 		updateActuatorMode
 	} from '$lib/actions.svelte.js';
 	import {
-		ecosystems,
 		ecosystemsActuatorsRecords,
 		ecosystemsActuatorsState,
 		getStoreDataKey
 	} from '$lib/store.svelte.js';
 
 	import { actuatorTypes } from '$lib/utils/consts.js';
-	import { capitalize, getEcosystemUID } from '$lib/utils/functions.js';
+	import { capitalize } from '$lib/utils/functions.js';
 	import { colors } from '$lib/utils/styling.js';
 
-	let ecosystemName = $derived($page['params']['ecosystem']);
-	let ecosystemUID = $derived(getEcosystemUID($ecosystems, ecosystemName));
+	let { data } = $props();
+
+	let ecosystemName = data['ecosystemName'];
+	let ecosystemUID = data['ecosystemUID'];
 
 	const hasBeenActive = function (ecosystemsActuatorsRecords) {
 		const active = (element) => element[1];

@@ -1,6 +1,5 @@
 <script>
 	import { onDestroy, onMount } from 'svelte';
-	import { page } from '$app/stores';
 
 	import Box from '$lib/components/layout/Box.svelte';
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
@@ -9,12 +8,13 @@
 
 	import { fetchCameraPicturesInfo } from '$lib/actions.svelte.js';
 	import { joinRoom, leaveRoom, socketio } from '$lib/socketio.svelte.js';
-	import { ecosystems } from '$lib/store.svelte.js';
 	import { STATIC_URL } from '$lib/utils/consts.js';
-	import { capitalize, dynamicSort, getEcosystemUID } from '$lib/utils/functions.js';
+	import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 
-	let ecosystemName = $derived($page['params']['ecosystem']);
-	let ecosystemUID = $derived(getEcosystemUID($ecosystems, ecosystemName));
+	let { data } = $props();
+
+	let ecosystemName = data['ecosystemName'];
+	let ecosystemUID = data['ecosystemUID'];
 
 	let images = $state({});
 	let cameraPicturesInfo = $state({});

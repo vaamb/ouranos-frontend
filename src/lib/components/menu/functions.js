@@ -114,7 +114,9 @@ export const generateListOfMenuItems = function (
 	}
 
 	if (currentUser.can(permissions.ADMIN)) {
-		let systemMenus = [];
+		let systemMenus = [
+			MenuItem('Services', '/admin/services/settings', undefined)
+		];
 		for (const id of systemsIds) {
 			const uid = id['uid'];
 			const children = [

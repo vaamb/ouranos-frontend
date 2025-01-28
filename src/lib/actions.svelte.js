@@ -556,14 +556,31 @@ export const fetchServerHistoricData = async function (serverUid) {
 		});
 };
 
-export const fetchServices = async function () {
+export const fetchServices = async function (local = true) {
+	const URL = local ? LOCAL_API_URL : API_URL;
 	return axios
-		.get(`${LOCAL_API_URL}/app/services`)
+		.get(`${URL}/app/services`)
 		.then((response) => {
 			return response.data;
 		})
 		.catch(() => {
 			return [];
+		});
+};
+
+export const updateService = async function (serviceName, status) {
+	return axios(`${API_URL}/app/services/u/${serviceName}`, {
+		method: 'put',
+		withCredentials: true,
+		data: { status: status }
+	})
+		.then((response) => {
+			const msgs = get(flashMessage);
+			msgs.push(Message(response.data.msg, null, 1500));
+			flashMessage.set(msgs);
+		})
+		.catch((error) => {
+			setFlashMsgError(error);
 		});
 };
 

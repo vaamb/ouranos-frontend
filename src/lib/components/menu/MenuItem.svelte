@@ -40,6 +40,7 @@
 				{/if}
 			</div>
 			<div class="item-name">{item.name}</div>
+			<div class="right-ico"></div>
 		</a>
 	</li>
 {:else}
@@ -57,13 +58,22 @@
 			<ul transition:animate={{ anyItemClicked: anyItemClicked }}>
 				{#each item.children as child, index}
 					{#if !child.children || child.children.length === 0}
-						<a href={child.path} class="menu-item" class:active={$page.url.pathname === child.path}>
+						<a href={child.path} class="menu-item menu-sub-item" class:active={$page.url.pathname === child.path}>
 							<div class="left-ico">
-								{#if child.icon !== undefined}
+								{#if child.icon !== undefined && child.name !== undefined}
 									<Fa icon={child.icon} />
 								{/if}
 							</div>
-							<div class="item-name">{child.name}</div>
+							<div class="item-name">
+								{#if child.name !== undefined}
+									{child.name}
+								{:else if child.icon !== undefined}
+									<div style="margin: auto">
+										<Fa icon={child.icon} />
+									</div>
+								{/if}
+							</div>
+							<div class="right-ico"></div>
 						</a>
 					{:else}
 						<li>
@@ -86,15 +96,24 @@
 								{#each child.children as grandchild}
 									<a
 										href={grandchild.path}
-										class="menu-item"
+										class="menu-item menu-sub-item item-name"
 										class:active={$page.url.pathname === grandchild.path}
 									>
 										<div class="left-ico">
-											{#if grandchild.icon !== undefined}
+											{#if grandchild.icon !== undefined && grandchild.name !== undefined}
 												<Fa icon={grandchild.icon} />
 											{/if}
 										</div>
-										<div class="item-name">{grandchild.name}</div>
+										<div class="item-name">
+											{#if grandchild.name !== undefined}
+												{grandchild.name}
+											{:else if grandchild.icon !== undefined}
+												<div style="margin: auto">
+													<Fa icon={grandchild.icon} />
+												</div>
+											{/if}
+										</div>
+										<div class="right-ico"></div>
 									</a>
 								{/each}
 							</ul>

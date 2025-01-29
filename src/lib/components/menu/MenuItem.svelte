@@ -40,6 +40,7 @@
 				{/if}
 			</div>
 			<div class="item-name">{item.name}</div>
+			<div class="right-ico"></div>
 		</a>
 	</li>
 {:else}
@@ -57,13 +58,22 @@
 			<ul transition:animate={{ anyItemClicked: anyItemClicked }}>
 				{#each item.children as child, index}
 					{#if !child.children || child.children.length === 0}
-						<a href={child.path} class="menu-item" class:active={$page.url.pathname === child.path}>
+						<a href={child.path} class="menu-item menu-sub-item" class:active={$page.url.pathname === child.path}>
 							<div class="left-ico">
-								{#if child.icon !== undefined}
+								{#if child.icon !== undefined && child.name !== undefined}
 									<Fa icon={child.icon} />
 								{/if}
 							</div>
-							<div class="item-name">{child.name}</div>
+							<div class="item-name">
+								{#if child.name !== undefined}
+									{child.name}
+								{:else if child.icon !== undefined}
+									<div style="margin: auto">
+										<Fa icon={child.icon} />
+									</div>
+								{/if}
+							</div>
+							<div class="right-ico"></div>
 						</a>
 					{:else}
 						<li>
@@ -86,15 +96,24 @@
 								{#each child.children as grandchild}
 									<a
 										href={grandchild.path}
-										class="menu-item"
+										class="menu-item menu-sub-item item-name"
 										class:active={$page.url.pathname === grandchild.path}
 									>
 										<div class="left-ico">
-											{#if grandchild.icon !== undefined}
+											{#if grandchild.icon !== undefined && grandchild.name !== undefined}
 												<Fa icon={grandchild.icon} />
 											{/if}
 										</div>
-										<div class="item-name">{grandchild.name}</div>
+										<div class="item-name">
+											{#if grandchild.name !== undefined}
+												{grandchild.name}
+											{:else if grandchild.icon !== undefined}
+												<div style="margin: auto">
+													<Fa icon={grandchild.icon} />
+												</div>
+											{/if}
+										</div>
+										<div class="right-ico"></div>
 									</a>
 								{/each}
 							</ul>
@@ -124,44 +143,47 @@
 	ul a {
 		background: var(--gray-65);
 		color: var(--gray-90);
-		padding: 9px 15px;
 	}
 
 	ul a.active {
 		color: var(--derived-40);
 	}
 
+	button {
+		width: 100%;
+	}
+
 	.menu-item {
 		cursor: pointer;
 		display: flex;
-		width: 100%;
-		padding: 12px 15px;
+		padding: 11px 15px;
 		border-bottom: thin solid var(--main-95);
-		font-size: 0.84rem;
+		font-size: 0.82rem;
 		line-height: 24px;
 		z-index: 50;
 	}
 
 	.menu-sub-item {
-		background-color: var(--green);
 		color: var(--main-95);
 		padding: 9px 15px;
 	}
 
 	.item-name {
-		margin-right: auto;
+		width: 100%;
+		display: flex;
+		text-align: left;
 	}
 
 	.left-ico {
-		width: 18px;
+		width: 25px;
 		text-align: center;
-		margin: auto 18px auto 0;
+		margin: auto 14px auto 0;
 	}
 
 	.right-ico {
-		float: right;
-		line-height: 25px;
-		margin: auto 0 auto;
+		width: 25px;
+		line-height: 24px;
+		margin: auto 0 auto 14px;
 	}
 
 	.rotated {

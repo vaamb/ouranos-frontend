@@ -151,19 +151,21 @@
 	.user-box {
 		height: 56px;
 		margin-top: 5px;
-		margin-bottom: 15px;
-		display: none;
+		margin-bottom: 10px;
+		display: flex;
 	}
 
 	.avatar {
 		width: 50px;
 		height: 50px;
+		margin: auto;
 		border-radius: 50%;
 		border: 3px solid var(--main-95);
 	}
 
 	.welcome {
-		margin-left: 10px;
+		height: 46px;
+		margin: auto 0 auto 10px;
 		display: flex;
 		flex-direction: column;
 		padding: 6px 0 6px 0;

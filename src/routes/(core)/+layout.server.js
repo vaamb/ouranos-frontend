@@ -4,7 +4,8 @@ import {
 	fetchEngines,
 	fetchServers,
 	fetchServices,
-	fetchWarnings
+	fetchWarnings,
+	fetchWikiTopics
 } from '$lib/actions.svelte.js';
 import { User } from '$lib/utils/factories.js';
 
@@ -21,6 +22,7 @@ export async function load({ cookies, parent, request }) {
 		engines: await fetchEngines(),
 		services: await fetchServices(),
 		servers: currentUser.isAuthenticated ? await fetchServers(clientSessionCookie, clientUserAgent) : {},
-		warnings: currentUser.isAuthenticated ? await fetchWarnings(clientSessionCookie, clientUserAgent) : []
+		warnings: currentUser.isAuthenticated ? await fetchWarnings(clientSessionCookie, clientUserAgent) : [],
+		wikiTopics: await fetchWikiTopics()
 	};
 }

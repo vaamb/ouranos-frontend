@@ -27,6 +27,7 @@ export const rawWarnings = writable([]);
 export const weatherCurrently = writable({});
 export const weatherHourly = writable([]);
 export const weatherDaily = writable([]);
+export const wikiTopics = writable([]);
 
 // Derived stores
 export const ecosystemsIds = derived(ecosystems, (ecosystems) => {

@@ -630,6 +630,17 @@ export const fetchCalendarEvents = async function (startTime=undefined, endTime=
 		});
 };
 
+export const fetchWikiTopics = async function () {
+	return axios
+		.get(`${LOCAL_API_URL}/app/services/wiki/topics`)
+		.then((response) => {
+			return response.data;
+		})
+		.catch(() => {
+			return [];
+		});
+}
+
 export const fetchUserDescription = async function (username) {
 	return axios
 		.get(`${LOCAL_API_URL}/user/u/${username}`, {

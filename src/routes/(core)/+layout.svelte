@@ -19,10 +19,10 @@
 		flashMessage,
 		pingServerLastSeen,
 		pingServerStatus,
+		rawWarnings,
 		servers,
 		serversIds,
-		services,
-		warnings
+		services
 	} from '$lib/store.svelte.js';
 	import { APP_MODE } from '$lib/utils/consts.js';
 
@@ -34,17 +34,7 @@
 	ecosystemsManagement.set(data.ecosystemsManagement);
 	servers.set(data.servers);
 	services.set(data.services);
-	warnings.set(data.warnings);
-
-	const addEcosystemNameToWarnings = function (warnings, ecosystems) {
-		warnings.forEach((warning) => {
-			if (ecosystems[warning['created_by']]) {
-				warning['created_by'] = ecosystems[warning['created_by']]['name'];
-			}
-		});
-		return warnings;
-	};
-	addEcosystemNameToWarnings($warnings, $ecosystems);
+	rawWarnings.set(data.warnings);
 
 	// Menu-related parameters
 	let menuWidth = 210;

@@ -23,7 +23,7 @@ export const pingServerStatus = writable(CONNECTION_STATUS.CONNECTED);
 export const pingServerLastSeen = writable(new Date(0));
 export const pingServerLatency = writable(null);
 export const services = writable([]);
-export const warnings = writable([]);
+export const rawWarnings = writable([]);
 export const weatherCurrently = writable({});
 export const weatherHourly = writable([]);
 export const weatherDaily = writable([]);
@@ -45,6 +45,15 @@ export const serversIds = derived(servers, (servers) => {
 	return Object.values(servers)
 		.sort(dynamicSort('uid'))
 		.map((obj) => ({ uid: obj['uid'], name: capitalize(obj['uid'].replace('_', ' ')) }));
+});
+
+export const warnings = derived([rawWarnings, ecosystems], ([rawWarnings, ecosystems]) => {
+	rawWarnings.forEach((warning) => {
+		if (ecosystems[warning['created_by']]) {
+			warning['created_by'] = ecosystems[warning['created_by']]['name'];
+		}
+	});
+	return rawWarnings;
 });
 
 // Store-related utility functions

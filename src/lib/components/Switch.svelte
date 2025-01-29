@@ -25,6 +25,7 @@
 
 	const emitEvent = function (actuatorMode) {
 		dispatch('switch', { actuatorType: actuatorType, mode: actuatorMode, countdown: seconds });
+		countdown = '00:00:00';
 	};
 </script>
 

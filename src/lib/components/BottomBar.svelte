@@ -3,7 +3,6 @@
 
 	import { ecosystems, engines, pingServerStatus } from '$lib/store.svelte.js';
 	import { CONNECTION_STATUS } from '$lib/utils/consts.js';
-	import { getEcosystemUID } from '$lib/utils/functions.js';
 
 	let { menuWidth = 210 } = $props();
 
@@ -18,9 +17,12 @@
 	// Page type
 	const computePageType = function (url) {
 		if (url.includes('/ecosystem/')) {
+			const ecosystem = Object.values($ecosystems).find((ecosystem) => {
+				return ecosystem.name_slug === $page.params['ecosystem'];
+			})
 			return {
 				pageType: PAGE_TYPE.ECOSYSTEM,
-				ecosystemOrEngineUID: getEcosystemUID($ecosystems, $page.params['ecosystem'])
+				ecosystemOrEngineUID: ecosystem ? ecosystem.uid : undefined
 			};
 		} else if (url.includes('/engine/')) {
 			return {

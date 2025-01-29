@@ -205,15 +205,6 @@ export const setCookie = function (name, value, expDays = 90) {
 	document.cookie = name + '=' + value + '; ' + expires + '; path=/;SameSite=Lax';
 };
 
-export const getEcosystemUID = function (ecosystems, ecosystemName) {
-	const Ids = Object.values(ecosystems).find((id) => {
-		return id.name === ecosystemName;
-	});
-	if (!isEmpty(Ids)) {
-		return Ids.uid;
-	}
-};
-
 export const slugify = function (str) {
 	return str
 		.toLowerCase()

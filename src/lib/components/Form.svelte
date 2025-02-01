@@ -10,12 +10,12 @@
 
 	let { data } = $props();
 	// [{
-	//   label: "The input", key: "the_input", value: "the value", hint: String
-	//   type: undefined | String, min: undefined | Number, max: undefined | Number, step: undefined | Number,
+	//   label: "The input", key: "the_input", value: "the value",
 	//   serializer: undefined | function(value), deserializer: undefined | function(value),
-	//   pattern: undefined | regex, selectFrom: [{ label: "The input", value: "the_value" }]
+	//   selectFrom: [{ label: "The input", value: "the_value" }]
 	//   validate: undefined | function(value) { return value === "validated" },
 	//   required: true
+	//   all remaining input parameters
 	// }]
 
 	const isNotFalse = function(obj) {
@@ -49,6 +49,7 @@
 						};
 			rv[row['key']] = {
 				value: row['value'] !== undefined ? serializer(row['value']) : '',
+				files: undefined,
 				validate: row['validate'] !== undefined ? row['validate'] : defaultValidator,
 				deserializer: deserializer
 			};
@@ -100,21 +101,14 @@
 					{#if isEmpty(row['selectFrom'])}
 						<input
 							id={row['key']}
-							type={row['type'] !== undefined ? row['type'] : null}
 							bind:value={values[row['key']]['value']}
-							min={row['min'] !== undefined ? row['min'] : null}
-							max={row['max'] !== undefined ? row['max'] : null}
-							step={row['step'] !== undefined ? row['step'] : null}
-							pattern={row['pattern'] !== undefined ? row['pattern'] : null}
-							disabled={row['disabled']}
-							placeholder={row['hint'] ? row['hint'] : null}
+							{...row}
 						/>
 					{:else}
 						<select
 							id={row['key']}
 							bind:value={values[row['key']]['value']}
-							disabled={row['disabled']}
-							title={row['hint'] ? row['hint'] : null}
+							{...row}
 						>
 							{#if !row['value']}
 								<option disabled value="">Select one</option>

@@ -15,7 +15,12 @@
 	//   serializer: undefined | function(value), deserializer: undefined | function(value),
 	//   pattern: undefined | regex, selectFrom: [{ label: "The input", value: "the_value" }]
 	//   validate: undefined | function(value) { return value === "validated" },
+	//   required: true
 	// }]
+
+	const isNotFalse = function(obj) {
+		return obj === undefined ? true : obj
+	};
 
 	const notEmptyValue = function (value) {
 		return value !== '';
@@ -30,6 +35,12 @@
 					: (value) => {
 							return value;
 						};
+			const defaultValidator =
+				isNotFalse(row['required'])
+					? notEmptyValue
+					: (value) => {
+						return true;
+					}
 			const deserializer =
 				row['deserializer'] !== undefined
 					? row['deserializer']
@@ -38,7 +49,7 @@
 						};
 			rv[row['key']] = {
 				value: row['value'] !== undefined ? serializer(row['value']) : '',
-				validate: row['validate'] !== undefined ? row['validate'] : notEmptyValue,
+				validate: row['validate'] !== undefined ? row['validate'] : defaultValidator,
 				deserializer: deserializer
 			};
 		}
@@ -68,7 +79,10 @@
 	const confirm = function () {
 		const payload = {};
 		for (const [key, obj] of Object.entries(values)) {
-			payload[key] = obj['deserializer'](obj['value']);
+			const value = obj['deserializer'](obj['value']);
+			if (value !== '') {
+				payload[key] = value;
+			}
 		}
 		dispatch('confirm', payload);
 	};
@@ -120,7 +134,7 @@
 					{/if}
 				</td>
 				<td>
-					{#if values[row['key']] !== ''}
+					{#if isNotFalse(row['required'])}
 						&nbsp;
 						<Fa
 							icon={faCircle}

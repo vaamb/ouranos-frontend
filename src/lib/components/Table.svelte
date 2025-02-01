@@ -4,9 +4,10 @@
 	import Fa from 'svelte-fa';
 	import {
 		faCircle,
-		faTrashCan,
+		faLink,
+		faPenToSquare,
 		faSquarePlus,
-		faPenToSquare
+		faTrashCan
 	} from '@fortawesome/free-solid-svg-icons';
 
 	import { permissions } from '$lib/utils/consts.js';
@@ -15,7 +16,11 @@
 
 	let {
 		tableID,
-		columns = [], // [{label: "My column", key: "data_key", isTime: false, isStatus: false, serializer: undefined | function(value)}]
+		columns = [],
+		// [{
+		//   label: "My column", key: "data_key", isStatus: false, isLink: false,
+		//   serializer: undefined | function(value)
+		// }]
 		data = [], // [{data_key: data1}, {data_key: data2}]
 		editable = false,
 		crudOptions = ['create', 'update', 'delete']
@@ -61,13 +66,17 @@
 			{#each data as row, rowIndex}
 				<tr>
 					{#each columns as column}
+						{@const serializer = column['serializer'] ? column['serializer'] : (value) => value}
+						{@const value = serializer(row[column.key])}
 						<td>
 							{#if column['isStatus'] === true}
-								<Fa icon={faCircle} class={getStatusClass(row[column.key])} />
-							{:else if column['serializer'] !== undefined}
-								{column['serializer'](row[column.key])}
+								<Fa icon={faCircle} class={getStatusClass(value)} />
+							{:else if column['isLink'] === true}
+								<a href={value}>
+									<Fa icon={faLink} />
+								</a>
 							{:else}
-								{row[column.key]}
+								{value}
 							{/if}
 						</td>
 					{/each}

@@ -641,6 +641,17 @@ export const fetchWikiTopics = async function () {
 		});
 }
 
+export const fetchWikiArticles = async function (topic_name) {
+	return axios
+		.get(`${LOCAL_API_URL}/app/services/wiki/topics/u/${topic_name}/articles`)
+		.then((response) => {
+			return response.data;
+		})
+		.catch(() => {
+			return [];
+		});
+}
+
 export const fetchUserDescription = async function (username) {
 	return axios
 		.get(`${LOCAL_API_URL}/user/u/${username}`, {

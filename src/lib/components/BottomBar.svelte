@@ -3,6 +3,7 @@
 
 	import { ecosystems, engines, pingServerStatus } from '$lib/store.svelte.js';
 	import { CONNECTION_STATUS } from '$lib/utils/consts.js';
+	import { slugify } from '$lib/utils/functions.js';
 
 	let { menuWidth = 210 } = $props();
 
@@ -18,7 +19,7 @@
 	const computePageType = function (url) {
 		if (url.includes('/ecosystem/')) {
 			const ecosystem = Object.values($ecosystems).find((ecosystem) => {
-				return ecosystem.name_slug === $page.params['ecosystem'];
+				return slugify(ecosystem['name']) === $page.params['ecosystem'];
 			})
 			return {
 				pageType: PAGE_TYPE.ECOSYSTEM,

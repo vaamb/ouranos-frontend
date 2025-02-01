@@ -10,7 +10,7 @@
 
 	let { data } = $props();
 	// [{
-	//   label: "The input", key: "the_input", value: "the value",
+	//   label: "The input", key: "the_input", value: "the value"
 	//   serializer: undefined | function(value), deserializer: undefined | function(value),
 	//   selectFrom: [{ label: "The input", value: "the_value" }]
 	//   validate: undefined | function(value) { return value === "validated" },
@@ -18,8 +18,8 @@
 	//   all remaining input parameters
 	// }]
 
-	const isNotFalse = function(obj) {
-		return obj === undefined ? true : obj
+	const isNotFalse = function (obj) {
+		return obj === undefined ? true : obj;
 	};
 
 	const notEmptyValue = function (value) {
@@ -39,8 +39,8 @@
 				isNotFalse(row['required'])
 					? notEmptyValue
 					: (value) => {
-						return true;
-					}
+							return true;
+						};
 			const deserializer =
 				row['deserializer'] !== undefined
 					? row['deserializer']

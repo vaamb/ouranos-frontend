@@ -209,7 +209,6 @@ export const fetchEcosystems = async function () {
 					? CONNECTION_STATUS.CONNECTED
 					: CONNECTION_STATUS.DISCONNECTED;
 				element['registration_date'] = new Date(element['registration_date']);
-				element['name_slug'] = slugify(element['name']);
 			});
 			return data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
 		})

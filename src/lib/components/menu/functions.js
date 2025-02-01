@@ -14,7 +14,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { permissions } from '$lib/utils/consts.js';
-import { serviceEnabled } from '$lib/utils/functions.js';
+import { serviceEnabled, slugify } from '$lib/utils/functions.js';
 
 const MenuItem = function (name, path, icon = undefined, children = [], color = undefined) {
 	return {
@@ -93,7 +93,7 @@ export const generateListOfMenuItems = function (
 		const ecosystemManagement = ecosystemsManagement[uid];
 		let children = [];
 		if (currentUser.can(permissions.OPERATE)) {
-			children.push(MenuItem('Settings', `/ecosystem/${id['name_slug']}/settings`, faCog));
+			children.push(MenuItem('Settings', `/ecosystem/${slugify(id['name'])}/settings`, faCog));
 		}
 		for (const menuItemAvailable of ecosystemMenuItemsAvailable) {
 			const management = menuItemAvailable['management'];
@@ -101,7 +101,7 @@ export const generateListOfMenuItems = function (
 				children.push(
 					MenuItem(
 						menuItemAvailable['name'],
-						`/ecosystem/${id['name_slug']}/${menuItemAvailable['path']}`,
+						`/ecosystem/${slugify(id['name'])}/${menuItemAvailable['path']}`,
 						menuItemAvailable['icon']
 					)
 				);

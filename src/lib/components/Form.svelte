@@ -15,6 +15,7 @@
 	//   serializer: undefined | function(value), deserializer: undefined | function(value),
 	//   pattern: undefined | regex, selectFrom: [{ label: "The input", value: "the_value" }]
 	//   validate: undefined | function(value) { return value === "validated" },
+	//   required: true
 	// }]
 
 	const notEmptyValue = function (value) {
@@ -72,6 +73,10 @@
 		}
 		dispatch('confirm', payload);
 	};
+
+	const isNotFalse = function(obj) {
+		return obj === undefined ? true : obj
+	};
 </script>
 
 <table style="display: table">
@@ -120,7 +125,7 @@
 					{/if}
 				</td>
 				<td>
-					{#if values[row['key']] !== ''}
+					{#if isNotFalse(row['required'])}
 						&nbsp;
 						<Fa
 							icon={faCircle}

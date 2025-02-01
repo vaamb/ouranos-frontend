@@ -48,7 +48,8 @@
 			$ecosystemsManagement,
 			$enginesIds,
 			$services,
-			$serversIds
+			$serversIds,
+			$wikiTopics
 		)
 	);
 

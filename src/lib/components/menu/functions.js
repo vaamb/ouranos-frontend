@@ -1,4 +1,5 @@
 import {
+	faBook,
 	faCalendarDay,
 	faCloud,
 	faCog,
@@ -14,7 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { permissions } from '$lib/utils/consts.js';
-import { serviceEnabled, slugify } from '$lib/utils/functions.js';
+import { capitalize, serviceEnabled, slugify } from '$lib/utils/functions.js';
 
 const MenuItem = function (name, path, icon = undefined, children = [], color = undefined) {
 	return {
@@ -32,7 +33,8 @@ export const generateListOfMenuItems = function (
 	ecosystemsManagement,
 	enginesIds,
 	services,
-	systemsIds
+	systemsIds,
+	wikiTopics
 ) {
 	let menuItems = [MenuItem('Home', '/', faHome)];
 
@@ -125,6 +127,18 @@ export const generateListOfMenuItems = function (
 			systemMenus.push(MenuItem(id['name'], '#', undefined, children, 'var(--derived-50)'));
 		}
 		menuItems.push(MenuItem('Systems', '#', faDatabase, systemMenus));
+	}
+
+	if (serviceEnabled(services, 'wiki')) {
+		let wikiMenus = [];
+
+		wikiMenus.push(MenuItem("Index", '/wiki'));
+
+		for (const topic of wikiTopics) {
+			wikiMenus.push(MenuItem(capitalize(topic.name), `/wiki/u/${slugify(topic.name)}`));
+		}
+
+		menuItems.push(MenuItem('Wiki', '#', faBook, wikiMenus));
 	}
 	return menuItems;
 };

@@ -43,7 +43,7 @@
 	let ecosystemManagement = $state({ ...$ecosystemsManagement[ecosystemUID] });
 
 	$effect(() => {
-		ecosystemManagement = { ...$ecosystemsManagement[ecosystemUID] }
+		ecosystemManagement = { ...$ecosystemsManagement[ecosystemUID] };
 	});
 
 	const managementChoices = [
@@ -103,7 +103,10 @@
 <HeaderLine title="{ecosystemName} settings" />
 <h2>Base info</h2>
 <div style="overflow-x: auto">
-	<table class="table-base table-spaced table-alternate-colors table-narrow" style="padding-bottom: 35px;">
+	<table
+		class="table-base table-spaced table-alternate-colors table-narrow"
+		style="padding-bottom: 35px;"
+	>
 		<tbody>
 			<tr>
 				<td>Name</td>
@@ -167,7 +170,10 @@
 	{@const nycthemeralCycle = $ecosystemsNycthemeralCycle[getStoreDataKey(ecosystemUID)]}
 	<h2>Nycthemeral cycle info</h2>
 	<div style="overflow-x: auto">
-		<table class="table-base table-spaced table-alternate-colors table-narrow" style="padding-bottom: 35px;">
+		<table
+			class="table-base table-spaced table-alternate-colors table-narrow"
+			style="padding-bottom: 35px;"
+		>
 			<tbody>
 				<tr>
 					<td>Span method</td>
@@ -175,7 +181,9 @@
 				</tr>
 				<tr>
 					<td>Span target</td>
-					<td>{nycthemeralCycle['target'] ? capitalize(nycthemeralCycle['target']) : 'No target'}</td>
+					<td
+						>{nycthemeralCycle['target'] ? capitalize(nycthemeralCycle['target']) : 'No target'}</td
+					>
 				</tr>
 				<tr>
 					<td>Day start</td>
@@ -229,13 +237,13 @@
 					key: 'span',
 					value: nycthemeralCycle['span'],
 					selectFrom: ['fixed', 'mimic'],
-					disabled: true,
+					disabled: true
 				},
 				{
 					label: 'Span target',
 					key: 'target',
 					value: nycthemeralCycle['target'],
-					disabled: true,
+					disabled: true
 				},
 				{
 					label: 'Lighting method',
@@ -324,7 +332,8 @@
 			{ label: 'Parameter', key: 'parameter', serializer: (value) => capitalize(value) },
 			{ label: 'Day', key: 'day', serializer: (value) => value.toFixed(1) },
 			{ label: 'Night', key: 'night', serializer: (value) => value.toFixed(1) },
-			{ label: 'Hysteresis', key: 'hysteresis', serializer: (value) => value.toFixed(1) }
+			{ label: 'Hysteresis', key: 'hysteresis', serializer: (value) => value.toFixed(1) },
+			{ label: 'Alarm', key: 'alarm' }
 		]}
 		data={environmentParameters}
 		editable={true}
@@ -343,7 +352,8 @@
 				{ label: 'Parameter', key: 'parameter', selectFrom: climateParameters },
 				{ label: 'Day', key: 'day', type: 'number', step: '0.1' },
 				{ label: 'Night', key: 'night', type: 'number', step: '0.1' },
-				{ label: 'Hysteresis', key: 'hysteresis', type: 'number', min: '0', step: '0.1' }
+				{ label: 'Hysteresis', key: 'hysteresis', type: 'number', min: '0', step: '0.1' },
+				{ label: 'Alarm', key: 'alarm', type: 'number', min: '0', step: '0.1', required: false }
 			]}
 			on:confirm={(event) => {
 				const payload = event.detail;
@@ -373,16 +383,14 @@
 					key: 'day',
 					type: 'number',
 					step: '0.1',
-					value: environmentParameter['day'],
-					validate: isNumber
+					value: environmentParameter['day']
 				},
 				{
 					label: 'Night',
 					key: 'night',
 					type: 'number',
 					step: '0.1',
-					value: environmentParameter['night'],
-					validate: isNumber
+					value: environmentParameter['night']
 				},
 				{
 					label: 'Hysteresis',
@@ -390,8 +398,15 @@
 					type: 'number',
 					min: '0',
 					step: '0.1',
-					value: environmentParameter['hysteresis'],
-					validate: isNumber
+					value: environmentParameter['hysteresis']
+				},
+				{
+					label: 'Alarm',
+					key: 'alarm',
+					type: 'number',
+					min: '0',
+					step: '0.1',
+					value: environmentParameter['alarm']
 				}
 			]}
 			on:confirm={(event) => {
@@ -436,7 +451,15 @@
 			{ label: 'Type', key: 'type', serializer: (value) => capitalize(value) },
 			{ label: 'Model', key: 'model' },
 			{ label: 'Address', key: 'address' },
-			{ label: 'Last log entry', key: 'last_log', serializer: formatDateTime }
+			{
+				label: 'Last log entry',
+				key: 'last_log',
+				serializer: (value) => {
+					if (!value) return '';
+					const date = new Date(value);
+					return formatDateTime(date);
+				}
+			}
 		]}
 		data={hardwareObjects}
 		editable={true}

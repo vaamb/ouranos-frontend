@@ -11,11 +11,7 @@
 
 	import { currentUser, ecosystems, engines } from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
-	import {
-		formatDateTime,
-		getStatusClass,
-		isEmpty
-	} from '$lib/utils/functions.js';
+	import { formatDateTime, getStatusClass, isEmpty, slugify } from '$lib/utils/functions.js';
 	import { crudRequest } from '$lib/actions.svelte.js';
 
 	const getEcosystemsArray = function (engineUID, ecosystemsStore) {
@@ -121,7 +117,13 @@
 			{ label: 'Name', key: 'name' },
 			{ label: 'UID', key: 'uid' },
 			{ label: 'Status', key: 'status', isStatus: true },
-			{ label: 'Last Seen', key: 'last_seen', serializer: formatDateTime }
+			{ label: 'Last Seen', key: 'last_seen', serializer: formatDateTime },
+			{
+				label: 'Link',
+				key: 'name',
+				isLink: true,
+				serializer: (value) => `/ecosystem/${slugify(value)}/settings`
+			}
 		]}
 		data={ecosystemsArray}
 		editable={true}

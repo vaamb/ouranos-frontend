@@ -10,16 +10,16 @@
 
 	let { data } = $props();
 	// [{
-	//   label: "The input", key: "the_input", value: "the value", hint: String
-	//   type: undefined | String, min: undefined | Number, max: undefined | Number, step: undefined | Number,
+	//   label: "The input", key: "the_input", value: "the value"
 	//   serializer: undefined | function(value), deserializer: undefined | function(value),
-	//   pattern: undefined | regex, selectFrom: [{ label: "The input", value: "the_value" }]
+	//   selectFrom: [{ label: "The input", value: "the_value" }]
 	//   validate: undefined | function(value) { return value === "validated" },
 	//   required: true
+	//   all remaining input parameters
 	// }]
 
-	const isNotFalse = function(obj) {
-		return obj === undefined ? true : obj
+	const isNotFalse = function (obj) {
+		return obj === undefined ? true : obj;
 	};
 
 	const notEmptyValue = function (value) {
@@ -39,8 +39,8 @@
 				isNotFalse(row['required'])
 					? notEmptyValue
 					: (value) => {
-						return true;
-					}
+							return true;
+						};
 			const deserializer =
 				row['deserializer'] !== undefined
 					? row['deserializer']
@@ -49,6 +49,7 @@
 						};
 			rv[row['key']] = {
 				value: row['value'] !== undefined ? serializer(row['value']) : '',
+				files: undefined,
 				validate: row['validate'] !== undefined ? row['validate'] : defaultValidator,
 				deserializer: deserializer
 			};
@@ -79,9 +80,15 @@
 	const confirm = function () {
 		const payload = {};
 		for (const [key, obj] of Object.entries(values)) {
-			const value = obj['deserializer'](obj['value']);
-			if (value !== '') {
-				payload[key] = value;
+			if (obj['files'] !== undefined) {
+				// File type input, need to pass files
+				payload[key] = obj['files'];
+			} else {
+				// Others, need to pass the (deserialized) value
+				const deserialized_value = obj['deserializer'](obj['value']);
+				if (deserialized_value !== '') {
+					payload[key] = deserialized_value;
+				}
 			}
 		}
 		dispatch('confirm', payload);
@@ -98,23 +105,25 @@
 				<td style="width: 10px"></td>
 				<td>
 					{#if isEmpty(row['selectFrom'])}
-						<input
-							id={row['key']}
-							type={row['type'] !== undefined ? row['type'] : null}
-							bind:value={values[row['key']]['value']}
-							min={row['min'] !== undefined ? row['min'] : null}
-							max={row['max'] !== undefined ? row['max'] : null}
-							step={row['step'] !== undefined ? row['step'] : null}
-							pattern={row['pattern'] !== undefined ? row['pattern'] : null}
-							disabled={row['disabled']}
-							placeholder={row['hint'] ? row['hint'] : null}
-						/>
+						{#if row['type'] !== 'file'}
+							<input
+								id={row['key']}
+								bind:value={values[row['key']]['value']}
+								{...row}
+							/>
+						{:else}
+							<input
+								id={row['key']}
+								bind:files={values[row['key']]['files']}
+								{...row}
+								type="file"
+							/>
+						{/if}
 					{:else}
 						<select
 							id={row['key']}
 							bind:value={values[row['key']]['value']}
-							disabled={row['disabled']}
-							title={row['hint'] ? row['hint'] : null}
+							{...row}
 						>
 							{#if !row['value']}
 								<option disabled value="">Select one</option>

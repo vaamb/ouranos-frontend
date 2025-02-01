@@ -80,9 +80,15 @@
 	const confirm = function () {
 		const payload = {};
 		for (const [key, obj] of Object.entries(values)) {
-			const value = obj['deserializer'](obj['value']);
-			if (value !== '') {
-				payload[key] = value;
+			if (obj['files'] !== undefined) {
+				// File type input, need to pass files
+				payload[key] = obj['files'];
+			} else {
+				// Others, need to pass the (deserialized) value
+				const deserialized_value = obj['deserializer'](obj['value']);
+				if (deserialized_value !== '') {
+					payload[key] = deserialized_value;
+				}
 			}
 		}
 		dispatch('confirm', payload);
@@ -99,11 +105,20 @@
 				<td style="width: 10px"></td>
 				<td>
 					{#if isEmpty(row['selectFrom'])}
-						<input
-							id={row['key']}
-							bind:value={values[row['key']]['value']}
-							{...row}
-						/>
+						{#if row['type'] !== 'file'}
+							<input
+								id={row['key']}
+								bind:value={values[row['key']]['value']}
+								{...row}
+							/>
+						{:else}
+							<input
+								id={row['key']}
+								bind:files={values[row['key']]['files']}
+								{...row}
+								type="file"
+							/>
+						{/if}
 					{:else}
 						<select
 							id={row['key']}

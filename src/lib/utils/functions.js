@@ -141,7 +141,7 @@ export const getStatusClass = function (status) {
 	}
 };
 
-const strHoursToDate = function (strHour) {
+export const strHoursToDate = function (strHour) {
 	const now = new Date();
 	const hour = strHour.split(':');
 	now.setHours(hour[0], hour[1], hour[2]);

@@ -35,12 +35,13 @@
 		computeEcosystemStatusClass,
 		computeLightingHours,
 		computeServerUptime,
-		isConnected,
-		isEmpty,
 		formatDate,
 		formatDateTime,
+		getParamStatus,
+		isConnected,
+		isEmpty,
 		serviceEnabled,
-		getParamStatus
+		strHoursToDate
 	} from '$lib/utils/functions.js';
 	import {
 		fetchCalendarEvents,
@@ -219,9 +220,15 @@
 					<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
 					{#if !isEmpty(suntimes)}
 						<div>
-							<Fa icon={faSun} />&nbsp{suntimes[0]['sunrise'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+							<Fa icon={faSun} />&nbsp{suntimes[0]['sunrise'].toLocaleTimeString([], {
+								timeStyle: 'short',
+								hour12: false
+							})}
 							&nbsp; - &nbsp;
-						  <Fa icon={faMoon} />&nbsp{suntimes[0]['sunset'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
+							<Fa icon={faMoon} />&nbsp{suntimes[0]['sunset'].toLocaleTimeString([], {
+								timeStyle: 'short',
+								hour12: false
+							})}
 						</div>
 					{/if}
 				</BoxItem>
@@ -350,11 +357,29 @@
 						</BoxItem>
 					{/if}
 					{#if light}
-						<BoxItem title="Lighting">
+						<BoxItem title="Nycthemeral cycle">
 							{#await fetchEcosystemNycthemeralCycleData(uid)}
 								<p>Fetching data</p>
 							{:then ecosystemLightData_notUsed}
 								{@const nycthemeralCycle = $ecosystemsNycthemeralCycle[getStoreDataKey(uid)]}
+								{@const formatTime = (timeStr) => {
+									return strHoursToDate(timeStr).toLocaleTimeString([], {
+										timeStyle: 'short',
+										hour12: false
+									});
+								}}
+								<p>Method: {nycthemeralCycle['span']}</p>
+								{#if nycthemeralCycle['span'] === 'target'}
+									<p>Target: {nycthemeralCycle['target']}</p>
+								{/if}
+								<p>
+									Span: {formatTime(nycthemeralCycle['day'])} -
+									{formatTime(nycthemeralCycle['night'])}
+								</p>
+								<p style="font-size: 1rem; font-weight: bold; padding: 2px 0; margin-top: 0.6rem">
+									Lighting
+								</p>
+								<p>Method: {nycthemeralCycle['lighting']}</p>
 								{#each computeLightingHours(nycthemeralCycle, 'short') as lightingHours}
 									<p>{lightingHours}</p>
 								{:else}

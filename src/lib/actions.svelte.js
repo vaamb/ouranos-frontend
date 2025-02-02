@@ -575,7 +575,7 @@ export const updateService = async function (serviceName, status) {
 	})
 		.then((response) => {
 			const msgs = get(flashMessage);
-			msgs.push(Message(response.data.msg, null, 1500));
+			msgs.push(Message(response.data, null, 1500));
 			flashMessage.set(msgs);
 		})
 		.catch((error) => {
@@ -666,7 +666,7 @@ export const crudRequest = function (relRoute, action, payload = undefined) {
 	return axios(`${API_URL}/${relRoute}`, options)
 		.then((response) => {
 			const msgs = get(flashMessage);
-			msgs.push(Message(response.data.msg, null, 3000));
+			msgs.push(Message(response.data, null, 3000));
 			flashMessage.set(msgs);
 		})
 		.catch((error) => {
@@ -685,7 +685,7 @@ export const updateActuatorMode = function (ecosystemUID, actuatorType, mode, co
 	})
 		.then((response) => {
 			const msgs = get(flashMessage);
-			msgs.push(Message(response.data.msg, null, 1500));
+			msgs.push(Message(response.data, null, 1500));
 			flashMessage.set(msgs);
 		})
 		.catch((error) => {

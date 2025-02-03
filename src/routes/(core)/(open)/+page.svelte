@@ -41,6 +41,7 @@
 		isConnected,
 		isEmpty,
 		serviceEnabled,
+		slugify,
 		strHoursToDate
 	} from '$lib/utils/functions.js';
 	import {
@@ -180,59 +181,55 @@
 
 <h2>Global overview</h2>
 <Row>
-	<Box title="Calendar - {formatDate(now)}" align="center">
-		<a href="/calendar" style="background: var(--main-95); color:inherit; display: contents">
-			<BoxItem title="Happening now">
-				{#each sortedCalendarEvents['happening'] as event}
-					{@const color = getLevelColor(event['level'])}
-					<p style="text-align: left">
-						<Fa icon={faCircleExclamation} style="color: var({color});" />
-						Until {event['end_time'].toLocaleDateString('en-GB')}: {event['title']}
-					</p>
-				{:else}
-					<p style="text-align: left">There is no event happening currently.</p>
-				{/each}
-			</BoxItem>
-			<BoxItem title="Planned">
-				{#each sortedCalendarEvents['future'] as event}
-					{@const color = getLevelColor(event['level'])}
-					<p style="text-align: left">
-						<Fa icon={faCircleExclamation} style="color: var({color});" />
-						Starting on {event['start_time'].toLocaleDateString('en-GB')}: {event['title']}
-					</p>
-				{:else}
-					<p style="text-align: left">There is no event planned.</p>
-				{/each}
-			</BoxItem>
-		</a>
+	<Box title="Calendar - {formatDate(now)}" align="center" href="/calendar">
+		<BoxItem title="Happening now">
+			{#each sortedCalendarEvents['happening'] as event}
+				{@const color = getLevelColor(event['level'])}
+				<p style="text-align: left">
+					<Fa icon={faCircleExclamation} style="color: var({color});" />
+					Until {event['end_time'].toLocaleDateString('en-GB')}: {event['title']}
+				</p>
+			{:else}
+				<p style="text-align: left">There is no event happening currently.</p>
+			{/each}
+		</BoxItem>
+		<BoxItem title="Planned">
+			{#each sortedCalendarEvents['future'] as event}
+				{@const color = getLevelColor(event['level'])}
+				<p style="text-align: left">
+					<Fa icon={faCircleExclamation} style="color: var({color});" />
+					Starting on {event['start_time'].toLocaleDateString('en-GB')}: {event['title']}
+				</p>
+			{:else}
+				<p style="text-align: left">There is no event planned.</p>
+			{/each}
+		</BoxItem>
 	</Box>
 	{#if serviceEnabled($services, 'weather') && !isEmpty($weatherCurrently)}
-		<Box title="Current weather" align="center">
-			<a href="/weather" style="display: inherit; flex-direction: inherit">
-				<WeatherIcon icon={$weatherCurrently['icon']} />
-				<BoxItem title={capitalize($weatherCurrently['summary'])}>
-					<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
-					<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
-					{#if !isEmpty($weatherHourly)}
-					  <p>Precipitation: {($weatherHourly[0]['precipitation_probability']*100).toFixed(1)} %</p>
-					{/if}
-					<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
-					<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
-					{#if !isEmpty(suntimes)}
-						<div>
-							<Fa icon={faSun} />&nbsp{suntimes[0]['sunrise'].toLocaleTimeString([], {
-								timeStyle: 'short',
-								hour12: false
-							})}
-							&nbsp; - &nbsp;
-							<Fa icon={faMoon} />&nbsp{suntimes[0]['sunset'].toLocaleTimeString([], {
-								timeStyle: 'short',
-								hour12: false
-							})}
-						</div>
-					{/if}
-				</BoxItem>
-			</a>
+		<Box title="Current weather" align="center" href="/weather">
+			<WeatherIcon icon={$weatherCurrently['icon']} />
+			<BoxItem title={capitalize($weatherCurrently['summary'])}>
+				<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
+				<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
+				{#if !isEmpty($weatherHourly)}
+				  <p>Precipitation: {($weatherHourly[0]['precipitation_probability']*100).toFixed(1)} %</p>
+				{/if}
+				<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
+				<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
+				{#if !isEmpty(suntimes)}
+					<div>
+						<Fa icon={faSun} />&nbsp{suntimes[0]['sunrise'].toLocaleTimeString([], {
+							timeStyle: 'short',
+							hour12: false
+						})}
+						&nbsp; - &nbsp;
+						<Fa icon={faMoon} />&nbsp{suntimes[0]['sunset'].toLocaleTimeString([], {
+							timeStyle: 'short',
+							hour12: false
+						})}
+					</div>
+				{/if}
+			</BoxItem>
 		</Box>
 	{/if}
 	{#if $currentUser.can(permissions.ADMIN)}
@@ -276,27 +273,25 @@
 		</Box>
 	{/if}
 	{#if $currentUser.isAuthenticated}
-		<Box title="Ecosystem warnings overview" align="center">
-			<a href="/warnings" style="background: var(--main-95); color:inherit; display: contents">
-				{#if $warnings.length > 0}
-					{#each Object.keys(sortedWarnings) as name}
-						{@const ecosystemWarnings = sortedWarnings[name]}
-						{#if ecosystemWarnings}
-							<BoxItem title={name}>
-								{#each ecosystemWarnings as warning}
-									{@const color = getLevelColor(warning['level'])}
-									<p style="text-align: left">
-										<Fa icon={faCircleExclamation} style="color: var({color});" />
-										On {formatDateTime(warning['created_on'])}: {warning['title']}
-									</p>
-								{/each}
-							</BoxItem>
-						{/if}
-					{/each}
-				{:else}
-					<BoxItem title="No warning" />
-				{/if}
-			</a>
+		<Box title="Ecosystem warnings overview" align="center" href="/warnings">
+			{#if $warnings.length > 0}
+				{#each Object.keys(sortedWarnings) as name}
+					{@const ecosystemWarnings = sortedWarnings[name]}
+					{#if ecosystemWarnings}
+						<BoxItem title={name}>
+							{#each ecosystemWarnings as warning}
+								{@const color = getLevelColor(warning['level'])}
+								<p style="text-align: left">
+									<Fa icon={faCircleExclamation} style="color: var({color});" />
+									On {formatDateTime(warning['created_on'])}: {warning['title']}
+								</p>
+							{/each}
+						</BoxItem>
+					{/if}
+				{/each}
+			{:else}
+				<BoxItem title="No warning" />
+			{/if}
 		</Box>
 	{/if}
 </Row>
@@ -389,7 +384,7 @@
 						</BoxItem>
 					{/if}
 					{#if actuator}
-						<BoxItem title="Actuators">
+						<BoxItem title="Actuators" href="/ecosystem/{slugify(name)}/actuators">
 							{#each actuatorTypes as actuatorType}
 								{@const actuator = $ecosystemsActuatorsState[uid][actuatorType]}
 								{#if actuator && actuator['active']}
@@ -406,7 +401,7 @@
 						</BoxItem>
 					{/if}
 					{#if environmentData}
-						<BoxItem title="Environment">
+						<BoxItem title="Environment" href="/ecosystem/{slugify(name)}/sensors/environment">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
 								<p>Collecting environment's data from the ecosystem</p>
 							{:then sensorsSkeleton}
@@ -434,7 +429,7 @@
 						</BoxItem>
 					{/if}
 					{#if plantsData}
-						<BoxItem title="Plants">
+						<BoxItem title="Plants" href="/ecosystem/{slugify(name)}/sensors/plants">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
 								<p>Collecting environment's data from the ecosystem</p>
 							{:then sensorsSkeleton}

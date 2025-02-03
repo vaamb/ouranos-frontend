@@ -4,6 +4,7 @@
 		minWidth = '200px',
 		maxWidth = 'auto',
 		direction = 'column',
+		href = null,
 		children
 	} = $props();
 </script>
@@ -15,11 +16,25 @@
 		{/if}
 	</div>
 	<div class="box-item-content {direction}" style="height: 100%; display: flex">
-		{@render children?.()}
+		{#if href}
+			<a href="{href}">
+				{@render children?.()}
+			</a>
+		{:else}
+			{@render children?.()}
+		{/if}
 	</div>
 </div>
 
 <style>
+	a {
+		display: inherit;
+		flex-direction: inherit;
+		flex-wrap: inherit;
+		column-gap: inherit;
+		row-gap: inherit;
+	}
+
 	h1 {
 		font-size: 1rem;
 		font-weight: bold;

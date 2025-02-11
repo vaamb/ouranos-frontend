@@ -56,6 +56,12 @@ export const generateListOfMenuItems = function (
 
 	let ecosystemMenuItemsAvailable = [
 		{
+			name: 'Actuators',
+			icon: faToggleOff,
+			path: 'actuators',
+			management: 'switches'
+		},
+		{
 			name: 'Environment',
 			icon: faThermometerHalf,
 			path: 'sensors/environment',
@@ -68,16 +74,10 @@ export const generateListOfMenuItems = function (
 			management: 'plants_data'
 		},
 		{
-			name: 'Plant health',
+			name: 'Ecosystem health',
 			icon: faHeartbeat,
 			path: 'health',
 			management: 'health'
-		},
-		{
-			name: 'Actuators',
-			icon: faToggleOff,
-			path: 'actuators',
-			management: 'switches'
 		},
 		{
 			name: 'Camera',
@@ -96,8 +96,7 @@ export const generateListOfMenuItems = function (
 			children.push(MenuItem('Settings', `/ecosystem/${slugify(id['name'])}/settings`, faCog));
 		}
 		for (const menuItemAvailable of ecosystemMenuItemsAvailable) {
-			const management = menuItemAvailable['management'];
-			if (ecosystemManagement[management]) {
+			if (ecosystemManagement[menuItemAvailable['management']]) {
 				children.push(
 					MenuItem(
 						menuItemAvailable['name'],
@@ -128,8 +127,4 @@ export const generateListOfMenuItems = function (
 		menuItems.push(MenuItem('Systems', '#', faDatabase, systemMenus));
 	}
 	return menuItems;
-};
-
-export const restartServer = function () {
-	// TODO
 };

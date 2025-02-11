@@ -96,7 +96,7 @@
 								{#each child.children as grandchild}
 									<a
 										href={grandchild.path}
-										class="menu-item menu-sub-item item-name"
+										class="menu-item menu-sub-item menu-sub-sub-item item-name"
 										class:active={$page.url.pathname === grandchild.path}
 									>
 										<div class="left-ico">
@@ -156,7 +156,7 @@
 	.menu-item {
 		cursor: pointer;
 		display: flex;
-		padding: 11px 15px;
+		padding: 11px 10px 11px 15px;
 		border-bottom: thin solid var(--main-95);
 		font-size: 0.82rem;
 		line-height: 24px;
@@ -164,12 +164,14 @@
 	}
 
 	.menu-sub-item {
-		color: var(--main-95);
-		padding: 9px 15px;
+		padding: 9px 10px 9px 15px;
+	}
+
+	.menu-sub-sub-item {
+		/*background: hsl(0, 0%, 75%);*/
 	}
 
 	.item-name {
-		width: 100%;
 		display: flex;
 		text-align: left;
 	}
@@ -183,7 +185,7 @@
 	.right-ico {
 		width: 25px;
 		line-height: 24px;
-		margin: auto 0 auto 14px;
+		margin: auto 0 auto auto;
 	}
 
 	.rotated {

@@ -55,17 +55,17 @@ export const graphs = {
 			TVOC: ' ppm'
 		},
 		min_values: {
-			temperature: 15,
+			temperature: 0,
 			humidity: 0,
 			absolute_humidity: 0,
-			dew_point: 5,
+			dew_point: 0,
 			light: 0,
 			AQI: 0,
 			eCO2: 0,
 			TVOC: 0
 		},
 		max_values: {
-			temperature: 30,
+			temperature: 35,
 			humidity: 100,
 			absolute_humidity: 15,
 			dew_point: 30,
@@ -90,7 +90,7 @@ export const graphs = {
 		},
 		min_values: {
 			moisture: 0,
-			temperature: 20
+			temperature: 0
 		},
 		max_values: {
 			moisture: 100,

@@ -75,7 +75,7 @@
 
 	.box {
 		background-color: var(--main-95);
-		padding: 10px 17px 17px 17px;
+		padding: 10px 17px 5px 17px;
 		margin-bottom: 6px;
 		border: thin solid var(--main-80);
 		flex: 1;

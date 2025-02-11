@@ -9,7 +9,7 @@
 	} = $props();
 </script>
 
-<div class="box-item" style="--min-width: {minWidth}; --max-width: {maxWidth}; height=100%">
+<div class="box-item" style="--min-width: {minWidth}; --max-width: {maxWidth}">
 	<div class="top-fix">
 		{#if title}
 			<h1>{title}</h1>
@@ -28,6 +28,7 @@
 
 <style>
 	a {
+		height: 100%;
 		display: inherit;
 		flex-direction: inherit;
 		flex-wrap: inherit;
@@ -46,8 +47,10 @@
 
 	.box-item {
 		flex: 1;
+		display: flex;
+		flex-direction: column;
 		background: var(--main-95);
-		padding-bottom: 5px;
+		padding-bottom: 15px;
 		width: 100%;
 	}
 

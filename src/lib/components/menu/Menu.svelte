@@ -5,7 +5,6 @@
 	import { faAddressCard, faUserCog, faPowerOff } from '@fortawesome/free-solid-svg-icons';
 
 	import MenuItem from '$lib/components/menu/MenuItem.svelte';
-	import { restartServer } from '$lib/components/menu/functions.js';
 
 	import { permissions } from '$lib/utils/consts.js';
 	import { currentUser, ecosystemsIds } from '$lib/store.svelte.js';
@@ -34,6 +33,12 @@
 			toggledMenuItemIndex = null;
 		} else {
 			toggledMenuItemIndex = index;
+		}
+	};
+
+	const restartServer = function () {
+		if (!currentUser.can(permissions.ADMIN)) {
+			return;
 		}
 	};
 
@@ -152,7 +157,7 @@
 		height: 56px;
 		margin-top: 5px;
 		margin-bottom: 10px;
-		display: flex;
+		display: none;
 	}
 
 	.avatar {
@@ -174,6 +179,10 @@
 	}
 
 	.welcome > div {
+		margin: auto auto auto 0;
+	}
+
+	.welcome > div + div {
 		padding-top: 2px;
 	}
 
@@ -203,6 +212,10 @@
 			width: calc(var(--menu-width) * 1px);
 			position: fixed;
 			height: 100%;
+		}
+
+		.menu-title {
+			margin: 0 auto 5px auto;
 		}
 
 		.user-box {

@@ -163,14 +163,14 @@
 	}
 
 	input {
-		height: 1.3rem;
-		width: 216px;
+		height: 1.35rem;
+		width: 240px;
 		font-family: inherit;
 	}
 
 	select {
 		height: 1.5rem;
-		width: 218px;
+		width: 242px;
 		font-family: inherit;
 	}
 
@@ -185,6 +185,6 @@
 	}
 
 	tr {
-		height: 27px;
+		height: 28px;
 	}
 </style>

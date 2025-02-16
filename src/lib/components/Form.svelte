@@ -23,7 +23,7 @@
 	};
 
 	const notEmptyValue = function (value) {
-		return value !== '';
+		return value !== undefined && value !== '';
 	};
 
 	const getValues = function (data) {
@@ -62,7 +62,10 @@
 	const canSubmit = function (data) {
 		for (const [_, obj] of Object.entries(data)) {
 			const validate = obj['validate'];
-			if (!validate(obj['value'])) {
+			if (obj['files'] !== undefined) {
+				return true
+			}
+			else if (!validate(obj['value'])) {
 				return false;
 			}
 		}
@@ -147,7 +150,11 @@
 						&nbsp;
 						<Fa
 							icon={faCircle}
-							class={values[row['key']]['validate'](values[row['key']]['value']) ? 'on' : 'off'}
+							class={
+								row['type'] !== 'file'
+								? values[row['key']]['validate'](values[row['key']]['value']) ? 'on' : 'off'
+								: values[row['key']]['validate'](values[row['key']]['files']) ? 'on' : 'off'
+							}
 						/>
 					{/if}
 				</td>

@@ -9,8 +9,8 @@
 <div class="header-line">
 	<h1>{title}</h1>
 	{#if sideBloc}
-    	{@render sideBloc()}
-    {/if}
+		{@render sideBloc()}
+	{/if}
 </div>
 
 <style>

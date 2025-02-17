@@ -48,6 +48,7 @@
 							return value;
 						};
 			rv[row['key']] = {
+				type: row['type'] !== undefined ? row['type'] : 'text',
 				value: row['value'] !== undefined ? serializer(row['value']) : '',
 				files: undefined,
 				validate: row['validate'] !== undefined ? row['validate'] : defaultValidator,
@@ -62,8 +63,8 @@
 	const canSubmit = function (data) {
 		for (const [_, obj] of Object.entries(data)) {
 			const validate = obj['validate'];
-			if (obj['files'] !== undefined) {
-				return true
+			if (obj['type'] === 'file' && obj['files'] === undefined) {
+				return false
 			}
 			else if (!validate(obj['value'])) {
 				return false;
@@ -151,9 +152,9 @@
 						<Fa
 							icon={faCircle}
 							class={
-								row['type'] !== 'file'
-								? values[row['key']]['validate'](values[row['key']]['value']) ? 'on' : 'off'
-								: values[row['key']]['validate'](values[row['key']]['files']) ? 'on' : 'off'
+								row['type'] === 'file'
+								? values[row['key']]['validate'](values[row['key']]['files']) ? 'on' : 'off'
+								: values[row['key']]['validate'](values[row['key']]['value']) ? 'on' : 'off'
 							}
 						/>
 					{/if}

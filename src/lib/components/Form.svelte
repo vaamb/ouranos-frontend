@@ -23,7 +23,7 @@
 	};
 
 	const notEmptyValue = function (value) {
-		return value !== '';
+		return value !== undefined && value !== '';
 	};
 
 	const getValues = function (data) {
@@ -48,6 +48,7 @@
 							return value;
 						};
 			rv[row['key']] = {
+				type: row['type'] !== undefined ? row['type'] : 'text',
 				value: row['value'] !== undefined ? serializer(row['value']) : '',
 				files: undefined,
 				validate: row['validate'] !== undefined ? row['validate'] : defaultValidator,
@@ -62,7 +63,10 @@
 	const canSubmit = function (data) {
 		for (const [_, obj] of Object.entries(data)) {
 			const validate = obj['validate'];
-			if (!validate(obj['value'])) {
+			if (obj['type'] === 'file' && obj['files'] === undefined) {
+				return false
+			}
+			else if (!validate(obj['value'])) {
 				return false;
 			}
 		}
@@ -147,7 +151,11 @@
 						&nbsp;
 						<Fa
 							icon={faCircle}
-							class={values[row['key']]['validate'](values[row['key']]['value']) ? 'on' : 'off'}
+							class={
+								row['type'] === 'file'
+								? values[row['key']]['validate'](values[row['key']]['files']) ? 'on' : 'off'
+								: values[row['key']]['validate'](values[row['key']]['value']) ? 'on' : 'off'
+							}
 						/>
 					{/if}
 				</td>
@@ -163,14 +171,14 @@
 	}
 
 	input {
-		height: 1.3rem;
-		width: 216px;
+		height: 1.35rem;
+		width: 240px;
 		font-family: inherit;
 	}
 
 	select {
 		height: 1.5rem;
-		width: 218px;
+		width: 242px;
 		font-family: inherit;
 	}
 
@@ -185,6 +193,6 @@
 	}
 
 	tr {
-		height: 27px;
+		height: 28px;
 	}
 </style>

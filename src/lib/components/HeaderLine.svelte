@@ -1,5 +1,5 @@
 <script>
-	let { title, info = null } = $props();
+	let { title, sideBloc } = $props();
 </script>
 
 <svelte:head>
@@ -8,8 +8,8 @@
 
 <div class="header-line">
 	<h1>{title}</h1>
-	{#if info}
-		<div class="info">{info}</div>
+	{#if sideBloc}
+		{@render sideBloc()}
 	{/if}
 </div>
 
@@ -20,10 +20,5 @@
 		column-gap: 7px;
 		padding-bottom: 0.8em;
 		min-height: 35px;
-	}
-
-	.info {
-		margin: auto 0 0 auto;
-		font-size: 0.97rem;
 	}
 </style>

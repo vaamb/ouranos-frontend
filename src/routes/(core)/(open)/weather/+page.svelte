@@ -85,7 +85,13 @@
 	});
 </script>
 
-<HeaderLine title="Weather" info={lastUpdate($weatherCurrently['timestamp'])} />
+{#snippet timestamp()}
+<div style="margin: auto 0 0 auto; font-size: 0.97rem">
+	{lastUpdate($weatherCurrently['timestamp'])}
+</div>
+{/snippet}
+
+<HeaderLine title="Weather" sideBloc={timestamp} />
 
 <Box title="Day forecast" direction="row" align="center">
 	<BoxItem maxWidth="250px">

@@ -146,6 +146,19 @@ a {
 	margin-bottom: 1rem;
 }
 
+.text ul {
+	padding-left: 40px;
+}
+
+.text ol {
+	padding-left: 40px;
+}
+
+.text img {
+	float: left;
+	object-fit: cover;
+}
+
 .table-base {
 	display: table;
 	/* table-layout: fixed; */

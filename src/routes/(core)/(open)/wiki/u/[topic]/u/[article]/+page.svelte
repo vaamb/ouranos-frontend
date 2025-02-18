@@ -17,7 +17,8 @@
 
 	let { data } = $props();
 
-	let article = data['article'];
+	const article = data['article'];
+
 	let pictures = $state(undefined);
 	let content = $state();
 
@@ -33,7 +34,7 @@
 					return picture['name'] === value;
 				});
 				if (picture === undefined) {
-					// TODO: use a not def symbol
+					href = '/images/misc/undefined.svg';
 				} else {
 					href = `${STATIC_URL}/${picture['path']}`;
 				}

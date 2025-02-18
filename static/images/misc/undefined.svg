@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<svg
+   fill="#000000"
+   width="200"
+   height="200"
+   viewBox="0 0 8 8"
+   id="icon"
+   version="1.1"
+   sodipodi:docname="undefined.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   inkscape:export-filename="undefined.svg"
+   inkscape:export-xdpi="24"
+   inkscape:export-ydpi="24"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview2"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.06875"
+     inkscape:cx="400.46784"
+     inkscape:cy="400.93567"
+     inkscape:window-width="1920"
+     inkscape:window-height="1111"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="icon" />
+  <defs
+     id="defs1">
+    <style
+       id="style1">.cls-1{fill:none;}</style>
+  </defs>
+  <title
+     id="title1">no-image</title>
+  <path
+     d="M 7.6935673,0.80855217 7.3285239,0.44350877 0.46549708,7.3065356 0.83054048,7.671579 1.3468312,7.1552882 H 6.6609858 A 0.51698772,0.51698772 0 0 0 7.1772765,6.6389975 V 1.3248429 Z M 6.6609858,6.6389975 H 1.8631219 l 2.011701,-2.0117268 0.6140762,0.6140504 a 0.51629073,0.51629073 0 0 0 0.7301384,0 L 5.6284044,4.83198 6.6609858,5.8638644 Z m 0,-1.5054521 -0.6675123,-0.6675381 a 0.51629073,0.51629073 0 0 0 -0.7301383,0 L 4.8539683,4.8754 4.2403567,4.2617627 6.6609858,1.8411336 Z"
+     id="path1"
+     style="fill:#6a8095;fill-opacity:1;stroke-width:0.258145" />
+  <path
+     d="M 1.4980786,5.6064161 V 4.83198 L 2.7888054,3.5421309 3.1433164,3.8966419 3.5088244,3.531108 3.1538745,3.1761582 a 0.51629073,0.51629073 0 0 0 -0.7301383,0 L 1.4980786,4.1018416 V 1.4760903 H 5.6284044 V 0.95979947 H 1.4980786 A 0.51680702,0.51680702 0 0 0 0.98178778,1.4760903 v 4.1303258 z"
+     id="path2"
+     style="fill:#6a8095;fill-opacity:1;stroke-width:0.258145" />
+  <rect
+     id="_Transparent_Rectangle_"
+     data-name="&lt;Transparent Rectangle&gt;"
+     class="cls-1"
+     width="32"
+     height="32"
+     x="0"
+     y="0" />
+</svg>

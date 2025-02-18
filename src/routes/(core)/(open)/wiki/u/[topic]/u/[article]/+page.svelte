@@ -105,16 +105,23 @@
 <Modal
 	bind:this={modal}
 	showModal={updatingContent !== null}
+	title="Text editor"
 	on:close={() => {
 		updatingContent = null;
 	}}
 >
-	<div class="editor">
-		<textarea class="text-box" bind:value={updatingContent} style="width: 100%; resize: none"></textarea>
-		<div class="text-box rendered">
-			{@html parsedUpdatingContent}
+	<div class="modal-content">
+		<div class="editor">
+			<textarea
+				class="text-box"
+				bind:value={updatingContent}
+				style="margin-right: auto; resize: none"
+			></textarea>
+			<div class="text-box rendered">
+				{@html parsedUpdatingContent}
+			</div>
 		</div>
-		<div class="center-content" style="grid-column: 1/3; grid-row: 2/3">
+		<div class="center-content" style="margin-top: 12px">
 			<button
 				class="text-button"
 				onclick={() => {
@@ -148,33 +155,43 @@
 	}
 
 	.text-box {
+		width: 100%;
+		min-height: 30vh;
 		padding: 5px;
 	}
 
 	.rendered {
 		border: thin solid var(--main-50-shadow);
+		overflow: auto;
+	}
+
+	.modal-content {
+		max-height: calc(80vh - (40px + 3.2px + 24px + 7px + 20px)); /*Modal padding (40) + border (3.2) + h1 (24 + 7) + content padding (20)*/
+		display: flex;
+		flex-direction: column;
+		column-gap: 1em;
+		row-gap: 1em;
 	}
 
 	@media only screen and (max-width: 992px) {
 		.editor {
 			width: 80vw;
-			height: 70vh;
-			display: grid;
-			grid-template-rows: 1fr 1fr 1em 1em;
-			grid-gap: 1em;
+			display: flex;
+			flex-direction: column;
+			row-gap: 1em;
 		}
 	}
 
 	@media only screen and (min-width: 992px) {
 		.editor {
-			width: 1200px;
+			width: 1100px;
+			display: flex;
+		}
+
+		.text-box {
+			width: calc((1100px - 3em) / 2);
 			height: 70vh;
-			display: grid;
-			grid-template:
-				'a b' 1fr
-				'c c' 1em / 1fr 1fr;
-			grid-template-rows: 1fr 1em;
-			grid-gap: 2em;
+			max-height: 400px;
 		}
 	}
 </style>

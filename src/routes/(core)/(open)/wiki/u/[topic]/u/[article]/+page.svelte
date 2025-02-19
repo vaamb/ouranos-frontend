@@ -143,15 +143,18 @@
 <style>
 	.rendered :global(ul) {
 		padding-left: 40px;
+		margin-bottom: 0.75rem;
 	}
 
 	.rendered :global(ol) {
 		padding-left: 40px;
+		margin-bottom: 0.75rem;
 	}
 
 	.rendered :global(img) {
 		float: left;
 		object-fit: cover;
+		margin: 7px;
 	}
 
 	.text-box {

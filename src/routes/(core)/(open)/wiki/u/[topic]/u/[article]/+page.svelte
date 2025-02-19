@@ -7,8 +7,10 @@
 	import axios from 'axios';
 	import { marked } from 'marked';
 
+	import Form from '$lib/components/Form.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
+	import Table from '$lib/components/Table.svelte';
 
 	import { crudRequest, fetchWikiPictures } from '$lib/actions.svelte.js';
 	import { currentUser } from '$lib/store.svelte.js';
@@ -31,7 +33,7 @@
 			if (regexPicture.test(href)) {
 				const value = href.replace('!picture:', '').replace('!', '');
 				let picture = Object.values(pictures).find((picture) => {
-					return picture['name'] === value;
+					return picture['slug'] === value;
 				});
 				if (picture === undefined) {
 					href = '/images/misc/undefined.svg';
@@ -70,6 +72,20 @@
 	let parsedUpdatingContent = $derived.by(() => {
 		if (updatingContent) return marked(updatingContent);
 	});
+
+	// Image upload
+	let imageUploadModal = $state();
+	let showImageUploadModal = $state(false);
+	let showImagesAvailable = $state(false);
+
+	const splitTags = function (tags) {
+		if (tags === '') return '';
+		tags = tags.split(',');
+		tags.forEach((tag) => {
+			tag = tag.trim();
+		});
+		return tags;
+	};
 
 	// Mount
 	onMount(async () => {
@@ -121,7 +137,7 @@
 				{@html parsedUpdatingContent}
 			</div>
 		</div>
-		<div class="center-content" style="margin-top: 12px">
+		<div class="center-content" style="margin-top: 20px">
 			<button
 				class="text-button"
 				onclick={() => {
@@ -136,8 +152,95 @@
 			>
 				Save
 			</button>
+			<button
+				class="text-button"
+				onclick={() => {
+					showImageUploadModal = true;
+				}}
+			>
+				Upload image
+			</button>
+			<button
+				class="text-button"
+				onclick={() => {
+					showImagesAvailable = !showImagesAvailable;
+				}}
+			>
+				Images available
+			</button>
 		</div>
+		{#if pictures && showImagesAvailable}
+			<div style="margin-top: 20px">
+				<Table
+					tableID="pictures"
+					columns={[
+						{ label: 'Name', key: 'name' },
+						{ label: 'Description', key: 'description' },
+						{ label: 'Code', key: 'slug', serializer: (value) => `!picture:${value}!` },
+						{
+							label: 'Link',
+							key: 'path',
+							isLink: true,
+							serializer: (value) => `${STATIC_URL}/${value}`
+						}
+					]}
+					data={pictures}
+				/>
+			</div>
+		{/if}
 	</div>
+</Modal>
+
+<Modal
+	bind:this={imageUploadModal}
+	showModal={showImageUploadModal === true}
+	on:close={() => {
+		showImageUploadModal = false;
+	}}
+>
+	<Form
+		data={[
+			{ label: 'Name', key: 'name' },
+			{ label: 'Description', key: 'description', required: false },
+			{
+				label: 'Image',
+				key: 'content',
+				type: 'file',
+				hint: 'Images'
+			},
+			{
+				label: 'Tags',
+				key: 'tags',
+				hint: 'Comma separated tags',
+				required: false,
+				deserializer: splitTags
+			}
+		]}
+		on:confirm={(event) => {
+			const form = event.detail;
+			let payload = new FormData();
+			payload.append('name', form['name']);
+			if (form['description'] !== undefined) {
+				payload.append('description', form['description']);
+			}
+			form['tags'] = form['tags'] || [];
+			for (const tag of form['tags']) {
+				payload.append('tags', tag);
+			}
+			payload.append('file', form.content[0]);
+			crudRequest(
+				`app/services/wiki/topics/u/${article['topic_slug']}/u/${article['slug']}/u/upload_file`,
+				'create',
+				payload
+			).then(
+				fetchWikiPictures(article['topic_slug'], article['slug']).then((response) => {
+					pictures = response.data;
+				})
+			);
+			imageUploadModal.closeModal();
+		}}
+		on:cancel={() => imageUploadModal.closeModal()}
+	/>
 </Modal>
 
 <style>
@@ -169,7 +272,9 @@
 	}
 
 	.modal-content {
-		max-height: calc(80vh - (40px + 3.2px + 24px + 7px + 20px)); /*Modal padding (40) + border (3.2) + h1 (24 + 7) + content padding (20)*/
+		max-height: calc(
+			80vh - (40px + 3.2px + 24px + 7px + 20px)
+		); /*Modal padding (40) + border (3.2) + h1 (24 + 7) + content padding (20)*/
 		display: flex;
 		flex-direction: column;
 		column-gap: 1em;

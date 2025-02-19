@@ -6,20 +6,7 @@
 
 	import { crudRequest, fetchWikiTopics } from '$lib/actions.svelte.js';
 	import { wikiTopics } from '$lib/store.svelte.js';
-	import { capitalize } from '$lib/utils/functions.js';
-
-	const joinTags = function (tags) {
-		return tags.join(', ');
-	};
-
-	const splitTags = function (tags) {
-		if (tags === '') return '';
-		tags = tags.split(',');
-		tags.forEach((tag) => {
-			tag = tag.trim();
-		});
-		return tags;
-	};
+	import { capitalize, joinTags, splitTags } from '$lib/utils/functions.js';
 
 	const refreshTopics = function () {
 		fetchWikiTopics().then((data) => {
@@ -42,10 +29,10 @@
 <Table
 	tableID="wikiTopicsTable"
 	columns={[
-		{ key: 'name', label: 'Name', serializer: capitalize },
-		{ key: 'description', label: 'Description', serializer: capitalize },
-		{ key: 'tags', label: 'Tags', serializer: joinTags },
-		{ key: 'slug', label: 'Link', isLink: true, serializer: (value) => `/wiki/u/${value}` }
+		{ label: 'Name', key: 'name', serializer: capitalize },
+		{ label: 'Description', key: 'description', serializer: capitalize },
+		{ label: 'Tags', key: 'tags', serializer: joinTags },
+		{ label: 'Link', key: 'slug', isLink: true, serializer: (value) => `/wiki/u/${value}` }
 	]}
 	data={$wikiTopics}
 	editable={true}
@@ -126,11 +113,11 @@
 		confirmationButtons={true}
 		on:close={resetModal}
 		on:confirm={() => {
-			crudRequest(
-				`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`,
-				'delete'
-			).then(() => refreshTopics());
-			modal['delete'].closeModal()
+			crudRequest(`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`, 'delete')
+			.then(
+				() => refreshTopics()
+			);
+			modal['delete'].closeModal();
 		}}
 	>
 		<p>Are you sure you want to delete '{$wikiTopics[crudIndex]['name']}' topic ?</p>

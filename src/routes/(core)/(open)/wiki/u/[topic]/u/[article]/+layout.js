@@ -12,6 +12,6 @@ export async function load({ params, parent }) {
 	}
 
 	return {
-		article: article,
+		article: article
 	};
 }

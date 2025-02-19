@@ -1,11 +1,11 @@
 <script>
 	import Form from '$lib/components/Form.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
+	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
 	import { crudRequest, fetchWikiArticles } from '$lib/actions.svelte.js';
 	import { capitalize } from '$lib/utils/functions.js';
-	import Modal from '$lib/components/Modal.svelte';
 
 	let { data } = $props();
 
@@ -40,12 +40,12 @@
 <Table
 	tableID="wikiArticlesTable"
 	columns={[
-		{ key: 'name', label: 'Name', serializer: capitalize },
-		{ key: 'description', label: 'Description', serializer: capitalize },
-		{ key: 'tags', label: 'Tags', serializer: joinTags },
+		{ label: 'Name', key: 'name', serializer: capitalize },
+		{ label: 'Description', key: 'description', serializer: capitalize },
+		{ label: 'Tags', key: 'tags', serializer: joinTags },
 		{
-			key: 'slug',
 			label: 'Link',
+			key: 'slug',
 			isLink: true,
 			serializer: (value) => `/wiki/u/${topic['slug']}/u/${value}`
 		}
@@ -96,8 +96,10 @@
 			}
 			promise.then((contentText) => {
 				payload.content = contentText;
-				crudRequest(`app/services/wiki/topics/u/${topic['slug']}/u`, 'create', payload).then(() => {
-					fetchWikiArticles(topic['slug']).then((data) => {
+				crudRequest(`app/services/wiki/topics/u/${topic['slug']}/u`, 'create', payload)
+				.then(() => {
+					fetchWikiArticles(topic['slug'])
+					.then((data) => {
 						wikiArticles = data;
 						modal['create'].closeModal();
 					});

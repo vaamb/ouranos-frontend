@@ -210,3 +210,16 @@ export const slugify = function (str) {
 		.toLowerCase()
 		.replace(' ', '_');
 };
+
+export const splitTags = function (tags) {
+	if (tags === '') return '';
+	tags = tags.split(',');
+	tags.forEach((tag) => {
+		tag = tag.trim();
+	});
+	return tags;
+};
+
+export const joinTags = function (tags) {
+	return tags.join(', ');
+};

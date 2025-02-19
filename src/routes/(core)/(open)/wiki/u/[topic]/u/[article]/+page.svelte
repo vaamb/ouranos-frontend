@@ -15,7 +15,7 @@
 	import { crudRequest, fetchWikiPictures } from '$lib/actions.svelte.js';
 	import { currentUser } from '$lib/store.svelte.js';
 	import { permissions, STATIC_URL } from '$lib/utils/consts.js';
-	import { capitalize } from '$lib/utils/functions.js';
+	import { capitalize, splitTags } from '$lib/utils/functions.js';
 
 	let { data } = $props();
 
@@ -78,21 +78,18 @@
 	let showImageUploadModal = $state(false);
 	let showImagesAvailable = $state(false);
 
-	const splitTags = function (tags) {
-		if (tags === '') return '';
-		tags = tags.split(',');
-		tags.forEach((tag) => {
-			tag = tag.trim();
-		});
-		return tags;
+	// Mount
+	const fetchWikiArticleContent = async function (articleObject) {
+		return axios
+			.get(`${STATIC_URL}/${articleObject['path']}?${new Date().getTime()}`)
+			.then((response) => {
+				return response.data;
+			});
 	};
 
-	// Mount
 	onMount(async () => {
 		pictures = await fetchWikiPictures(article['topic_slug'], article['slug']);
-		content = await axios.get(`${STATIC_URL}/${article['path']}?${new Date().getTime()}`).then((response) => {
-			return response.data;
-		});
+		content = await fetchWikiArticleContent(article);
 	});
 </script>
 
@@ -144,7 +141,7 @@
 					crudRequest(
 						`app/services/wiki/topics/u/${article['topic_slug']}/u/${article['slug']}`,
 						'update',
-						{ "content": updatingContent }
+						{ content: updatingContent }
 					);
 					content = updatingContent;
 					modal.closeModal();
@@ -233,7 +230,8 @@
 				'create',
 				payload
 			).then(
-				fetchWikiPictures(article['topic_slug'], article['slug']).then((response) => {
+				fetchWikiPictures(article['topic_slug'], article['slug'])
+				.then((response) => {
 					pictures = response.data;
 				})
 			);

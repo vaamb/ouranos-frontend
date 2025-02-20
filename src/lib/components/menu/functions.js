@@ -135,7 +135,6 @@ export const generateListOfMenuItems = function (
 		wikiMenus.push(MenuItem("Index", '/wiki'));
 
 		for (const topic of wikiTopics) {
-			console.log("here", topic)
 			wikiMenus.push(MenuItem(capitalize(topic['name']), `/wiki/u/${topic['slug']}`));
 		}
 

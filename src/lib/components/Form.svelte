@@ -61,12 +61,13 @@
 	let values = $state(getValues(data));
 
 	const canSubmit = function (data) {
-		for (const [_, obj] of Object.entries(data)) {
+		for (const obj of Object.values(data)) {
 			const validate = obj['validate'];
-			if (obj['type'] === 'file' && obj['files'] === undefined) {
-				return false
-			}
-			else if (!validate(obj['value'])) {
+			if (obj['type'] === 'file') {
+				if (!validate(obj['files'])) {
+					return false;
+				}
+			} else if (!validate(obj['value'])) {
 				return false;
 			}
 		}
@@ -151,11 +152,13 @@
 						&nbsp;
 						<Fa
 							icon={faCircle}
-							class={
-								row['type'] === 'file'
-								? values[row['key']]['validate'](values[row['key']]['files']) ? 'on' : 'off'
-								: values[row['key']]['validate'](values[row['key']]['value']) ? 'on' : 'off'
-							}
+							class={row['type'] === 'file'
+								? values[row['key']]['validate'](values[row['key']]['files'])
+									? 'on'
+									: 'off'
+								: values[row['key']]['validate'](values[row['key']]['value'])
+									? 'on'
+									: 'off'}
 						/>
 					{/if}
 				</td>

@@ -22,7 +22,8 @@
 		rawWarnings,
 		servers,
 		serversIds,
-		services
+		services,
+		wikiTopics
 	} from '$lib/store.svelte.js';
 	import { APP_MODE } from '$lib/utils/consts.js';
 
@@ -35,6 +36,7 @@
 	servers.set(data.servers);
 	services.set(data.services);
 	rawWarnings.set(data.warnings);
+	wikiTopics.set(data.wikiTopics);
 
 	// Menu-related parameters
 	let menuWidth = 210;
@@ -46,7 +48,8 @@
 			$ecosystemsManagement,
 			$enginesIds,
 			$services,
-			$serversIds
+			$serversIds,
+			$wikiTopics
 		)
 	);
 

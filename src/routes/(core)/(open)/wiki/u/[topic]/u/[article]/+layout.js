@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 
 export async function load({ params, parent }) {
 	const data = await parent();
-	const articles = data['wikiArticles'];
+	const articles = data['articles'];
 	const article = Object.values(articles).find((article) => {
 		return article['slug'] === params['article'];
 	});

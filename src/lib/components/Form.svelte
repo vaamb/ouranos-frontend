@@ -35,11 +35,12 @@
 					: (value) => {
 							return value;
 						};
-			const defaultValidator = isNotFalse(row['required'])
-				? notEmptyValue
-				: (value) => {
-						return true;
-					};
+			const defaultValidator =
+				isNotFalse(row['required'])
+					? notEmptyValue
+					: (value) => {
+							return true;
+						};
 			const deserializer =
 				row['deserializer'] !== undefined
 					? row['deserializer']
@@ -110,7 +111,11 @@
 				<td>
 					{#if isEmpty(row['selectFrom'])}
 						{#if row['type'] !== 'file'}
-							<input id={row['key']} bind:value={values[row['key']]['value']} {...row} />
+							<input
+								id={row['key']}
+								bind:value={values[row['key']]['value']}
+								{...row}
+							/>
 						{:else}
 							<input
 								id={row['key']}
@@ -120,7 +125,11 @@
 							/>
 						{/if}
 					{:else}
-						<select id={row['key']} bind:value={values[row['key']]['value']} {...row}>
+						<select
+							id={row['key']}
+							bind:value={values[row['key']]['value']}
+							{...row}
+						>
 							{#if !row['value']}
 								<option disabled value="">Select one</option>
 							{/if}

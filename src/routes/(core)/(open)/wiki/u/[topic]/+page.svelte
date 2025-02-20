@@ -9,9 +9,9 @@
 
 	let { data } = $props();
 
-	const topic = data['wikiTopic'];
+	const topic = data['topic'];
 	const topicName = topic['name'];
-	let wikiArticles = $state(data.wikiArticles);
+	let articles = $state(data['articles']);
 
 	const joinTags = function (tags) {
 		return tags.join(', ');
@@ -50,7 +50,7 @@
 			serializer: (value) => `/wiki/u/${topic['slug']}/u/${value}`
 		}
 	]}
-	data={wikiArticles}
+	data={articles}
 	editable={true}
 	on:crud={(event) => {
 		crudAction = event['detail']['action'];
@@ -100,7 +100,7 @@
 				.then(() => {
 					fetchWikiArticles(topic['slug'])
 					.then((data) => {
-						wikiArticles = data;
+						articles = data;
 						modal['create'].closeModal();
 					});
 				});
@@ -109,25 +109,25 @@
 		on:cancel={() => modal['create'].closeModal()}
 	/>
 </Modal>
-{#if wikiArticles[crudIndex]}
+{#if articles[crudIndex]}
 	<Modal
 		bind:this={modal['delete']}
 		showModal={crudAction === 'delete'}
-		title={`Delete ${wikiArticles[crudIndex]['name']} article`}
+		title={`Delete ${articles[crudIndex]['name']} article`}
 		confirmationButtons={true}
 		on:close={resetModal}
 		on:confirm={() => {
 			crudRequest(
-				`app/services/wiki/topics/u/${topic['slug']}/u/${wikiArticles[crudIndex]['slug']}`,
+				`app/services/wiki/topics/u/${topic['slug']}/u/${articles[crudIndex]['slug']}`,
 				'delete'
 			).then(() => {
 				fetchWikiArticles(topic['slug']).then((data) => {
-					wikiArticles = data;
+					articles = data;
 					modal['delete'].closeModal();
 				});
 			});
 		}}
 	>
-		<p>Are you sure you want to delete '{wikiArticles[crudIndex]['name']}' article ?</p>
+		<p>Are you sure you want to delete '{articles[crudIndex]['name']}' article ?</p>
 	</Modal>
 {/if}

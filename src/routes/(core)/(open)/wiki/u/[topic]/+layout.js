@@ -16,7 +16,7 @@ export async function load({ params, parent }) {
 	const articles = await fetchWikiArticles(topic['slug']);
 
 	return {
-		wikiTopic: topic,
-		wikiArticles: articles
+		topic: topic,
+		articles: articles
 	};
 }

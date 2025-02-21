@@ -52,6 +52,17 @@ const setFlashMsgError = function (error) {
 	flashMessage.set(msgs);
 };
 
+export const probePath = async function (path) {
+	return await axios
+		.get(path)
+		.then((response) => {
+			return response.status === 200;
+		})
+		.catch(() => {
+			return false;
+		});
+}
+
 // Server-related actions
 export const fetchServerInfo = async function () {
 	return await axios

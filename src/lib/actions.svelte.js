@@ -351,7 +351,7 @@ export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, m
 		});
 };
 
-export const fetchSensorHistoricData = async function (ecosystemUID, sensorUID, measure) {
+export const fetchSensorHistoricData = async function (ecosystemUID, sensorUID, measure, windowLength=undefined) {
 	const dataKey = getStoreDataKey(sensorUID, measure);
 	const storedData = getFreshStoreData(ecosystemsSensorsDataHistoric, dataKey);
 	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 10)) {
@@ -359,7 +359,11 @@ export const fetchSensorHistoricData = async function (ecosystemUID, sensorUID, 
 	}
 
 	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensorUID}/data/${measure}/historic`)
+		.get(
+			`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensorUID}/data/${measure}/historic`, {
+				params: { window_length: windowLength }
+			}
+		)
 		.then((response) => {
 			const data = {
 				timestamp: new Date(response['data']['span'][1]),

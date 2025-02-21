@@ -50,6 +50,10 @@ export const isObject = function (object) {
 
 export const capitalize = function (string) {
 	if (typeof string !== 'string') return '';
+	// Don't capitalize if the string has capital(s) or number(s) as it could be an acronym
+	if (/[A-Z0-9]/.test(string)) {
+		return string;
+	}
 	return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 };
 

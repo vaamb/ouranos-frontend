@@ -21,7 +21,7 @@
 	} from '$lib/store.svelte.js';
 	import { STATIC_URL } from '$lib/utils/consts.js';
 	import { capitalize } from '$lib/utils/functions.js';
-	import { colors } from "$lib/utils/styling.js";
+	import { colors } from '$lib/utils/styling.js';
 
 	let { data } = $props();
 
@@ -59,7 +59,7 @@
 	};
 
 	const computeTrendAngle = function (data) {
-		const records = data['values']
+		const records = data['values'];
 		const beginning = records.slice(0, 5);
 		const end = records.slice(-5);
 		const beginningAverage = beginning.reduce((a, b) => a + b[1], 0) / beginning.length;
@@ -67,9 +67,7 @@
 		const beginningStd = Math.sqrt(
 			beginning.reduce((a, b) => a + (b[1] - beginningAverage) ** 2, 0) / beginning.length
 		);
-		const endStd = Math.sqrt(
-			end.reduce((a, b) => a + (b[1] - endAverage) ** 2, 0) / end.length
-		)
+		const endStd = Math.sqrt(end.reduce((a, b) => a + (b[1] - endAverage) ** 2, 0) / end.length);
 		if (endAverage - endStd > beginningAverage + beginningStd) {
 			return -35;
 		} else if (endAverage + endStd < beginningAverage - beginningStd) {
@@ -81,7 +79,7 @@
 		} else {
 			return 0;
 		}
-	}
+	};
 </script>
 
 <HeaderLine title={ecosystemName + ' ecosystem health'} />
@@ -119,7 +117,7 @@
 										datasets={formattedHistoricSensorsData['datasets']}
 										labels={formattedHistoricSensorsData['labels']}
 										height="200px"
-										suggestedMax=1
+										suggestedMax="1"
 									/>
 								{:else}
 									<div style="margin: auto">

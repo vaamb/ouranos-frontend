@@ -210,9 +210,7 @@ export const setCookie = function (name, value, expDays = 90) {
 };
 
 export const slugify = function (str) {
-	return str
-		.toLowerCase()
-		.replace(' ', '_');
+	return str.toLowerCase().replace(' ', '_');
 };
 
 export const splitTags = function (tags) {

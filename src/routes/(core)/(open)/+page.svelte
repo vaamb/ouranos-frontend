@@ -117,7 +117,12 @@
 		return rv;
 	};
 
+	let healthData = $state({})
 	const fetchHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
+		const storedData = healthData[getStoreDataKey(ecosystemUID, measure)]
+		if (storedData !== undefined) {
+			return storedData;
+		}
 		let rv = [];
 		for (const sensor of sensors) {
 			const value = await axios
@@ -136,7 +141,9 @@
 			return null;
 		}
 		const average = (array) => array.reduce((a, b) => a + b) / array.length;
-		return average(rv).toFixed(4);
+		const result = average(rv).toFixed(4);
+		healthData[getStoreDataKey(ecosystemUID, measure)] = result;
+		return result;
 	};
 
 	const computeAverageSensorsCurrentDataForMeasure = function (

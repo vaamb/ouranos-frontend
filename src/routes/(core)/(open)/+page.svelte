@@ -1,6 +1,7 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 
+	import axios from 'axios';
 	import Fa from 'svelte-fa';
 	import { faCircleExclamation, faMoon, faSun, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
@@ -29,7 +30,7 @@
 		weatherCurrently,
 		weatherHourly
 	} from '$lib/store.svelte.js';
-	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
+	import { actuatorTypes, API_URL, permissions } from '$lib/utils/consts.js';
 	import {
 		capitalize,
 		computeEcosystemStatusClass,
@@ -113,6 +114,28 @@
 			rv.push(data);
 		}
 		return rv;
+	};
+
+	const fetchHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
+		let rv = [];
+		for (const sensor of sensors) {
+			const value = await axios
+				.get(
+					`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensor['uid']}/data/${measure}/historic`,
+					{
+						params: { window_length: 1 }
+					}
+				)
+				.then((response) => {
+					return response['data']['values'][0][1];
+				});
+			rv.push(value);
+		}
+		if (rv.length === 0) {
+			return null;
+		}
+		const average = (array) => array.reduce((a, b) => a + b) / array.length;
+		return average(rv).toFixed(4);
 	};
 
 	const computeAverageSensorsCurrentDataForMeasure = function (
@@ -212,7 +235,9 @@
 				<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
 				<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
 				{#if !isEmpty($weatherHourly)}
-				  <p>Precipitation: {($weatherHourly[0]['precipitation_probability']*100).toFixed(1)} %</p>
+					<p>
+						Precipitation: {($weatherHourly[0]['precipitation_probability'] * 100).toFixed(1)} %
+					</p>
 				{/if}
 				<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
 				<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
@@ -337,9 +362,10 @@
 				{:else}{@html '<!--Only connected and running ecosystems afterwards-->'}
 					{@const light = getParamStatus($ecosystemsManagement, uid, 'light')}
 					{@const actuator = anyActiveActuator($ecosystemsActuatorsState, uid)}
+					{@const ecosystemData = getParamStatus($ecosystemsManagement, uid, 'ecosystem_data')}
 					{@const environmentData = getParamStatus($ecosystemsManagement, uid, 'environment_data')}
 					{@const plantsData = getParamStatus($ecosystemsManagement, uid, 'plants_data')}
-					{#if !(light || actuator || environmentData || plantsData)}
+					{#if !(light || actuator || ecosystemData || environmentData || plantsData)}
 						<BoxItem>
 							<p>No functionality is enabled in {name}</p>
 							{#if $currentUser.can(permissions.OPERATE)}
@@ -400,10 +426,31 @@
 							{/each}
 						</BoxItem>
 					{/if}
+					{#if ecosystemData}
+						<BoxItem title="Ecosystem health" href="/ecosystem/{slugify(name)}/sensors/ecosystem">
+							{#await fetchEcosystemSensorsSkeleton(uid, 'ecosystem')}
+								<p>Collecting health data from the ecosystem</p>
+							{:then sensorsSkeleton}
+								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'ecosystem')] as sensorsBone}
+									{#await fetchHealthLatestDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
+										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
+									{:then averageHealthData}
+										{#if averageHealthData !== null}
+											<p style="margin-bottom: 0">
+												{capitalize(sensorsBone.measure).replace('_', ' ')}:
+												{averageHealthData}
+												{sensorsBone.units[0]}
+											</p>
+										{/if}
+									{/await}
+								{/each}
+							{/await}
+						</BoxItem>
+					{/if}
 					{#if environmentData}
 						<BoxItem title="Environment" href="/ecosystem/{slugify(name)}/sensors/environment">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
-								<p>Collecting environment's data from the ecosystem</p>
+								<p>Collecting environment data from the ecosystem</p>
 							{:then sensorsSkeleton}
 								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'environment')] as sensorsBone}
 									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
@@ -431,7 +478,7 @@
 					{#if plantsData}
 						<BoxItem title="Plants" href="/ecosystem/{slugify(name)}/sensors/plants">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
-								<p>Collecting environment's data from the ecosystem</p>
+								<p>Collecting plants data from the ecosystem</p>
 							{:then sensorsSkeleton}
 								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'plants')] as sensorsBone}
 									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}

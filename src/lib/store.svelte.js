@@ -59,16 +59,7 @@ export const warnings = derived([rawWarnings, ecosystems], ([rawWarnings, ecosys
 
 // Store-related utility functions
 export const getStoreDataKey = function () {
-	if (arguments.length <= 1) {
-		return arguments[0];
-	} else {
-		let rv = arguments[0];
-		const remainingArgs = Array.prototype.slice.call(arguments, 1);
-		for (const value of Object.values(remainingArgs)) {
-			rv = rv + '_' + value;
-		}
-		return rv;
-	}
+	return Array.prototype.slice.call(arguments).join('-');
 };
 
 export const getStoreData = function (store, storageKey) {

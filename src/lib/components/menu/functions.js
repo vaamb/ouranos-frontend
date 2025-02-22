@@ -64,6 +64,12 @@ export const generateListOfMenuItems = function (
 			management: 'switches'
 		},
 		{
+			name: 'Ecosystem health',
+			icon: faHeartbeat,
+			path: 'sensors/ecosystem',
+			management: 'health'
+		},
+		{
 			name: 'Environment',
 			icon: faThermometerHalf,
 			path: 'sensors/environment',
@@ -74,12 +80,6 @@ export const generateListOfMenuItems = function (
 			icon: faSeedling,
 			path: 'sensors/plants',
 			management: 'plants_data'
-		},
-		{
-			name: 'Ecosystem health',
-			icon: faHeartbeat,
-			path: 'health',
-			management: 'health'
 		},
 		{
 			name: 'Camera',

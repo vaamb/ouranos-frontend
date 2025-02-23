@@ -172,11 +172,13 @@
 	};
 
 	let suntimes = $state([]);
+	let sensorsPrimed = $state(false)
 
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
-		await fetchSensorCurrentData(undefined, 'priming', undefined);
+		await fetchSensorCurrentData(undefined, 'priming', undefined)
+				.then(() => {sensorsPrimed = true});
 
 		for (const { uid, name } of $ecosystemsIds) {
 			if (isConnected($ecosystemsState[uid]) && $ecosystemsState[uid]['status']) {
@@ -448,7 +450,7 @@
 							{/await}
 						</BoxItem>
 					{/if}
-					{#if environmentData}
+					{#if environmentData & sensorsPrimed}
 						<BoxItem title="Environment" href="/ecosystem/{slugify(name)}/sensors/environment">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
 								<p>Collecting environment data from the ecosystem</p>
@@ -476,7 +478,7 @@
 							{/await}
 						</BoxItem>
 					{/if}
-					{#if plantsData}
+					{#if plantsData & sensorsPrimed}
 						<BoxItem title="Plants" href="/ecosystem/{slugify(name)}/sensors/plants">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
 								<p>Collecting plants data from the ecosystem</p>

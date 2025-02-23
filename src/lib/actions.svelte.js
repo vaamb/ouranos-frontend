@@ -214,8 +214,8 @@ export const fetchEngines = async function () {
 		})
 		.catch(() => {
 			return {
-				info: undefined,
-				states: undefined
+				info: {},
+				states: {}
 			};
 		});
 };
@@ -252,8 +252,8 @@ export const fetchEcosystems = async function () {
 		})
 		.catch(() => {
 			return {
-				info: undefined,
-				states: undefined
+				info: {},
+				states: {}
 			};
 		});
 };

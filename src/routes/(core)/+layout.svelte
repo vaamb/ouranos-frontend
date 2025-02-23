@@ -111,7 +111,7 @@
 	let updateStatusInterval = undefined;
 
 	onMount(async () => {
-		updateStatusInterval = setInterval(updateStatus, 1 * 1000);
+		updateStatusInterval = setInterval(updateStatus, 5 * 1000);
 	});
 
 	onDestroy(() => {
@@ -139,9 +139,7 @@
 
 <style>
 	.main {
-		min-height: calc(
-			100vh - 141px
-		); /* 141px = Nav bar (65) + Top bar (45) + border (1) + padding (10+20) */
+		min-height: calc(100vh - 141px); /* 141px = Nav bar (65) + Top bar (45) + border (1) + padding (10+20) */
 		padding: 10px 20px 20px 20px;
 	}
 

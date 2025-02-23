@@ -117,9 +117,9 @@
 		return rv;
 	};
 
-	let healthData = $state({})
+	let healthData = $state({});
 	const fetchHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
-		const storedData = healthData[getStoreDataKey(ecosystemUID, measure)]
+		const storedData = healthData[getStoreDataKey(ecosystemUID, measure)];
 		if (storedData !== undefined) {
 			return storedData;
 		}
@@ -134,7 +134,7 @@
 				)
 				.then((response) => {
 					if (response['data']['values'].length === 0) {
-						return null
+						return null;
 					}
 					return response['data']['values'][0][1];
 				});
@@ -184,13 +184,14 @@
 	};
 
 	let suntimes = $state([]);
-	let sensorsPrimed = $state(false)
+	let sensorsPrimed = $state(false);
 
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
-		await fetchSensorCurrentData(undefined, 'priming', undefined)
-				.then(() => {sensorsPrimed = true});
+		await fetchSensorCurrentData(undefined, 'priming', undefined).then(() => {
+			sensorsPrimed = true;
+		});
 
 		for (const { uid, name } of $ecosystemsIds) {
 			if (isConnected($ecosystemsState[uid]) && $ecosystemsState[uid]['status']) {
@@ -466,7 +467,7 @@
 							{/await}
 						</BoxItem>
 					{/if}
-					{#if environmentData & sensorsPrimed}
+					{#if environmentData && sensorsPrimed}
 						<BoxItem title="Environment" href="/ecosystem/{slugify(name)}/sensors/environment">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
 								<p>Collecting environment data from the ecosystem</p>
@@ -494,7 +495,7 @@
 							{/await}
 						</BoxItem>
 					{/if}
-					{#if plantsData & sensorsPrimed}
+					{#if plantsData && sensorsPrimed}
 						<BoxItem title="Plants" href="/ecosystem/{slugify(name)}/sensors/plants">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
 								<p>Collecting plants data from the ecosystem</p>

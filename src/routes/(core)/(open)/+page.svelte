@@ -133,9 +133,14 @@
 					}
 				)
 				.then((response) => {
+					if (response['data']['values'].length === 0) {
+						return null
+					}
 					return response['data']['values'][0][1];
 				});
-			rv.push(value);
+			if (value !== null) {
+				rv.push(value);
+			}
 		}
 		if (rv.length === 0) {
 			return null;
@@ -450,6 +455,10 @@
 												{capitalize(sensorsBone.measure).replace('_', ' ')}:
 												{averageHealthData}
 												{sensorsBone.units[0]}
+											</p>
+										{:else}
+											<p style="margin-bottom: 0">
+												No recent data for {capitalize(sensorsBone.measure).replace('_', ' ')}
 											</p>
 										{/if}
 									{/await}

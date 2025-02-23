@@ -1,7 +1,12 @@
 <script>
 	import { page } from '$app/stores';
 
-	import { ecosystems, engines, pingServerStatus } from '$lib/store.svelte.js';
+	import {
+		ecosystems,
+		ecosystemsState,
+		enginesState,
+		pingServerStatus
+	} from '$lib/store.svelte.js';
 	import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 	import { slugify } from '$lib/utils/functions.js';
 
@@ -20,7 +25,7 @@
 		if (url.includes('/ecosystem/')) {
 			const ecosystem = Object.values($ecosystems).find((ecosystem) => {
 				return slugify(ecosystem['name']) === $page.params['ecosystem'];
-			})
+			});
 			return {
 				pageType: PAGE_TYPE.ECOSYSTEM,
 				ecosystemOrEngineUID: ecosystem ? ecosystem.uid : undefined
@@ -46,8 +51,8 @@
 	{:else if $pingServerStatus === CONNECTION_STATUS.RECONNECTED}
 		<div class="reconnecting center-content">Reconnected to the server</div>
 	{:else if pageType === PAGE_TYPE.ENGINE && ecosystemOrEngineUID !== undefined}
-		{@const connectionStatus = $engines[ecosystemOrEngineUID]
-			? $engines[ecosystemOrEngineUID]['connected']
+		{@const connectionStatus = $enginesState[ecosystemOrEngineUID]
+			? $enginesState[ecosystemOrEngineUID]['connected']
 			: CONNECTION_STATUS.DISCONNECTED}
 		{#if connectionStatus === CONNECTION_STATUS.DISCONNECTED}
 			<div class="disconnected center-content">The engine is currently disconnected from GAIA</div>
@@ -55,8 +60,8 @@
 			<div class="reconnecting center-content">The engine has reconnected to GAIA</div>
 		{/if}
 	{:else if pageType === PAGE_TYPE.ECOSYSTEM}
-		{@const connectionStatus = $ecosystems[ecosystemOrEngineUID]
-			? $ecosystems[ecosystemOrEngineUID]['connected']
+		{@const connectionStatus = $ecosystemsState[ecosystemOrEngineUID]
+			? $ecosystemsState[ecosystemOrEngineUID]['connected']
 			: CONNECTION_STATUS.DISCONNECTED}
 		{#if connectionStatus === CONNECTION_STATUS.DISCONNECTED}
 			<div class="disconnected center-content">

@@ -15,14 +15,22 @@ export async function load({ cookies, parent, request }) {
 
 	const clientSessionCookie = 'session=' + cookies.get('session');
 	const clientUserAgent = request.headers.get('user-agent');
+	const ecosystems = await fetchEcosystems();
+	const engines = await fetchEngines();
 
 	return {
-		ecosystems: await fetchEcosystems(),
+		ecosystems: ecosystems['info'],
+		ecosystemsState: ecosystems['states'],
 		ecosystemsManagement: await fetchEcosystemsManagement(),
-		engines: await fetchEngines(),
+		engines: engines['info'],
+		enginesState: engines['states'],
 		services: await fetchServices(),
-		servers: currentUser.isAuthenticated ? await fetchServers(clientSessionCookie, clientUserAgent) : {},
-		warnings: currentUser.isAuthenticated ? await fetchWarnings(clientSessionCookie, clientUserAgent) : [],
+		servers: currentUser.isAuthenticated
+			? await fetchServers(clientSessionCookie, clientUserAgent)
+			: {},
+		warnings: currentUser.isAuthenticated
+			? await fetchWarnings(clientSessionCookie, clientUserAgent)
+			: [],
 		wikiTopics: await fetchWikiTopics()
 	};
 }

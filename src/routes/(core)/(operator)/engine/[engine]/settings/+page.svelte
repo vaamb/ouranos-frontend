@@ -9,22 +9,22 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { currentUser, ecosystems, engines } from '$lib/store.svelte.js';
-	import { permissions } from '$lib/utils/consts.js';
+	import { ecosystems, ecosystemsState, engines, enginesState } from '$lib/store.svelte.js';
 	import { formatDateTime, getStatusClass, isEmpty, slugify } from '$lib/utils/functions.js';
 	import { crudRequest } from '$lib/actions.svelte.js';
 
-	const getEcosystemsArray = function (engineUID, ecosystemsStore) {
-		if (!ecosystemsStore) {
-			return [];
-		}
-		const array = Object.values(ecosystemsStore);
-		return array.filter((ecosystem) => ecosystem['engine_uid'] === engineUID);
-	};
-
 	let engineUID = $derived($page['params']['engine']);
 	let engine = $derived($engines[engineUID]);
-	let ecosystemsArray = $derived(getEcosystemsArray(engineUID, $ecosystems));
+	let engineState = $derived($enginesState[engineUID]);
+	let fullEcosystems = $derived.by(() => {
+		let ecosystemsCopy = structuredClone($ecosystems);
+		ecosystemsCopy = Object.values(ecosystemsCopy);
+		ecosystemsCopy.forEach((ecosystem) => {
+			ecosystem['last_seen'] = $ecosystemsState[ecosystem['uid']]['last_seen'];
+			ecosystem['status'] = $ecosystemsState[ecosystem['uid']]['status'];
+		});
+		return ecosystemsCopy;
+	});
 
 	let modals = $state({});
 
@@ -48,7 +48,7 @@
 		crudEcosystemName = '';
 	};
 
-	let ecosystemArray = $derived(crudIndex !== undefined ? ecosystemsArray[crudIndex] : []);
+	let ecosystemArray = $derived(crudIndex !== undefined ? fullEcosystems[crudIndex] : []);
 </script>
 
 <HeaderLine title="{engineUID} engine" />
@@ -60,7 +60,7 @@
 				<td>UID</td>
 				<td>
 					{engineUID} &nbsp;
-					<Fa icon={faCircle} class={getStatusClass(engine['connected'])} />
+					<Fa icon={faCircle} class={getStatusClass(engineState['connected'])} />
 				</td>
 			</tr>
 			<tr>
@@ -73,7 +73,7 @@
 			</tr>
 			<tr>
 				<td>Last seen</td>
-				<td>{formatDateTime(engine['last_seen'])}</td>
+				<td>{formatDateTime(engineState['last_seen'])}</td>
 			</tr>
 		</tbody>
 		<tbody>
@@ -109,7 +109,7 @@
 	/>
 </Modal>
 
-{#if $currentUser.can(permissions.OPERATE) || !isEmpty(engine['ecosystems'])}
+{#if !isEmpty(engine['ecosystems'])}
 	<h2>Linked ecosystems</h2>
 	<Table
 		tableID="linkedEnvironmentsTable"
@@ -125,7 +125,7 @@
 				serializer: (value) => `/ecosystem/${slugify(value)}/settings`
 			}
 		]}
-		data={ecosystemsArray}
+		data={fullEcosystems}
 		editable={true}
 		crudOptions={['create', 'delete']}
 		on:crud={(event) => {

@@ -20,6 +20,7 @@
 		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsSkeleton,
+		ecosystemsState,
 		getStoreDataKey,
 		pingServerLatency,
 		servers,
@@ -178,7 +179,7 @@
 		await fetchSensorCurrentData(undefined, 'priming', undefined);
 
 		for (const { uid, name } of $ecosystemsIds) {
-			if (isConnected($ecosystems[uid])) {
+			if (isConnected($ecosystemsState[uid]) && $ecosystemsState[uid]['status']) {
 				await fetchEcosystemActuatorsState(uid);
 			}
 		}
@@ -329,12 +330,12 @@
 			<Box
 				title={name}
 				align="center"
-				status={computeEcosystemStatusClass(ecosystem)}
+				status={computeEcosystemStatusClass($ecosystemsState[uid])}
 				direction="row"
 			>
-				{#if !ecosystem['status']}
+				{#if !$ecosystemsState[uid]['status']}
 					<BoxItem>
-						{#if isConnected(ecosystem)}
+						{#if isConnected($ecosystemsState[uid])}
 							<p>The ecosystem '{name}' is not currently running</p>
 							{#if $currentUser.can(permissions.OPERATE)}
 								<p>
@@ -351,7 +352,7 @@
 							</p>
 						{/if}
 					</BoxItem>
-				{:else if !isConnected(ecosystem)}
+				{:else if !isConnected($ecosystemsState[uid])}
 					<BoxItem>
 						<p>The ecosystem {name} is not currently connected</p>
 						<p>

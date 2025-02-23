@@ -61,7 +61,7 @@ export const probePath = async function (path) {
 		.catch(() => {
 			return false;
 		});
-}
+};
 
 // Server-related actions
 export const fetchServerInfo = async function () {
@@ -192,17 +192,31 @@ export const fetchEngines = async function () {
 		})
 		.then((response) => {
 			const data = response['data'];
+			let enginesState = {};
 			data.forEach((element) => {
-				element['last_seen'] = new Date(element['last_seen']);
-				element['connected'] = element['connected']
+				// Use a date for 'registration_date'
+				element['registration_date'] = new Date(element['registration_date']);
+
+				// Transfer 'last_seen' and 'connected' to enginesState
+				const engineState = {};
+				engineState['last_seen'] = new Date(element['last_seen']);
+				delete element['last_seen'];
+				engineState['connected'] = element['connected']
 					? CONNECTION_STATUS.CONNECTED
 					: CONNECTION_STATUS.DISCONNECTED;
-				element['registration_date'] = new Date(element['registration_date']);
+				delete element['connected'];
+				enginesState[element['uid']] = engineState;
 			});
-			return data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
+			return {
+				info: data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {}),
+				states: enginesState
+			};
 		})
 		.catch(() => {
-			return {};
+			return {
+				info: undefined,
+				states: undefined
+			};
 		});
 };
 
@@ -214,17 +228,33 @@ export const fetchEcosystems = async function () {
 		})
 		.then((response) => {
 			const data = response['data'];
+			let ecosystemsState = {};
 			data.forEach((element) => {
-				element['last_seen'] = new Date(element['last_seen']);
-				element['connected'] = element['connected']
+				// Use a date for 'registration_date'
+				element['registration_date'] = new Date(element['registration_date']);
+
+				// Transfer 'last_seen' and 'connected' to ecosystemsState
+				const ecosystemState = {};
+				ecosystemState['status'] = element['status'];
+				delete element['status'];
+				ecosystemState['last_seen'] = new Date(element['last_seen']);
+				delete element['last_seen'];
+				ecosystemState['connected'] = element['connected']
 					? CONNECTION_STATUS.CONNECTED
 					: CONNECTION_STATUS.DISCONNECTED;
-				element['registration_date'] = new Date(element['registration_date']);
+				delete element['connected'];
+				ecosystemsState[element['uid']] = ecosystemState;
 			});
-			return data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {});
+			return {
+				info: data.reduce((a, v) => ({ ...a, [v['uid']]: v }), {}),
+				states: ecosystemsState
+			};
 		})
 		.catch(() => {
-			return {};
+			return {
+				info: undefined,
+				states: undefined
+			};
 		});
 };
 
@@ -362,7 +392,12 @@ export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, m
 		});
 };
 
-export const fetchSensorHistoricData = async function (ecosystemUID, sensorUID, measure, windowLength=undefined) {
+export const fetchSensorHistoricData = async function (
+	ecosystemUID,
+	sensorUID,
+	measure,
+	windowLength = undefined
+) {
 	const dataKey = getStoreDataKey(sensorUID, measure);
 	const storedData = getFreshStoreData(ecosystemsSensorsDataHistoric, dataKey);
 	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 10)) {
@@ -371,7 +406,8 @@ export const fetchSensorHistoricData = async function (ecosystemUID, sensorUID, 
 
 	return axios
 		.get(
-			`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensorUID}/data/${measure}/historic`, {
+			`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensorUID}/data/${measure}/historic`,
+			{
 				params: { window_length: windowLength }
 			}
 		)
@@ -487,17 +523,17 @@ export const fetchSuntimes = async function () {
 				const datestamp = element['datestamp'];
 				Object.entries(element).forEach(([key, value]) => {
 					if (key !== 'datestamp') {
-						element[key] = new Date(`${datestamp}T${element[key]}`)
+						element[key] = new Date(`${datestamp}T${element[key]}`);
 					}
-				})
+				});
 				element['datestamp'] = new Date(datestamp);
-			})
-			return data
+			});
+			return data;
 		})
 		.catch(() => {
 			return {};
 		});
-}
+};
 
 // Server-related actions
 export const fetchServers = async function (clientSessionCookie, clientUserAgent) {
@@ -621,7 +657,11 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 };
 
 // Calendar-related actions
-export const fetchCalendarEvents = async function (startTime=undefined, endTime=undefined, limit=10) {
+export const fetchCalendarEvents = async function (
+	startTime = undefined,
+	endTime = undefined,
+	limit = 10
+) {
 	return axios
 		.get(`${API_URL}/app/services/calendar`, {
 			params: {
@@ -654,7 +694,7 @@ export const fetchWikiTopics = async function () {
 		.catch(() => {
 			return [];
 		});
-}
+};
 
 export const fetchWikiArticles = async function (topic_name) {
 	return axios
@@ -665,7 +705,7 @@ export const fetchWikiArticles = async function (topic_name) {
 		.catch(() => {
 			return [];
 		});
-}
+};
 
 export const fetchWikiPictures = async function (topic_name, article_name) {
 	return axios
@@ -676,7 +716,7 @@ export const fetchWikiPictures = async function (topic_name, article_name) {
 		.catch(() => {
 			return [];
 		});
-}
+};
 
 export const fetchUserDescription = async function (username) {
 	return axios

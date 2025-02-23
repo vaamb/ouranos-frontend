@@ -108,7 +108,7 @@
 								{/if}
 							{/await}
 							<BoxItem>
-								{#if historicSensorsData && historicSensorsData['values'].length > 0}
+								{#if historicSensorsData && historicSensorsData['values'].length >= 2}
 									{@const formattedHistoricSensorsData = formatHistoricData(
 										historicSensorsData,
 										sensorsBone['measure']

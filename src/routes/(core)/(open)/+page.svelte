@@ -117,7 +117,12 @@
 		return rv;
 	};
 
+	let healthData = $state({});
 	const fetchHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
+		const storedData = healthData[getStoreDataKey(ecosystemUID, measure)];
+		if (storedData !== undefined) {
+			return storedData;
+		}
 		let rv = [];
 		for (const sensor of sensors) {
 			const value = await axios
@@ -128,15 +133,22 @@
 					}
 				)
 				.then((response) => {
+					if (response['data']['values'].length === 0) {
+						return null;
+					}
 					return response['data']['values'][0][1];
 				});
-			rv.push(value);
+			if (value !== null) {
+				rv.push(value);
+			}
 		}
 		if (rv.length === 0) {
 			return null;
 		}
 		const average = (array) => array.reduce((a, b) => a + b) / array.length;
-		return average(rv).toFixed(4);
+		const result = average(rv).toFixed(4);
+		healthData[getStoreDataKey(ecosystemUID, measure)] = result;
+		return result;
 	};
 
 	const computeAverageSensorsCurrentDataForMeasure = function (
@@ -172,13 +184,14 @@
 	};
 
 	let suntimes = $state([]);
-	let sensorsPrimed = $state(false)
+	let sensorsPrimed = $state(false);
 
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
-		await fetchSensorCurrentData(undefined, 'priming', undefined)
-				.then(() => {sensorsPrimed = true});
+		await fetchSensorCurrentData(undefined, 'priming', undefined).then(() => {
+			sensorsPrimed = true;
+		});
 
 		for (const { uid, name } of $ecosystemsIds) {
 			if (isConnected($ecosystemsState[uid]) && $ecosystemsState[uid]['status']) {
@@ -444,13 +457,17 @@
 												{averageHealthData}
 												{sensorsBone.units[0]}
 											</p>
+										{:else}
+											<p style="margin-bottom: 0">
+												No recent data for {capitalize(sensorsBone.measure).replace('_', ' ')}
+											</p>
 										{/if}
 									{/await}
 								{/each}
 							{/await}
 						</BoxItem>
 					{/if}
-					{#if environmentData & sensorsPrimed}
+					{#if environmentData && sensorsPrimed}
 						<BoxItem title="Environment" href="/ecosystem/{slugify(name)}/sensors/environment">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
 								<p>Collecting environment data from the ecosystem</p>
@@ -478,7 +495,7 @@
 							{/await}
 						</BoxItem>
 					{/if}
-					{#if plantsData & sensorsPrimed}
+					{#if plantsData && sensorsPrimed}
 						<BoxItem title="Plants" href="/ecosystem/{slugify(name)}/sensors/plants">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
 								<p>Collecting plants data from the ecosystem</p>

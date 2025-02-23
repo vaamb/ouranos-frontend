@@ -4,13 +4,13 @@ import { Manager } from 'socket.io-client';
 import { APP_MODE, BASE_URL, getAppMode } from '$lib/utils/consts.js';
 import {
 	currentUser,
-	ecosystems,
 	ecosystemsActuatorsState,
 	ecosystemsNycthemeralCycle,
 	ecosystemsManagement,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
-	engines,
+	ecosystemsState,
+	enginesState,
 	getFreshStoreData,
 	getStoreDataKey,
 	pingServerLastSeen,
@@ -166,19 +166,19 @@ socketio.on('weather_daily', (data) => {
 // Ecosystems
 socketio.on('ecosystems_heartbeat', (data) => {
 	const now = new Date();
-	const enginesObj = get(engines);
+	const enginesObj = get(enginesState);
 	if (enginesObj[data['engine_uid']]) {
 		enginesObj[data['engine_uid']]['last_seen'] = now;
-		engines.set(enginesObj);
+		enginesState.set(enginesObj);
 	}
-	const ecosystemsObj = get(ecosystems);
+	const ecosystemsStateObj = get(ecosystemsState);
 	for (const ecosystemData of data['ecosystems']) {
-		if (ecosystemsObj[ecosystemData['uid']]) {
-			ecosystemsObj[ecosystemData['uid']]['last_seen'] = now;
-			ecosystemsObj[ecosystemData['uid']]['status'] = ecosystemData['status'];
+		if (ecosystemsStateObj[ecosystemData['uid']]) {
+			ecosystemsStateObj[ecosystemData['uid']]['last_seen'] = now;
+			ecosystemsStateObj[ecosystemData['uid']]['status'] = ecosystemData['status'];
 		}
 	}
-	ecosystems.set(ecosystemsObj);
+	ecosystemsState.set(ecosystemsStateObj);
 });
 
 socketio.on('current_server_data', (data) => {
@@ -256,9 +256,9 @@ socketio.on('historic_sensors_data_update', (data) => {
 
 socketio.on('nycthemeral_info', (data) => {
 	data.forEach((ecosystem) => {
-  	ecosystem['data']['lighting'] = ecosystem['data']['lighting'] ? 'elongate': 'fixed'
-		ecosystem['data']['span'] = ecosystem['data']['lighting'] ? 'mimic': 'fixed'
-	})
+		ecosystem['data']['lighting'] = ecosystem['data']['lighting'] ? 'elongate' : 'fixed';
+		ecosystem['data']['span'] = ecosystem['data']['lighting'] ? 'mimic' : 'fixed';
+	});
 	const updatedData = data.reduce((a, v) => ({ ...a, [v['uid']]: v['data'] }), {});
 	updateStoreData(ecosystemsNycthemeralCycle, updatedData);
 });

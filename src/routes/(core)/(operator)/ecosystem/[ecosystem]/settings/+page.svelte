@@ -14,6 +14,7 @@
 		ecosystems,
 		ecosystemsNycthemeralCycle,
 		ecosystemsManagement,
+		ecosystemsState,
 		getStoreDataKey
 	} from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
@@ -103,16 +104,13 @@
 <HeaderLine title="{ecosystemName} settings" />
 <h2>Base info</h2>
 <div style="overflow-x: auto">
-	<table
-		class="table-base table-spaced table-alternate-colors table-narrow"
-		style="padding-bottom: 35px;"
-	>
+	<table class="table-base table-alternate-colors table-narrow" style="padding-bottom: 35px;">
 		<tbody>
 			<tr>
 				<td>Name</td>
 				<td>
 					{ecosystem['name']} &nbsp;
-					<Fa icon={faCircle} class={computeEcosystemStatusClass(ecosystem)} />
+					<Fa icon={faCircle} class={computeEcosystemStatusClass($ecosystemsState[ecosystemUID])} />
 				</td>
 			</tr>
 			<tr>

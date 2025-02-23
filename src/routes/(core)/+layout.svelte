@@ -14,7 +14,9 @@
 		ecosystems,
 		ecosystemsIds,
 		ecosystemsManagement,
+		ecosystemsState,
 		engines,
+		enginesState,
 		enginesIds,
 		flashMessage,
 		pingServerLastSeen,
@@ -30,9 +32,11 @@
 	// Fill stores with pre-fetched data
 	let { data, children } = $props();
 
-	engines.set(data.engines);
 	ecosystems.set(data.ecosystems);
 	ecosystemsManagement.set(data.ecosystemsManagement);
+	ecosystemsState.set(data.ecosystemsState);
+	engines.set(data.engines);
+	enginesState.set(data.enginesState);
 	servers.set(data.servers);
 	services.set(data.services);
 	rawWarnings.set(data.warnings);
@@ -69,7 +73,7 @@
 	// Ping server, engine and ecosystem connection status
 	const updateStatus = function () {
 		// Utility function
-		const getStatus = function (lastSeen, previousStatus, timeout = CONNECTION_TIMEOUT) {
+		const getStatus = function (lastSeen, previousStatus, timeout) {
 			if (new Date() - lastSeen < timeout * 1000) {
 				return previousStatus === CONNECTION_STATUS.DISCONNECTED
 					? CONNECTION_STATUS.RECONNECTED
@@ -80,22 +84,27 @@
 		};
 
 		// Ping server
-		$pingServerStatus = getStatus($pingServerLastSeen, $pingServerStatus);
+		const newServerStatus = getStatus($pingServerLastSeen, $pingServerStatus, CONNECTION_TIMEOUT);
+		if ($pingServerStatus !== newServerStatus) {
+			$pingServerStatus = newServerStatus;
+		}
 
 		// Engines
 		for (const engineUID in $engines) {
 			const engine = $engines[engineUID];
-			$engines[engineUID]['connected'] = getStatus(engine['last_seen'], engine['connected'], 90);
+			const newEngineStatus = getStatus(engine['last_seen'], engine['connected'], 90);
+			if ($engines[engineUID]['connected'] !== newEngineStatus) {
+				$engines[engineUID]['connected'] = newEngineStatus;
+			}
 		}
 
 		// Ecosystems
-		for (const ecosystemUID in $ecosystems) {
-			const ecosystem = $ecosystems[ecosystemUID];
-			$ecosystems[ecosystemUID]['connected'] = getStatus(
-				ecosystem['last_seen'],
-				ecosystem['connected'],
-				90
-			);
+		for (const ecosystemUID in $ecosystemsState) {
+			const ecosystem = $ecosystemsState[ecosystemUID];
+			const newEcosystemStatus = getStatus(ecosystem['last_seen'], ecosystem['connected'], 90);
+			if (ecosystem['connected'] !== newEcosystemStatus) {
+				$ecosystemsState[ecosystemUID]['connected'] = newEcosystemStatus;
+			}
 		}
 	};
 

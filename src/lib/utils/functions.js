@@ -121,13 +121,13 @@ export const computeServerUptime = function (serverStartTime, now) {
 	}
 };
 
-export const isConnected = function (connectable) {
-	return connectable['connected'] !== CONNECTION_STATUS.DISCONNECTED;
+export const isConnected = function (state) {
+	return state['connected'] !== CONNECTION_STATUS.DISCONNECTED;
 };
 
-export const computeEcosystemStatusClass = function (ecosystem) {
-	if (isConnected(ecosystem)) {
-		if (ecosystem['status']) {
+export const computeEcosystemStatusClass = function (ecosystemState) {
+	if (isConnected(ecosystemState)) {
+		if (ecosystemState['status']) {
 			return 'on';
 		} else {
 			return 'off';

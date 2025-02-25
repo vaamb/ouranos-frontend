@@ -363,7 +363,7 @@
 							<p>The ecosystem '{name}' is not currently running and is not connected</p>
 							<p>
 								Last connection to the server on
-								{formatDateTime(ecosystem['last_seen'])}
+								{formatDateTime($ecosystemsState[uid]['last_seen'])}
 							</p>
 						{/if}
 					</BoxItem>
@@ -372,7 +372,7 @@
 						<p>The ecosystem {name} is not currently connected</p>
 						<p>
 							Last connection to the server on
-							{formatDateTime(ecosystem['last_seen'])}
+							{formatDateTime($ecosystemsState[uid]['last_seen'])}
 						</p>
 					</BoxItem>
 				{:else}{@html '<!--Only connected and running ecosystems afterwards-->'}

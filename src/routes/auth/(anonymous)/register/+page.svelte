@@ -10,6 +10,12 @@
 	import { currentUser, flashMessage } from '$lib/store.svelte.js';
 	import { API_URL } from '$lib/utils/consts.js';
 	import { Message, User } from '$lib/utils/factories.js';
+	import {
+		checkJWT,
+		getValidationColorClass,
+		isEmailValid,
+		isPasswordValid
+	} from '$lib/utils/functions.js';
 
 	// Get token, verify it and extract the pre-assigned user info
 	let token = $state($page.url.searchParams.get('token'));
@@ -23,6 +29,7 @@
 	// Token validation should be done only once
 	if (token) {
 		try {
+			checkJWT(token, { sub: 'registration' });
 			const data = jwt_decode(token);
 			tokenUsername = data['username'];
 			tokenFirstname = data['firstname'];
@@ -54,19 +61,16 @@
 	};
 	resetErrors();
 
-	const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-	const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-+_!$&?.,])[^ ]{8,20}$/;
-
-	let validEmail = $derived(!email ? null : regexEmail.test(email));
-	let validPassword = $derived(!password1 ? null : regexPassword.test(password1));
+	let validEmail = $derived(!email ? null : isEmailValid(email));
+	let validPassword = $derived(!password1 ? null : isPasswordValid(password1));
 	let samePassword = $derived(!password1 || !password2 ? null : password1 === password2);
 
 	const validateRegistration = function () {
 		resetErrors();
-		if (!regexEmail.test(email)) {
-			errors.password1 = 'Invalid email format.';
+		if (!isEmailValid(email)) {
+			errors.email = 'Invalid email format.';
 		}
-		if (!regexPassword.test(password2)) {
+		if (!isPasswordValid(password2)) {
 			errors.password1 = 'Invalid password format.';
 		}
 		if (password1 !== password2) {
@@ -102,16 +106,6 @@
 					}
 				}
 			});
-	};
-
-	const getValidationColorClass = function (validationCode) {
-		if (validationCode === null) {
-			return 'hidden';
-		} else if (validationCode === true) {
-			return 'on';
-		} else if (validationCode === false) {
-			return 'off';
-		}
 	};
 </script>
 

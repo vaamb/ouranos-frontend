@@ -1,8 +1,13 @@
 import humanizeDuration from 'humanize-duration';
+import jwt_decode from 'jwt-decode';
 
 import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 
+export class InvalidTokenError extends Error {}
+
+const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const dateRegex = new RegExp('^[0-9]{2}[-\/][0-9]{2}-([0-9]{2}|[0-9]{4})$');
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-+_!$&?.,])[^ ]{8,20}$/;
 const timeRegex = new RegExp('^[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?$');
 
 export const dynamicSort = function (property) {
@@ -125,23 +130,27 @@ export const isConnected = function (state) {
 	return state['connected'] !== CONNECTION_STATUS.DISCONNECTED;
 };
 
-export const computeEcosystemStatusClass = function (ecosystemState) {
-	if (isConnected(ecosystemState)) {
-		if (ecosystemState['status']) {
-			return 'on';
-		} else {
-			return 'off';
-		}
-	} else {
-		return 'deco';
-	}
-};
-
 export const getStatusClass = function (status) {
 	if (status) {
 		return 'on';
 	} else {
 		return 'off';
+	}
+};
+
+export const computeEcosystemStatusClass = function (ecosystemState) {
+	if (isConnected(ecosystemState)) {
+		return getStatusClass(ecosystemState['status']);
+	} else {
+		return 'deco';
+	}
+};
+
+export const getValidationColorClass = function (validationCode) {
+	if (validationCode !== null) {
+		return getStatusClass(validationCode);
+	} else {
+		return 'hidden';
 	}
 };
 
@@ -224,4 +233,34 @@ export const splitTags = function (tags) {
 
 export const joinTags = function (tags) {
 	return tags.join(', ');
+};
+
+export const isEmailValid = function (email) {
+	return emailRegex.test(email);
+};
+
+export const isPasswordValid = function (password) {
+	return passwordRegex.test(password);
+};
+
+export const checkJWT = function (token, claims = {}) {
+	try {
+		const decodedInvitationToken = jwt_decode(token);
+		if (new Date() >= decodedInvitationToken.exp * 1000) {
+			throw new InvalidTokenError('Expired token');
+		} else {
+			Object.entries(claims).forEach(([key, value]) => {
+				if (decodedInvitationToken[key] !== value) {
+					throw new InvalidTokenError('Invalid token');
+				}
+			});
+			return null;
+		}
+	} catch (error) {
+		if (error instanceof InvalidTokenError) {
+			return error;
+		} else {
+			throw new InvalidTokenError('Invalid token');
+		}
+	}
 };

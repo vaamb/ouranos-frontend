@@ -1,7 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 
-	import jwt_decode from 'jwt-decode';
+	import { checkJWT } from '$lib/utils/functions.js';
 
 	let invitationToken = $state();
 	let invitationError = $state(null);
@@ -9,19 +9,12 @@
 	const validateToken = function () {
 		invitationError = null;
 		try {
-			const decodedInvitationToken = jwt_decode(invitationToken);
-			if (new Date() >= decodedInvitationToken.exp * 1000) {
-				invitationError = 'Expired token';
-			} else {
-				const wrap = function () {
-					goto(`/auth/register?token=${invitationToken}`);
-				};
-				requestAnimationFrame(wrap);
-			}
+			checkJWT(invitationToken, { sub: 'registration' });
+			requestAnimationFrame(() => {
+				goto(`/auth/register?token=${invitationToken}`);
+			});
 		} catch (error) {
-			if (error.message) {
-				invitationError = 'Invalid token';
-			}
+			invitationError = error.message;
 		}
 	};
 </script>
@@ -47,7 +40,7 @@
 
 <style>
 	h1 {
-	font-size: 1.8rem;
+		font-size: 1.8rem;
 		font-weight: 500;
 		margin-bottom: 7px;
 	}

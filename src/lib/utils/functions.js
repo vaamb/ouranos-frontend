@@ -9,6 +9,7 @@ const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const dateRegex = new RegExp('^[0-9]{2}[-\/][0-9]{2}-([0-9]{2}|[0-9]{4})$');
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-+_!$&?.,])[^ ]{8,20}$/;
 const timeRegex = new RegExp('^[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?$');
+const usernameRegex = /^[a-zA-Z0-9_.!]{3,32}$/;
 
 export const dynamicSort = function (property) {
 	// from https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
@@ -233,6 +234,10 @@ export const splitTags = function (tags) {
 
 export const joinTags = function (tags) {
 	return tags.join(', ');
+};
+
+export const isUsernameValid = function (username) {
+	return usernameRegex.test(username);
 };
 
 export const isEmailValid = function (email) {

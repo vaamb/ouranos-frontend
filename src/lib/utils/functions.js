@@ -245,12 +245,12 @@ export const isPasswordValid = function (password) {
 
 export const checkJWT = function (token, claims = {}) {
 	try {
-		const decodedInvitationToken = jwt_decode(token);
-		if (new Date() >= decodedInvitationToken.exp * 1000) {
+		const decodedToken = jwt_decode(token);
+		if (new Date() >= decodedToken.exp * 1000) {
 			throw new InvalidTokenError('Expired token');
 		} else {
 			Object.entries(claims).forEach(([key, value]) => {
-				if (decodedInvitationToken[key] !== value) {
+				if (decodedToken[key] !== value) {
 					throw new InvalidTokenError('Invalid token');
 				}
 			});
@@ -258,7 +258,7 @@ export const checkJWT = function (token, claims = {}) {
 		}
 	} catch (error) {
 		if (error instanceof InvalidTokenError) {
-			return error;
+			throw error;
 		} else {
 			throw new InvalidTokenError('Invalid token');
 		}

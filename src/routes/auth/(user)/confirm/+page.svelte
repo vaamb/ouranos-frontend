@@ -107,7 +107,7 @@
 				id="submit-token"
 				type="submit"
 				class="submit-button"
-				value="Confirm"
+				value="Validate"
 				style="height: 2rem"
 				disabled={!newTokenIsValid}
 			/>
@@ -142,7 +142,7 @@
 		font-size: 0.95rem;
 	}
 
-	input:disabled {
+	.submit-button:disabled {
 		background-color: var(--derived-40);
 		color: var(--derived-60);
 		cursor: not-allowed;

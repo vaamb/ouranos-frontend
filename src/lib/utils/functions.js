@@ -7,7 +7,7 @@ export class InvalidTokenError extends Error {}
 
 const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const dateRegex = new RegExp('^[0-9]{2}[-\/][0-9]{2}-([0-9]{2}|[0-9]{4})$');
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-+_!$&?.,])[^ ]{8,20}$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-+_!$&?.,])[^ ]{8,32}$/;
 const timeRegex = new RegExp('^[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?$');
 const usernameRegex = /^[a-zA-Z0-9_.!]{3,32}$/;
 

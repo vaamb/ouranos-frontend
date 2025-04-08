@@ -176,7 +176,7 @@
 				<div class="error">{errors.password1}</div>
 			{:else}
 				<p style="max-width: 250px; margin: 0; font-size: smaller">
-					Should be between 8 and 20 characters long, contain at least one lower case letter, one
+					Should be between 8 and 32 characters long, contain at least one lower case letter, one
 					capital letter, one number and one special character amongst -+_!$&?.,
 				</p>
 			{/if}

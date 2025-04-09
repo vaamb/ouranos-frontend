@@ -50,7 +50,7 @@
 	};
 
 	const confirmAccount = function () {
-		axios(`${API_URL}/auth/confirm?token=${token}`, {
+		axios(`${API_URL}/auth/confirm_account?token=${token}`, {
 			method: 'post',
 			withCredentials: true
 		})

@@ -2,13 +2,10 @@
 	import { goto } from '$app/navigation';
 	import { navigating, page } from '$app/stores';
 
-	import axios from 'axios';
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
-	import { flashMessage } from '$lib/store.svelte.js';
-	import { API_URL } from '$lib/utils/consts.js';
-	import { Message } from '$lib/utils/factories.js';
+	import { crudRequest } from '$lib/actions.svelte.js';
 	import { checkJWT, getValidationColorClass, isPasswordValid } from '$lib/utils/functions.js';
 
 	// Token validation
@@ -60,34 +57,7 @@
 			password1 = null;
 			password2 = null;
 		} else {
-			axios(`${API_URL}/auth/reset_password?token=${token}`, {
-				method: 'post',
-				withCredentials: true,
-				data: {
-					password: password1
-				}
-			})
-				.then(() => {
-					let msgs = $flashMessage;
-					msgs.push(Message('Your password has been changed'));
-					flashMessage.set(msgs);
-					goto('/');
-				})
-				.catch((error) => {
-					if (error.response.data.detail) {
-						let msgs = $flashMessage;
-						msgs.push(Message(error.response.data.detail));
-						flashMessage.set(msgs);
-					} else {
-						let msgs = $flashMessage;
-						msgs.push(
-							Message(
-								'We encountered an error. Please contact the administrator and come back later.'
-							)
-						);
-						flashMessage.set(msgs);
-					}
-				});
+			crudRequest(`auth/reset_password?token=${token}`, 'create', { password: password1 });
 		}
 	};
 

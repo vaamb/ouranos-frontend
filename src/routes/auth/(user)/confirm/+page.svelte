@@ -2,13 +2,10 @@
 	import { goto } from '$app/navigation';
 	import { navigating, page } from '$app/stores';
 
-	import axios from 'axios';
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
-	import { flashMessage } from '$lib/store.svelte.js';
-	import { API_URL } from '$lib/utils/consts.js';
-	import { Message } from '$lib/utils/factories.js';
+	import { crudRequest } from "$lib/actions.svelte.js";
 	import { checkJWT, getValidationColorClass } from '$lib/utils/functions.js';
 
 	// Token validation
@@ -49,34 +46,6 @@
 		}
 	};
 
-	const confirmAccount = function () {
-		axios(`${API_URL}/auth/confirm_account?token=${token}`, {
-			method: 'post',
-			withCredentials: true
-		})
-			.then(() => {
-				let msgs = $flashMessage;
-				msgs.push(Message('Your account has been confirmed'));
-				flashMessage.set(msgs);
-				goto('/');
-			})
-			.catch((error) => {
-				if (error.response.data.detail) {
-					let msgs = $flashMessage;
-					msgs.push(Message(error.response.data.detail));
-					flashMessage.set(msgs);
-				} else {
-					let msgs = $flashMessage;
-					msgs.push(
-						Message(
-							'We encountered an error. Please contact the administrator and come back later.'
-						)
-					);
-					flashMessage.set(msgs);
-				}
-			});
-	};
-
 	// Update token on self page navigation
 	$effect(() => {
 		if ($navigating) {
@@ -115,7 +84,9 @@
 	</form>
 {:else if tokenIsValid}
 	<h1>Confirm your account</h1>
-	<form onsubmit={confirmAccount}>
+	<form onsubmit={() => {
+		crudRequest(`auth/confirm_account?token=${token}`, 'create')
+	}}>
 		<div class="input-group">
 			<input
 				id="submit-confirm-account"

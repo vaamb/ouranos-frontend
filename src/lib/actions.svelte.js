@@ -745,7 +745,7 @@ export const crudRequest = function (relRoute, action, payload = undefined) {
 		method = 'delete';
 	} else if (action === 'get') {
 		method = 'get';
-    } else {
+	} else {
 		throw Error;
 	}
 

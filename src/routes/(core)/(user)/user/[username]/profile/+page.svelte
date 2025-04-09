@@ -7,7 +7,13 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
-	import { capitalize, getStatusClass, formatDateTime } from '$lib/utils/functions.js';
+	import { services } from '$lib/store.svelte.js';
+	import {
+		capitalize,
+		getStatusClass,
+		formatDateTime,
+		serviceEnabled
+	} from '$lib/utils/functions.js';
 
 	let { data } = $props();
 	let userDescription = data.userDescription;
@@ -80,19 +86,34 @@
 				</button>
 			</td>
 		</tr>
-		{#if !userDescription['confirmed_at']}
-			<tr>
-				<td colspan="2" style="text-align: center; vertical-align: middle">
-					<button
-						class="text-button"
-						onclick={() => {
-							setCrudAction('confirm');
-						}}
-					>
-						Confirm account
-					</button>
-				</td>
-			</tr>
+		{#if serviceEnabled($services, 'email')}
+			{#if !userDescription['confirmed_at']}
+				<tr>
+					<td colspan="2" style="text-align: center; vertical-align: middle">
+						<button
+							class="text-button"
+							onclick={() => {
+								setCrudAction('confirm');
+							}}
+						>
+							Confirm account
+						</button>
+					</td>
+				</tr>
+			{:else}
+				<tr>
+					<td colspan="2" style="text-align: center; vertical-align: middle">
+						<button
+							class="text-button"
+							onclick={() => {
+								setCrudAction('reset_password');
+							}}
+						>
+							Change password
+						</button>
+					</td>
+				</tr>
+			{/if}
 		{/if}
 		<tr>
 			<td colspan="2" style="text-align: center; vertical-align: middle">
@@ -131,20 +152,42 @@
 		on:cancel={() => modals['update'].closeModal()}
 	/>
 </Modal>
-<Modal
-	bind:this={modals['confirm']}
-	showModal={crudAction === 'confirm'}
-	on:close={resetCrudAction}
-	title="Confirm {userDescription['username']}'s account"
-	confirmationButtons={true}
-	on:confirm={() => {
-		crudRequest(`user/u/${userDescription['username']}/confirm`, 'create').then(() => {
-			modals['confirm'].closeModal();
-		});
-	}}
->
-	<p>Send a confirmation mail to {userDescription['username']}?</p>
-</Modal>
+{#if serviceEnabled($services, 'email')}
+	<Modal
+		bind:this={modals['confirm']}
+		showModal={crudAction === 'confirm'}
+		on:close={resetCrudAction}
+		title="Confirm {userDescription['username']}'s account"
+		confirmationButtons={true}
+		on:confirm={() => {
+			crudRequest(
+				`user/u/${userDescription['username']}/confirmation_token?send_email=true`,
+				'get'
+			).then(() => {
+				modals['confirm'].closeModal();
+			});
+		}}
+	>
+		<p>Send a confirmation mail to {userDescription['username']}?</p>
+	</Modal>
+	<Modal
+		bind:this={modals['reset_password']}
+		showModal={crudAction === 'reset_password'}
+		on:close={resetCrudAction}
+		title="Change {userDescription['username']}'s password"
+		confirmationButtons={true}
+		on:confirm={() => {
+			crudRequest(
+				`user/u/${userDescription['username']}/password_reset_token?send_email=true`,
+				'get'
+			).then(() => {
+				modals['reset_password'].closeModal();
+			});
+		}}
+	>
+		<p>Send a mail to change {userDescription['username']}'s password ?</p>
+	</Modal>
+{/if}
 <Modal
 	bind:this={modals['delete']}
 	showModal={crudAction === 'delete'}

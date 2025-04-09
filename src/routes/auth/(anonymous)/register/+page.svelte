@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { navigating, page } from '$app/stores';
 
 	import axios from 'axios';
 	import jwt_decode from 'jwt-decode';
@@ -10,81 +10,114 @@
 	import { currentUser, flashMessage } from '$lib/store.svelte.js';
 	import { API_URL } from '$lib/utils/consts.js';
 	import { Message, User } from '$lib/utils/factories.js';
+	import {
+		checkJWT,
+		getValidationColorClass,
+		isEmailValid,
+		isEmpty,
+		isPasswordValid,
+		isUsernameValid
+	} from '$lib/utils/functions.js';
 
-	// Get token, verify it and extract the pre-assigned user info
+	// Token validation
 	let token = $state($page.url.searchParams.get('token'));
+	let newToken = $state(token);
 
-	let tokenUsername = $state();
-	let tokenFirstname = $state();
-	let tokenLastname = $state();
-	let tokenRole = $state();
-	let tokenEmail = $state();
-
-	// Token validation should be done only once
-	if (token) {
+	let tokenIsValid = $derived.by(() => {
 		try {
-			const data = jwt_decode(token);
-			tokenUsername = data['username'];
-			tokenFirstname = data['firstname'];
-			tokenLastname = data['lastname'];
-			tokenRole = data['role'];
-			tokenEmail = data['email'];
+			checkJWT(token, { sub: 'registration' });
+			return true;
 		} catch (error) {
-			token = null;
+			return false;
 		}
-	}
+	});
+
+	let newTokenError = $derived.by(() => {
+		try {
+			checkJWT(newToken, { sub: 'registration' });
+			return null;
+		} catch (error) {
+			return error.message;
+		}
+	});
+	let newTokenIsValid = $derived(!newToken ? null : newTokenError === null);
+
+	const submitToken = function () {
+		if (newTokenIsValid !== true) {
+			// If invalid or expired token, clear it (should not be possible)
+			newToken = null;
+			token = null;
+		} else {
+			// Else, store the reset token and use it
+			token = newToken;
+			requestAnimationFrame(() => {
+				username = tokenData.username;
+				firstname = tokenData.firstname;
+				lastname = tokenData.lastname;
+				role = tokenData.role || 'User';
+				email = tokenData.email;
+				telegramId = tokenData.telegramId;
+				goto(`/auth/register?token=${token}`);
+			});
+		}
+	};
+
+	// Token data extraction
+	let tokenData = $derived.by(() => {
+		try {
+			checkJWT(token, { sub: 'registration' });
+			const tokenData = jwt_decode(token);
+			return {
+				username: tokenData['username'],
+				firstname: tokenData['firstname'],
+				lastname: tokenData['lastname'],
+				role: tokenData['role'],
+				email: tokenData['email'],
+				telegramId: undefined
+			};
+		} catch (error) {
+			return {};
+		}
+	});
 
 	// Prefill user data with pre-assigned user info
-	let username = $state(tokenUsername);
-	let firstname = $state(tokenFirstname);
-	let lastname = $state(tokenLastname);
-	let role = tokenRole || 'User';
-	let email = $state(tokenEmail);
-	let telegramId = $state();
+	let username = $state(tokenData.username);
+	let firstname = $state(tokenData.firstname);
+	let lastname = $state(tokenData.lastname);
+	let role = tokenData.role || 'User';
+	let email = $state(tokenData.email);
+	let telegramId = $state(tokenData.telegramId);
+
 	let password1 = $state(null);
 	let password2 = $state(null);
 
 	// Data validation
-	let errors = $state({});
-	const resetErrors = function () {
-		errors.email = null;
-		errors.password1 = null;
-		errors.password2 = null;
-		errors.server = null;
-	};
-	resetErrors();
+	let serverError = $state(null);
 
-	const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-	const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-+_!$&?.,])[^ ]{8,20}$/;
-
-	let validEmail = $derived(!email ? null : regexEmail.test(email));
-	let validPassword = $derived(!password1 ? null : regexPassword.test(password1));
+	let validUsername = $derived(!username ? null : isUsernameValid(username));
+	let validEmail = $derived(!email ? null : isEmailValid(email));
+	let validPassword = $derived(!password1 ? null : isPasswordValid(password1));
 	let samePassword = $derived(!password1 || !password2 ? null : password1 === password2);
 
+	let canSubmit = $derived(validUsername && validEmail && validPassword && samePassword);
+
 	const validateRegistration = function () {
-		resetErrors();
-		if (!regexEmail.test(email)) {
-			errors.password1 = 'Invalid email format.';
-		}
-		if (!regexPassword.test(password2)) {
-			errors.password1 = 'Invalid password format.';
-		}
-		if (password1 !== password2) {
-			errors.password2 = 'Both passwords should match.';
-		}
 		axios(`${API_URL}/auth/register?invitation_token=${token}`, {
 			method: 'post',
 			withCredentials: true,
 			data: {
-				username: tokenUsername ? tokenUsername : username,
+				// Overwrite the non-overridable pre-assigned user info (it won't be accepted otherwise)
+				username: tokenData.username ? tokenData.username : username,
+				email: tokenData.email ? tokenData.email : email,
+				// Use the remaining user info as such
 				firstname: firstname,
 				lastname: lastname,
-				email: tokenEmail ? tokenEmail : email,
-				telegram_id: telegramId,
+				// telegram_id: telegramId,
 				password: password1
 			}
 		})
 			.then((response) => {
+				serverError = null;
 				const user = User(response.data.user);
 				currentUser.set(user);
 				let msgs = $flashMessage;
@@ -92,37 +125,60 @@
 				flashMessage.set(msgs);
 				goto(`/`);
 			})
-			.catch((postError) => {
-				if (postError.response) {
-					if (postError.response.data.detail) {
-						errors.server = postError.response.data.detail;
+			.catch((error) => {
+				if (error.response) {
+					if (error.response.data.detail) {
+						serverError = error.response.data.detail;
 					} else {
-						errors.server =
+						serverError =
 							'We encountered an error. Please contact the administrator and come back later.';
 					}
 				}
 			});
 	};
 
-	const getValidationColorClass = function (validationCode) {
-		if (validationCode === null) {
-			return 'hidden';
-		} else if (validationCode === true) {
-			return 'on';
-		} else if (validationCode === false) {
-			return 'off';
+	// Update token on self page navigation
+	$effect(() => {
+		if ($navigating) {
+			// Coming from a page with a token, to a page without -> the token was invalid, clear it
+			if (
+				$navigating.from.url.searchParams.get('token') &&
+				!$navigating.to.url.searchParams.get('token')
+			) {
+				token = null;
+				newToken = null;
+			}
 		}
-	};
+	});
 </script>
 
-{#if !token}
-	<p>Get a valid token and enter it <a href="/auth/invitation">here</a></p>
-{:else}
+{#if token === null}
+	<h1>Enter your registration token</h1>
+	<form onsubmit={submitToken}>
+		<div class="input-group">
+			{#if newToken !== null && newTokenError !== null}
+				<div class="error">{newTokenError}</div>
+			{/if}
+			<input id="invitation" size="60" type="text" bind:value={newToken} />
+			<Fa icon={faCircle} class={getValidationColorClass(newTokenIsValid)} />
+		</div>
+		<div class="input-group">
+			<input
+				id="submit-token"
+				type="submit"
+				class="submit-button"
+				value="Validate"
+				style="height: 2rem"
+				disabled={!newTokenIsValid}
+			/>
+		</div>
+	</form>
+{:else if tokenIsValid}
 	<h1>Register</h1>
 	<form onsubmit={validateRegistration}>
-		{#if errors.server}
+		{#if serverError}
 			<div class="input-group">
-				<div class="error">{errors.server}</div>
+				<div class="error">{serverError}</div>
 			</div>
 		{/if}
 		<div class="input-group">
@@ -132,12 +188,13 @@
 				size="32"
 				type="text"
 				bind:value={username}
-				disabled={tokenUsername !== undefined}
+				disabled={tokenData.username !== undefined}
 			/>
-			{#if errors.username}
-				<br />
-				<div class="error">{errors.username}</div>
-			{/if}
+			<Fa icon={faCircle} class={getValidationColorClass(validUsername)} />
+			<p style="max-width: 250px; margin: 0; font-size: smaller">
+				Should be between 3 and 32 characters long, cannot contain spaces
+				and special characters other than ._!
+			</p>
 		</div>
 		<div class="input-group">
 			<label for="firstname">Firstname</label> <br />
@@ -150,21 +207,18 @@
 		<div class="input-group">
 			<label for="role">Role</label> <br />
 			<input id="role" size="32" type="text" value={role} disabled />
+			<Fa icon={faCircle} class={getValidationColorClass(!isEmpty(role))} />
 		</div>
 		<div class="input-group">
 			<label for="email">E-mail</label> <br />
 			<input
 				id="email"
 				size="32"
-				type="text"
+				type="email"
 				bind:value={email}
-				disabled={tokenEmail !== undefined}
+				disabled={tokenData.email !== undefined}
 			/>
 			<Fa icon={faCircle} class={getValidationColorClass(validEmail)} />
-			{#if errors.email}
-				<br />
-				<div class="error">{errors.email}</div>
-			{/if}
 		</div>
 		<!--
 		<div class="input-group">
@@ -176,25 +230,15 @@
 			<label for="password1">Password</label> <br />
 			<input id="password1" size="32" type="password" bind:value={password1} />
 			<Fa icon={faCircle} class={getValidationColorClass(validPassword)} />
-			<div style="display: {validPassword !== null ? 'auto' : 'none'}"></div>
-			{#if errors.password1}
-				<br />
-				<div class="error">{errors.password1}</div>
-			{:else}
-				<p style="max-width: 250px; margin: 0; font-size: smaller">
-					Should be between 8 and 20 characters long, contain at least one lower case letter, one
-					capital letter, one number and one special character amongst -+_!$&?.,
-				</p>
-			{/if}
+			<p style="max-width: 250px; margin: 0; font-size: smaller">
+				Should be between 8 and 32 characters long, contain at least one lower case letter, one
+				capital letter, one number and one special character amongst -+_!$&?.,
+			</p>
 		</div>
 		<div class="input-group">
 			<label for="password2">Repeat your password</label> <br />
 			<input id="password2" size="32" type="password" bind:value={password2} />
 			<Fa icon={faCircle} class={getValidationColorClass(samePassword)} />
-			{#if errors.password2}
-				<br />
-				<div class="error">{errors.password2}</div>
-			{/if}
 		</div>
 		<div class="input-group">
 			<input
@@ -203,9 +247,12 @@
 				class="submit-button"
 				value="Validate"
 				style="height: 2rem"
+				disabled={!canSubmit}
 			/>
 		</div>
 	</form>
+{:else}
+	<p>Get a valid token and enter it <a href="/auth/register">here</a></p>
 {/if}
 
 <style>
@@ -222,5 +269,11 @@
 	input {
 		height: 1.3rem;
 		font-size: 0.95rem;
+	}
+
+	.submit-button:disabled {
+		background-color: var(--derived-40);
+		color: var(--derived-60);
+		cursor: not-allowed;
 	}
 </style>

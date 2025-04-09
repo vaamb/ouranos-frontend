@@ -1,9 +1,15 @@
 import humanizeDuration from 'humanize-duration';
+import jwt_decode from 'jwt-decode';
 
 import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 
-const dateRegex = new RegExp('^[0-9]{2}[-\/][0-9]{2}-([0-9]{2}|[0-9]{4})$');
-const timeRegex = new RegExp('^[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?$');
+export class InvalidTokenError extends Error {}
+
+const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+const dateRegex = /^[0-9]{2}[-\/][0-9]{2}-([0-9]{2}|[0-9]{4})$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-+_!$&?.,])[^ ]{8,32}$/;
+const timeRegex = /^[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?$/;
+const usernameRegex = /^[a-zA-Z0-9_.!]{3,32}$/;
 
 export const dynamicSort = function (property) {
 	// from https://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value
@@ -125,23 +131,27 @@ export const isConnected = function (state) {
 	return state['connected'] !== CONNECTION_STATUS.DISCONNECTED;
 };
 
-export const computeEcosystemStatusClass = function (ecosystemState) {
-	if (isConnected(ecosystemState)) {
-		if (ecosystemState['status']) {
-			return 'on';
-		} else {
-			return 'off';
-		}
-	} else {
-		return 'deco';
-	}
-};
-
 export const getStatusClass = function (status) {
 	if (status) {
 		return 'on';
 	} else {
 		return 'off';
+	}
+};
+
+export const computeEcosystemStatusClass = function (ecosystemState) {
+	if (isConnected(ecosystemState)) {
+		return getStatusClass(ecosystemState['status']);
+	} else {
+		return 'deco';
+	}
+};
+
+export const getValidationColorClass = function (validationCode) {
+	if (validationCode !== null) {
+		return getStatusClass(validationCode);
+	} else {
+		return 'hidden';
 	}
 };
 
@@ -224,4 +234,38 @@ export const splitTags = function (tags) {
 
 export const joinTags = function (tags) {
 	return tags.join(', ');
+};
+
+export const isUsernameValid = function (username) {
+	return usernameRegex.test(username);
+};
+
+export const isEmailValid = function (email) {
+	return emailRegex.test(email);
+};
+
+export const isPasswordValid = function (password) {
+	return passwordRegex.test(password);
+};
+
+export const checkJWT = function (token, claims = {}) {
+	try {
+		const decodedToken = jwt_decode(token);
+		if (new Date() >= decodedToken.exp * 1000) {
+			throw new InvalidTokenError('Expired token');
+		} else {
+			Object.entries(claims).forEach(([key, value]) => {
+				if (decodedToken[key] !== value) {
+					throw new InvalidTokenError('Invalid token');
+				}
+			});
+			return null;
+		}
+	} catch (error) {
+		if (error instanceof InvalidTokenError) {
+			throw error;
+		} else {
+			throw new InvalidTokenError('Invalid token');
+		}
+	}
 };

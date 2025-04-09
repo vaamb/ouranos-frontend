@@ -718,9 +718,13 @@ export const fetchWikiPictures = async function (topic_name, article_name) {
 		});
 };
 
-export const fetchUserDescription = async function (username) {
+export const fetchUserDescription = async function (clientSessionCookie, clientUserAgent, username) {
 	return axios
 		.get(`${LOCAL_API_URL}/user/u/${username}`, {
+			headers: {
+				Cookie: clientSessionCookie,
+				'User-Agent': clientUserAgent
+			},
 			withCredentials: true
 		})
 		.then((response) => {

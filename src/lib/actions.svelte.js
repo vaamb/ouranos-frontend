@@ -743,6 +743,8 @@ export const crudRequest = function (relRoute, action, payload = undefined) {
 		method = 'put';
 	} else if (action === 'delete') {
 		method = 'delete';
+	} else if (action === 'get') {
+		method = 'get';
 	} else {
 		throw Error;
 	}
@@ -751,7 +753,7 @@ export const crudRequest = function (relRoute, action, payload = undefined) {
 		method: method,
 		withCredentials: true
 	};
-	if (action !== 'delete' && payload !== undefined) {
+	if (payload !== undefined) {
 		options['data'] = payload;
 	}
 

@@ -107,8 +107,7 @@
 							/>
 						</BoxItem>
 					{/if}
-					{@const actuatorRecords =
-						$ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
+					{@const actuatorRecords = $ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
 					{#if actuatorRecords.values.length >= 3}
 						<BoxItem>
 							{@const formattedActuatorRecords = formatRecords(actuatorRecords)}

@@ -66,7 +66,8 @@
 		<div class="menu-title-wrapper">
 			<div class="menu-title">
 				<a href="/">
-					GAIA
+					<img src="/favicon.ico" alt="G" width="25px" class="logo">
+					AIA
 				</a>
 			</div>
 		</div>
@@ -159,6 +160,11 @@
 		font-weight: bold;
 		font-size: 1.5rem;
 		margin: auto;
+	}
+
+	.logo {
+		margin-right: -6px;
+		margin-bottom: -3px;
 	}
 
 	.toggle-button-wrapper {

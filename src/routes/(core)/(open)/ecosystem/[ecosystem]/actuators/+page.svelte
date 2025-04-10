@@ -102,8 +102,7 @@
 	{#each actuatorTypes as actuator}
 		{#await fetchEcosystemActuatorRecords(ecosystemUID, actuator) then ecosystemsActuatorsRecords_notUsed}
 			{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active'] || hasBeenActive($ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)])}
-				{@const actuatorRecords =
-					$ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
+				{@const actuatorRecords = $ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
 				{@const drawGraph = actuatorRecords.values.length >= 3}
 				<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>
 					{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active']}

@@ -186,10 +186,10 @@
 		width: 25px;
 		line-height: 24px;
 		margin: auto 0 auto auto;
+		transition: transform 0.7s;
 	}
 
 	.rotated {
-		transition: transform 0.5s;
 		transform: rotate(90deg);
 	}
 </style>

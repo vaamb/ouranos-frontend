@@ -2,7 +2,13 @@
 	import { navigating } from '$app/stores';
 
 	import Fa from 'svelte-fa';
-	import { faAddressCard, faUserCog, faPowerOff } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faAddressCard,
+		faBars,
+		faPowerOff,
+		faUserCog,
+		faXmark
+	} from '@fortawesome/free-solid-svg-icons';
 
 	import MenuItem from '$lib/components/menu/MenuItem.svelte';
 
@@ -56,16 +62,25 @@
 <svelte:window bind:outerWidth />
 
 <nav style="--menu-width:{width}">
-	<div
-		class="top-box"
-		tabindex="0"
-		role="button"
-		aria-pressed="false"
-		onclick={toggleMenu}
-		onkeypress={toggleMenu}
-	>
-		<div class="menu-title">
-			<h1>GAIA</h1>
+	<div class="top-box">
+		<div class="menu-title-wrapper">
+			<div class="menu-title">GAIA</div>
+		</div>
+		<div
+			class="toggle-button-wrapper"
+			tabindex="0"
+			role="button"
+			aria-pressed="false"
+			onclick={toggleMenu}
+			onkeypress={toggleMenu}
+		>
+			<div class="toggle-button">
+				{#if !showMenu}
+					<Fa icon={faBars} size="2x" />
+				{:else}
+					<Fa icon={faXmark} size="2x" />
+				{/if}
+			</div>
 		</div>
 		<div class="user-box">
 			<img src="/images/avatar/{$currentUser.avatar}_64.jpg" alt="User avatar" class="avatar" />
@@ -83,7 +98,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="toggle-accordion" class:show={showMenu === true}>
+	<div class="toggleable-content" class:show={showMenu === true}>
 		<ul class="accordion">
 			{#each items as item, index}
 				<MenuItem
@@ -106,12 +121,6 @@
 </nav>
 
 <style>
-	h1 {
-		font-family: sans-serif;
-		font-weight: bold;
-		font-size: 1.5rem;
-	}
-
 	a {
 		text-decoration: none;
 		color: inherit;
@@ -129,37 +138,36 @@
 	}
 
 	.top-box {
+		width: calc(100% - 20px);
 		padding: 10px;
 		display: flex;
 		flex-wrap: wrap;
 	}
 
-	.accordion {
-		overflow-y: scroll;
-		scrollbar-width: none;
-	}
-
-	.toggle-accordion {
-		height: calc(100vh - 65px); /* full screen - reduced menu height */
-		display: none;
-		flex-direction: column;
-		border-top: thin solid var(--main-95);
-	}
-
-	.show {
-		display: flex;
+	.menu-title-wrapper {
+		width: 25%;
+		margin: auto auto auto 10px;
+		line-height: 45px;
 	}
 
 	.menu-title {
+		font-family: sans-serif;
+		font-weight: bold;
+		font-size: 1.5rem;
 		margin: auto;
+	}
+
+	.toggle-button-wrapper {
+		width: 75px;
 		line-height: 45px;
 		display: flex;
 	}
 
+	.toggle-button {
+		margin: auto 15px -5px auto;
+	}
+
 	.user-box {
-		height: 56px;
-		margin-top: 5px;
-		margin-bottom: 10px;
 		display: none;
 	}
 
@@ -189,6 +197,22 @@
 		padding-top: 2px;
 	}
 
+	.toggleable-content {
+		height: calc(100vh - 65px); /* full screen - reduced menu height */
+		display: none;
+		flex-direction: column;
+		border-top: thin solid var(--main-95);
+	}
+
+	.show {
+		display: flex;
+	}
+
+	.accordion {
+		overflow-y: scroll;
+		scrollbar-width: none;
+	}
+
 	.bottom-box {
 		display: flex;
 		margin-top: auto;
@@ -216,15 +240,24 @@
 			height: 100%;
 		}
 
-		.menu-title {
+		.menu-title-wrapper {
 			margin: 0 auto 5px auto;
-		}
-
-		.user-box {
+			width: inherit;
 			display: flex;
 		}
 
-		.toggle-accordion {
+		.toggle-button-wrapper {
+			display: none;
+		}
+
+		.user-box {
+			height: 56px;
+			margin-top: 5px;
+			margin-bottom: 10px;
+			display: flex;
+		}
+
+		.toggleable-content {
 			display: flex;
 			flex-direction: column;
 			height: 100%;

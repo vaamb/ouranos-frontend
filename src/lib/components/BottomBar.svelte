@@ -99,7 +99,6 @@
 	@media only screen and (min-width: 992px) {
 		.bottom-bar {
 			width: calc(100% - var(--menu-width) * 1px);
-			margin-left: calc(var(--menu-width) * 1px);
 		}
 	}
 </style>

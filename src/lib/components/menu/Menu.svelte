@@ -140,6 +140,7 @@
 	}
 
 	.toggle-accordion {
+		height: calc(100vh - 65px); /* full screen - reduced menu height */
 		display: none;
 		flex-direction: column;
 		border-top: thin solid var(--main-95);

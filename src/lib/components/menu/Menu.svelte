@@ -119,6 +119,8 @@
 
 	nav {
 		top: 0;
+		position: fixed;
+		width: 100%;
 		background-color: var(--main-25);
 		color: var(--main-95);
 		display: flex;
@@ -210,7 +212,6 @@
 	@media only screen and (min-width: 992px) {
 		nav {
 			width: calc(var(--menu-width) * 1px);
-			position: fixed;
 			height: 100%;
 		}
 

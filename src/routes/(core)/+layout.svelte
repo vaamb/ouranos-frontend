@@ -141,6 +141,7 @@
 
 <style>
 	.main {
+		margin-top: 65px;
 		min-height: calc(100vh - 141px); /* 141px = Nav bar (65) + Top bar (45) + border (1) + padding (10+20) */
 	}
 
@@ -151,6 +152,7 @@
 	/* Large devices (laptops/desktops, 992px and up) */
 	@media only screen and (min-width: 992px) {
 		.main {
+			margin-top: 0;
 			margin-left: calc(var(--margin-width) * 1px);
 			min-height: calc(100vh - 76px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
 		}

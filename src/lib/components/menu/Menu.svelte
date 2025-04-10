@@ -198,14 +198,16 @@
 	}
 
 	.toggleable-content {
-		height: calc(100vh - 65px); /* full screen - reduced menu height */
-		display: none;
+		height: 0;
+		display: flex;
+		overflow: hidden;
 		flex-direction: column;
 		border-top: thin solid var(--main-95);
-	}
+		-webkit-transition: all 0.7s;
 
-	.show {
-		display: flex;
+		&.show {
+			height: calc(100vh - 65px); /* full screen - reduced menu height */
+		}
 	}
 
 	.accordion {

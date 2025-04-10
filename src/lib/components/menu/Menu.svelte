@@ -165,6 +165,7 @@
 		width: 75px;
 		line-height: 45px;
 		display: flex;
+		cursor: pointer;
 	}
 
 	.toggle-button {

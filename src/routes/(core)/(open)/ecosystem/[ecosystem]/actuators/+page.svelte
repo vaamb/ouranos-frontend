@@ -34,6 +34,22 @@
 		return mode === 'automatic';
 	};
 
+	const patchActuatorRecords = function (records, actuatorName) {
+		if (records['values'].length > 0) {
+			return records;
+		} else {
+			const currentState = $ecosystemsActuatorsState[ecosystemUID][actuatorName];
+			records['values'].push([
+				records['span'][1],
+				currentState['active'],
+				currentState['mode'],
+				currentState['status'],
+				currentState['level']
+			]);
+			return records;
+		}
+	};
+
 	const formatRecords = function (data) {
 		const records = data['values'];
 		// Pre-populate data with the first bound (so they all start at the same time)
@@ -86,7 +102,8 @@
 	{#each actuatorTypes as actuator}
 		{#await fetchEcosystemActuatorRecords(ecosystemUID, actuator) then ecosystemsActuatorsRecords_notUsed}
 			{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active'] || hasBeenActive($ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)])}
-				{@const actuatorRecords = $ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
+				{@const actuatorRecords =
+					$ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
 				{@const drawGraph = actuatorRecords.values.length >= 3}
 				<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>
 					{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active']}
@@ -107,22 +124,22 @@
 							/>
 						</BoxItem>
 					{/if}
-					{@const actuatorRecords = $ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
-					{#if actuatorRecords.values.length >= 3}
-						<BoxItem>
-							{@const formattedActuatorRecords = formatRecords(actuatorRecords)}
-							<Graph
-								datasets={formattedActuatorRecords.datasets}
-								labels={formattedActuatorRecords.labels}
-								suggestedMax="1"
-								height="200px"
-								legend={{
-									display: true,
-									position: 'right'
-								}}
-							/>
-						</BoxItem>
-					{/if}
+					{@const actuatorRecords =
+						$ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
+					{@const patchedActuatorRecords = patchActuatorRecords(actuatorRecords, actuator)}
+					<BoxItem>
+						{@const formattedActuatorRecords = formatRecords(patchedActuatorRecords)}
+						<Graph
+							datasets={formattedActuatorRecords.datasets}
+							labels={formattedActuatorRecords.labels}
+							suggestedMax="1"
+							height="200px"
+							legend={{
+								display: true,
+								position: 'right'
+							}}
+						/>
+					</BoxItem>
 				</Box>
 			{/if}
 		{/await}

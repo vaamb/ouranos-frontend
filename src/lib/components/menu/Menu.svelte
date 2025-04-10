@@ -64,7 +64,11 @@
 <nav style="--menu-width:{width}">
 	<div class="top-box">
 		<div class="menu-title-wrapper">
-			<div class="menu-title">GAIA</div>
+			<div class="menu-title">
+				<a href="/">
+					GAIA
+				</a>
+			</div>
 		</div>
 		<div
 			class="toggle-button-wrapper"

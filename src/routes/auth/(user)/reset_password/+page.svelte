@@ -83,7 +83,7 @@
 			{#if newToken !== null && newTokenError !== null}
 				<div class="error">{newTokenError}</div>
 			{/if}
-			<input id="validate" size="60" type="text" bind:value={newToken} />
+			<input id="token" type="text" bind:value={newToken} />
 			<Fa icon={faCircle} class={getValidationColorClass(newTokenIsValid)} />
 		</div>
 		<div class="input-group">
@@ -145,5 +145,15 @@
 		background-color: var(--derived-40);
 		color: var(--derived-60);
 		cursor: not-allowed;
+	}
+
+	#token {
+		width: 100%;
+	}
+
+	@media only screen and (min-width: 992px) {
+		#token {
+			width: 575px;
+		}
 	}
 </style>

@@ -43,7 +43,11 @@ const setFlashMsgError = function (error) {
 	let errorMsg;
 	if (appMode === APP_MODE.development) {
 		console.log(error);
-		errorMsg = Message(JSON.stringify(error.response.data), 'Encountered an error');
+		if (error.response.data.detail !== undefined) {
+			errorMsg = Message(error.response.data.detail, 'Encountered an error');
+		} else {
+			errorMsg = Message(JSON.stringify(error.response.data), 'Encountered an error');
+		}
 	} else {
 		errorMsg = Message(ERROR_MSG);
 	}
@@ -718,7 +722,12 @@ export const fetchWikiPictures = async function (topic_name, article_name) {
 		});
 };
 
-export const fetchUserDescription = async function (clientSessionCookie, clientUserAgent, username) {
+// User-related actions
+export const fetchUserDescription = async function (
+	clientSessionCookie,
+	clientUserAgent,
+	username
+) {
 	return axios
 		.get(`${LOCAL_API_URL}/user/u/${username}`, {
 			headers: {
@@ -732,6 +741,22 @@ export const fetchUserDescription = async function (clientSessionCookie, clientU
 		})
 		.catch(() => {
 			return undefined;
+		});
+};
+
+export const fetchUsers = async function (page) {
+	return axios
+		.get(`${API_URL}/user`, {
+			params: {
+				page: page
+			},
+			withCredentials: true
+		})
+		.then((response) => {
+			return response.data;
+		})
+		.catch(() => {
+			return [];
 		});
 };
 

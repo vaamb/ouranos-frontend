@@ -11,6 +11,7 @@ import {
 	faServer,
 	faThermometerHalf,
 	faToggleOff,
+	faUsers,
 	faVideo
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -115,9 +116,8 @@ export const generateListOfMenuItems = function (
 	}
 
 	if (currentUser.can(permissions.ADMIN)) {
-		let systemMenus = [
-			MenuItem('Services', '/admin/services/settings', undefined)
-		];
+		// System menu
+		let systemMenus = [MenuItem('Services', '/admin/services/settings', undefined)];
 		for (const id of systemsIds) {
 			const uid = id['uid'];
 			const children = [
@@ -127,12 +127,15 @@ export const generateListOfMenuItems = function (
 			systemMenus.push(MenuItem(id['name'], '#', undefined, children, 'var(--derived-50)'));
 		}
 		menuItems.push(MenuItem('Systems', '#', faDatabase, systemMenus));
+
+		// User menu
+		menuItems.push(MenuItem('Users', '/user', faUsers));
 	}
 
 	if (serviceEnabled(services, 'wiki')) {
 		let wikiMenus = [];
 
-		wikiMenus.push(MenuItem("Index", '/wiki'));
+		wikiMenus.push(MenuItem('Index', '/wiki'));
 
 		for (const topic of wikiTopics) {
 			wikiMenus.push(MenuItem(capitalize(topic['name']), `/wiki/u/${topic['slug']}`));

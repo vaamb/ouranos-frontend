@@ -89,6 +89,7 @@ export const generateListOfMenuItems = function (
 		}
 	];
 
+	// Might want to use a `hasAnyManagements` instead
 	const hasAllManagements = function (ecosystemManagement, managements) {
 		for (const management of managements) {
 			if (! ecosystemManagement[management]) {

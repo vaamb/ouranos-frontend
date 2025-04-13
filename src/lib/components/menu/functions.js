@@ -62,33 +62,43 @@ export const generateListOfMenuItems = function (
 			name: 'Actuators',
 			icon: faToggleOff,
 			path: 'actuators',
-			management: 'switches'
+			management: ['switches']
 		},
 		{
 			name: 'Ecosystem health',
 			icon: faHeartbeat,
 			path: 'sensors/ecosystem',
-			management: 'health'
+			management: ['health', 'ecosystem_data']
 		},
 		{
 			name: 'Environment',
 			icon: faThermometerHalf,
 			path: 'sensors/environment',
-			management: 'environment_data'
+			management: ['sensors', 'environment_data']
 		},
 		{
 			name: 'Plants',
 			icon: faSeedling,
 			path: 'sensors/plants',
-			management: 'plants_data'
+			management: ['sensors', 'plants_data']
 		},
 		{
 			name: 'Camera',
 			icon: faVideo,
 			path: 'camera',
-			management: 'pictures'
+			management: ['pictures']
 		}
 	];
+
+	// Might want to use a `hasAnyManagements` instead
+	const hasAllManagements = function (ecosystemManagement, managements) {
+		for (const management of managements) {
+			if (! ecosystemManagement[management]) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	let ecosystemMenus = [];
 	for (const id of ecosystemsIds) {
@@ -99,7 +109,7 @@ export const generateListOfMenuItems = function (
 			children.push(MenuItem('Settings', `/ecosystem/${slugify(id['name'])}/settings`, faCog));
 		}
 		for (const menuItemAvailable of ecosystemMenuItemsAvailable) {
-			if (ecosystemManagement[menuItemAvailable['management']]) {
+			if (hasAllManagements(ecosystemManagement, menuItemAvailable['management'])) {
 				children.push(
 					MenuItem(
 						menuItemAvailable['name'],

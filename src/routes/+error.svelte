@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 </script>
 
-<div class="center-content">
+<div class="main center-content">
 	<div style="max-width: 80%">
 		<h1>{$page.status}</h1>
 		<p>{$page.error.message}</p>
@@ -17,3 +17,10 @@
 		</button>
 	</div>
 </div>
+
+<style>
+	.main {
+		height: 100vh;
+		width: 100vw;
+	}
+</style>

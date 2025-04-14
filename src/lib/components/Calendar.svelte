@@ -12,7 +12,7 @@
 		formatDate,
 		formatDateTime,
 		months,
-		serializeDatetime,
+		serializeDatetime
 	} from '$lib/utils/functions.js';
 	import Table from '$lib/components/Table.svelte';
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
@@ -204,8 +204,14 @@
 										{day.getTime() === today.getTime() ? 'today' : ''}
 										{day.getTime() < today.getTime() ? 'past' : ''}
 									"
+									tabindex="0"
+									role="button"
+									aria-pressed="false"
 									onclick={() => {
-										modalDay = day;
+										modalDay = new Date(day.getFullYear(), day.getMonth(), day.getDate());
+									}}
+									onkeypress={() => {
+										modalDay = new Date(day.getFullYear(), day.getMonth(), day.getDate());
 									}}
 								>
 									<div class="date">{day.getDate()}</div>
@@ -267,9 +273,20 @@
 			<Form
 				data={[
 					{ label: 'Title', key: 'title' },
-					{ label: 'Start', key: 'start_time', type: 'datetime-local', deserializer: deserializeDatetime },
-					{ label: 'End', key: 'end_time', type: 'datetime-local', deserializer: deserializeDatetime },
-					{ label: 'Description', key: 'description' },
+					{
+						label: 'Start',
+						key: 'start_time',
+						type: 'datetime-local',
+						deserializer: deserializeDatetime,
+						value: serializeDatetime(modalDay)
+					},
+					{
+						label: 'End',
+						key: 'end_time',
+						type: 'datetime-local',
+						deserializer: deserializeDatetime
+					},
+					{ label: 'Description', key: 'description', required: false },
 					{ label: 'Level', key: 'level', value: eventLevels[0], selectFrom: eventLevels }
 				]}
 				on:confirm={(event) => {

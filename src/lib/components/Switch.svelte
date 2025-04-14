@@ -84,13 +84,15 @@
 	}
 
 	input {
+		width: 100%;
+		box-sizing:border-box;
 		border: thin var(--derived-50) solid;
 		text-align: center;
-		padding: 0.45em 1.4em;
+		padding: 0.45em 0.45em;
 		margin: 2px 0;
 		box-shadow: var(--main-50-shadow);
 		border-radius: 7px;
-		font-size: 1rem;
+		font-size: 0.95rem;
 	}
 
 	.container {
@@ -100,13 +102,14 @@
 	}
 
 	.status {
-		height: 150px;
-		width: 150px;
+		height: 125px;
+		width: 125px;
 		display: flex;
-		padding-right: 10px;
+		margin: auto;
 	}
 
 	.switch-options {
 		margin: auto;
+		max-width: 150px;
 	}
 </style>

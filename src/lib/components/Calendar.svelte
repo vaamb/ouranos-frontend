@@ -118,7 +118,7 @@
 			events
 				// Keep only index of events that fall between dayStart and dayEnd
 				.map((event, i) =>
-					dayStart <= event['end_time'] && event['start_time'] <= dayEnd ? i : undefined
+					dayStart <= event['end_time'] && event['start_time'] < dayEnd ? i : undefined
 				)
 				.filter((i) => i !== undefined)
 				// Get the IDs of the events

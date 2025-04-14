@@ -139,7 +139,7 @@
 		color: var(--main-95);
 		display: flex;
 		flex-direction: column;
-		z-index: 10;
+		z-index: 100;
 	}
 
 	.top-box {

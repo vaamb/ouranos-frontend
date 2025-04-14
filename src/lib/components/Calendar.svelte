@@ -32,9 +32,9 @@
 
 	let outerWidth = $state(0);
 	let daysName = $derived.by(() => {
-		if (outerWidth < 640) return ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-		if (outerWidth < 992) return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-		return days;
+		if (outerWidth < 640) return ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+		if (outerWidth < 992) return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+		return ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 	});
 
 	// Navigation
@@ -75,7 +75,7 @@
 					break;
 				}
 				if (row === 0 && !started) {
-					if (col === firstDayOfMonth.getDay()) {
+					if (col === firstDayOfMonth.getDay() - 1) {
 						started = true;
 					} else {
 						continue;

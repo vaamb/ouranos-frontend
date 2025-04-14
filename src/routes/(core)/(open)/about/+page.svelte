@@ -59,8 +59,8 @@
 		database, a script for retrieving weather data, and another for fetching sunrise and sunset
 		times) should only be launched once. This raised the issue of sharing data across multiple
 		processes once again. However, this time I took a different approach and developed a basic
-		<a href="https://github.com/vaamb/event-dispatcher">event dispatcher</a> with an API similar to Socket.IO's.
-		I tried to make this dispatcher broker agnostic, enabling versatility.
+		<a href="https://github.com/vaamb/event-dispatcher">event dispatcher</a> with an API similar to
+		Socket.IO's. I tried to make this dispatcher broker agnostic, enabling versatility.
 		It can operate in-memory, utilize Redis or RabbitMQ, and adding support for additional brokers is
 		straightforward.
 	</p>
@@ -81,6 +81,13 @@
 		validating inputs across both Ouranos and Gaia.
 		For the <a href="https://github.com/vaamb/ouranos-frontend">frontend</a>, I chose Svelte
 		(and later SvelteKit), which made Javascript a bit less painful to write.
+	</p>
+	<p>
+		At that point, I started to have a good enough backbone and so I focused on making the code cleaner and
+		adding more "aesthetic" features. So in parallel of removing redundant chunks in my code, trying to write
+		more maintainable code and increasing test coverage; I started to play with CI/CD pipeline (that greatly
+		reduced the amount of errors making it to "production"), photo manipulation (allowing to visualize Gaia's
+		ecosystems from Ouranos' UI and compute ecosystem health metrics) and added a ridiculously simple wiki.
 	</p>
 	<p>
 		Here is the (temporary) result of this side project, until I decide to make further changes. It has

@@ -38,7 +38,7 @@ class Frontend(Functionality):
         raise ValueError("Cannot find the frontend end directory")
 
     async def _startup(self):
-        address = current_app.config.get("FRONTEND_ADDRESS", Config.FRONTEND_ADDRESS)
+        host = current_app.config.get("FRONTEND_HOST", Config.FRONTEND_HOST)
         port = current_app.config.get("FRONTEND_PORT", Config.FRONTEND_PORT)
         if current_app.config["DEVELOPMENT"]:
             cmd = [
@@ -47,25 +47,23 @@ class Frontend(Functionality):
                 "dev",
                 "--prefix", str(self.frontend_dir),
                 "--",
-                "--host", str(address),
+                "--host", str(host),
                 "--port", str(port),
             ]
             self.logger.info(
-                f"Vite development server running on http://{address}:{port} "
+                f"Vite development server running on http://{host}:{port} "
                 "(Press CTRL+C to quit)"
             )
         else:
-            address = current_app.config.get("FRONTEND_ADDRESS", Config.FRONTEND_ADDRESS)
-            port = current_app.config.get("FRONTEND_PORT", Config.FRONTEND_PORT)
             cmd = [
                 "node",
                 str(self.frontend_dir/"build"),
                 "--",
-                "--host", str(address),
+                "--host", str(host),
                 "--port", str(port),
             ]
             self.logger.info(
-                f"Node running on http://{address}:{port} (Press CTRL+C to quit)"
+                f"Node running on http://{host}:{port} (Press CTRL+C to quit)"
             )
         self.subprocess = subprocess.Popen(
             cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)

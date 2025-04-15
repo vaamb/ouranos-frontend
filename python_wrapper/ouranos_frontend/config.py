@@ -1,3 +1,4 @@
+import os
 from warnings import warn
 
 
@@ -20,6 +21,6 @@ class Config:
         return f"{self.BACKEND_URL}/api"
 
     # Frontend config
-    FRONTEND_HOST: str = "127.0.0.1"
-    FRONTEND_PORT: int = 3000
-    FRONTEND_USE_SSL: bool = False
+    FRONTEND_HOST: str = os.environ.get("OURANOS_FRONTEND_HOST", "127.0.0.1")
+    FRONTEND_PORT: int = os.environ.get("OURANOS_FRONTEND_PORT", 3000)
+    FRONTEND_USE_SSL: bool = os.environ.get("OURANOS_FRONTEND_USE_SSL", False)

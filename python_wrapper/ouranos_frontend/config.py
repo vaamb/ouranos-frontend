@@ -3,10 +3,7 @@ from warnings import warn
 
 
 class Config:
-    # URLs used for fetching data from the API. The local version is used in
-    #  `*.server.js` pages and is never exposed to the client.
-    @property
-    def BACKEND_URL(self) -> str:
+    def _get_backend_url(self) -> str:
         if not hasattr(self, "API_HOST") or not hasattr(self, "API_PORT"):
             warn(
                 "The config class used for Ouranos does not subclass "
@@ -16,9 +13,15 @@ class Config:
         api_use_ssl = self.API_USE_SSL if hasattr(self, "API_USE_SSL") else False
         return f"http{'s' if api_use_ssl else ''}://{api_host}:{api_port}"
 
+    # URLs used for fetching data from the API. The local version is used in
+    #  `*.server.js` pages and is never exposed to the client.
+    @property
+    def BACKEND_URL(self) -> str:
+        return self._get_backend_url()
+
     @property
     def API_URL_LOCAL(self) -> str:
-        return f"{self.BACKEND_URL}/api"
+        return f"{self._get_backend_url()}/api"
 
     # Frontend config
     FRONTEND_HOST: str = os.environ.get("OURANOS_FRONTEND_HOST", "127.0.0.1")

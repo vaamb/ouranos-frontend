@@ -26,7 +26,6 @@
 			checkJWT(newToken, { sub: 'confirmation' });
 			return null;
 		} catch (error) {
-			console.log(error);
 			return error.message;
 		}
 	});
@@ -85,7 +84,9 @@
 {:else if tokenIsValid}
 	<h1>Confirm your account</h1>
 	<form onsubmit={() => {
-		crudRequest(`auth/confirm_account?token=${token}`, 'create')
+		crudRequest(`auth/confirm_account?token=${token}`, 'create').then(() => {
+			goto(`/auth/confirm?token=${token}`);
+		});
 	}}>
 		<div class="input-group">
 			<input

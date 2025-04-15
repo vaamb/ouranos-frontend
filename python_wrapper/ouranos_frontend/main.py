@@ -37,8 +37,31 @@ class Frontend(Functionality):
             return frontend_dir
         raise ValueError("Cannot find the frontend end directory")
 
-    async def _startup(self):
-        address = current_app.config.get("FRONTEND_ADDRESS", Config.FRONTEND_ADDRESS)
+    def _patch_dotenv(self) -> None:
+        # App mode
+        app_mode: str
+        if current_app.config["DEVELOPMENT"]:
+            app_mode = "development"
+        elif current_app.config["TESTING"]:
+            app_mode = "test"
+        else:
+            app_mode = "production"
+        # API URLs
+        backend_url = current_app.config.get("BACKEND_URL")
+        if not backend_url:
+            backend_url = Config().BACKEND_URL
+        api_url_local = current_app.config.get("API_URL_LOCAL")
+        if not api_url_local:
+            api_url_local = Config().API_URL_LOCAL
+        # Patch the dotenv file
+        with open(self.frontend_dir / ".env", "w") as f:
+            f.write(f'PUBLIC_APP_MODE = "{app_mode}"\n')
+            f.write(f'PUBLIC_BACKEND_URL = "{backend_url}"\n')
+            f.write(f'PUBLIC_LOCAL_API_URL = "{api_url_local}"\n')
+
+    async def _startup(self) -> None:
+        self._patch_dotenv()
+        host = current_app.config.get("FRONTEND_HOST", Config.FRONTEND_HOST)
         port = current_app.config.get("FRONTEND_PORT", Config.FRONTEND_PORT)
         if current_app.config["DEVELOPMENT"]:
             cmd = [
@@ -47,29 +70,27 @@ class Frontend(Functionality):
                 "dev",
                 "--prefix", str(self.frontend_dir),
                 "--",
-                "--host", str(address),
+                "--host", str(host),
                 "--port", str(port),
             ]
             self.logger.info(
-                f"Vite development server running on http://{address}:{port} "
+                f"Vite development server running on http://{host}:{port} "
                 "(Press CTRL+C to quit)"
             )
         else:
-            address = current_app.config.get("FRONTEND_ADDRESS", Config.FRONTEND_ADDRESS)
-            port = current_app.config.get("FRONTEND_PORT", Config.FRONTEND_PORT)
             cmd = [
                 "node",
                 str(self.frontend_dir/"build"),
                 "--",
-                "--host", str(address),
+                "--host", str(host),
                 "--port", str(port),
             ]
             self.logger.info(
-                f"Node running on http://{address}:{port} (Press CTRL+C to quit)"
+                f"Node running on http://{host}:{port} (Press CTRL+C to quit)"
             )
         self.subprocess = subprocess.Popen(
             cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
 
-    async def _shutdown(self):
+    async def _shutdown(self) -> None:
         self.subprocess.terminate()
         self.subprocess = None

@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import { Manager } from 'socket.io-client';
 
-import { APP_MODE, BASE_URL, getAppMode } from '$lib/utils/consts.js';
+import { APP_MODE, BACKEND_URL, getAppMode } from '$lib/utils/consts.js';
 import {
 	currentUser,
 	ecosystemsActuatorsState,
@@ -24,7 +24,7 @@ import {
 } from '$lib/store.svelte.js';
 
 // Socket.IO manager, connection and disconnection
-const manager = new Manager(BASE_URL, {
+const manager = new Manager(BACKEND_URL, {
 	autoConnect: false,
 	reconnectionDelayMax: 30000,
 	transports: ['websocket', 'polling']

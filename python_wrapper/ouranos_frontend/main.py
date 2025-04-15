@@ -37,7 +37,30 @@ class Frontend(Functionality):
             return frontend_dir
         raise ValueError("Cannot find the frontend end directory")
 
+    def _patch_dotenv(self) -> None:
+        # App mode
+        app_mode: str
+        if current_app.config["DEVELOPMENT"]:
+            app_mode = "development"
+        elif current_app.config["TESTING"]:
+            app_mode = "test"
+        else:
+            app_mode = "production"
+        # API URLs
+        backend_url = current_app.config.get("BACKEND_URL")
+        if not backend_url:
+            backend_url = Config().BACKEND_URL
+        api_url_local = current_app.config.get("API_URL_LOCAL")
+        if not api_url_local:
+            api_url_local = Config().API_URL_LOCAL
+        # Patch the dotenv file
+        with open(self.frontend_dir / ".env", "w") as f:
+            f.write(f'PUBLIC_APP_MODE = "{app_mode}"\n')
+            f.write(f'PUBLIC_BACKEND_URL = "{backend_url}"\n')
+            f.write(f'PUBLIC_LOCAL_API_URL = "{api_url_local}"\n')
+
     async def _startup(self):
+        self._patch_dotenv()
         host = current_app.config.get("FRONTEND_HOST", Config.FRONTEND_HOST)
         port = current_app.config.get("FRONTEND_PORT", Config.FRONTEND_PORT)
         if current_app.config["DEVELOPMENT"]:

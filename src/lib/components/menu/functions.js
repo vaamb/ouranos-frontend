@@ -142,7 +142,7 @@ export const generateListOfMenuItems = function (
 		menuItems.push(MenuItem('Users', '/user', faUsers));
 	}
 
-	if (serviceEnabled(services, 'wiki')) {
+	if (serviceEnabled(services, 'wiki') && currentUser.can(permissions.VIEW)) {
 		let wikiMenus = [];
 
 		wikiMenus.push(MenuItem('Index', '/wiki'));

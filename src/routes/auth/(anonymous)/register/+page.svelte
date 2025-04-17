@@ -102,7 +102,7 @@
 	let canSubmit = $derived(validUsername && validEmail && validPassword && samePassword);
 
 	const validateRegistration = function () {
-		axios(`${API_URL}/auth/register?invitation_token=${token}`, {
+		axios(`${API_URL}/auth/register?invitation_token=${token}&send_email=true`, {
 			method: 'post',
 			withCredentials: true,
 			data: {

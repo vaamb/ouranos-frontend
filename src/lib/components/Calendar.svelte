@@ -2,8 +2,10 @@
 	import Fa from 'svelte-fa';
 	import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
+	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import Modal from '$lib/components/Modal.svelte';
+	import Table from '$lib/components/Table.svelte';
 
 	import {
 		capitalize,
@@ -14,9 +16,7 @@
 		months,
 		serializeDatetime
 	} from '$lib/utils/functions.js';
-	import Table from '$lib/components/Table.svelte';
-	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
-	import { eventLevels } from '$lib/utils/consts.js';
+	import { eventLevels, eventVisibility } from '$lib/utils/consts.js';
 
 	const now = new Date();
 	let {
@@ -287,7 +287,8 @@
 						deserializer: deserializeDatetime
 					},
 					{ label: 'Description', key: 'description', required: false },
-					{ label: 'Level', key: 'level', value: eventLevels[0], selectFrom: eventLevels }
+					{ label: 'Level', key: 'level', value: eventLevels[0], selectFrom: eventLevels },
+					{ label: 'Visibility', key: 'visibility', value: eventVisibility[1], selectFrom: eventVisibility }
 				]}
 				on:confirm={(event) => {
 					const payload = event.detail;
@@ -326,6 +327,12 @@
 						key: 'level',
 						value: filteredEventsArray[crudIndex]['level'],
 						selectFrom: eventLevels
+					},
+					{
+						label: 'Visibility',
+						key: 'visibility',
+						value: filteredEventsArray[crudIndex]['visibility'],
+						selectFrom: eventVisibility
 					}
 				]}
 				on:confirm={(event) => {

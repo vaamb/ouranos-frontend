@@ -11,7 +11,7 @@
 	let events = $state([]);
 
 	const refreshEvents = function () {
-		fetchCalendarEvents(new Date(year, month, 1), new Date(year, month + 1, 1), null).then(
+		fetchCalendarEvents(new Date(year, month, 1), new Date(year, month + 1, 1)).then(
 			(data) => {
 				events = data;
 			}

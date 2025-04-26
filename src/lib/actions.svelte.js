@@ -8,6 +8,7 @@ import {
 	APP_MODE,
 	CONNECTION_STATUS,
 	eventLevels,
+	eventVisibility,
 	getAppMode,
 	LOCAL_API_URL,
 	SERVER_STATUS
@@ -663,15 +664,14 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 // Calendar-related actions
 export const fetchCalendarEvents = async function (
 	startTime = undefined,
-	endTime = undefined,
-	limit = 10
+	endTime = undefined
 ) {
 	return axios
 		.get(`${API_URL}/app/services/calendar`, {
 			params: {
 				start_time: startTime,
 				end_time: endTime,
-				limit: limit
+				visibility: 'private',
 			},
 			withCredentials: true
 		})
@@ -681,6 +681,7 @@ export const fetchCalendarEvents = async function (
 				event['start_time'] = new Date(event['start_time']);
 				event['end_time'] = new Date(event['end_time']);
 				event['level'] = eventLevels[event['level']];
+				event['visibility'] = eventVisibility[event['visibility']];
 			});
 			return events;
 		})

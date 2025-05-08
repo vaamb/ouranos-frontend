@@ -25,34 +25,33 @@
 	let ecosystemName = data['ecosystemName'];
 	let ecosystemUID = data['ecosystemUID'];
 
-	let ecosystemsActuatorsRecords = $state({});
+	let actuatorsRecords = $state({});
 
-	const hasBeenActive = function (ecosystemsActuatorsRecords) {
+	const hasBeenActive = function (actuatorsRecords) {
 		const active = (element) => element[1];
-		return ecosystemsActuatorsRecords['values'].some(active);
+		return actuatorsRecords['values'].some(active);
 	};
 
 	const convertModeToBool = function (mode) {
 		return mode === 'automatic';
 	};
 
-	const patchActuatorRecords = function (records, actuatorName) {
-		if (records['values'].length > 0) {
-			return records;
-		} else {
-			const currentState = $ecosystemsActuatorsState[ecosystemUID][actuatorName];
-			records['values'].push([
-				records['span'][1],
+	const patchActuatorRecords = function (actuatorRecords, actuatorState) {
+		if (actuatorRecords['values'].length === 0) {
+			const currentState = actuatorState;
+			actuatorRecords['values'].push([
+				actuatorRecords['span'][1],
 				currentState['active'],
 				currentState['mode'],
 				currentState['status'],
 				currentState['level']
 			]);
-			return records;
 		}
+		return actuatorRecords;
 	};
 
-	const formatRecords = function (data) {
+	const getFormattedRecords = function (actuatorType) {
+		const data = patchActuatorRecords(actuatorsRecords[actuatorType], $ecosystemsActuatorsState[ecosystemUID][actuatorType]);
 		const records = data['values'];
 		// Pre-populate data with the first bound (so they all start at the same time)
 		const labels = [new Date(data['span'][0])];
@@ -99,7 +98,7 @@
 
 	onMount(async () => {
 		for (const actuatorType of actuatorTypes) {
-			ecosystemsActuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(ecosystemUID, actuatorType);
+			actuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(ecosystemUID, actuatorType);
 		}
 	});
 </script>
@@ -108,9 +107,9 @@
 
 {#await fetchEcosystemActuatorsState(ecosystemUID) then actuatorsState_notUsed}
 	{#each actuatorTypes as actuator}
-		{#if ecosystemsActuatorsRecords[actuator]}
-			{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active'] || hasBeenActive(ecosystemsActuatorsRecords[actuator])}
-				{@const actuatorRecords = ecosystemsActuatorsRecords[actuator]}
+		{#if actuatorsRecords[actuator]}
+			{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active'] || hasBeenActive(actuatorsRecords[actuator])}
+				{@const actuatorRecords = actuatorsRecords[actuator]}
 				{@const drawGraph = actuatorRecords.values.length >= 3}
 				<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>
 					{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active']}
@@ -131,11 +130,8 @@
 							/>
 						</BoxItem>
 					{/if}
-					{@const actuatorRecords =
-						ecosystemsActuatorsRecords[actuator]}
-					{@const patchedActuatorRecords = patchActuatorRecords(actuatorRecords, actuator)}
 					<BoxItem>
-						{@const formattedActuatorRecords = formatRecords(patchedActuatorRecords)}
+						{@const formattedActuatorRecords = getFormattedRecords(actuator)}
 						<Graph
 							datasets={formattedActuatorRecords.datasets}
 							labels={formattedActuatorRecords.labels}

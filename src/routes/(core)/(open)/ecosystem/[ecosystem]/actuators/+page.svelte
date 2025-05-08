@@ -1,4 +1,6 @@
 <script>
+	import { onMount } from 'svelte';
+
 	import Box from '$lib/components/layout/Box.svelte';
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
 	import Graph from '$lib/components/Graph.svelte';
@@ -11,9 +13,7 @@
 		updateActuatorMode
 	} from '$lib/actions.svelte.js';
 	import {
-		ecosystemsActuatorsRecords,
 		ecosystemsActuatorsState,
-		getStoreDataKey
 	} from '$lib/store.svelte.js';
 
 	import { actuatorTypes } from '$lib/utils/consts.js';
@@ -24,6 +24,8 @@
 
 	let ecosystemName = data['ecosystemName'];
 	let ecosystemUID = data['ecosystemUID'];
+
+	let ecosystemsActuatorsRecords = $state({});
 
 	const hasBeenActive = function (ecosystemsActuatorsRecords) {
 		const active = (element) => element[1];
@@ -94,15 +96,21 @@
 			]
 		};
 	};
+
+	onMount(async () => {
+		for (const actuatorType of actuatorTypes) {
+			ecosystemsActuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(ecosystemUID, actuatorType);
+		}
+	});
 </script>
 
 <HeaderLine title="Actuators in {ecosystemName}" />
 
 {#await fetchEcosystemActuatorsState(ecosystemUID) then actuatorsState_notUsed}
 	{#each actuatorTypes as actuator}
-		{#await fetchEcosystemActuatorRecords(ecosystemUID, actuator) then ecosystemsActuatorsRecords_notUsed}
-			{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active'] || hasBeenActive($ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)])}
-				{@const actuatorRecords = $ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
+		{#if ecosystemsActuatorsRecords[actuator]}
+			{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active'] || hasBeenActive(ecosystemsActuatorsRecords[actuator])}
+				{@const actuatorRecords = ecosystemsActuatorsRecords[actuator]}
 				{@const drawGraph = actuatorRecords.values.length >= 3}
 				<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>
 					{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active']}
@@ -124,7 +132,7 @@
 						</BoxItem>
 					{/if}
 					{@const actuatorRecords =
-						$ecosystemsActuatorsRecords[getStoreDataKey(ecosystemUID, actuator)]}
+						ecosystemsActuatorsRecords[actuator]}
 					{@const patchedActuatorRecords = patchActuatorRecords(actuatorRecords, actuator)}
 					<BoxItem>
 						{@const formattedActuatorRecords = formatRecords(patchedActuatorRecords)}
@@ -141,6 +149,6 @@
 					</BoxItem>
 				</Box>
 			{/if}
-		{/await}
+		{/if}
 	{/each}
 {/await}

@@ -14,11 +14,10 @@ import {
 	SERVER_STATUS
 } from '$lib/utils/consts.js';
 import { Message, User } from '$lib/utils/factories.js';
-import { isEmpty, slugify } from '$lib/utils/functions.js';
+import { isEmpty } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
 	currentUser,
-	ecosystemsActuatorsRecords,
 	ecosystemsActuatorsState,
 	ecosystemsNycthemeralCycle,
 	ecosystemsSensorsDataCurrent,
@@ -329,21 +328,14 @@ export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
 };
 
 export const fetchEcosystemActuatorRecords = async function (ecosystemUID, actuatorType) {
-	const dataKey = getStoreDataKey(ecosystemUID, actuatorType);
-	const storedData = getFreshStoreData(ecosystemsActuatorsRecords, dataKey);
-	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 1)) {
-		return storedData;
-	}
 	return axios
 		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuator_records/u/${actuatorType}`)
 		.then((response) => {
-			const data = {
+			return {
 				timestamp: new Date(response['data']['span'][1]),
 				span: response['data']['span'],
 				values: response['data']['values']
 			};
-			updateStoreData(ecosystemsActuatorsRecords, { [dataKey]: data });
-			return data;
 		})
 		.catch(() => {
 			return {};

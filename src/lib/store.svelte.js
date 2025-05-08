@@ -7,7 +7,6 @@ import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 // Writable stores
 export const currentUser = writable(User());
 export const ecosystems = writable({});
-export const ecosystemsActuatorsRecords = writable({});
 export const ecosystemsActuatorsState = writable({});
 export const ecosystemsNycthemeralCycle = writable({});
 export const ecosystemsManagement = writable({});

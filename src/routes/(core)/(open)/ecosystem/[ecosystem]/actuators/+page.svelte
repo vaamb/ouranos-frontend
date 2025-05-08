@@ -26,6 +26,25 @@
 	let ecosystemUID = data['ecosystemUID'];
 
 	let actuatorsRecords = $state({});
+	let patchedActuatorsRecords = $derived.by(() => {
+		let actuatorsRecordsCopy = $state.snapshot(actuatorsRecords);
+		for (const actuatorType of actuatorTypes) {
+			if (
+				actuatorsRecordsCopy[actuatorType] &&
+				actuatorsRecordsCopy[actuatorType]['values'].length === 0
+			) {
+				const currentState = actuatorsRecordsCopy[actuatorType];
+				actuatorsRecordsCopy[actuatorType]['values'].push([
+					actuatorsRecordsCopy[actuatorType]['span'][1],
+					currentState['active'],
+					currentState['mode'],
+					currentState['status'],
+					currentState['level']
+				]);
+			}
+		}
+		return actuatorsRecordsCopy;
+	});
 
 	const hasBeenActive = function (actuatorsRecords) {
 		const active = (element) => element[1];
@@ -36,22 +55,8 @@
 		return mode === 'automatic';
 	};
 
-	const patchActuatorRecords = function (actuatorRecords, actuatorState) {
-		if (actuatorRecords['values'].length === 0) {
-			const currentState = actuatorState;
-			actuatorRecords['values'].push([
-				actuatorRecords['span'][1],
-				currentState['active'],
-				currentState['mode'],
-				currentState['status'],
-				currentState['level']
-			]);
-		}
-		return actuatorRecords;
-	};
-
 	const getFormattedRecords = function (actuatorType) {
-		const data = patchActuatorRecords(actuatorsRecords[actuatorType], $ecosystemsActuatorsState[ecosystemUID][actuatorType]);
+		const data = patchedActuatorsRecords[actuatorType];
 		const records = data['values'];
 		// Pre-populate data with the first bound (so they all start at the same time)
 		const labels = [new Date(data['span'][0])];

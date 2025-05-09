@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import Box from '$lib/components/layout/Box.svelte';
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
@@ -14,6 +14,7 @@
 	} from '$lib/actions.svelte.js';
 	import { ecosystemsActuatorsState } from '$lib/store.svelte.js';
 
+	import { socketio } from '$lib/socketio.svelte.js';
 	import { actuatorTypes } from '$lib/utils/consts.js';
 	import { capitalize } from '$lib/utils/functions.js';
 	import { colors } from '$lib/utils/styling.js';
@@ -108,10 +109,33 @@
 		};
 	};
 
+	const updateActuatorsData = function (actuatorsData) {
+		for (const actuatorData of actuatorsData) {
+			if (actuatorData['ecosystem_uid'] !== ecosystemUID) {
+				continue;
+			}
+			actuatorsRecords[actuatorData['type']]['values'].push([
+				new Date().toISOString(),
+				actuatorData['active'],
+				actuatorData['mode'],
+				actuatorData['status'],
+				actuatorData['level']
+			]);
+		}
+	};
+
 	onMount(async () => {
 		for (const actuatorType of actuatorTypes) {
-			actuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(ecosystemUID, actuatorType);
+			actuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(
+				ecosystemUID,
+				actuatorType
+			);
 		}
+		socketio.on('actuators_data', updateActuatorsData);
+	});
+
+	onDestroy(async () => {
+		socketio.off('actuators_data', updateActuatorsData);
 	});
 </script>
 

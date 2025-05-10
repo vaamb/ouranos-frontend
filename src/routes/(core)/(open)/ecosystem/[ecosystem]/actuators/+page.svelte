@@ -24,48 +24,43 @@
 	let ecosystemName = data['ecosystemName'];
 	let ecosystemUID = data['ecosystemUID'];
 
+	let endPoint = $state(Date.now());
+	let startPoint = $state(endPoint - 1000 * 60 * 60 * 24 * 7);
+
 	let actuatorsRecords = $state({});
-	let formattedActuatorsRecords = $derived.by(() => {
-		const endPoint = Date.now();
-		const startPoint = Date.now() - 1000 * 60 * 60 * 24 * 7;
-		let formattedRecords = {}
-		for (const actuatorType of actuatorTypes) {
-			if (!actuatorsRecords[actuatorType]) {
-				continue;
-			}
-			formattedRecords[actuatorType] = [];
-			if (actuatorsRecords[actuatorType]['values'].length === 0) {
-				// If there are no records, add start and end points only
-				formattedRecords[actuatorType].push(
-					// TODO: use current state values but don't refresh when they change
-					[startPoint, false, 'automatic', false, 0],
-					[endPoint, false, 'automatic', false, 0]
-				);
-			} else {
-				// If there are records, first add start point ...
-				let previousRecord = actuatorsRecords[actuatorType]['values'][0];
-				formattedRecords[actuatorType].push(
-					[startPoint, previousRecord[1], previousRecord[2], previousRecord[3], previousRecord[4]]
+	let formatActuatorsRecords = function(actuatorRecords, actuatorState, startPoint, endPoint) {
+		let formattedRecords = []
+		if (actuatorRecords['values'].length === 0) {
+			// If there are no records, add start and end points only
+			formattedRecords.push(
+				// TODO: use current state values but don't refresh when they change
+				[startPoint, actuatorState[1], actuatorState[2], actuatorState[3], actuatorState[4]],
+				[endPoint, actuatorState[1], actuatorState[2], actuatorState[3], actuatorState[4]]
+			);
+		} else {
+			// If there are records, first add start point ...
+			let previousRecord = actuatorRecords['values'][0];
+			formattedRecords.push(
+				[new Date(startPoint), previousRecord[1], previousRecord[2], previousRecord[3], previousRecord[4]]
+			)
+			// ... then, we need to create "pre" data points and fill them with data from the
+			// previous record and a date a few microseconds before the current record ...
+			for (const record of actuatorRecords['values']) {
+				const recordDate = new Date(record[0]);
+				const previousRecordDate = new Date(recordDate - 10);
+				formattedRecords.push(
+					[previousRecordDate, previousRecord[1], previousRecord[2], previousRecord[3], previousRecord[4]],
+					[recordDate, record[1], record[2], record[3], record[4]]
 				)
-				// ... then, we need to create "pre" data points and fill them with data from the
-				// previous record and a date a few microseconds before the current record ...
-				for (const record of actuatorsRecords[actuatorType]['values']) {
-					const recordDate = new Date(record[0]);
-					const previousRecordDate = new Date(recordDate - 10);
-					formattedRecords[actuatorType].push(
-						[previousRecordDate, previousRecord[1], previousRecord[2], previousRecord[3], previousRecord[4]],
-						[recordDate, record[1], record[2], record[3], record[4]]
-					)
-					previousRecord = record;
-				}
-				// ... and finally, add end point
-				formattedRecords[actuatorType].push(
-					[endPoint, previousRecord[1], previousRecord[2], previousRecord[3], previousRecord[4]]
-				);
+				previousRecord = record;
 			}
+			// ... and finally, add end point
+			formattedRecords.push(
+				[new Date(endPoint), previousRecord[1], previousRecord[2], previousRecord[3], previousRecord[4]]
+			);
 		}
 		return formattedRecords;
-	});
+	};
 
 	const hasBeenActive = function (actuatorsRecords) {
 		const active = (element) => element[1];
@@ -142,45 +137,44 @@
 <HeaderLine title="Actuators in {ecosystemName}" />
 
 {#await fetchEcosystemActuatorsState(ecosystemUID) then actuatorsState_notUsed}
-	{#each actuatorTypes as actuator}
-		{#if actuatorsRecords[actuator]}
-			{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active'] || hasBeenActive(actuatorsRecords[actuator])}
-				{@const formattedActuatorsRecord = formattedActuatorsRecords[actuator]}
-				{@const drawGraph = formattedActuatorsRecord.length >= 5}
-				<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>
-					{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active']}
-						<BoxItem maxWidth={drawGraph ? '305px' : null}>
-							<Switch
-								actuatorType={actuator}
-								status={$ecosystemsActuatorsState[ecosystemUID][actuator]['status']}
-								mode={$ecosystemsActuatorsState[ecosystemUID][actuator]['mode']}
-								useTimer={true}
-								on:switch={(event) => {
-									updateActuatorMode(
-										ecosystemUID,
-										event['detail']['actuatorType'],
-										event['detail']['mode'],
-										event['detail']['countdown']
-									);
-								}}
-							/>
-						</BoxItem>
-					{/if}
-					<BoxItem>
-						{@const graphData = formatRecordsForGraphs(formattedActuatorsRecord)}
-						<Graph
-							datasets={graphData.datasets}
-							labels={graphData.labels}
-							suggestedMax="1"
-							height="200px"
-							legend={{
-								display: true,
-								position: 'right'
+	{#each Object.entries(actuatorsRecords) as [actuator, actuatorRecords]}
+		{@const actuatorState = $ecosystemsActuatorsState[ecosystemUID][actuator]}
+		{#if actuatorState['active'] || hasBeenActive(actuatorRecords)}
+			{@const drawGraph = actuatorRecords['values'].length >= 3}
+			<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>
+				{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active']}
+					<BoxItem maxWidth={drawGraph ? '305px' : null}>
+						<Switch
+							actuatorType={actuator}
+							status={$ecosystemsActuatorsState[ecosystemUID][actuator]['status']}
+							mode={$ecosystemsActuatorsState[ecosystemUID][actuator]['mode']}
+							useTimer={true}
+							on:switch={(event) => {
+								updateActuatorMode(
+									ecosystemUID,
+									event['detail']['actuatorType'],
+									event['detail']['mode'],
+									event['detail']['countdown']
+								);
 							}}
 						/>
 					</BoxItem>
-				</Box>
-			{/if}
+				{/if}
+				<BoxItem>
+					{@const formattedActuatorRecords = formatActuatorsRecords(actuatorRecords, actuatorState, startPoint, endPoint)}
+					{@const graphData = formatRecordsForGraphs(formattedActuatorRecords)}
+					<Graph
+						datasets={graphData.datasets}
+						labels={graphData.labels}
+						suggestedMax="1"
+						height="200px"
+						legend={{
+							display: true,
+							position: 'right'
+						}}
+					/>
+				</BoxItem>
+			</Box>
 		{/if}
 	{/each}
 {/await}

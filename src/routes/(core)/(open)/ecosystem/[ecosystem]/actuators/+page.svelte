@@ -25,7 +25,7 @@
 	let ecosystemUID = data['ecosystemUID'];
 
 	let endPoint = $state(Date.now());
-	let startPoint = $state(endPoint - 1000 * 60 * 60 * 24 * 7);
+	let startPoint = $derived(new Date(endPoint - 1000 * 60 * 60 * 24 * 7));
 
 	let actuatorsRecords = $state({});
 	let formatActuatorsRecords = function(actuatorRecords, actuatorState, startPoint, endPoint) {
@@ -109,8 +109,9 @@
 			if (actuatorData['ecosystem_uid'] !== ecosystemUID) {
 				continue;
 			}
+			endPoint = Date.now()
 			actuatorsRecords[actuatorData['type']]['values'].push([
-				new Date().toISOString(),
+				(new Date(endPoint - 100)).toISOString(),
 				actuatorData['active'],
 				actuatorData['mode'],
 				actuatorData['status'],

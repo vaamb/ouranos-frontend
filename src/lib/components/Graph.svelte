@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import { Chart } from 'chart.js/auto';
 	import 'chartjs-adapter-date-fns';
@@ -63,6 +63,12 @@
 			},
 			options: chartLayout
 		});
+	});
+
+	onDestroy(async () => {
+		if (chart) {
+			chart.destroy();
+		}
 	});
 </script>
 

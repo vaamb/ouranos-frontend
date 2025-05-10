@@ -28,8 +28,8 @@
 	let startPoint = $derived(new Date(endPoint - 1000 * 60 * 60 * 24 * 7));
 
 	let actuatorsRecords = $state({});
-	let formatActuatorsRecords = function(actuatorRecords, actuatorState, startPoint, endPoint) {
-		let formattedRecords = []
+	let formatActuatorsRecords = function (actuatorRecords, actuatorState, startPoint, endPoint) {
+		let formattedRecords = [];
 		if (actuatorRecords['values'].length === 0) {
 			// If there are no records, add start and end points only
 			formattedRecords.push(
@@ -39,24 +39,38 @@
 		} else {
 			// If there are records, first add start point ...
 			let previousRecord = actuatorRecords['values'][0];
-			formattedRecords.push(
-				[new Date(startPoint), previousRecord[1], previousRecord[2], previousRecord[3], previousRecord[4]]
-			)
+			formattedRecords.push([
+				new Date(startPoint),
+				previousRecord[1],
+				previousRecord[2],
+				previousRecord[3],
+				previousRecord[4]
+			]);
 			// ... then, we need to create "pre" data points and fill them with data from the
 			// previous record and a date a few microseconds before the current record ...
 			for (const record of actuatorRecords['values']) {
 				const recordDate = new Date(record[0]);
 				const previousRecordDate = new Date(recordDate - 10);
 				formattedRecords.push(
-					[previousRecordDate, previousRecord[1], previousRecord[2], previousRecord[3], previousRecord[4]],
+					[
+						previousRecordDate,
+						previousRecord[1],
+						previousRecord[2],
+						previousRecord[3],
+						previousRecord[4]
+					],
 					[recordDate, record[1], record[2], record[3], record[4]]
-				)
+				);
 				previousRecord = record;
 			}
 			// ... and finally, add end point
-			formattedRecords.push(
-				[new Date(endPoint), previousRecord[1], previousRecord[2], previousRecord[3], previousRecord[4]]
-			);
+			formattedRecords.push([
+				new Date(endPoint),
+				previousRecord[1],
+				previousRecord[2],
+				previousRecord[3],
+				previousRecord[4]
+			]);
 		}
 		return formattedRecords;
 	};
@@ -108,9 +122,9 @@
 			if (actuatorData['ecosystem_uid'] !== ecosystemUID) {
 				continue;
 			}
-			endPoint = Date.now()
+			endPoint = Date.now();
 			actuatorsRecords[actuatorData['type']]['values'].push([
-				(new Date(endPoint - 100)).toISOString(),
+				new Date(endPoint - 100).toISOString(),
 				actuatorData['active'],
 				actuatorData['mode'],
 				actuatorData['status'],
@@ -161,7 +175,12 @@
 					</BoxItem>
 				{/if}
 				<BoxItem>
-					{@const formattedActuatorRecords = formatActuatorsRecords(actuatorRecords, actuatorState, startPoint, endPoint)}
+					{@const formattedActuatorRecords = formatActuatorsRecords(
+						actuatorRecords,
+						actuatorState,
+						startPoint,
+						endPoint
+					)}
 					{@const graphData = formatRecordsForGraphs(formattedActuatorRecords)}
 					<Graph
 						datasets={graphData.datasets}

@@ -251,7 +251,7 @@
 		{@const eventsID = getDayEventsID(modalDay)}
 		{@const filteredEventsArray = eventsID.map((eventID) => eventsByID[eventID])}
 		{#if crudAction === undefined}
-			<div class="wrapper">
+			<div class="events-wrapper">
 				<Table
 					tableID="events"
 					columns={[
@@ -370,7 +370,7 @@
 	}
 
 	.calendar {
-		max-width: 900px;
+		max-width: 1050px;
 		margin-bottom: 1.5rem;
 		box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 	}
@@ -423,6 +423,7 @@
 	}
 
 	.event {
+		color: var(--derived-30);
 		padding: 0 5px;
 		margin: 1px 0;
 		font-size: 0.75rem;
@@ -436,7 +437,7 @@
 	}
 
 	@media only screen and (min-width: 1200px) {
-		.wrapper {
+		.events-wrapper {
 			min-width: 1000px;
 		}
 	}

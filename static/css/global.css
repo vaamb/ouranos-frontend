@@ -13,6 +13,7 @@
 	--derived-60: hsl(210, 17%, 60%);
 	--derived-50: hsl(210, 17%, 50%); /*original: #73879c*/
 	--derived-40: hsl(210, 17%, 40%);
+	--derived-30: hsl(210, 17%, 30%);
 	--derived-20: hsl(210, 17%, 20%); /*original: #282f3c*/
 
 	--background-color: var(--main-95);

@@ -133,6 +133,11 @@
 		}
 	};
 
+	let timeUpdate = null;
+	const updateTime = function () {
+		endPoint = Date.now();
+	};
+
 	onMount(async () => {
 		for (const actuatorType of actuatorTypes) {
 			actuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(
@@ -141,10 +146,12 @@
 			);
 		}
 		socketio.on('actuators_data', updateActuatorsData);
+		timeUpdate = setInterval(updateTime, 1000 * 60 * 5);
 	});
 
 	onDestroy(async () => {
 		socketio.off('actuators_data', updateActuatorsData);
+		clearInterval(timeUpdate);
 	});
 </script>
 

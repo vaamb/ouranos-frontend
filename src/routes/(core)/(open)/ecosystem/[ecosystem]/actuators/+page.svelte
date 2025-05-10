@@ -33,7 +33,6 @@
 		if (actuatorRecords['values'].length === 0) {
 			// If there are no records, add start and end points only
 			formattedRecords.push(
-				// TODO: use current state values but don't refresh when they change
 				[startPoint, actuatorState[1], actuatorState[2], actuatorState[3], actuatorState[4]],
 				[endPoint, actuatorState[1], actuatorState[2], actuatorState[3], actuatorState[4]]
 			);

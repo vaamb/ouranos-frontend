@@ -67,9 +67,9 @@
 
 	onDestroy(async () => {
 		if (chart) {
-		  chart.destroy();
+			chart.destroy();
 		}
-  });
+	});
 </script>
 
 <div class="container" style="height:{height}">

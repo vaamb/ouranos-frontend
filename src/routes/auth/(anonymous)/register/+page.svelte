@@ -21,6 +21,7 @@
 
 	// Token validation
 	let token = $state($page.url.searchParams.get('token'));
+	//svelte-ignore state_referenced_locally
 	let newToken = $state(token);
 
 	let tokenIsValid = $derived.by(() => {
@@ -81,11 +82,17 @@
 	});
 
 	// Prefill user data with pre-assigned user info
+	//svelte-ignore state_referenced_locally
 	let username = $state(tokenData.username);
+	//svelte-ignore state_referenced_locally
 	let firstname = $state(tokenData.firstname);
+	//svelte-ignore state_referenced_locally
 	let lastname = $state(tokenData.lastname);
+	//svelte-ignore non_reactive_update, state_referenced_locally
 	let role = tokenData.role || 'User';
+	//svelte-ignore state_referenced_locally
 	let email = $state(tokenData.email);
+	//svelte-ignore state_referenced_locally
 	let telegramId = $state(tokenData.telegramId);
 
 	let password1 = $state(null);

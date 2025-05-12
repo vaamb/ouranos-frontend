@@ -10,6 +10,7 @@
 
 	// Token validation
 	let token = $state($page.url.searchParams.get('token'));
+	//svelte-ignore state_referenced_locally
 	let newToken = $state(token);
 
 	let tokenIsValid = $derived.by(() => {

@@ -38,11 +38,19 @@
 
 <dialog
 	bind:this={dialog}
+	tabindex="-1"
+	aria-hidden="true"
+	aria-modal="true"
 	onclose={() => {
 		showModal = false;
 	}}
 	onclick={(e) => {
 		if (e.target === dialog) closeModal();
+	}}
+	onkeydown={(e) => {
+		if (e.key === 'Escape') {
+			closeModal();
+		}
 	}}
 >
 	<div>

@@ -210,7 +210,7 @@
 									onclick={() => {
 										modalDay = new Date(day.getFullYear(), day.getMonth(), day.getDate());
 									}}
-									onkeypress={() => {
+									onkeydown={() => {
 										modalDay = new Date(day.getFullYear(), day.getMonth(), day.getDate());
 									}}
 								>

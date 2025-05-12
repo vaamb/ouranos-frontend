@@ -39,16 +39,16 @@
 	});
 </script>
 
-<figure style="--image-height: {height}; --image-width:{width}">
-	<div class="image-wrapper" style="display: {!loaded ? 'none' : ''}">
-		<img bind:this={image} style="display: {loaded}" />
-		{#if caption}
+<div class="image-wrapper" style="--image-height: {height}; --image-width:{width}">
+	<figure>
+		<!--svelte-ignore a11y_missing_attribute (the alt attribute is set on mount)-->
+		<img bind:this={image} style="display: {loaded ? 'inherit' : 'none'}" />
+		{#if loaded && caption}
 			<figcaption>
 				{caption}
 			</figcaption>
 		{/if}
-	</div>
-
+	</figure>
 	{#if loading}
 		<div class="image-icon">
 			<Fa icon={faSpinner} spin size="3x" />
@@ -58,12 +58,12 @@
 			<Fa icon={faNotdef} size="3x" />
 		</div>
 	{/if}
-</figure>
+</div>
 
 <style>
-	figure {
+	.image-wrapper {
 		height: calc(var(--image-height) * 1px);
-		max-width: calc(var(--image-width) * 1px);
+		width: calc(var(--image-width) * 1px);
 		position: relative;
 		display: flex;
 		padding: 1px;

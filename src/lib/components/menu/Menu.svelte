@@ -77,7 +77,7 @@
 			role="button"
 			aria-pressed="false"
 			onclick={toggleMenu}
-			onkeypress={toggleMenu}
+			onkeydown={toggleMenu}
 		>
 			<div class="toggle-button">
 				{#if !showMenu}

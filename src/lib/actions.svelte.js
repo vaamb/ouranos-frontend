@@ -695,7 +695,7 @@ export const fetchWikiTopics = async function () {
 
 export const fetchWikiArticles = async function (topic_name) {
 	return axios
-		.get(`${LOCAL_API_URL}/app/services/wiki/topics/u/${topic_name}/articles`)
+		.get(`${API_URL}/app/services/wiki/topics/u/${topic_name}/articles`)
 		.then((response) => {
 			return response.data;
 		})
@@ -706,7 +706,7 @@ export const fetchWikiArticles = async function (topic_name) {
 
 export const fetchWikiPictures = async function (topic_name, article_name) {
 	return axios
-		.get(`${LOCAL_API_URL}/app/services/wiki/topics/u/${topic_name}/u/${article_name}/pictures`)
+		.get(`${API_URL}/app/services/wiki/topics/u/${topic_name}/u/${article_name}/pictures`)
 		.then((response) => {
 			return response.data;
 		})

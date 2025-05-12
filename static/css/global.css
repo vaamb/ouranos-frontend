@@ -12,6 +12,7 @@
 	--main-50-shadow: hsla(210, 33%, 50%, 10%);
 	--derived-60: hsl(210, 17%, 60%);
 	--derived-50: hsl(210, 17%, 50%); /*original: #73879c*/
+	--derived-43: hsl(210, 17%, 43%);
 	--derived-40: hsl(210, 17%, 40%);
 	--derived-30: hsl(210, 17%, 30%);
 	--derived-20: hsl(210, 17%, 20%); /*original: #282f3c*/
@@ -46,7 +47,7 @@
 body {
 	background-color: var(--main-95);
 	font-family: 'Raleway', Verdana, sans-serif;
-	color: var(--derived-50);
+	color: var(--derived-43);
 	overflow-y: scroll;
 }
 

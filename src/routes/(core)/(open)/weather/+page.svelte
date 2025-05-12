@@ -54,7 +54,8 @@
 				humidity: colors.blue,
 				precipitation_probability: colors.blue
 			}[measure],
-			borderWidth: 1
+			borderWidth: 1,
+			lineTension: 0.4
 		};
 	};
 

@@ -169,7 +169,7 @@
 	<h2>Nycthemeral cycle info</h2>
 	<div style="overflow-x: auto">
 		<table
-			class="table-base table-spaced table-alternate-colors table-narrow"
+			class="table-base table-alternate-colors table-narrow"
 			style="padding-bottom: 35px;"
 		>
 			<tbody>

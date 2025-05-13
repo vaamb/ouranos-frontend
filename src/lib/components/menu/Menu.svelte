@@ -10,6 +10,9 @@
 		faXmark
 	} from '@fortawesome/free-solid-svg-icons';
 
+	// Use w=100 as enhanced:img min size is 540 by default
+	import seedling from '/static/images/avatar/seedling.jpg?enhanced&w=100';
+
 	import MenuItem from '$lib/components/menu/MenuItem.svelte';
 
 	import { permissions } from '$lib/utils/consts.js';
@@ -48,6 +51,10 @@
 		}
 	};
 
+	let avatarMapping = {
+		seedling: seedling
+	};
+
 	$effect(() => {
 		// Close menu when changing page if screen is smaller than 992px
 		if ($navigating) {
@@ -66,7 +73,7 @@
 		<div class="menu-title-wrapper">
 			<div class="menu-title">
 				<a href="/">
-					<img src="/favicon.ico" alt="G" width="25px" class="logo" />
+					<img src="/favicon.svg" alt="G" width="25px" class="logo" />
 					AIA
 				</a>
 			</div>
@@ -88,7 +95,7 @@
 			</div>
 		</div>
 		<div class="user-box">
-			<img src="/images/avatar/{$currentUser.avatar}_64.jpg" alt="User avatar" class="avatar" />
+			<enhanced:img src={avatarMapping[$currentUser.avatar]} alt="User avatar" sizes="50px" />
 			<div class="welcome">
 				{#if $currentUser.isAuthenticated}
 					<div>Welcome,</div>
@@ -182,7 +189,7 @@
 		display: none;
 	}
 
-	.avatar {
+	.user-box img {
 		width: 50px;
 		height: 50px;
 		margin: auto;

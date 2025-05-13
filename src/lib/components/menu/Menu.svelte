@@ -73,7 +73,7 @@
 		<div class="menu-title-wrapper">
 			<div class="menu-title">
 				<a href="/">
-					<img src="/logo_75.webp" alt="G" width="25px" class="logo" />
+					<img src="/favicon.svg" alt="G" width="25px" class="logo" />
 					AIA
 				</a>
 			</div>

@@ -109,6 +109,13 @@ export const fetchCurrentUserData = async function (clientSessionCookie, clientU
 		});
 };
 
+export const refreshSessionCookie = async function () {
+	return axios
+		.get(`${API_URL}/auth/refresh_session`, {
+			withCredentials: true
+		})
+}
+
 export const logIn = async function (username, password, remember = false) {
 	return axios
 		.get(`${API_URL}/auth/login`, {

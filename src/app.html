@@ -7,11 +7,15 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1.0" />
 		<meta name="description" content="The GAIA dashboard to monitor and control your environment" />
 		<title>GAIA</title>
+		<!--Styles needed globally-->
 		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
-		<link rel="stylesheet" href="%sveltekit.assets%/fonts/Raleway/registry.css" />
-		<link rel="stylesheet" href="%sveltekit.assets%/fonts/Open_Sans/registry.css" />
-		<link rel="stylesheet" href="%sveltekit.assets%/fonts/Garamond/registry.css" />
 		<link rel="stylesheet" href="%sveltekit.assets%/css/global.css" />
+		<link rel="stylesheet" href="%sveltekit.assets%/fonts/Raleway/registry.css" />
+		<!--Styles needed on a limited number of pages-->
+		<link rel="preload" href="%sveltekit.assets%/fonts/Open_Sans/registry.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="%sveltekit.assets%/fonts/Open_Sans/registry.css" /></noscript>
+        <link rel="preload" href="%sveltekit.assets%/fonts/Garamond/registry.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="%sveltekit.assets%/fonts/Garamond/registry.css" /></noscript>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="tap">

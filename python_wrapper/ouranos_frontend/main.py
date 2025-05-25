@@ -5,15 +5,15 @@ from pathlib import Path
 import subprocess
 
 from ouranos import current_app
-from ouranos.core.config import get_base_dir
+from ouranos.core.config import ConfigDict, get_base_dir
 from ouranos.sdk import Functionality
 
 from ouranos_frontend.config import Config
 
 
 class Frontend(Functionality):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, config: ConfigDict, **kwargs):
+        super().__init__(config, **kwargs)
         self.subprocess: subprocess.Popen | None = None
         self.frontend_dir = self._get_frontend_dir().absolute()
 

@@ -59,7 +59,7 @@ class Frontend(Functionality):
             f.write(f'PUBLIC_BACKEND_URL = "{backend_url}"\n')
             f.write(f'PUBLIC_LOCAL_API_URL = "{api_url_local}"\n')
 
-    async def _startup(self) -> None:
+    async def startup(self) -> None:
         self._patch_dotenv()
         host = current_app.config.get("FRONTEND_HOST", Config.FRONTEND_HOST)
         port = current_app.config.get("FRONTEND_PORT", Config.FRONTEND_PORT)
@@ -91,6 +91,6 @@ class Frontend(Functionality):
         self.subprocess = subprocess.Popen(
             cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
 
-    async def _shutdown(self) -> None:
+    async def shutdown(self) -> None:
         self.subprocess.terminate()
         self.subprocess = None

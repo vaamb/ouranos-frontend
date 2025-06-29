@@ -64,18 +64,18 @@
 			[0, 0, 0, 0, 0, 0, 0]
 		];
 		// months are 0 indexed
-		const firstDayOfMonth = new Date(year, month);
-		const lastDayOfMonth = new Date(year, month + 1, 0);
+		const firstDayOfMonth = ((new Date(year, month)).getDay() + 6) % 7;
+		const lastDateOfMonth = (new Date(year, month + 1, 0)).getDate();
 
 		let started = false;
 		let i = 1;
 		for (let row = 0; row < calendarArray.length; row++) {
 			for (let col = 0; col < days.length; col++) {
-				if (i > lastDayOfMonth.getDate()) {
+				if (i > lastDateOfMonth) {
 					break;
 				}
 				if (row === 0 && !started) {
-					if (col === firstDayOfMonth.getDay() - 1) {
+					if (col === firstDayOfMonth) {
 						started = true;
 					} else {
 						continue;

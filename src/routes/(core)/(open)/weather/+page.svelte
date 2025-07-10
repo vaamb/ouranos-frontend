@@ -160,7 +160,7 @@
 			<BoxItem title={formatDate(new Date(weather['timestamp']))} minWidth="175px">
 				<WeatherIcon icon={weather['icon']} size="45px" height="75px" />
 				<h1>{capitalize(weather['summary'])}</h1>
-				<p>Temperature: {weather['temperature'].toFixed(1)} °C</p>
+				<p>Temperature: {weather['temperature_min'].toFixed(0)}-{weather['temperature_max'].toFixed(0)} °C</p>
 				<p>Humidity: {weather['humidity']} %</p>
 				<p>Precipitation: {(weather['precipitation_probability']*100).toFixed(1)} %</p>
 				<p>Wind: {weather['wind_speed'].toFixed(1)} km/h</p>

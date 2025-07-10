@@ -119,7 +119,7 @@
 	</BoxItem>
 	<BoxItem>
 		{#if !isEmpty($weatherHourly)}
-			<div style="display: flex; margin-bottom: 6px; flex-flow: row wrap">
+			<div class="weather-buttons">
 				{#each measures as measure}
 					<button
 						onclick={setcurrentMeasure(measure)}
@@ -177,5 +177,18 @@
 
 	p {
 		margin-bottom: 0;
+	}
+
+	.weather-buttons {
+		display: flex;
+		flex-wrap: wrap;
+		margin-bottom: 6px;
+		justify-content: center;
+	}
+
+	@media only screen and (min-width: 768px) {
+		.weather-buttons {
+			justify-content: flex-start;
+		}
 	}
 </style>

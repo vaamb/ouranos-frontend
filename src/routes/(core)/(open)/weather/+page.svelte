@@ -30,6 +30,15 @@
 	let suntimes = $state([])
 
 	// Hourly forecast switch
+	const measuresColor = {
+		default: colors.blue,
+		temperature: colors.red,
+		humidity: colors.blue,
+		precipitation_probability: colors.blue,
+		cloud_cover: colors.grey,
+		wind_speed: colors.blueLight
+	};
+
 	const measures = {
 		temperature: 'temperature',
 		humidity: 'humidity',
@@ -55,14 +64,12 @@
 		return {
 			label: capitalize(measure.replace('_', ' ')),
 			data: data,
-			borderColor: {
-				temperature: colors.red,
-				humidity: colors.blue,
-				precipitation_probability: colors.blue,
-				cloud_cover: colors.grey,
-				wind_speed: colors.blueLight
-			}[measure],
-			borderWidth: 1,
+			borderColor: measuresColor[measure] || measuresColor['default'],
+			backgroundColor: measuresColor[measure]
+						? measuresColor[measure] + '10'
+						: measuresColor['default'] + '10', // Add alpha
+			fill: true,
+			borderWidth: 2,
 			lineTension: 0.4
 		};
 	};

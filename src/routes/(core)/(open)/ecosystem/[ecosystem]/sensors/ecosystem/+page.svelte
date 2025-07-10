@@ -51,7 +51,9 @@
 					data: values,
 					borderColor: colors.green,
 					backgroundColor: colors.green + '10', // Add alpha
-					fill: true
+					fill: true,
+					borderWidth: 2,
+					lineTension: 0.05
 				}
 			],
 			labels: labels

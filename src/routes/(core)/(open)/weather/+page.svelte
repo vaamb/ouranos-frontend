@@ -33,7 +33,9 @@
 	const measures = {
 		temperature: 'temperature',
 		humidity: 'humidity',
-		precipitation: 'precipitation_probability'
+		precipitation: 'precipitation_probability',
+		'cloud cover': 'cloud_cover',
+		wind: 'wind_speed'
 	};
 	let currentMeasure = $state(Object.values(measures)[0]);
 
@@ -56,7 +58,9 @@
 			borderColor: {
 				temperature: colors.red,
 				humidity: colors.blue,
-				precipitation_probability: colors.blue
+				precipitation_probability: colors.blue,
+				cloud_cover: colors.grey,
+				wind_speed: colors.blueLight
 			}[measure],
 			borderWidth: 1,
 			lineTension: 0.4

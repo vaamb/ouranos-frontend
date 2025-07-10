@@ -30,8 +30,12 @@
 	let suntimes = $state([])
 
 	// Hourly forecast switch
-	const measures = ['temperature', 'humidity', 'precipitation_probability'];
-	let currentMeasure = $state(measures[0]);
+	const measures = {
+		temperature: 'temperature',
+		humidity: 'humidity',
+		precipitation: 'precipitation_probability'
+	};
+	let currentMeasure = $state(Object.values(measures)[0]);
 
 	const setcurrentMeasure = function (newMeasure) {
 		return function () {
@@ -120,7 +124,7 @@
 	<BoxItem>
 		{#if !isEmpty($weatherHourly)}
 			<div class="weather-buttons">
-				{#each measures as measure}
+				{#each Object.entries(measures) as [measureName, measure]}
 					<button
 						onclick={setcurrentMeasure(measure)}
 						class="text-button"
@@ -131,7 +135,7 @@
 							: 'background-color: var(--main-40);'}
 						"
 					>
-						{capitalize(measure).replace('_', ' ')}
+						{capitalize(measureName)}
 					</button>
 				{/each}
 			</div>

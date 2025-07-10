@@ -33,7 +33,9 @@
 	const measures = {
 		temperature: 'temperature',
 		humidity: 'humidity',
-		precipitation: 'precipitation_probability'
+		precipitation: 'precipitation_probability',
+		'cloud cover': 'cloud_cover',
+		wind: 'wind_speed'
 	};
 	let currentMeasure = $state(Object.values(measures)[0]);
 
@@ -56,7 +58,9 @@
 			borderColor: {
 				temperature: colors.red,
 				humidity: colors.blue,
-				precipitation_probability: colors.blue
+				precipitation_probability: colors.blue,
+				cloud_cover: colors.grey,
+				wind_speed: colors.blueLight
 			}[measure],
 			borderWidth: 1,
 			lineTension: 0.4
@@ -156,7 +160,7 @@
 			<BoxItem title={formatDate(new Date(weather['timestamp']))} minWidth="175px">
 				<WeatherIcon icon={weather['icon']} size="45px" height="75px" />
 				<h1>{capitalize(weather['summary'])}</h1>
-				<p>Temperature: {weather['temperature'].toFixed(1)} °C</p>
+				<p>Temperature: {weather['temperature_min'].toFixed(0)}-{weather['temperature_max'].toFixed(0)} °C</p>
 				<p>Humidity: {weather['humidity']} %</p>
 				<p>Precipitation: {(weather['precipitation_probability']*100).toFixed(1)} %</p>
 				<p>Wind: {weather['wind_speed'].toFixed(1)} km/h</p>

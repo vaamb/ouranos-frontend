@@ -18,7 +18,11 @@ export let colors = {
 	orange: '#Ed7c24',
 	yellow: '#e9c429',
 	green: '#88ae60',
-	blue: '#226ba3'
+	blueLight: '#52a0da',
+	blue: '#226ba3',
+	grey: '#5b616e',
+	black: '#000000',
+	white: '#ffffff'
 };
 
 export const graphs = {

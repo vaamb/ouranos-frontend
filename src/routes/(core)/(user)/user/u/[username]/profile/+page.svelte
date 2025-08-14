@@ -16,7 +16,8 @@
 	} from '$lib/utils/functions.js';
 
 	let { data } = $props();
-	let userDescription = data.userDescription;
+
+	let userDescription = $derived(data.userDescription);
 
 	const seenLastly = function (userDescription) {
 		if (!userDescription['last_seen']) {

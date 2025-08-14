@@ -9,8 +9,8 @@
 
 	let { data } = $props();
 
-	const topic = data['topic'];
-	const topicName = topic['name'];
+	const topic = $derived(data['topic']);
+	const topicName = $derived(topic['name']);
 	let articles = $state(data['articles']);
 
 	const joinTags = function (tags) {

@@ -33,8 +33,8 @@
 
 	let { data } = $props();
 
-	let ecosystemName = data['ecosystemName'];
-	let ecosystemUID = data['ecosystemUID'];
+	let ecosystemName = $derived(data['ecosystemName']);
+	let ecosystemUID = $derived(data['ecosystemUID']);
 
 	let sensorsLevel = $derived($page.params.level);
 	let pageTitle = $derived(generateTitle(sensorsLevel, ecosystemName));

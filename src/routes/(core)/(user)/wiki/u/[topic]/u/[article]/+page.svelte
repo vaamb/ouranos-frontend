@@ -19,7 +19,7 @@
 
 	let { data } = $props();
 
-	const article = data['article'];
+	const article = $derived(data['article']);
 
 	let pictures = $state(undefined);
 	let content = $state();

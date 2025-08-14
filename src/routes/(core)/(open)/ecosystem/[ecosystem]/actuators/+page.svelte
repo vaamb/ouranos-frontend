@@ -21,8 +21,8 @@
 
 	let { data } = $props();
 
-	let ecosystemName = data['ecosystemName'];
-	let ecosystemUID = data['ecosystemUID'];
+	let ecosystemName = $derived(data['ecosystemName']);
+	let ecosystemUID = $derived(data['ecosystemUID']);
 
 	let endPoint = $state(Date.now());
 	let startPoint = $derived(new Date(endPoint - 1000 * 60 * 60 * 24 * 7));

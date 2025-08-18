@@ -393,26 +393,26 @@
 							{/if}
 						</BoxItem>
 					{/if}
-					{#if light}
-						<BoxItem title="Nycthemeral cycle">
-							{#await fetchEcosystemNycthemeralCycleData(uid)}
-								<p>Fetching data</p>
-							{:then ecosystemLightData_notUsed}
-								{@const nycthemeralCycle = $ecosystemsNycthemeralCycle[getStoreDataKey(uid)]}
-								{@const formatTime = (timeStr) => {
-									return strHoursToDate(timeStr).toLocaleTimeString([], {
-										timeStyle: 'short',
-										hour12: false
-									});
-								}}
-								<p>Method: {nycthemeralCycle['span']}</p>
-								{#if nycthemeralCycle['span'] === 'target'}
-									<p>Target: {nycthemeralCycle['target']}</p>
-								{/if}
-								<p>
-									Span: {formatTime(nycthemeralCycle['day'])} -
-									{formatTime(nycthemeralCycle['night'])}
-								</p>
+					<BoxItem title="Nycthemeral cycle">
+						{#await fetchEcosystemNycthemeralCycleData(uid)}
+							<p>Fetching data</p>
+						{:then ecosystemLightData_notUsed}
+							{@const nycthemeralCycle = $ecosystemsNycthemeralCycle[getStoreDataKey(uid)]}
+							{@const formatTime = (timeStr) => {
+								return strHoursToDate(timeStr).toLocaleTimeString([], {
+									timeStyle: 'short',
+									hour12: false
+								});
+							}}
+							<p>Method: {nycthemeralCycle['span']}</p>
+							{#if nycthemeralCycle['span'] === 'target'}
+								<p>Target: {nycthemeralCycle['target']}</p>
+							{/if}
+							<p>
+								Span: {formatTime(nycthemeralCycle['day'])} -
+								{formatTime(nycthemeralCycle['night'])}
+							</p>
+							{#if light}
 								<p style="font-size: 1rem; font-weight: bold; padding: 2px 0; margin-top: 0.6rem">
 									Lighting
 								</p>
@@ -422,9 +422,9 @@
 								{:else}
 									<p>No lighting needed</p>
 								{/each}
-							{/await}
-						</BoxItem>
-					{/if}
+							{/if}
+						{/await}
+					</BoxItem>
 					{#if actuator}
 						<BoxItem title="Actuators" href="/ecosystem/{slugify(name)}/actuators">
 							{#each actuatorTypes as actuatorType}

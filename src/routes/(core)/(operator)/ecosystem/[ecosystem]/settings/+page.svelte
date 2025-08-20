@@ -40,6 +40,7 @@
 	let ecosystemUID = $derived(data['ecosystemUID']);
 
 	let ecosystem = $derived({ ...$ecosystems[ecosystemUID] });
+	let ecosystemState = $derived($ecosystemsState[ecosystemUID]);
 
 	// Management crud-related function
 	let ecosystemManagement = $state({ ...$ecosystemsManagement[ecosystemUID] });
@@ -124,7 +125,7 @@
 			</tr>
 			<tr>
 				<td>Last seen</td>
-				<td>{formatDateTime(ecosystem['last_seen'])}</td>
+				<td>{formatDateTime(ecosystemState['last_seen'])}</td>
 			</tr>
 		</tbody>
 		{#if $currentUser.can(permissions.OPERATE)}

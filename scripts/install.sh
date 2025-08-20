@@ -15,7 +15,7 @@ check_ouranos_installed() {
     fi
 
     # Check that the directories exist
-    local dirs=("${OURANOS_DIR}" "${OURANOS_DIR}/lib" "${OURANOS_DIR}/logs" "${OURANOS_DIR}/scripts")
+    local dirs=("${OURANOS_DIR}" "${OURANOS_DIR}/lib" "${OURANOS_DIR}/logs" "${OURANOS_DIR}/scripts" "${OURANOS_DIR}/python_venv")
     for dir in "${dirs[@]}"; do
       if [[ ! -d "$dir" ]]; then
         echo "Ouranos directories not found at $OURANOS_DIR. Please check your installation."
@@ -27,7 +27,7 @@ check_ouranos_installed() {
 setup_logging() {
     # Load logging functions
     readonly DATETIME=$(date +%Y%m%d_%H%M%S)
-    readonly LOG_FILE="/tmp/ouranos_frontend_update_${DATETIME}.log"
+    readonly LOG_FILE="/tmp/ouranos_frontend_install_${DATETIME}.log"
     readonly SCRIPT_DIR="${OURANOS_DIR}/scripts"
     . "${SCRIPT_DIR}/logging.sh"
 }
@@ -147,4 +147,4 @@ main() {
     exit 0
 }
 
-main
+main "$@"

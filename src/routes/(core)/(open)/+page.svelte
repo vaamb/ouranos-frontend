@@ -393,7 +393,7 @@
 							{/if}
 						</BoxItem>
 					{/if}
-					<BoxItem title="Nycthemeral cycle">
+					<BoxItem title="Nycthemeral cycle" href={$currentUser.can(permissions.ADMIN) ? `/ecosystem/${slugify(name)}/settings`: ""}>
 						{#await fetchEcosystemNycthemeralCycleData(uid)}
 							<p>Fetching data</p>
 						{:then ecosystemLightData_notUsed}

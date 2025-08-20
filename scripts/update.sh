@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# Exit on error, unset variable, and pipefail
+set -euo pipefail
+
 check_ouranos_installed() {
     # Check that Ouranos variable is set
     if [[ -z "${OURANOS_DIR:-}" ]]; then
@@ -19,8 +24,7 @@ setup_logging() {
     # Load logging functions
     readonly DATETIME=$(date +%Y%m%d_%H%M%S)
     readonly LOG_FILE="/tmp/ouranos_frontend_update_${DATETIME}.log"
-    readonly SCRIPT_DIR="${OURANOS_DIR}/scripts"
-    . "${SCRIPT_DIR}/logging.sh"
+    . "${OURANOS_DIR}/scripts/utils/logging.sh" "${LOG_FILE}"
 }
 
 check_ouranos_frontend_installed() {
@@ -36,7 +40,8 @@ update_ouranos_frontend() {
         log ERROR "Failed to change to directory: ${OURANOS_DIR}/lib/ouranos-frontend"
 
     # Use the update_git_repo function from ouranos scripts
-    # It takes care of all the python-side updates
+    # It takes care of all the git- and python-side updates
+    source "${OURANOS_DIR}/scripts/update.sh"
     update_git_repo "${OURANOS_DIR}/lib/ouranos-frontend"
 
     # Update npm dependencies

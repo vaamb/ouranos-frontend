@@ -62,7 +62,7 @@ export const generateListOfMenuItems = function (
 			name: 'Actuators',
 			icon: faToggleOff,
 			path: 'actuators',
-			management: ['switches']
+			management: ['actuators']
 		},
 		{
 			name: 'Ecosystem health',

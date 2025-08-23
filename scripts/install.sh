@@ -40,7 +40,7 @@ install_requirements() {
     log INFO "Installing Node.js and npm..."
     if ! command -v node &> /dev/null || ! command -v npm &> /dev/null; then
         curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && \
-        sudo apt-get install -y nodejs  || log ERROR "Failed to install Node.js and npm"
+        sudo apt-get install -y nodejs npm  || log ERROR "Failed to install Node.js and npm"
     else
         log INFO "Node.js and npm are already installed"
     fi

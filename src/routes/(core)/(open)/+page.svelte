@@ -91,19 +91,6 @@
 	};
 	let sortedCalendarEvents = $derived(sortCalendarEventsByHappening(calendarEvents));
 
-	const anyActiveActuator = function (ecosystemsActuatorsState, uid) {
-		const actuatorsStatus = ecosystemsActuatorsState[uid];
-		if (!actuatorsStatus) {
-			return false;
-		}
-		for (const actuatorType of actuatorTypes) {
-			if (actuatorsStatus[actuatorType]['active']) {
-				return true;
-			}
-		}
-		return false;
-	};
-
 	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {
 		let rv = [];
 		for (const sensor of sensors) {
@@ -377,7 +364,7 @@
 					</BoxItem>
 				{:else}{@html '<!--Only connected and running ecosystems afterwards-->'}
 					{@const light = getParamStatus($ecosystemsManagement, uid, 'light')}
-					{@const actuator = anyActiveActuator($ecosystemsActuatorsState, uid)}
+					{@const actuator = getParamStatus($ecosystemsManagement, uid, 'actuators')}
 					{@const ecosystemData = getParamStatus($ecosystemsManagement, uid, 'ecosystem_data')}
 					{@const environmentData = getParamStatus($ecosystemsManagement, uid, 'environment_data')}
 					{@const plantsData = getParamStatus($ecosystemsManagement, uid, 'plants_data')}

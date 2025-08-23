@@ -33,7 +33,6 @@ export const wikiTopics = writable([]);
 // Derived stores
 export const ecosystemsIds = derived(ecosystems, (ecosystems) => {
 	return Object.values(ecosystems)
-		.sort(dynamicSort('name'))
 		.map((obj) => ({ uid: obj['uid'], name: obj['name'] }));
 });
 

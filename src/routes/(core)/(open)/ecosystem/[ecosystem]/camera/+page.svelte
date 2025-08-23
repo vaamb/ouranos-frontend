@@ -27,11 +27,12 @@
 			}))
 	);
 
-	const getCaption = function (cameraPicturesInfo, cameraUID) {
-		if (Object.prototype.hasOwnProperty.call(cameraPicturesInfo, cameraUID)) {
-			return `Taken on ${cameraPicturesInfo[cameraUID]['timestamp']}`;
-		}
-		return '';
+	const getSource = function (path) {
+		return `${STATIC_URL}/${path}?timestamp=${new Date().getTime()}`;
+	}
+
+	const getCaption = function (timestamp) {
+		return `Taken on ${new Date(timestamp)}`;
 	};
 
 	onMount(async () => {
@@ -42,13 +43,12 @@
 			if (data['ecosystem_uid'] === ecosystemUID) {
 				// TODO: add new images if available
 				for (const updatedInfo of data['updated_pictures']) {
-					const cameraUid = updatedInfo['camera_uid'];
-					if (
-						Object.prototype.hasOwnProperty.call(cameraPicturesInfo, cameraUid) &&
-						Object.prototype.hasOwnProperty.call(images, cameraUid)
-					) {
-						cameraPicturesInfo[cameraUid]['timestamp'] = new Date(updatedInfo['timestamp']);
-						images[cameraUid].refresh();
+					const cameraUID = updatedInfo['camera_uid'];
+					if (images[cameraUID]) {
+						images[cameraUID].update({
+							source: getSource(updatedInfo['path']),
+							caption: getCaption(updatedInfo['timestamp'])
+						})
 					}
 				}
 			}
@@ -71,10 +71,10 @@
 				<div style="margin: auto">
 					<Image
 						bind:this={images[cameraID['uid']]}
-						source={`${STATIC_URL}/${pictureInfo['path']}?${new Date().getTime()}`}
+						source={getSource(pictureInfo['path'])}
 						height="250"
-						width="375"
-						caption={getCaption(cameraPicturesInfo, cameraID['uid'])}
+						width=null
+						caption={getCaption(pictureInfo['timestamp'])}
 						alt={`A picture taken by the camera '${cameraID['name']}'`}
 					/>
 				</div>

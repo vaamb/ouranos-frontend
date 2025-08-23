@@ -518,7 +518,7 @@
 			on:confirm={(event) => {
 				const uid = hardware['uid'];
 				const payload = event.detail;
-				crudRequest(`gaia/hardware/u/${uid}`, 'update', payload);
+				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/hardware/u/${uid}`, 'update', payload);
 				modals['hardware_update'].closeModal();
 			}}
 			on:cancel={() => modals['hardware_update'].closeModal()}
@@ -532,7 +532,7 @@
 		on:close={resetCrudData}
 		on:confirm={() => {
 			const uid = hardware['uid'];
-			crudRequest(`gaia/hardware/u/${uid}`, 'delete');
+			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/hardware/u/${uid}`, 'delete');
 			modals['hardware_delete'].closeModal();
 		}}
 	>

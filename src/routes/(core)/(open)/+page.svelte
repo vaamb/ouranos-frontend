@@ -415,7 +415,7 @@
 					{#if actuator}
 						<BoxItem title="Actuators" href="/ecosystem/{slugify(name)}/actuators">
 							{#each actuatorTypes as actuatorType}
-								{@const actuator = $ecosystemsActuatorsState[uid][actuatorType]}
+								{@const actuator = $ecosystemsActuatorsState[uid] && $ecosystemsActuatorsState[uid][actuatorType]}
 								{#if actuator && actuator['active']}
 									<p>
 										{capitalize(actuatorType)}:

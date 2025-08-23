@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+
 	import Fa from 'svelte-fa';
 	import { faNotdef, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
@@ -11,38 +12,38 @@
 		caption = undefined
 	} = $props();
 
-	export const refresh = function () {
-		const rootSource = source.split('?')[0];
-		image.src = rootSource + '?' + new Date().getTime();
+	export const update = function (newData) {
+		if (newData["source"]) {
+			source = newData["source"];
+		}
+		if (newData["alt"]) {
+			alt = newData["alt"];
+		}
+		if (newData["caption"]) {
+			caption = newData["caption"];
+		}
 	};
 
-	let image = $state(new Image()); // bound to the image container
+	let image = undefined;  // bound to the image container
 	let loading = $state(false);
 	let loaded = $state(false);
 	let error = $state(false);
 
 	onMount(() => {
 		loading = true;
-
-		image.src = source;
-		image.alt = alt;
-
-		image.onload = () => {
-			loading = false;
-			loaded = true;
-		};
-
-		image.onerror = () => {
-			loading = false;
-			error = true;
-		};
 	});
 </script>
 
 <div class="image-wrapper" style="--image-height: {height}; --image-width:{width}">
 	<figure>
-		<!--svelte-ignore a11y_missing_attribute (the alt attribute is set on mount)-->
-		<img bind:this={image} style="display: {loaded ? 'inherit' : 'none'}" />
+		<img
+			bind:this={image}
+			src={source}
+			{alt}
+		  onload={() => {loading = false; loaded = true;}}
+			onerror={() => {loading = false; error = true;}}
+			style="display: {loaded ? 'inherit' : 'none'}"
+		/>
 		{#if loaded && caption}
 			<figcaption>
 				{caption}

@@ -11,7 +11,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 
 	// Use w=100 as enhanced:img min size is 540 by default
-	import seedling from '/static/images/avatar/seedling.jpg?enhanced&w=100';
+	import seedling from '/static/images/avatar/seedling.jpg?url&enhanced&w=100';
 
 	import MenuItem from '$lib/components/menu/MenuItem.svelte';
 

@@ -3,7 +3,7 @@
 
 	import axios from 'axios';
 	import Fa from 'svelte-fa';
-	import { faCircleExclamation, faMoon, faSun, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+	import { faCircle, faCircleExclamation, faMoon, faSun, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Row from '$lib/components/layout/Row.svelte';
@@ -48,6 +48,7 @@
 	} from '$lib/utils/functions.js';
 	import {
 		fetchCalendarEvents,
+		fetchCameraPicturesInfo,
 		fetchEcosystemActuatorsState,
 		fetchSensorCurrentData,
 		fetchEcosystemSensorsSkeleton,
@@ -172,6 +173,10 @@
 
 	let suntimes = $state([]);
 	let sensorsPrimed = $state(false);
+
+	const recentPicture = function (timestamp, now) {
+		return now - new Date(timestamp) < 5 * 60 * 1000 ? "--green": "--red"
+	}
 
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
@@ -368,7 +373,8 @@
 					{@const ecosystemData = getParamStatus($ecosystemsManagement, uid, 'ecosystem_data')}
 					{@const environmentData = getParamStatus($ecosystemsManagement, uid, 'environment_data')}
 					{@const plantsData = getParamStatus($ecosystemsManagement, uid, 'plants_data')}
-					{#if !(light || actuator || ecosystemData || environmentData || plantsData)}
+					{@const pictures = getParamStatus($ecosystemsManagement, uid, 'pictures')}
+					{#if !(light || actuator || ecosystemData || environmentData || plantsData || pictures)}
 						<BoxItem>
 							<p>No functionality is enabled in {name}</p>
 							{#if $currentUser.can(permissions.OPERATE)}
@@ -506,6 +512,20 @@
 									{/await}
 								{:else}
 									<p style="margin-bottom: 0">No sensor data available</p>
+								{/each}
+							{/await}
+						</BoxItem>
+					{/if}
+					{#if pictures}
+						<BoxItem title="Camera" href="/ecosystem/{slugify(name)}/camera">
+							{#await fetchCameraPicturesInfo(uid)}
+								<p>Loading camera information</p>
+							{:then camerasInfo}
+								{#each Object.values(camerasInfo) as cameraInfo}
+									<p>
+										{cameraInfo["camera_name"]}
+										<Fa icon={faCircle} style="color: var({recentPicture(cameraInfo['timestamp'], now)});" />
+									</p>
 								{/each}
 							{/await}
 						</BoxItem>

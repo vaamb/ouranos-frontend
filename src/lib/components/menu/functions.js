@@ -16,7 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { permissions } from '$lib/utils/consts.js';
-import { capitalize, serviceEnabled, slugify } from '$lib/utils/functions.js';
+import { capitalize, dynamicSort, serviceEnabled, slugify } from '$lib/utils/functions.js';
 
 const MenuItem = function (name, path, icon = undefined, children = [], color = undefined) {
 	return {
@@ -38,6 +38,7 @@ export const generateListOfMenuItems = function (
 	wikiTopics
 ) {
 	let menuItems = [MenuItem('Home', '/', faHome)];
+	ecosystemsIds = [...ecosystemsIds].sort(dynamicSort('name'))
 
 	if (serviceEnabled(services, 'calendar')) {
 		menuItems.push(MenuItem('Calendar', '/calendar', faCalendarDay));

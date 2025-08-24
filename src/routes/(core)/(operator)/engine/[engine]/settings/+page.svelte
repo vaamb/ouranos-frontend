@@ -128,15 +128,15 @@
 		data={fullEcosystems}
 		editable={true}
 		crudOptions={['create', 'delete']}
-		on:crud={(event) => {
-			const rowIndex = event['detail']['rowIndex'];
+		oncrud={(payload) => {
+			const rowIndex = payload['rowIndex'];
 			setCrudData(
-				event['detail']['action'],
+				payload['action'],
 				rowIndex,
-				event['detail']['rowIndex'] !== undefined
+				payload['rowIndex'] !== undefined
 					? engine['ecosystems'][rowIndex]['uid']
 					: undefined,
-				event['detail']['rowIndex'] !== undefined
+				payload['rowIndex'] !== undefined
 					? engine['ecosystems'][rowIndex]['name']
 					: undefined
 			);

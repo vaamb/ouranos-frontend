@@ -36,9 +36,9 @@
 	]}
 	data={$wikiTopics}
 	editable={true}
-	on:crud={(event) => {
-		crudAction = event['detail']['action'];
-		crudIndex = event['detail']['rowIndex'];
+	oncrud={(payload) => {
+		crudAction = payload['action'];
+		crudIndex = payload['rowIndex'];
 	}}
 />
 

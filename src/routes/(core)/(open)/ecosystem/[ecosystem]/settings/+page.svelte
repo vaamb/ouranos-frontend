@@ -337,8 +337,8 @@
 		]}
 		data={environmentParameters}
 		editable={true}
-		on:crud={(event) => {
-			setCrudData('climate_parameter', event['detail']['action'], event['detail']['rowIndex']);
+		oncrud={(payload) => {
+			setCrudData('climate_parameter', payload['action'], payload['rowIndex']);
 		}}
 	/>
 	<Modal
@@ -463,8 +463,8 @@
 		]}
 		data={hardwareObjects}
 		editable={true}
-		on:crud={(event) => {
-			setCrudData('hardware', event['detail']['action'], event['detail']['rowIndex']);
+		oncrud={(payload) => {
+			setCrudData('hardware', payload['action'], payload['rowIndex']);
 		}}
 	/>
 	<Modal

@@ -47,9 +47,9 @@
 		data={users}
 		editable={true}
 		crudOptions={['create', 'delete']}
-		on:crud={(event) => {
-			crudAction = event['detail']['action'];
-			crudIndex = event['detail']['rowIndex'];
+		oncrud={(payload) => {
+			crudAction = payload['action'];
+			crudIndex = payload['rowIndex'];
 		}}
 	/>
 	<Modal

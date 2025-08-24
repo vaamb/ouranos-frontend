@@ -35,8 +35,8 @@
 		data={$warnings}
 		editable={true}
 		crudOptions={['delete']}
-		on:crud={(event) => {
-			setCrudData(event['detail']['rowIndex']);
+		oncrud={(payload) => {
+			setCrudData(payload['rowIndex']);
 		}}
 	/>
 	<Modal

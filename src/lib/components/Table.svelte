@@ -1,6 +1,4 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
-
 	import Fa from 'svelte-fa';
 	import {
 		faCircle,
@@ -23,17 +21,16 @@
 		// }]
 		data = [], // [{data_key: data1}, {data_key: data2}]
 		editable = false,
-		crudOptions = ['create', 'update', 'delete']
+		crudOptions = ['create', 'update', 'delete'],
+		oncrud = (payload) => {}
 	} = $props();
-
-	const dispatch = createEventDispatcher();
 
 	const emitEvent = function (action, rowIndex) {
 		const payload = {
 			action: action,
 			rowIndex: rowIndex
 		};
-		dispatch('crud', payload);
+		oncrud(payload);
 	};
 
 	const checkCongruency = function () {

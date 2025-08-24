@@ -351,7 +351,9 @@ export const fetchEcosystemActuatorRecords = async function (ecosystemUID, actua
 
 export const fetchEcosystemHardware = async function (ecosystemUID) {
 	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/hardware`)
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/hardware`, {
+			params: { in_config: true }
+		})
 		.then((response) => {
 			return response.data;
 		})

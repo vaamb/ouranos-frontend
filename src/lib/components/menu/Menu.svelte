@@ -116,7 +116,7 @@
 				<MenuItem
 					{item}
 					open={toggledMenuItemIndex === index}
-					on:click={() => toggleMenuItem(index)}
+					onclick={() => toggleMenuItem(index)}
 				/>
 			{/each}
 		</ul>

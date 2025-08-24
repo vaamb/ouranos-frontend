@@ -35,17 +35,17 @@
 		data={$warnings}
 		editable={true}
 		crudOptions={['delete']}
-		on:crud={(event) => {
-			setCrudData(event['detail']['rowIndex']);
+		oncrud={(payload) => {
+			setCrudData(payload['rowIndex']);
 		}}
 	/>
 	<Modal
 		bind:this={modal}
 		showModal={crudDataIndex !== null}
 		title="Remove a warning"
-		on:close={resetCrudData}
+		onclose={resetCrudData}
 		confirmationButtons={true}
-		on:confirm={() => {
+		onconfirm={() => {
 			const warningID = $warnings[crudDataIndex]['id'];
 			crudRequest(`gaia/warning/u/${warningID}/mark_as_solved`, 'create');
 			modal.closeModal();

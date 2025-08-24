@@ -244,7 +244,7 @@
 <Modal
 	bind:this={modal}
 	showModal={modalDay !== undefined}
-	on:close={resetModal}
+	onclose={resetModal}
 	title={modalDay !== undefined ? formatDate(modalDay) : ''}
 >
 	{#if modalDay !== undefined}
@@ -263,9 +263,9 @@
 					]}
 					data={filteredEventsArray}
 					editable={true}
-					on:crud={(event) => {
-						crudAction = event['detail']['action'];
-						crudIndex = event['detail']['rowIndex'];
+					oncrud={(payload) => {
+						crudAction = payload['action'];
+						crudIndex = payload['rowIndex'];
 					}}
 				/>
 			</div>
@@ -290,12 +290,11 @@
 					{ label: 'Level', key: 'level', value: eventLevels[0], selectFrom: eventLevels },
 					{ label: 'Visibility', key: 'visibility', value: eventVisibility[1], selectFrom: eventVisibility }
 				]}
-				on:confirm={(event) => {
-					const payload = event.detail;
+				onconfirm={(payload) => {
 					handleCrudEvent('create', payload);
 					modal.closeModal();
 				}}
-				on:cancel={modal.closeModal}
+				oncancel={modal.closeModal}
 			/>
 		{:else if crudAction === 'update'}
 			<Form
@@ -335,24 +334,23 @@
 						selectFrom: eventVisibility
 					}
 				]}
-				on:confirm={(event) => {
-					const payload = event.detail;
+				onconfirm={(payload) => {
 					handleCrudEvent('update', {
 						eventID: filteredEventsArray[crudIndex]['id'],
 						...payload
 					});
 					modal.closeModal();
 				}}
-				on:cancel={modal.closeModal}
+				oncancel={modal.closeModal}
 			/>
 		{:else if crudAction === 'delete'}
 			<p>Delete '{filteredEventsArray[crudIndex]['title']}' event ?</p>
 			<ConfirmButtons
-				on:confirm={() => {
+				onconfirm={() => {
 					handleCrudEvent('delete', { eventID: filteredEventsArray[crudIndex]['id'] });
 					modal.closeModal();
 				}}
-				on:cancel={modal.closeModal}
+				oncancel={modal.closeModal}
 			/>
 		{/if}
 	{/if}

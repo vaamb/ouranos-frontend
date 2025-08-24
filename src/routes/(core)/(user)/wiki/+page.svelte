@@ -36,16 +36,16 @@
 	]}
 	data={$wikiTopics}
 	editable={true}
-	on:crud={(event) => {
-		crudAction = event['detail']['action'];
-		crudIndex = event['detail']['rowIndex'];
+	oncrud={(payload) => {
+		crudAction = payload['action'];
+		crudIndex = payload['rowIndex'];
 	}}
 />
 
 <Modal
 	bind:this={modal['create']}
 	showModal={crudAction === 'create'}
-	on:close={resetModal}
+	onclose={resetModal}
 	title="Create a new topic"
 >
 	<Form
@@ -60,19 +60,18 @@
 				deserializer: splitTags
 			}
 		]}
-		on:confirm={(event) => {
-			const payload = event.detail;
+		onconfirm={(payload) => {
 			crudRequest(`app/services/wiki/topics/u`, 'create', payload).then(() => refreshTopics());
 			modal['create'].closeModal();
 		}}
-		on:cancel={() => modal['create'].closeModal()}
+		oncancel={() => modal['create'].closeModal()}
 	/>
 </Modal>
 {#if $wikiTopics[crudIndex]}
 	<Modal
 		bind:this={modal['update']}
 		showModal={crudAction === 'update'}
-		on:close={resetModal}
+		onclose={resetModal}
 		title={`Update ${$wikiTopics[crudIndex]['name']} topic`}
 	>
 		<Form
@@ -94,8 +93,7 @@
 					deserializer: splitTags
 				}
 			]}
-			on:confirm={(event) => {
-				const payload = event.detail;
+			onconfirm={(payload) => {
 				crudRequest(
 					`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`,
 					'update',
@@ -103,7 +101,7 @@
 				).then(() => refreshTopics());
 				modal['update'].closeModal();
 			}}
-			on:cancel={() => modal['update'].closeModal()}
+			oncancel={() => modal['update'].closeModal()}
 		/>
 	</Modal>
 	<Modal
@@ -111,8 +109,8 @@
 		showModal={crudAction === 'delete'}
 		title={`Delete ${$wikiTopics[crudIndex]['name']} topic`}
 		confirmationButtons={true}
-		on:close={resetModal}
-		on:confirm={() => {
+		onclose={resetModal}
+		onconfirm={() => {
 			crudRequest(`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`, 'delete')
 			.then(
 				() => refreshTopics()

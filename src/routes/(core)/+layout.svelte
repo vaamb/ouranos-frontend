@@ -123,7 +123,7 @@
 
 <Modal
 	bind:showModal
-	on:close={refreshModal}
+	onclose={refreshModal}
 	title={$flashMessage.length > 0 ? $flashMessage[0]['title'] : ''}
 	timeOut={$flashMessage.length > 0 ? $flashMessage[0]['timeOut'] : undefined}
 >

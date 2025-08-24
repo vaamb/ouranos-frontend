@@ -96,16 +96,15 @@
 	bind:this={modals['base_info']}
 	showModal={crudAction === 'base_info'}
 	title="Update {engineUID}' base info"
-	on:close={resetCrudData}
+	onclose={resetCrudData}
 >
 	<Form
 		data={[{ label: 'Uid', key: 'uid', value: engineUID }]}
-		on:confirm={(event) => {
-			const payload = event.detail;
+		onconfirm={(payload) => {
 			crudRequest(`gaia/engine/u/${engineUID}`, 'update', payload);
 			modals['base_info'].closeModal();
 		}}
-		on:cancel={() => modals['base_info'].closeModal()}
+		oncancel={() => modals['base_info'].closeModal()}
 	/>
 </Modal>
 
@@ -128,15 +127,15 @@
 		data={fullEcosystems}
 		editable={true}
 		crudOptions={['create', 'delete']}
-		on:crud={(event) => {
-			const rowIndex = event['detail']['rowIndex'];
+		oncrud={(payload) => {
+			const rowIndex = payload['rowIndex'];
 			setCrudData(
-				event['detail']['action'],
+				payload['action'],
 				rowIndex,
-				event['detail']['rowIndex'] !== undefined
+				payload['rowIndex'] !== undefined
 					? engine['ecosystems'][rowIndex]['uid']
 					: undefined,
-				event['detail']['rowIndex'] !== undefined
+				payload['rowIndex'] !== undefined
 					? engine['ecosystems'][rowIndex]['name']
 					: undefined
 			);
@@ -146,7 +145,7 @@
 		bind:this={modals['create']}
 		showModal={crudAction === 'create'}
 		title="Create a new ecosystem"
-		on:close={resetCrudData}
+		onclose={resetCrudData}
 	>
 		<Form
 			data={[
@@ -165,22 +164,21 @@
 				},
 				{ label: 'Status', key: 'status', value: true, selectFrom: [true, false] }
 			]}
-			on:confirm={(event) => {
-				const payload = event.detail;
+			onconfirm={(payload) => {
 				payload['engine_uid'] = engineUID;
 				crudRequest(`gaia/ecosystem/u`, 'create', payload);
 				modals['create'].closeModal();
 			}}
-			on:cancel={() => modals['create'].closeModal()}
+			oncancel={() => modals['create'].closeModal()}
 		/>
 	</Modal>
 	<Modal
 		bind:this={modals['delete']}
 		showModal={crudAction === 'delete'}
 		title="Delete {crudEcosystemName}"
-		on:close={resetCrudData}
+		onclose={resetCrudData}
 		confirmationButtons={true}
-		on:confirm={() => {
+		onconfirm={() => {
 			crudRequest(`gaia/ecosystem/u/${crudEcosystemUID}`, 'delete');
 			modals['delete'].closeModal();
 		}}

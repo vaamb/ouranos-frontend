@@ -1,6 +1,4 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
-
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -8,7 +6,11 @@
 
 	import { isEmpty, isObject } from '$lib/utils/functions.js';
 
-	let { data } = $props();
+	let {
+		data,
+		onconfirm = (payload) => {},
+		oncancel = () => {}
+	} = $props();
 	// [{
 	//   label: "The input", key: "the_input", value: "the value"
 	//   serializer: undefined | function(value), deserializer: undefined | function(value),
@@ -76,12 +78,6 @@
 
 	let disabledSubmit = $derived(!canSubmit(values));
 
-	const dispatch = createEventDispatcher();
-
-	const cancel = function () {
-		dispatch('cancel');
-	};
-
 	const confirm = function () {
 		const payload = {};
 		for (const [key, obj] of Object.entries(values)) {
@@ -96,7 +92,7 @@
 				}
 			}
 		}
-		dispatch('confirm', payload);
+		onconfirm(payload);
 	};
 </script>
 
@@ -166,7 +162,7 @@
 		{/each}
 	</tbody>
 </table>
-<ConfirmButtons disabled={disabledSubmit} on:confirm={confirm} on:cancel={cancel} />
+<ConfirmButtons disabled={disabledSubmit} onconfirm={confirm} oncancel={oncancel} />
 
 <style>
 	label {

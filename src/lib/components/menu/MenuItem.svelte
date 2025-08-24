@@ -1,16 +1,17 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { page } from '$app/stores';
 
 	import Fa from 'svelte-fa';
 	import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-	let { item, open = false } = $props();
+	let {
+		item,
+		open = false,
+		onclick = () => {}
+	} = $props();
 
 	let anyItemClicked = $state(false);
-
-	const dispatch = createEventDispatcher();
 
 	let toggledMenuSubItemIndex = $state(null);
 	const toggleMenuSubItem = function (index) {
@@ -25,7 +26,7 @@
 	const toggleMenuItem = function () {
 		anyItemClicked = true;
 		toggledMenuSubItemIndex = null;
-		dispatch('click');
+		onclick();
 	};
 
 	const animate = (node, args) => (args.anyItemClicked ? slide(node, args) : undefined);

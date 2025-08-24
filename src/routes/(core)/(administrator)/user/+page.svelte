@@ -47,15 +47,15 @@
 		data={users}
 		editable={true}
 		crudOptions={['create', 'delete']}
-		on:crud={(event) => {
-			crudAction = event['detail']['action'];
-			crudIndex = event['detail']['rowIndex'];
+		oncrud={(payload) => {
+			crudAction = payload['action'];
+			crudIndex = payload['rowIndex'];
 		}}
 	/>
 	<Modal
 		bind:this={modals['create']}
 		showModal={crudAction === 'create'}
-		on:close={resetModal}
+		onclose={resetModal}
 		title="Invite a new user"
 	>
 		<Form
@@ -71,20 +71,19 @@
 				{ label: 'Firstname', key: 'firstname', required: false },
 				{ label: 'Lastname', key: 'lastname', required: false }
 			]}
-			on:confirm={(event) => {
-				const payload = event.detail;
+			onconfirm={(payload) => {
 				crudRequest(`auth/registration_token?send_email=true`, 'create', payload);
 				modals['create'].closeModal();
 			}}
-			on:cancel={() => modals['create'].closeModal()}
+			oncancel={() => modals['create'].closeModal()}
 		/>
 	</Modal>
 	<Modal
 		bind:this={modals['delete']}
 		showModal={crudAction === 'delete'}
 		title={users[crudIndex] ? `Delete ${users[crudIndex]['username']}?` : ''}
-		on:close={resetModal}
-		on:confirm={() => {
+		onclose={resetModal}
+		onconfirm={() => {
 			crudRequest(`user/u/${users[crudIndex]['username']}`, 'delete');
 			modals['delete'].closeModal();
 		}}

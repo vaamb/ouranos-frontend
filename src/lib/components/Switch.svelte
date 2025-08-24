@@ -1,6 +1,4 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
-
 	import Fa from 'svelte-fa';
 	import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
@@ -12,7 +10,8 @@
 		status = false,
 		mode = 'automatic',
 		turnToOptions = ['on', 'off', 'automatic'],
-		useTimer = false
+		useTimer = false,
+		onswitch = (payload) => {}
 	} = $props();
 
 	let countdown = $state('00:00:00');
@@ -21,10 +20,8 @@
 		return parseInt(h) * 3600 + parseInt(m) * 60 + parseInt(s);
 	});
 
-	const dispatch = createEventDispatcher();
-
 	const emitEvent = function (actuatorMode) {
-		dispatch('switch', { actuatorType: actuatorType, mode: actuatorMode, countdown: seconds });
+		onswitch({ actuatorType: actuatorType, mode: actuatorMode, countdown: seconds });
 		countdown = '00:00:00';
 	};
 </script>

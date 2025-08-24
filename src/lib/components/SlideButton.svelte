@@ -1,9 +1,10 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
-
-	let { disabled = false, id = 'primary', checked = $bindable(true) } = $props();
-
-	const dispatch = createEventDispatcher();
+	let {
+		disabled = false,
+		id = 'primary',
+		checked = $bindable(true),
+		ontoggle = (checked) => {}
+	} = $props();
 
 	const label = id + 'Button';
 
@@ -11,9 +12,7 @@
 		const target = event.target;
 		const state = target.getAttribute('aria-checked');
 		checked = state !== 'true';
-		dispatch('toggle', {
-			checked
-		});
+		ontoggle(checked);
 	};
 </script>
 

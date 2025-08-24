@@ -52,16 +52,16 @@
 	]}
 	data={articles}
 	editable={true}
-	on:crud={(event) => {
-		crudAction = event['detail']['action'];
-		crudIndex = event['detail']['rowIndex'];
+	oncrud={(payload) => {
+		crudAction = payload['action'];
+		crudIndex = payload['rowIndex'];
 	}}
 />
 
 <Modal
 	bind:this={modal['create']}
 	showModal={crudAction === 'create'}
-	on:close={resetModal}
+	onclose={resetModal}
 	title="Create a new article"
 >
 	<Form
@@ -84,8 +84,7 @@
 				hint: 'Comma separated tags'
 			}
 		]}
-		on:confirm={(event) => {
-			const payload = event.detail;
+		onconfirm={(payload) => {
 			let promise;
 			if (payload.content !== undefined) {
 				// Got a file
@@ -106,7 +105,7 @@
 				});
 			});
 		}}
-		on:cancel={() => modal['create'].closeModal()}
+		oncancel={() => modal['create'].closeModal()}
 	/>
 </Modal>
 {#if articles[crudIndex]}
@@ -115,8 +114,8 @@
 		showModal={crudAction === 'delete'}
 		title={`Delete ${articles[crudIndex]['name']} article`}
 		confirmationButtons={true}
-		on:close={resetModal}
-		on:confirm={() => {
+		onclose={resetModal}
+		onconfirm={() => {
 			crudRequest(
 				`app/services/wiki/topics/u/${topic['slug']}/u/${articles[crudIndex]['slug']}`,
 				'delete'

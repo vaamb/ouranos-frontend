@@ -49,9 +49,11 @@
 					: (value) => {
 							return value;
 						};
+			const defaultValue = row['value'] !== undefined ? serializer(row['value']) : ''
 			rv[row['key']] = {
 				type: row['type'] !== undefined ? row['type'] : 'text',
-				value: row['value'] !== undefined ? serializer(row['value']) : '',
+				defaultValue: defaultValue,
+				value: defaultValue,
 				files: undefined,
 				validate: row['validate'] !== undefined ? row['validate'] : defaultValidator,
 				deserializer: deserializer
@@ -60,7 +62,7 @@
 		return rv;
 	};
 
-	let values = $state(getValues(data));
+	let formDataValues = $state(getValues(data));
 
 	const canSubmit = function (data) {
 		for (const obj of Object.values(data)) {
@@ -76,19 +78,20 @@
 		return true;
 	};
 
-	let disabledSubmit = $derived(!canSubmit(values));
+	let disabledSubmit = $derived(!canSubmit(formDataValues));
 
 	const confirm = function () {
 		const payload = {};
-		for (const [key, obj] of Object.entries(values)) {
+		for (const [key, obj] of Object.entries(formDataValues)) {
 			if (obj['files'] !== undefined) {
 				// File type input, need to pass files
 				payload[key] = obj['files'];
 			} else {
 				// Others, need to pass the (deserialized) value
-				const deserialized_value = obj['deserializer'](obj['value']);
-				if (deserialized_value !== '') {
-					payload[key] = deserialized_value;
+				const deserializedDefaultValue = obj['deserializer'](obj['defaultValue'])
+				const deserializedValue = obj['deserializer'](obj['value']);
+				if (deserializedValue !== '' && deserializedValue !== deserializedDefaultValue) {
+					payload[key] = deserializedValue;
 				}
 			}
 		}
@@ -109,13 +112,13 @@
 						{#if row['type'] !== 'file'}
 							<input
 								id={row['key']}
-								bind:value={values[row['key']]['value']}
+								bind:value={formDataValues[row['key']]['value']}
 								{...row}
 							/>
 						{:else}
 							<input
 								id={row['key']}
-								bind:files={values[row['key']]['files']}
+								bind:files={formDataValues[row['key']]['files']}
 								{...row}
 								type="file"
 							/>
@@ -123,7 +126,7 @@
 					{:else}
 						<select
 							id={row['key']}
-							bind:value={values[row['key']]['value']}
+							bind:value={formDataValues[row['key']]['value']}
 							{...row}
 						>
 							{#if !row['value']}
@@ -149,10 +152,10 @@
 						<Fa
 							icon={faCircle}
 							class={row['type'] === 'file'
-								? values[row['key']]['validate'](values[row['key']]['files'])
+								? formDataValues[row['key']]['validate'](formDataValues[row['key']]['files'])
 									? 'on'
 									: 'off'
-								: values[row['key']]['validate'](values[row['key']]['value'])
+								: formDataValues[row['key']]['validate'](formDataValues[row['key']]['value'])
 									? 'on'
 									: 'off'}
 						/>

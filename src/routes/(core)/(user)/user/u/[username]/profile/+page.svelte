@@ -144,13 +144,12 @@
 			{ label: 'Role', key: 'role_name', value: userDescription['role_name'], disabled: true },
 			{ label: 'E-mail', key: 'email', value: userDescription['email'], disabled: true }
 		]}
-		on:confirm={(event) => {
-			const payload = event.detail;
+		onconfirm={(payload) => {
 			crudRequest(`user/u/${userDescription['username']}`, 'update', payload).then(() => {
 				modals['update'].closeModal();
 			});
 		}}
-		on:cancel={() => modals['update'].closeModal()}
+		oncancel={() => modals['update'].closeModal()}
 	/>
 </Modal>
 {#if serviceEnabled($services, 'email')}

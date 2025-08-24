@@ -100,12 +100,11 @@
 >
 	<Form
 		data={[{ label: 'Uid', key: 'uid', value: engineUID }]}
-		on:confirm={(event) => {
-			const payload = event.detail;
+		onconfirm={(payload) => {
 			crudRequest(`gaia/engine/u/${engineUID}`, 'update', payload);
 			modals['base_info'].closeModal();
 		}}
-		on:cancel={() => modals['base_info'].closeModal()}
+		oncancel={() => modals['base_info'].closeModal()}
 	/>
 </Modal>
 
@@ -165,13 +164,12 @@
 				},
 				{ label: 'Status', key: 'status', value: true, selectFrom: [true, false] }
 			]}
-			on:confirm={(event) => {
-				const payload = event.detail;
+			onconfirm={(payload) => {
 				payload['engine_uid'] = engineUID;
 				crudRequest(`gaia/ecosystem/u`, 'create', payload);
 				modals['create'].closeModal();
 			}}
-			on:cancel={() => modals['create'].closeModal()}
+			oncancel={() => modals['create'].closeModal()}
 		/>
 	</Modal>
 	<Modal

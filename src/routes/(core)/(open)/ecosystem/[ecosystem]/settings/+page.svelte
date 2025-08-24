@@ -157,12 +157,11 @@
 			{ label: 'Name', key: 'name', value: ecosystem['name'] },
 			{ label: 'Status', key: 'status', value: ecosystem['status'], selectFrom: [true, false] }
 		]}
-		on:confirm={(event) => {
-			const payload = event.detail;
+		onconfirm={(payload) => {
 			crudRequest(`gaia/ecosystem/u/${ecosystemUID}`, 'update', payload);
 			modals['base_info'].closeModal();
 		}}
-		on:cancel={() => modals['base_info'].closeModal()}
+		oncancel={() => modals['base_info'].closeModal()}
 	/>
 </Modal>
 
@@ -264,12 +263,11 @@
 					value: nycthemeralCycle['night']
 				}
 			]}
-			on:confirm={(event) => {
-				const payload = event.detail;
+			onconfirm={(payload) => {
 				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/light`, 'update', payload);
 				modals['nycthemeral_info'].closeModal();
 			}}
-			on:cancel={() => modals['nycthemeral_info'].closeModal()}
+			oncancel={() => modals['nycthemeral_info'].closeModal()}
 		/>
 	</Modal>
 {/if}
@@ -355,12 +353,11 @@
 				{ label: 'Hysteresis', key: 'hysteresis', type: 'number', min: '0', step: '0.1' },
 				{ label: 'Alarm', key: 'alarm', type: 'number', min: '0', step: '0.1', required: false }
 			]}
-			on:confirm={(event) => {
-				const payload = event.detail;
+			onconfirm={(payload) => {
 				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameter/u`, 'create', payload);
 				modals['climate_parameter_create'].closeModal();
 			}}
-			on:cancel={() => modals['climate_parameter_create'].closeModal()}
+			oncancel={() => modals['climate_parameter_create'].closeModal()}
 		/>
 	</Modal>
 	<Modal
@@ -409,9 +406,8 @@
 					value: environmentParameter['alarm']
 				}
 			]}
-			on:confirm={(event) => {
+			onconfirm={(payload) => {
 				const parameter = environmentParameter['parameter'];
-				const payload = event.detail;
 				crudRequest(
 					`gaia/ecosystem/u/${ecosystemUID}/environment_parameter/u/${parameter}`,
 					'update',
@@ -419,7 +415,7 @@
 				);
 				modals['climate_parameter_update'].closeModal();
 			}}
-			on:cancel={() => modals['climate_parameter_update'].closeModal()}
+			oncancel={() => modals['climate_parameter_update'].closeModal()}
 		/>
 	</Modal>
 	<Modal
@@ -481,12 +477,11 @@
 				{ label: 'Model', key: 'model' },
 				{ label: 'Address', key: 'address' }
 			]}
-			on:confirm={(event) => {
-				const payload = event.detail;
+			onconfirm={(payload) => {
 				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/hardware`, 'create', payload);
 				modals['hardware_create'].closeModal();
 			}}
-			on:cancel={() => modals['hardware_create'].closeModal()}
+			oncancel={() => modals['hardware_create'].closeModal()}
 		/>
 	</Modal>
 	<Modal
@@ -515,13 +510,12 @@
 				{ label: 'Model', key: 'model', value: hardware['model'], disabled: true },
 				{ label: 'Address', key: 'address', value: hardware['address'] }
 			]}
-			on:confirm={(event) => {
+			onconfirm={(payload) => {
 				const uid = hardware['uid'];
-				const payload = event.detail;
 				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/hardware/u/${uid}`, 'update', payload);
 				modals['hardware_update'].closeModal();
 			}}
-			on:cancel={() => modals['hardware_update'].closeModal()}
+			oncancel={() => modals['hardware_update'].closeModal()}
 		/>
 	</Modal>
 	<Modal

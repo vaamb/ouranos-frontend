@@ -71,12 +71,11 @@
 				{ label: 'Firstname', key: 'firstname', required: false },
 				{ label: 'Lastname', key: 'lastname', required: false }
 			]}
-			on:confirm={(event) => {
-				const payload = event.detail;
+			onconfirm={(payload) => {
 				crudRequest(`auth/registration_token?send_email=true`, 'create', payload);
 				modals['create'].closeModal();
 			}}
-			on:cancel={() => modals['create'].closeModal()}
+			oncancel={() => modals['create'].closeModal()}
 		/>
 	</Modal>
 	<Modal

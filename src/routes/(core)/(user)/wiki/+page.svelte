@@ -60,12 +60,11 @@
 				deserializer: splitTags
 			}
 		]}
-		on:confirm={(event) => {
-			const payload = event.detail;
+		onconfirm={(payload) => {
 			crudRequest(`app/services/wiki/topics/u`, 'create', payload).then(() => refreshTopics());
 			modal['create'].closeModal();
 		}}
-		on:cancel={() => modal['create'].closeModal()}
+		oncancel={() => modal['create'].closeModal()}
 	/>
 </Modal>
 {#if $wikiTopics[crudIndex]}
@@ -94,8 +93,7 @@
 					deserializer: splitTags
 				}
 			]}
-			on:confirm={(event) => {
-				const payload = event.detail;
+			onconfirm={(payload) => {
 				crudRequest(
 					`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`,
 					'update',
@@ -103,7 +101,7 @@
 				).then(() => refreshTopics());
 				modal['update'].closeModal();
 			}}
-			on:cancel={() => modal['update'].closeModal()}
+			oncancel={() => modal['update'].closeModal()}
 		/>
 	</Modal>
 	<Modal

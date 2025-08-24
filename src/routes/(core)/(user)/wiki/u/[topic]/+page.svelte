@@ -84,8 +84,7 @@
 				hint: 'Comma separated tags'
 			}
 		]}
-		on:confirm={(event) => {
-			const payload = event.detail;
+		onconfirm={(payload) => {
 			let promise;
 			if (payload.content !== undefined) {
 				// Got a file
@@ -106,7 +105,7 @@
 				});
 			});
 		}}
-		on:cancel={() => modal['create'].closeModal()}
+		oncancel={() => modal['create'].closeModal()}
 	/>
 </Modal>
 {#if articles[crudIndex]}

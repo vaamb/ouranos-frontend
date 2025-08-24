@@ -290,12 +290,11 @@
 					{ label: 'Level', key: 'level', value: eventLevels[0], selectFrom: eventLevels },
 					{ label: 'Visibility', key: 'visibility', value: eventVisibility[1], selectFrom: eventVisibility }
 				]}
-				on:confirm={(event) => {
-					const payload = event.detail;
+				onconfirm={(payload) => {
 					handleCrudEvent('create', payload);
 					modal.closeModal();
 				}}
-				on:cancel={modal.closeModal}
+				oncancel={modal.closeModal}
 			/>
 		{:else if crudAction === 'update'}
 			<Form
@@ -335,15 +334,14 @@
 						selectFrom: eventVisibility
 					}
 				]}
-				on:confirm={(event) => {
-					const payload = event.detail;
+				onconfirm={(payload) => {
 					handleCrudEvent('update', {
 						eventID: filteredEventsArray[crudIndex]['id'],
 						...payload
 					});
 					modal.closeModal();
 				}}
-				on:cancel={modal.closeModal}
+				oncancel={modal.closeModal}
 			/>
 		{:else if crudAction === 'delete'}
 			<p>Delete '{filteredEventsArray[crudIndex]['title']}' event ?</p>

@@ -213,22 +213,21 @@
 				deserializer: splitTags
 			}
 		]}
-		on:confirm={(event) => {
-			const form = event.detail;
-			let payload = new FormData();
-			payload.append('name', form['name']);
-			if (form['description'] !== undefined) {
-				payload.append('description', form['description']);
+		onconfirm={(payload) => {
+			let formData = new FormData();
+			formData.append('name', payload['name']);
+			if (payload['description'] !== undefined) {
+				formData.append('description', payload['description']);
 			}
-			form['tags'] = form['tags'] || [];
-			for (const tag of form['tags']) {
-				payload.append('tags', tag);
+			payload['tags'] = payload['tags'] || [];
+			for (const tag of payload['tags']) {
+				formData.append('tags', tag);
 			}
-			payload.append('file', form.content[0]);
+			formData.append('file', payload.content[0]);
 			crudRequest(
 				`app/services/wiki/topics/u/${article['topic_slug']}/u/${article['slug']}/u/upload_file`,
 				'create',
-				payload
+				formData
 			).then(
 				fetchWikiPictures(article['topic_slug'], article['slug'])
 				.then((response) => {
@@ -237,7 +236,7 @@
 			);
 			imageUploadModal.closeModal();
 		}}
-		on:cancel={() => imageUploadModal.closeModal()}
+		oncancel={() => imageUploadModal.closeModal()}
 	/>
 </Modal>
 

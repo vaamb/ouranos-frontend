@@ -1,6 +1,4 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
-
 	import Fa from 'svelte-fa';
 	import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
@@ -11,6 +9,9 @@
 		title = undefined,
 		confirmationButtons = false,
 		timeOut = undefined,
+		onconfirm = () => {},
+		oncancel = () => {},
+		onclose = () => {},
 		children
 	} = $props();
 
@@ -19,8 +20,6 @@
 	$effect(() => {
 		if (showModal) displayModal();
 	});
-
-	const dispatch = createEventDispatcher();
 
 	const displayModal = function () {
 		dialog.showModal();
@@ -33,7 +32,7 @@
 
 	export const closeModal = function () {
 		dialog.close();
-		dispatch('close');
+		onclose()
 	};
 </script>
 
@@ -70,11 +69,9 @@
 			</div>
 			{#if confirmationButtons}
 				<ConfirmButtons
-					onconfirm={() => {
-						dispatch('confirm');
-					}}
+					onconfirm={onconfirm}
 					oncancel={() => {
-						dispatch('cancel');
+						oncancel();
 						closeModal();
 					}}
 				/>

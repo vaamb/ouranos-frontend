@@ -244,7 +244,7 @@
 <Modal
 	bind:this={modal}
 	showModal={modalDay !== undefined}
-	on:close={resetModal}
+	onclose={resetModal}
 	title={modalDay !== undefined ? formatDate(modalDay) : ''}
 >
 	{#if modalDay !== undefined}

@@ -133,7 +133,7 @@
 <Modal
 	bind:this={modals['update']}
 	showModal={crudAction === 'update'}
-	on:close={resetCrudAction}
+	onclose={resetCrudAction}
 	title="Update {userDescription['username']}'s user info"
 >
 	<Form
@@ -157,10 +157,10 @@
 	<Modal
 		bind:this={modals['confirm']}
 		showModal={crudAction === 'confirm'}
-		on:close={resetCrudAction}
+		onclose={resetCrudAction}
 		title="Confirm {userDescription['username']}'s account"
 		confirmationButtons={true}
-		on:confirm={() => {
+		onconfirm={() => {
 			crudRequest(
 				`user/u/${userDescription['username']}/confirmation_token?send_email=true`,
 				'get'
@@ -174,10 +174,10 @@
 	<Modal
 		bind:this={modals['reset_password']}
 		showModal={crudAction === 'reset_password'}
-		on:close={resetCrudAction}
+		onclose={resetCrudAction}
 		title="Change {userDescription['username']}'s password"
 		confirmationButtons={true}
-		on:confirm={() => {
+		onconfirm={() => {
 			crudRequest(
 				`user/u/${userDescription['username']}/password_reset_token?send_email=true`,
 				'get'
@@ -192,10 +192,10 @@
 <Modal
 	bind:this={modals['delete']}
 	showModal={crudAction === 'delete'}
-	on:close={resetCrudAction}
+	onclose={resetCrudAction}
 	title="Delete {userDescription['username']}'s account"
 	confirmationButtons={true}
-	on:confirm={() => {
+	onconfirm={() => {
 		crudRequest(`user/u/${userDescription['username']}/delete`, 'create').then(() => {
 			modals['delete'].closeModal();
 		});

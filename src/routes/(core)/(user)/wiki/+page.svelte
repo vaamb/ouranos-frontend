@@ -45,7 +45,7 @@
 <Modal
 	bind:this={modal['create']}
 	showModal={crudAction === 'create'}
-	on:close={resetModal}
+	onclose={resetModal}
 	title="Create a new topic"
 >
 	<Form
@@ -72,7 +72,7 @@
 	<Modal
 		bind:this={modal['update']}
 		showModal={crudAction === 'update'}
-		on:close={resetModal}
+		onclose={resetModal}
 		title={`Update ${$wikiTopics[crudIndex]['name']} topic`}
 	>
 		<Form
@@ -111,8 +111,8 @@
 		showModal={crudAction === 'delete'}
 		title={`Delete ${$wikiTopics[crudIndex]['name']} topic`}
 		confirmationButtons={true}
-		on:close={resetModal}
-		on:confirm={() => {
+		onclose={resetModal}
+		onconfirm={() => {
 			crudRequest(`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`, 'delete')
 			.then(
 				() => refreshTopics()

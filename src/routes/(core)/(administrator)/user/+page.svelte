@@ -55,7 +55,7 @@
 	<Modal
 		bind:this={modals['create']}
 		showModal={crudAction === 'create'}
-		on:close={resetModal}
+		onclose={resetModal}
 		title="Invite a new user"
 	>
 		<Form
@@ -83,8 +83,8 @@
 		bind:this={modals['delete']}
 		showModal={crudAction === 'delete'}
 		title={users[crudIndex] ? `Delete ${users[crudIndex]['username']}?` : ''}
-		on:close={resetModal}
-		on:confirm={() => {
+		onclose={resetModal}
+		onconfirm={() => {
 			crudRequest(`user/u/${users[crudIndex]['username']}`, 'delete');
 			modals['delete'].closeModal();
 		}}

@@ -61,7 +61,7 @@
 <Modal
 	bind:this={modal['create']}
 	showModal={crudAction === 'create'}
-	on:close={resetModal}
+	onclose={resetModal}
 	title="Create a new article"
 >
 	<Form
@@ -115,8 +115,8 @@
 		showModal={crudAction === 'delete'}
 		title={`Delete ${articles[crudIndex]['name']} article`}
 		confirmationButtons={true}
-		on:close={resetModal}
-		on:confirm={() => {
+		onclose={resetModal}
+		onconfirm={() => {
 			crudRequest(
 				`app/services/wiki/topics/u/${topic['slug']}/u/${articles[crudIndex]['slug']}`,
 				'delete'

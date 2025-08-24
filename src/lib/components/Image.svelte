@@ -70,7 +70,7 @@
 
 <Modal
   showModal={enlargePicture === true}
-	on:close={() => {enlargePicture = false}}
+	onclose={() => {enlargePicture = false}}
 	title={alt}
 >
 	<img

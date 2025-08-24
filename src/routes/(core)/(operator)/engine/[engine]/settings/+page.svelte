@@ -96,7 +96,7 @@
 	bind:this={modals['base_info']}
 	showModal={crudAction === 'base_info'}
 	title="Update {engineUID}' base info"
-	on:close={resetCrudData}
+	onclose={resetCrudData}
 >
 	<Form
 		data={[{ label: 'Uid', key: 'uid', value: engineUID }]}
@@ -146,7 +146,7 @@
 		bind:this={modals['create']}
 		showModal={crudAction === 'create'}
 		title="Create a new ecosystem"
-		on:close={resetCrudData}
+		onclose={resetCrudData}
 	>
 		<Form
 			data={[
@@ -178,9 +178,9 @@
 		bind:this={modals['delete']}
 		showModal={crudAction === 'delete'}
 		title="Delete {crudEcosystemName}"
-		on:close={resetCrudData}
+		onclose={resetCrudData}
 		confirmationButtons={true}
-		on:confirm={() => {
+		onconfirm={() => {
 			crudRequest(`gaia/ecosystem/u/${crudEcosystemUID}`, 'delete');
 			modals['delete'].closeModal();
 		}}

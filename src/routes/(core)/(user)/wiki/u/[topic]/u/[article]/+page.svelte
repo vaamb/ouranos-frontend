@@ -119,7 +119,7 @@
 	bind:this={modal}
 	showModal={updatingContent !== null}
 	title="Text editor"
-	on:close={() => {
+	onclose={() => {
 		updatingContent = null;
 	}}
 >
@@ -191,7 +191,7 @@
 <Modal
 	bind:this={imageUploadModal}
 	showModal={showImageUploadModal === true}
-	on:close={() => {
+	onclose={() => {
 		showImageUploadModal = false;
 	}}
 >

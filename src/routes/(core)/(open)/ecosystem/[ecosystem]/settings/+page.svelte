@@ -150,7 +150,7 @@
 	bind:this={modals['base_info']}
 	showModal={crudTable === 'base_info'}
 	title="Update {ecosystemName}' base info"
-	on:close={resetCrudData}
+	onclose={resetCrudData}
 >
 	<Form
 		data={[
@@ -228,7 +228,7 @@
 		bind:this={modals['nycthemeral_info']}
 		showModal={crudTable === 'nycthemeral_info'}
 		title="Update {ecosystemName}' nycthemeral info"
-		on:close={resetCrudData}
+		onclose={resetCrudData}
 	>
 		<Form
 			data={[
@@ -315,8 +315,8 @@
 	showModal={crudTable === 'management'}
 	title="Update {ecosystemName}' management"
 	confirmationButtons={true}
-	on:close={resetCrudData}
-	on:confirm={() => {
+	onclose={resetCrudData}
+	onconfirm={() => {
 		crudRequest(`gaia/ecosystem/u/${ecosystemUID}/management`, 'update', ecosystemManagement);
 		modals['management'].closeModal();
 	}}
@@ -345,7 +345,7 @@
 		bind:this={modals['climate_parameter_create']}
 		showModal={crudTable === 'climate_parameter' && crudAction === 'create'}
 		title="Add a new environment parameter"
-		on:close={resetCrudData}
+		onclose={resetCrudData}
 	>
 		<Form
 			data={[
@@ -367,7 +367,7 @@
 		bind:this={modals['climate_parameter_update']}
 		showModal={crudTable === 'climate_parameter' && crudAction === 'update'}
 		title="Update {environmentParameter['parameter']} environment parameter"
-		on:close={resetCrudData}
+		onclose={resetCrudData}
 	>
 		<Form
 			data={[
@@ -427,8 +427,8 @@
 		showModal={crudTable === 'climate_parameter' && crudAction === 'delete'}
 		title="Delete {environmentParameter['parameter']} environment parameter"
 		confirmationButtons={true}
-		on:close={resetCrudData}
-		on:confirm={() => {
+		onclose={resetCrudData}
+		onconfirm={() => {
 			const parameter = environmentParameter['parameter'];
 			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameter/u/${parameter}`, 'delete');
 			modals['climate_parameter_delete'].closeModal();
@@ -471,7 +471,7 @@
 		bind:this={modals['hardware_create']}
 		showModal={crudTable === 'hardware' && crudAction === 'create'}
 		title="Add a new hardware"
-		on:close={resetCrudData}
+		onclose={resetCrudData}
 	>
 		<Form
 			data={[
@@ -493,7 +493,7 @@
 		bind:this={modals['hardware_update']}
 		showModal={crudTable === 'hardware' && crudAction === 'update'}
 		title="Update '{hardware['name']}' hardware"
-		on:close={resetCrudData}
+		onclose={resetCrudData}
 	>
 		<Form
 			data={[
@@ -529,8 +529,8 @@
 		showModal={crudTable === 'hardware' && crudAction === 'delete'}
 		title="Delete '{hardware['name']}' hardware"
 		confirmationButtons={true}
-		on:close={resetCrudData}
-		on:confirm={() => {
+		onclose={resetCrudData}
+		onconfirm={() => {
 			const uid = hardware['uid'];
 			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/hardware/u/${uid}`, 'delete');
 			modals['hardware_delete'].closeModal();

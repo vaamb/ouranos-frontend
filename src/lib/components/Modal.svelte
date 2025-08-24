@@ -3,6 +3,7 @@
 
 	import Fa from 'svelte-fa';
 	import { faXmark } from '@fortawesome/free-solid-svg-icons';
+
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 
 	let {
@@ -69,10 +70,10 @@
 			</div>
 			{#if confirmationButtons}
 				<ConfirmButtons
-					on:confirm={() => {
+					onconfirm={() => {
 						dispatch('confirm');
 					}}
-					on:cancel={() => {
+					oncancel={() => {
 						dispatch('cancel');
 						closeModal();
 					}}

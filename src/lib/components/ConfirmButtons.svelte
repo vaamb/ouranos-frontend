@@ -1,22 +1,14 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
-
-	let { disabled = false } = $props();
-
-	const dispatch = createEventDispatcher();
-
-	const cancel = function () {
-		dispatch('cancel');
-	};
-
-	const confirm = function () {
-		dispatch('confirm');
-	};
+	let {
+		disabled = false,
+		onconfirm = () => {},
+		oncancel = () => {},
+	} = $props();
 </script>
 
 <div style="display: flex; justify-content: center; margin-top: 10px">
-	<button class="confirm" onclick={confirm} {disabled}> Confirm </button>
-	<button class="cancel" onclick={cancel}>Cancel</button>
+	<button class="confirm" onclick={onconfirm} {disabled}> Confirm </button>
+	<button class="cancel" onclick={oncancel}>Cancel</button>
 </div>
 
 <style>

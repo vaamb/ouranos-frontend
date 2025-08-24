@@ -348,11 +348,11 @@
 		{:else if crudAction === 'delete'}
 			<p>Delete '{filteredEventsArray[crudIndex]['title']}' event ?</p>
 			<ConfirmButtons
-				on:confirm={() => {
+				onconfirm={() => {
 					handleCrudEvent('delete', { eventID: filteredEventsArray[crudIndex]['id'] });
 					modal.closeModal();
 				}}
-				on:cancel={modal.closeModal}
+				oncancel={modal.closeModal}
 			/>
 		{/if}
 	{/if}

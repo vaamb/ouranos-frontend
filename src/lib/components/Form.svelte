@@ -166,7 +166,7 @@
 		{/each}
 	</tbody>
 </table>
-<ConfirmButtons disabled={disabledSubmit} on:confirm={confirm} on:cancel={cancel} />
+<ConfirmButtons disabled={disabledSubmit} onconfirm={confirm} oncancel={cancel} />
 
 <style>
 	label {

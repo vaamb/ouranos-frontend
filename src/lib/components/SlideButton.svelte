@@ -3,7 +3,7 @@
 		disabled = false,
 		id = 'primary',
 		checked = $bindable(true),
-	  ontoggle = (checked) => {}
+		ontoggle = (checked) => {}
 	} = $props();
 
 	const label = id + 'Button';

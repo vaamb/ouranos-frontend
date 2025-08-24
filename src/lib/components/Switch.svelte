@@ -1,5 +1,5 @@
 <script>
-  import Fa from 'svelte-fa';
+	import Fa from 'svelte-fa';
 	import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
 	import { currentUser } from '$lib/store.svelte.js';
@@ -11,7 +11,7 @@
 		mode = 'automatic',
 		turnToOptions = ['on', 'off', 'automatic'],
 		useTimer = false,
-		onswitch = (switchInfo) => {}
+		onswitch = (payload) => {}
 	} = $props();
 
 	let countdown = $state('00:00:00');

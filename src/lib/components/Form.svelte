@@ -78,10 +78,6 @@
 
 	let disabledSubmit = $derived(!canSubmit(values));
 
-	const cancel = function () {
-		oncancel();
-	};
-
 	const confirm = function () {
 		const payload = {};
 		for (const [key, obj] of Object.entries(values)) {
@@ -166,7 +162,7 @@
 		{/each}
 	</tbody>
 </table>
-<ConfirmButtons disabled={disabledSubmit} onconfirm={confirm} oncancel={cancel} />
+<ConfirmButtons disabled={disabledSubmit} onconfirm={confirm} oncancel={oncancel} />
 
 <style>
 	label {

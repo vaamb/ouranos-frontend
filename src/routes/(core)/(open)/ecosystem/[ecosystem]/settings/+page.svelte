@@ -357,7 +357,7 @@
 			]}
 			on:confirm={(event) => {
 				const payload = event.detail;
-				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameters`, 'create', payload);
+				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameter/u`, 'create', payload);
 				modals['climate_parameter_create'].closeModal();
 			}}
 			on:cancel={() => modals['climate_parameter_create'].closeModal()}
@@ -413,7 +413,7 @@
 				const parameter = environmentParameter['parameter'];
 				const payload = event.detail;
 				crudRequest(
-					`gaia/ecosystem/u/${ecosystemUID}/environment_parameters/${parameter}`,
+					`gaia/ecosystem/u/${ecosystemUID}/environment_parameter/u/${parameter}`,
 					'update',
 					payload
 				);
@@ -430,7 +430,7 @@
 		on:close={resetCrudData}
 		on:confirm={() => {
 			const parameter = environmentParameter['parameter'];
-			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameters/${parameter}`, 'delete');
+			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameter/u/${parameter}`, 'delete');
 			modals['climate_parameter_delete'].closeModal();
 		}}
 	>

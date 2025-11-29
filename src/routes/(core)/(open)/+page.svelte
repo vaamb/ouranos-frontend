@@ -346,9 +346,9 @@
 							<p>The ecosystem '{name}' is not currently running</p>
 							{#if $currentUser.can(permissions.OPERATE)}
 								<p>
-									Click
-									<a href="/ecosystem/{name}/settings">here</a>
-									to configure '{name}'
+									<a href="/ecosystem/{slugify(name)}/settings">
+										Click here to configure {name}
+									</a>
 								</p>
 							{/if}
 						{:else}
@@ -379,9 +379,9 @@
 							<p>No functionality is enabled in {name}</p>
 							{#if $currentUser.can(permissions.OPERATE)}
 								<p>
-									Click
-									<a href="/ecosystem/{name}/settings">here</a>
-									to configure {name}
+									<a href="/ecosystem/{slugify(name)}/settings">
+										Click here to configure {name}
+									</a>
 								</p>
 							{/if}
 						</BoxItem>

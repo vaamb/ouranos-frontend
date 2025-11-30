@@ -312,6 +312,17 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 		});
 };
 
+export const fetchEcosystemWeatherEvents = async function (ecosystemUID) {
+	return axios
+		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/weather_event`)
+		.then((response) => {
+			return response['data']['weather_events'];
+		})
+		.catch(() => {
+			return [];
+		});
+};
+
 export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
 	const dataKey = getStoreDataKey(ecosystemUID);
 	const storedData = getFreshStoreData(ecosystemsActuatorsState, dataKey);

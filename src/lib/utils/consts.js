@@ -56,6 +56,8 @@ export const CONNECTION_TIMEOUT = 40;  // 2 * heartbeat + 10 secs
 
 export const climateParameters = ['temperature', 'humidity', 'light'];
 
+export const weatherParameters = ['rain', 'fog', 'wind_gust'];
+
 export const hardwareLevels = ['environment', 'plants'];
 
 export const actuatorTypes = ['light', 'heater', 'cooler', 'humidifier', 'dehumidifier', 'fan'];

@@ -501,7 +501,7 @@
 	<Modal
 		bind:this={modals['weather_event_update']}
 		showModal={crudTable === 'weather_event' && crudAction === 'update'}
-		title="Update {weatherEvent['parameter']} environment parameter"
+		title="Update {weatherEvent['parameter']} weather event"
 		onclose={resetCrudData}
 	>
 		<Form

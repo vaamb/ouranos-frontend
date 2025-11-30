@@ -17,20 +17,25 @@
 		ecosystemsState,
 		getStoreDataKey
 	} from '$lib/store.svelte.js';
-	import { permissions } from '$lib/utils/consts.js';
+	import {
+		climateParameters,
+		hardwareLevels,
+		hardwareTypes,
+		permissions,
+		weatherParameters
+	} from '$lib/utils/consts.js';
 	import {
 		capitalize,
 		computeEcosystemStatusClass,
 		computeLightingHours,
-		formatDateTime,
-		isNumber
+		formatDateTime
 	} from '$lib/utils/functions.js';
-	import { climateParameters, hardwareLevels, hardwareTypes } from '$lib/utils/consts.js';
 	import {
 		crudRequest,
 		fetchEcosystemEnvironmentParameters,
 		fetchEcosystemHardware,
-		fetchEcosystemNycthemeralCycleData
+		fetchEcosystemNycthemeralCycleData,
+		fetchEcosystemWeatherEvents
 	} from '$lib/actions.svelte.js';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -41,6 +46,10 @@
 
 	let ecosystem = $derived({ ...$ecosystems[ecosystemUID] });
 	let ecosystemState = $derived($ecosystemsState[ecosystemUID]);
+
+	const valueOrNone = function (value) {
+		return value === null ? 'None' : value;
+	};
 
 	// Management crud-related function
 	let ecosystemManagement = $state({ ...$ecosystemsManagement[ecosystemUID] });
@@ -89,6 +98,13 @@
 			: {}
 	);
 
+	let weatherEvents = $state(undefined);
+	let weatherEvent = $derived(
+		weatherEvents !== undefined && crudTable === 'weather_event' && crudIndex !== undefined
+			? weatherEvents[crudIndex]
+			: {}
+	);
+
 	let hardwareObjects = $state(undefined);
 	let hardware = $derived(
 		hardwareObjects !== undefined && crudTable === 'hardware' && crudIndex !== undefined
@@ -99,6 +115,7 @@
 	onMount(async () => {
 		await fetchEcosystemNycthemeralCycleData(ecosystemUID);
 		environmentParameters = await fetchEcosystemEnvironmentParameters(ecosystemUID);
+		weatherEvents = await fetchEcosystemWeatherEvents(ecosystemUID);
 		hardwareObjects = await fetchEcosystemHardware(ecosystemUID);
 	});
 </script>
@@ -169,10 +186,7 @@
 	{@const nycthemeralCycle = $ecosystemsNycthemeralCycle[getStoreDataKey(ecosystemUID)]}
 	<h2>Nycthemeral cycle info</h2>
 	<div style="overflow-x: auto">
-		<table
-			class="table-base table-alternate-colors table-narrow"
-			style="padding-bottom: 35px;"
-		>
+		<table class="table-base table-alternate-colors table-narrow" style="padding-bottom: 35px;">
 			<tbody>
 				<tr>
 					<td>Span method</td>
@@ -327,11 +341,11 @@
 	<Table
 		tableID="environmentParametersTable"
 		columns={[
-			{ label: 'Parameter', key: 'parameter', serializer: (value) => capitalize(value) },
+			{ label: 'Parameter', key: 'parameter', serializer: capitalize },
 			{ label: 'Day', key: 'day', serializer: (value) => value.toFixed(1) },
 			{ label: 'Night', key: 'night', serializer: (value) => value.toFixed(1) },
 			{ label: 'Hysteresis', key: 'hysteresis', serializer: (value) => value.toFixed(1) },
-			{ label: 'Alarm', key: 'alarm' }
+			{ label: 'Alarm', key: 'alarm', serializer: valueOrNone }
 		]}
 		data={environmentParameters}
 		editable={true}
@@ -351,7 +365,7 @@
 				{ label: 'Day', key: 'day', type: 'number', step: '0.1' },
 				{ label: 'Night', key: 'night', type: 'number', step: '0.1' },
 				{ label: 'Hysteresis', key: 'hysteresis', type: 'number', min: '0', step: '0.1' },
-				{ label: 'Alarm', key: 'alarm', type: 'number', min: '0', step: '0.1', required: false }
+				{ label: 'Alarm', key: 'alarm', type: 'number', min: '0', step: '0.1', serializer: valueOrNone, required: false }
 			]}
 			onconfirm={(payload) => {
 				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameter/u`, 'create', payload);
@@ -403,6 +417,7 @@
 					type: 'number',
 					min: '0',
 					step: '0.1',
+					serializer: valueOrNone,
 					value: environmentParameter['alarm']
 				}
 			]}
@@ -426,12 +441,135 @@
 		onclose={resetCrudData}
 		onconfirm={() => {
 			const parameter = environmentParameter['parameter'];
-			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/environment_parameter/u/${parameter}`, 'delete');
+			crudRequest(
+				`gaia/ecosystem/u/${ecosystemUID}/environment_parameter/u/${parameter}`,
+				'delete'
+			);
 			modals['climate_parameter_delete'].closeModal();
 		}}
 	>
 		<p>
 			Are you sure you want to delete the {environmentParameter['parameter']} environment parameter?
+		</p>
+	</Modal>
+{/if}
+
+{#if weatherEvents !== undefined && ($currentUser.can(permissions.OPERATE) || weatherEvents.length > 0)}
+	<h2>Weather events</h2>
+	<Table
+		tableID="weatherEventsTable"
+		columns={[
+			{ label: 'Parameter', key: 'parameter', serializer: capitalize },
+			{ label: 'Pattern', key: 'pattern' },
+			{ label: 'Duration', key: 'duration', serializer: (value) => value.toFixed(1) },
+			{ label: 'Level', key: 'level', serializer: (value) => value.toFixed(1) },
+			{ label: 'Linked actuator', key: 'linked_actuator', serializer: valueOrNone }
+		]}
+		data={weatherEvents}
+		editable={true}
+		oncrud={(payload) => {
+			setCrudData('weather_event', payload['action'], payload['rowIndex']);
+		}}
+	/>
+	<Modal
+		bind:this={modals['weather_event_create']}
+		showModal={crudTable === 'weather_event' && crudAction === 'create'}
+		title="Add a new weather event"
+		onclose={resetCrudData}
+	>
+		<Form
+			data={[
+				{ label: 'Parameter', key: 'parameter', selectFrom: weatherParameters },
+				{ label: 'Pattern', key: 'pattern', type: 'text' },
+				{ label: 'Duration', key: 'duration', type: 'number', step: '0.1' },
+				{ label: 'Level', key: 'level', type: 'number', min: '0', max: '100', step: '0.1' },
+				{
+					label: 'Linked actuator',
+					key: 'linked_actuator',
+					type: 'text',
+					required: false,
+					serializer: valueOrNone
+				}
+			]}
+			onconfirm={(payload) => {
+				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/weather_event/u`, 'create', payload);
+				modals['weather_event_create'].closeModal();
+			}}
+			oncancel={() => modals['weather_event_create'].closeModal()}
+		/>
+	</Modal>
+	<Modal
+		bind:this={modals['weather_event_update']}
+		showModal={crudTable === 'weather_event' && crudAction === 'update'}
+		title="Update {weatherEvent['parameter']} weather event"
+		onclose={resetCrudData}
+	>
+		<Form
+			data={[
+				{
+					label: 'Parameter',
+					key: 'parameter',
+					value: weatherEvent['parameter'],
+					selectFrom: weatherParameters,
+					disabled: true
+				},
+				{
+					label: 'Pattern',
+					key: 'pattern',
+					type: 'text',
+					value: weatherEvent['pattern']
+				},
+				{
+					label: 'Duration',
+					key: 'duration',
+					type: 'number',
+					step: '0.1',
+					value: weatherEvent['duration']
+				},
+				{
+					label: 'Level',
+					key: 'level',
+					type: 'number',
+					min: '0',
+					max: '100',
+					step: '0.1',
+					value: weatherEvent['level']
+				},
+				{
+					label: 'Linked actuator',
+					key: 'linked_actuator',
+					type: 'text',
+					required: false,
+					serializer: valueOrNone,
+					value: weatherEvent['linked_actuator']
+				}
+			]}
+			onconfirm={(payload) => {
+				const parameter = weatherEvent['parameter'];
+				crudRequest(
+					`gaia/ecosystem/u/${ecosystemUID}/weather_event/u/${parameter}`,
+					'update',
+					payload
+				);
+				modals['weather_event_update'].closeModal();
+			}}
+			oncancel={() => modals['weather_event_update'].closeModal()}
+		/>
+	</Modal>
+	<Modal
+		bind:this={modals['weather_event_delete']}
+		showModal={crudTable === 'weather_event' && crudAction === 'delete'}
+		title="Delete {weatherEvent['parameter']} weather event"
+		confirmationButtons={true}
+		onclose={resetCrudData}
+		onconfirm={() => {
+			const parameter = weatherEvent['parameter'];
+			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/weather_event/u/${parameter}`, 'delete');
+			modals['weather_event_delete'].closeModal();
+		}}
+	>
+		<p>
+			Are you sure you want to delete the {weatherEvent['parameter']} weather event?
 		</p>
 	</Modal>
 {/if}
@@ -443,8 +581,8 @@
 		columns={[
 			{ label: 'Name', key: 'name' },
 			{ label: 'UID', key: 'uid' },
-			{ label: 'Level', key: 'level', serializer: (value) => capitalize(value) },
-			{ label: 'Type', key: 'type', serializer: (value) => capitalize(value) },
+			{ label: 'Level', key: 'level', serializer: capitalize },
+			{ label: 'Type', key: 'type', serializer: capitalize },
 			{ label: 'Model', key: 'model' },
 			{ label: 'Address', key: 'address' },
 			{

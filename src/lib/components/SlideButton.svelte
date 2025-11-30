@@ -39,6 +39,11 @@
 		margin: 0 0 0 0.5em;
 		background: var(--gray-80);
 		border: none;
+		border-radius: 1.5em;
+	}
+
+	.slider button:disabled {
+		background-color: var(--gray-70);
 	}
 
 	.slider button::before {
@@ -50,26 +55,19 @@
 		top: 0.13em;
 		right: 1.5em;
 		transition: transform 0.3s;
+		border-radius: 100%;
 	}
 
 	.slider button[aria-checked='true'] {
 		background-color: var(--blue-accent);
 	}
 
+	.slider button[aria-checked='true']:disabled {
+		background-color: hsl(207, 30%, 68%);
+	}
+
 	.slider button[aria-checked='true']::before {
 		transform: translateX(1.3em);
 		transition: transform 0.3s;
-	}
-
-	.slider button {
-		border-radius: 1.5em;
-	}
-
-	.slider button::before {
-		border-radius: 100%;
-	}
-
-	.slider button:disabled {
-		background-color: var(--gray-70);
 	}
 </style>

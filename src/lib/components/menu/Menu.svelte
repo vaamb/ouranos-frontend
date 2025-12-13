@@ -5,6 +5,7 @@
 	import {
 		faAddressCard,
 		faBars,
+		faChevronDown,
 		faChevronLeft,
 		faPowerOff,
 		faUserCog,
@@ -77,13 +78,24 @@
 	class:menu-minimized="{minimized}"
 	style="--menu-width:{width}; --mini-menu-width:{miniWidth}"
 >
-	<button
-		class="maximize-menu reset-button center-content"
+	<div
+		class="minimized-menu"
 		class:menu-minimized="{minimized}"
-		onclick={toggleMenuSize}
 	>
-		<img src="/favicon.svg" alt="G" width="25px" style="margin-right: 3px" />
-	</button>
+		<a href="/">
+			<div class="center-content">
+				<img src="/favicon.svg" alt="G" width="25px" style="margin-right: 3px" />
+			</div>
+		</a>
+		<button
+			class="maximize-menu-button reset-button"
+			onclick={toggleMenuSize}
+		>
+			<div class="center-content">
+				<Fa icon={faChevronDown} />
+			</div>
+		</button>
+	</div>
 	<div
 		class="menu"
 		class:menu-minimized="{minimized}"
@@ -130,7 +142,7 @@
 			</div>
 		</div>
 		<button
-			class="minimize-menu reset-button"
+			class="minimize-menu-button reset-button"
 			onclick={toggleMenuSize}
 		>
 			<div class="center-content" style="margin-left: -1px">
@@ -175,7 +187,7 @@
 		z-index: 100;
 	}
 
-	.maximize-menu {
+	.minimized-menu {
 		display: none;
 	}
 
@@ -251,10 +263,6 @@
 		padding-top: 2px;
 	}
 
-	.minimize-menu {
-		display: none;
-	}
-
 	.toggleable-content {
 		height: 0;
 		display: flex;
@@ -305,7 +313,7 @@
 			height: 45px;
 		}
 
-		.minimize-menu {
+		.minimize-menu-button {
 			display: inherit;
 			width: 24px;
 			height: 24px;
@@ -318,11 +326,29 @@
 			background-color: var(--main-25);
 		}
 
-		.maximize-menu {
-      display: none;
-		}
+		.minimized-menu {
+			display: none;
+			width: 100%;
+			height: 100%;
 
-		.maximize-menu.menu-minimized {
+			a {
+				width: 100%;
+				height: 100%;
+			}
+
+			.maximize-menu-button {
+				width: 24px;
+				height: 24px;
+				position: fixed;
+				left: calc(45px - (20px / 2) - 4px);
+				top: calc(45px - (20px / 2) - 4px);
+				border-radius: 50%;
+				border: 2px solid var(--main-95);
+				background-color: var(--main-25);
+			}
+    }
+
+		.minimized-menu.menu-minimized {
 			display: flex;
 		}
 

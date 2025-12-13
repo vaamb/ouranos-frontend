@@ -177,10 +177,12 @@
 		.top-bar {
 			position: fixed;
 			top: 0;
-			width: calc(100% - var(--menu-width) * 1px);
+			right: 0;
+			width: 100%;
 		}
 
 		.left {
+			margin-left: calc(var(--menu-width) * 1px);
 			width: 210px;
 		}
 
@@ -202,6 +204,7 @@
 			font-size: 1.5rem;
 			width: 45px;
 		}
+
 		.warning-button > a {
 			display: block;
 		}

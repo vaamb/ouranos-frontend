@@ -133,7 +133,10 @@
 
 <Menu items={menuItems} width={menuWidth} miniWidth={45} bind:minimized={menuMinimized} />
 <div class="main" style="--margin-width:{menuWidth}" class:full-page={menuMinimized}>
-	<TopBar development={data.appMode === APP_MODE.development} menuWidth={menuMinimized ? 45 : menuWidth} />
+	<TopBar
+		development={data.appMode === APP_MODE.development}
+		menuWidth={menuMinimized ? 45 : menuWidth}
+	/>
 	<div class="padding-main">
 		{@render children?.()}
 	</div>

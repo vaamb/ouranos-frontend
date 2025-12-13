@@ -6,10 +6,7 @@
 	import { permissions } from '$lib/utils/consts.js';
 	import { currentUser, warnings } from '$lib/store.svelte.js';
 
-	let {
-		development,
-		menuWidth = 210
-	} = $props();
+	let { development, menuWidth = 210 } = $props();
 </script>
 
 <div class="top-bar" style="--menu-width:{menuWidth}">

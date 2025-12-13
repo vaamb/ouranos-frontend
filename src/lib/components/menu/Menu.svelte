@@ -74,32 +74,20 @@
 
 <svelte:window bind:outerWidth />
 
-<nav
-	class:menu-minimized="{minimized}"
-	style="--menu-width:{width}; --mini-menu-width:{miniWidth}"
->
-	<div
-		class="minimized-menu"
-		class:menu-minimized="{minimized}"
-	>
+<nav class:menu-minimized={minimized} style="--menu-width:{width}; --mini-menu-width:{miniWidth}">
+	<div class="minimized-menu" class:menu-minimized={minimized}>
 		<a href="/">
 			<div class="center-content">
 				<img src="/favicon.svg" alt="G" width="25px" style="margin-right: 3px" />
 			</div>
 		</a>
-		<button
-			class="maximize-menu-button reset-button"
-			onclick={toggleMenuSize}
-		>
+		<button class="maximize-menu-button reset-button" onclick={toggleMenuSize}>
 			<div class="center-content">
 				<Fa icon={faChevronDown} />
 			</div>
 		</button>
 	</div>
-	<div
-		class="menu"
-		class:menu-minimized="{minimized}"
-	>
+	<div class="menu" class:menu-minimized={minimized}>
 		<div class="top-box">
 			<div class="menu-title-wrapper">
 				<div class="menu-title">
@@ -126,7 +114,12 @@
 				</div>
 			</div>
 			<div class="user-box">
-				<enhanced:img src={avatarMapping[$currentUser.avatar]} alt="User avatar" class="user-box-img" sizes="50px" />
+				<enhanced:img
+					src={avatarMapping[$currentUser.avatar]}
+					alt="User avatar"
+					class="user-box-img"
+					sizes="50px"
+				/>
 				<div class="welcome">
 					{#if $currentUser.isAuthenticated}
 						<div>Welcome,</div>
@@ -141,10 +134,7 @@
 				</div>
 			</div>
 		</div>
-		<button
-			class="minimize-menu-button reset-button"
-			onclick={toggleMenuSize}
-		>
+		<button class="minimize-menu-button reset-button" onclick={toggleMenuSize}>
 			<div class="center-content" style="margin-left: -1px">
 				<Fa icon={faChevronLeft} />
 			</div>
@@ -191,7 +181,7 @@
 		display: none;
 	}
 
-  .menu {
+	.menu {
 		width: 100%;
 		display: flex;
 		flex-direction: column;
@@ -264,7 +254,7 @@
 	}
 
 	.minimize-menu-button {
-			display: none;
+		display: none;
 	}
 
 	.accordion-wrapper {
@@ -308,7 +298,7 @@
 
 	@media only screen and (min-width: 992px) {
 		nav {
-      height: 100%;
+			height: 100%;
 			width: calc(var(--menu-width) * 1px);
 		}
 
@@ -352,7 +342,7 @@
 				background-color: var(--main-25);
 				cursor: pointer;
 			}
-    }
+		}
 
 		.minimized-menu.menu-minimized {
 			display: flex;

@@ -5,6 +5,7 @@
 	import {
 		faAddressCard,
 		faBars,
+		faChevronLeft,
 		faPowerOff,
 		faUserCog,
 		faXmark
@@ -18,13 +19,17 @@
 	import { permissions } from '$lib/utils/consts.js';
 	import { currentUser, ecosystemsIds } from '$lib/store.svelte.js';
 
-	let { items, width = 210 } = $props();
+	let { items, width, miniWidth = 45, minimized = $bindable(false) } = $props();
 
 	let outerWidth = $state(0);
 
 	let showMenu = $state(false);
 	let toggleMenu = function () {
 		showMenu = !showMenu;
+	};
+
+	const toggleMenuSize = function () {
+		minimized = !minimized;
 	};
 
 	// Menu item to open
@@ -68,66 +73,89 @@
 
 <svelte:window bind:outerWidth />
 
-<nav style="--menu-width:{width}">
-	<div class="top-box">
-		<div class="menu-title-wrapper">
-			<div class="menu-title">
-				<a href="/">
-					<img src="/favicon.svg" alt="G" width="25px" class="logo" />
-					AIA
-				</a>
+<nav
+	class:menu-minimized="{minimized}"
+	style="--menu-width:{width}; --mini-menu-width:{miniWidth}"
+>
+	<button
+		class="maximize-menu reset-button center-content"
+		class:menu-minimized="{minimized}"
+		onclick={toggleMenuSize}
+	>
+		<img src="/favicon.svg" alt="G" width="25px" style="margin-right: 3px" />
+	</button>
+	<div
+		class="menu"
+		class:menu-minimized="{minimized}"
+	>
+		<div class="top-box">
+			<div class="menu-title-wrapper">
+				<div class="menu-title">
+					<a href="/">
+						<img src="/favicon.svg" alt="G" width="25px" class="logo" />
+						AIA
+					</a>
+				</div>
 			</div>
-		</div>
-		<div
-			class="toggle-button-wrapper"
-			tabindex="0"
-			role="button"
-			aria-pressed="false"
-			onclick={toggleMenu}
-			onkeydown={toggleMenu}
-		>
-			<div class="toggle-button">
-				{#if !showMenu}
-					<Fa icon={faBars} size="2x" />
-				{:else}
-					<Fa icon={faXmark} size="2x" />
-				{/if}
-			</div>
-		</div>
-		<div class="user-box">
-			<enhanced:img src={avatarMapping[$currentUser.avatar]} alt="User avatar" sizes="50px" />
-			<div class="welcome">
-				{#if $currentUser.isAuthenticated}
-					<div>Welcome,</div>
-					{#if $currentUser.firstname}
-						<div>{$currentUser.firstname}</div>
+			<div
+				class="toggle-button-wrapper"
+				tabindex="0"
+				role="button"
+				aria-pressed="false"
+				onclick={toggleMenu}
+				onkeydown={toggleMenu}
+			>
+				<div class="toggle-button">
+					{#if !showMenu}
+						<Fa icon={faBars} size="2x" />
 					{:else}
-						<div>{$currentUser.username}</div>
+						<Fa icon={faXmark} size="2x" />
 					{/if}
-				{:else}
-					<div>Welcome</div>
-				{/if}
+				</div>
+			</div>
+			<div class="user-box">
+				<enhanced:img src={avatarMapping[$currentUser.avatar]} alt="User avatar" class="user-box-img" sizes="50px" />
+				<div class="welcome">
+					{#if $currentUser.isAuthenticated}
+						<div>Welcome,</div>
+						{#if $currentUser.firstname}
+							<div>{$currentUser.firstname}</div>
+						{:else}
+							<div>{$currentUser.username}</div>
+						{/if}
+					{:else}
+						<div>Welcome</div>
+					{/if}
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="toggleable-content" class:show={showMenu === true}>
-		<ul class="accordion">
-			{#each items as item, index}
-				<MenuItem
-					{item}
-					open={toggledMenuItemIndex === index}
-					onclick={() => toggleMenuItem(index)}
-				/>
-			{/each}
-		</ul>
-		<div class="bottom-box">
-			<a href="/about"><Fa icon={faAddressCard} /></a>
-			{#if $currentUser.isAuthenticated}
-				<a href="/user/settings"><Fa icon={faUserCog} /></a>
-			{/if}
-			{#if $currentUser.can(permissions.ADMIN)}
-				<button class="reset-button" onclick={restartServer}><Fa icon={faPowerOff} /></button>
-			{/if}
+		<button
+			class="minimize-menu reset-button"
+			onclick={toggleMenuSize}
+		>
+			<div class="center-content" style="margin-left: -1px">
+				<Fa icon={faChevronLeft} />
+			</div>
+		</button>
+		<div class="toggleable-content" class:show={showMenu === true}>
+			<ul class="accordion">
+				{#each items as item, index}
+					<MenuItem
+						{item}
+						open={toggledMenuItemIndex === index}
+						onclick={() => toggleMenuItem(index)}
+					/>
+				{/each}
+			</ul>
+			<div class="bottom-box">
+				<a href="/about"><Fa icon={faAddressCard} /></a>
+				{#if $currentUser.isAuthenticated}
+					<a href="/user/settings"><Fa icon={faUserCog} /></a>
+				{/if}
+				{#if $currentUser.can(permissions.ADMIN)}
+					<button class="reset-button" onclick={restartServer}><Fa icon={faPowerOff} /></button>
+				{/if}
+			</div>
 		</div>
 	</div>
 </nav>
@@ -144,9 +172,17 @@
 		width: 100%;
 		background-color: var(--main-25);
 		color: var(--main-95);
+		z-index: 100;
+	}
+
+	.maximize-menu {
+		display: none;
+	}
+
+  .menu {
+		width: 100%;
 		display: flex;
 		flex-direction: column;
-		z-index: 100;
 	}
 
 	.top-box {
@@ -189,7 +225,7 @@
 		display: none;
 	}
 
-	.user-box img {
+	.user-box-img {
 		width: 50px;
 		height: 50px;
 		margin: auto;
@@ -213,6 +249,10 @@
 
 	.welcome > div + div {
 		padding-top: 2px;
+	}
+
+	.minimize-menu {
+		display: none;
 	}
 
 	.toggleable-content {
@@ -256,8 +296,43 @@
 
 	@media only screen and (min-width: 992px) {
 		nav {
+      height: 100%;
 			width: calc(var(--menu-width) * 1px);
+		}
+
+		nav.menu-minimized {
+			width: calc(var(--mini-menu-width) * 1px);
+			height: 45px;
+		}
+
+		.minimize-menu {
+			display: inherit;
+			width: 24px;
+			height: 24px;
+			position: fixed;
+			/*topbox has a dimension of --menu-width * 141 */
+			left: calc(var(--menu-width) * 1px - (24px / 2) - 2px);
+			top: calc(141px - (24px / 2));
+			border-radius: 50%;
+			border: 2px solid var(--main-95);
+			background-color: var(--main-25);
+		}
+
+		.maximize-menu {
+      display: none;
+		}
+
+		.maximize-menu.menu-minimized {
+			display: flex;
+		}
+
+		.menu {
+			width: 100%;
 			height: 100%;
+		}
+
+		.menu.menu-minimized {
+			display: none;
 		}
 
 		.menu-title-wrapper {

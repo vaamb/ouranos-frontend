@@ -44,6 +44,7 @@
 
 	// Menu-related parameters
 	let menuWidth = 210;
+	let menuMinimized = $state(false);
 
 	let menuItems = $derived(
 		generateListOfMenuItems(
@@ -130,13 +131,16 @@
 	{$flashMessage.length > 0 ? $flashMessage[0]['message'] : ''}
 </Modal>
 
-<Menu items={menuItems} width={menuWidth} />
-<div class="main" style="--margin-width:{menuWidth}">
-	<TopBar development={data.appMode === APP_MODE.development} {menuWidth} />
+<Menu items={menuItems} width={menuWidth} miniWidth={45} bind:minimized={menuMinimized} />
+<div class="main" style="--margin-width:{menuWidth}" class:full-page={menuMinimized}>
+	<TopBar
+		development={data.appMode === APP_MODE.development}
+		menuWidth={menuMinimized ? 45 : menuWidth}
+	/>
 	<div class="padding-main">
 		{@render children?.()}
 	</div>
-	<BottomBar {menuWidth} />
+	<BottomBar menuWidth={menuMinimized ? 0 : menuWidth} />
 </div>
 
 <style>
@@ -155,6 +159,10 @@
 			margin-top: 0;
 			margin-left: calc(var(--margin-width) * 1px);
 			min-height: calc(100vh - 76px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
+		}
+
+		.full-page {
+			margin-left: 25px;
 		}
 
 		.padding-main {

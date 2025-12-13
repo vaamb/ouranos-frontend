@@ -6,10 +6,7 @@
 	import { permissions } from '$lib/utils/consts.js';
 	import { currentUser, warnings } from '$lib/store.svelte.js';
 
-	let {
-		development,
-		menuWidth = 210
-	} = $props();
+	let { development, menuWidth = 210 } = $props();
 </script>
 
 <div class="top-bar" style="--menu-width:{menuWidth}">
@@ -177,10 +174,12 @@
 		.top-bar {
 			position: fixed;
 			top: 0;
-			width: calc(100% - var(--menu-width) * 1px);
+			right: 0;
+			width: 100%;
 		}
 
 		.left {
+			margin-left: calc(var(--menu-width) * 1px);
 			width: 210px;
 		}
 
@@ -202,6 +201,7 @@
 			font-size: 1.5rem;
 			width: 45px;
 		}
+
 		.warning-button > a {
 			display: block;
 		}

@@ -77,6 +77,7 @@
 	.bottom-bar {
 		position: fixed;
 		bottom: 0;
+		right: 0;
 		font-size: 1rem;
 		font-weight: bold;
 		height: 37px;

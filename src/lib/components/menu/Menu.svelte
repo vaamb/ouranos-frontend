@@ -328,6 +328,7 @@
 			border-radius: 50%;
 			border: 2px solid var(--main-95);
 			background-color: var(--main-25);
+			cursor: pointer;
 		}
 
 		.minimized-menu {
@@ -349,6 +350,7 @@
 				border-radius: 50%;
 				border: 2px solid var(--main-95);
 				background-color: var(--main-25);
+				cursor: pointer;
 			}
     }
 

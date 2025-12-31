@@ -263,7 +263,10 @@
 		overflow: hidden;
 		flex-direction: column;
 		border-top: thin solid var(--main-95);
-		-webkit-transition: all 0.7s;
+
+		transition: 700ms ease-in-out;
+    transition-property: height;
+		-webkit-transition-property: height;
 
 		&.show {
 			height: calc(100vh - 65px); /* full screen - reduced menu height */

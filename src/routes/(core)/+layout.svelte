@@ -43,7 +43,8 @@
 	wikiTopics.set(data.wikiTopics);
 
 	// Menu-related parameters
-	let menuWidth = 210;
+	const menuWidth = 210;
+	const menuMinimizedWidth = 45;
 	let menuMinimized = $state(false);
 
 	let menuItems = $derived(
@@ -131,10 +132,11 @@
 	{$flashMessage.length > 0 ? $flashMessage[0]['message'] : ''}
 </Modal>
 
-<Menu items={menuItems} width={menuWidth} miniWidth={45} bind:minimized={menuMinimized} />
+<Menu items={menuItems} width={menuWidth} miniWidth={menuMinimizedWidth} bind:minimized={menuMinimized} />
 <div class="main" style="--margin-width:{menuWidth}" class:full-page={menuMinimized}>
 	<TopBar
 		development={data.appMode === APP_MODE.development}
+		miniWidth={menuMinimizedWidth}
 		fullPage={menuMinimized}
 	/>
 	<div class="transition-wrapper">

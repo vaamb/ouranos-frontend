@@ -335,11 +335,14 @@
 		}
 
 		.menu {
+			left: 0;
 			height: 100%;
 			width: calc(var(--menu-width) * 1px);
 
+			transition: left 700ms ease-in-out;
+
 			&.menu-minimized {
-				display: none;
+				left: calc((-1 * var(--menu-width) * 1px) - 12px);
 			}
 		}
 
@@ -366,7 +369,7 @@
 			display: inherit;
 			width: 24px;
 			height: 24px;
-			position: fixed;
+			position: absolute;
 			/*topbox has a dimension of --menu-width * 141 */
 			left: calc(var(--menu-width) * 1px - (24px / 2) - 2px);
 			top: calc(141px - (24px / 2));

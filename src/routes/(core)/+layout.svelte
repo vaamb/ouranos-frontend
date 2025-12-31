@@ -135,7 +135,7 @@
 <div class="main" style="--margin-width:{menuWidth}" class:full-page={menuMinimized}>
 	<TopBar
 		development={data.appMode === APP_MODE.development}
-		menuWidth={menuMinimized ? 45 : menuWidth}
+		fullPage={menuMinimized}
 	/>
 	<div class="padding-main">
 		{@render children?.()}
@@ -157,11 +157,13 @@
 	@media only screen and (min-width: 992px) {
 		.main {
 			margin-top: 0;
-			margin-left: calc(var(--margin-width) * 1px);
 			min-height: calc(100vh - 76px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
+			margin-left: auto;
+			width: calc(100% - var(--margin-width) * 1px);
 		}
 
 		.full-page {
+			width: 100%;
 			margin-left: 25px;
 		}
 

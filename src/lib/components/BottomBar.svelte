@@ -10,8 +10,6 @@
 	import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 	import { slugify } from '$lib/utils/functions.js';
 
-	let { menuWidth = 210 } = $props();
-
 	// Enums
 	const PAGE_TYPE = {
 		SERVER: 0,
@@ -45,7 +43,7 @@
 	let { pageType, ecosystemOrEngineUID } = $derived(computePageType($page.url.pathname));
 </script>
 
-<div class="bottom-bar" style="--menu-width:{menuWidth}">
+<div class="bottom-bar">
 	{#if $pingServerStatus === CONNECTION_STATUS.DISCONNECTED}
 		<div class="disconnected center-content">Disconnected from the server</div>
 	{:else if $pingServerStatus === CONNECTION_STATUS.RECONNECTED}
@@ -99,7 +97,7 @@
 
 	@media only screen and (min-width: 992px) {
 		.bottom-bar {
-			width: calc(100% - var(--menu-width) * 1px);
+			width: inherit;
 		}
 	}
 </style>

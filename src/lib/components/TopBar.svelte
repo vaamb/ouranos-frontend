@@ -6,11 +6,11 @@
 	import { permissions } from '$lib/utils/consts.js';
 	import { currentUser, warnings } from '$lib/store.svelte.js';
 
-	let { development, menuWidth = 210 } = $props();
+	let { development, fullPage = false } = $props();
 </script>
 
-<div class="top-bar" style="--menu-width:{menuWidth}">
-	<div class="left">
+<div class="top-bar">
+	<div class="left" class:full-page={fullPage}>
 		<div style="margin-right: 10px"></div>
 		<div class="user-permission">
 			{#if $currentUser.can(permissions.ADMIN)}
@@ -175,12 +175,15 @@
 			position: fixed;
 			top: 0;
 			right: 0;
-			width: 100%;
+			width: inherit;
 		}
 
 		.left {
-			margin-left: calc(var(--menu-width) * 1px);
 			width: 210px;
+
+			&.full-page {
+				margin-left: 45px;
+			}
 		}
 
 		.user-permission {

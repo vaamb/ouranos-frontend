@@ -265,9 +265,7 @@
 		flex-direction: column;
 		border-top: thin solid var(--main-95);
 
-		transition: 700ms ease-in-out;
-    transition-property: height;
-		-webkit-transition-property: height;
+		transition: height 700ms ease-in-out;
 
 		&.show {
 			height: calc(100vh - 65px); /* full screen - reduced menu height */

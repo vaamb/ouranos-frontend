@@ -169,12 +169,8 @@
 	}
 
 	nav {
-		top: 0;
-		position: fixed;
-		width: 100%;
 		background-color: var(--main-25);
 		color: var(--main-95);
-		z-index: 100;
 	}
 
 	.minimized-menu {
@@ -182,9 +178,14 @@
 	}
 
 	.menu {
+		position: fixed;
+		top: 0;
 		width: 100%;
+		z-index: 100;
 		display: flex;
 		flex-direction: column;
+		background-color: inherit;
+		color: inherit;
 	}
 
 	.top-box {
@@ -300,16 +301,6 @@
 	}
 
 	@media only screen and (min-width: 992px) {
-		nav {
-			height: 100%;
-			width: calc(var(--menu-width) * 1px);
-		}
-
-		nav.menu-minimized {
-			width: calc(var(--mini-menu-width) * 1px);
-			height: 45px;
-		}
-
 		.minimize-menu-button {
 			display: inherit;
 			width: 24px;
@@ -325,9 +316,15 @@
 		}
 
 		.minimized-menu {
+			position: fixed;
+			top: 0;
+			z-index: 99;
+			width: calc(var(--mini-menu-width) * 1px);
+			height: 45px;
+
 			display: none;
-			width: 100%;
-			height: 100%;
+			background-color: inherit;
+			color: inherit;
 
 			a {
 				width: 100%;
@@ -352,12 +349,12 @@
 		}
 
 		.menu {
-			width: 100%;
 			height: 100%;
-		}
+			width: calc(var(--menu-width) * 1px);
 
-		.menu.menu-minimized {
-			display: none;
+			&.menu-minimized {
+				display: none;
+			}
 		}
 
 		.top-box {

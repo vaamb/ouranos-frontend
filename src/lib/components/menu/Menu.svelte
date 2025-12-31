@@ -301,20 +301,6 @@
 	}
 
 	@media only screen and (min-width: 992px) {
-		.minimize-menu-button {
-			display: inherit;
-			width: 24px;
-			height: 24px;
-			position: fixed;
-			/*topbox has a dimension of --menu-width * 141 */
-			left: calc(var(--menu-width) * 1px - (24px / 2) - 2px);
-			top: calc(141px - (24px / 2));
-			border-radius: 50%;
-			border: 2px solid var(--main-95);
-			background-color: var(--main-25);
-			cursor: pointer;
-		}
-
 		.minimized-menu {
 			position: fixed;
 			top: 0;
@@ -342,10 +328,10 @@
 				background-color: var(--main-25);
 				cursor: pointer;
 			}
-		}
 
-		.minimized-menu.menu-minimized {
-			display: flex;
+			&.menu-minimized {
+				display: flex;
+			}
 		}
 
 		.menu {
@@ -374,6 +360,20 @@
 				margin-bottom: 10px;
 				display: flex;
 			}
+		}
+
+		.minimize-menu-button {
+			display: inherit;
+			width: 24px;
+			height: 24px;
+			position: fixed;
+			/*topbox has a dimension of --menu-width * 141 */
+			left: calc(var(--menu-width) * 1px - (24px / 2) - 2px);
+			top: calc(141px - (24px / 2));
+			border-radius: 50%;
+			border: 2px solid var(--main-95);
+			background-color: var(--main-25);
+			cursor: pointer;
 		}
 
 		.accordion-wrapper {

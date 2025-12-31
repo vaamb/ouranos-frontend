@@ -137,8 +137,10 @@
 		development={data.appMode === APP_MODE.development}
 		fullPage={menuMinimized}
 	/>
-	<div class="padding-main">
-		{@render children?.()}
+	<div class="transition-wrapper">
+		<div class="padding-main">
+			{@render children?.()}
+		</div>
 	</div>
 	<BottomBar menuWidth={menuMinimized ? 0 : menuWidth} />
 </div>
@@ -160,6 +162,16 @@
 			min-height: calc(100vh - 76px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
 			margin-left: auto;
 			width: calc(100% - var(--margin-width) * 1px);
+
+			transition: 700ms ease-in-out;
+			transition-property: width;
+			-webkit-transition-property: width;
+		}
+
+		.transition-wrapper {
+			width: inherit;
+			position: absolute;
+			right: 0;
 		}
 
 		.full-page {

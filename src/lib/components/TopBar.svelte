@@ -181,11 +181,13 @@
 		.left {
 			width: 210px;
 			margin-left: 0;
+			padding-left: 0;
 
-			transition: margin-left 700ms ease-in-out;
+			transition: 700ms ease-in-out;
 
 			&.full-page {
-				margin-left: 45px;
+				margin-left: calc(var(--mini-menu-width) * 1px);
+				padding-left: 5px;
 			}
 		}
 

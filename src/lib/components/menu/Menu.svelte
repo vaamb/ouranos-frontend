@@ -5,8 +5,8 @@
 	import {
 		faAddressCard,
 		faBars,
-		faChevronDown,
 		faChevronLeft,
+		faChevronRight,
 		faPowerOff,
 		faUserCog,
 		faXmark
@@ -83,7 +83,7 @@
 		</a>
 		<button class="maximize-menu-button reset-button" onclick={toggleMenuSize}>
 			<div class="center-content">
-				<Fa icon={faChevronDown} />
+				<Fa icon={faChevronRight} />
 			</div>
 		</button>
 	</div>
@@ -302,13 +302,19 @@
 		.minimized-menu {
 			position: fixed;
 			top: 0;
+			left: calc((-1 * var(--menu-width) * 1px) - 12px);
 			z-index: 99;
-			width: calc(var(--mini-menu-width) * 1px);
 			height: 45px;
-
-			display: none;
+			width: calc(var(--mini-menu-width) * 1px);
+			display: flex;
 			background-color: inherit;
 			color: inherit;
+
+			transition: left 700ms ease-in-out;
+
+			&.menu-minimized {
+				left: 0;
+			}
 
 			a {
 				width: 100%;
@@ -316,20 +322,33 @@
 			}
 
 			.maximize-menu-button {
-				width: 24px;
-				height: 24px;
-				position: fixed;
-				left: calc(45px - (20px / 2) - 4px);
-				top: calc(45px - (20px / 2) - 4px);
+				--radius: 23px;
+				position: absolute;
+				left: calc((var(--mini-menu-width) * 1px) - (var(--radius) / 2) - 1px);
+				top: calc((45px / 2) - (var(--radius) / 2));
+				height: var(--radius);
+				width: var(--radius);
 				border-radius: 50%;
 				border: 2px solid var(--main-95);
 				background-color: var(--main-25);
 				cursor: pointer;
 			}
 
-			&.menu-minimized {
-				display: flex;
+			/*
+			.maximize-menu-button::before {
+				background: none;
+				border-radius: 50%;
+				border: 3px solid var(--main-25);
+				content: "";
+				display: block;
+				position: absolute;
+				top: -4px;
+				left: -4px;
+				right: -4px;
+				bottom: -4px;
+				pointer-events: none;
 			}
+			*/
 		}
 
 		.menu {

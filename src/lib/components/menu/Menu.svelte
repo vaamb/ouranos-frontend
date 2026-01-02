@@ -5,8 +5,8 @@
 	import {
 		faAddressCard,
 		faBars,
-		faChevronDown,
 		faChevronLeft,
+		faChevronRight,
 		faPowerOff,
 		faUserCog,
 		faXmark
@@ -83,7 +83,7 @@
 		</a>
 		<button class="maximize-menu-button reset-button" onclick={toggleMenuSize}>
 			<div class="center-content">
-				<Fa icon={faChevronDown} />
+				<Fa icon={faChevronRight} />
 			</div>
 		</button>
 	</div>
@@ -169,12 +169,8 @@
 	}
 
 	nav {
-		top: 0;
-		position: fixed;
-		width: 100%;
 		background-color: var(--main-25);
 		color: var(--main-95);
-		z-index: 100;
 	}
 
 	.minimized-menu {
@@ -182,9 +178,14 @@
 	}
 
 	.menu {
+		position: fixed;
+		top: 0;
 		width: 100%;
+		z-index: 100;
 		display: flex;
 		flex-direction: column;
+		background-color: inherit;
+		color: inherit;
 	}
 
 	.top-box {
@@ -263,7 +264,8 @@
 		overflow: hidden;
 		flex-direction: column;
 		border-top: thin solid var(--main-95);
-		-webkit-transition: all 0.7s;
+
+		transition: height 700ms ease-in-out;
 
 		&.show {
 			height: calc(100vh - 65px); /* full screen - reduced menu height */
@@ -297,34 +299,22 @@
 	}
 
 	@media only screen and (min-width: 992px) {
-		nav {
-			height: 100%;
-			width: calc(var(--menu-width) * 1px);
-		}
-
-		nav.menu-minimized {
-			width: calc(var(--mini-menu-width) * 1px);
-			height: 45px;
-		}
-
-		.minimize-menu-button {
-			display: inherit;
-			width: 24px;
-			height: 24px;
-			position: fixed;
-			/*topbox has a dimension of --menu-width * 141 */
-			left: calc(var(--menu-width) * 1px - (24px / 2) - 2px);
-			top: calc(141px - (24px / 2));
-			border-radius: 50%;
-			border: 2px solid var(--main-95);
-			background-color: var(--main-25);
-			cursor: pointer;
-		}
-
 		.minimized-menu {
-			display: none;
-			width: 100%;
-			height: 100%;
+			position: fixed;
+			top: 0;
+			left: calc((-1 * var(--menu-width) * 1px) - 12px);
+			z-index: 99;
+			height: 45px;
+			width: calc(var(--mini-menu-width) * 1px);
+			display: flex;
+			background-color: inherit;
+			color: inherit;
+
+			transition: left 700ms ease-in-out;
+
+			&.menu-minimized {
+				left: 0;
+			}
 
 			a {
 				width: 100%;
@@ -332,29 +322,45 @@
 			}
 
 			.maximize-menu-button {
-				width: 24px;
-				height: 24px;
-				position: fixed;
-				left: calc(45px - (20px / 2) - 4px);
-				top: calc(45px - (20px / 2) - 4px);
+				--radius: 23px;
+				position: absolute;
+				left: calc((var(--mini-menu-width) * 1px) - (var(--radius) / 2) - 1px);
+				top: calc((45px / 2) - (var(--radius) / 2));
+				height: var(--radius);
+				width: var(--radius);
 				border-radius: 50%;
 				border: 2px solid var(--main-95);
 				background-color: var(--main-25);
 				cursor: pointer;
 			}
-		}
 
-		.minimized-menu.menu-minimized {
-			display: flex;
+			/*
+			.maximize-menu-button::before {
+				background: none;
+				border-radius: 50%;
+				border: 3px solid var(--main-25);
+				content: "";
+				display: block;
+				position: absolute;
+				top: -4px;
+				left: -4px;
+				right: -4px;
+				bottom: -4px;
+				pointer-events: none;
+			}
+			*/
 		}
 
 		.menu {
-			width: 100%;
+			left: 0;
 			height: 100%;
-		}
+			width: calc(var(--menu-width) * 1px);
 
-		.menu.menu-minimized {
-			display: none;
+			transition: left 700ms ease-in-out;
+
+			&.menu-minimized {
+				left: calc((-1 * var(--menu-width) * 1px) - 12px);
+			}
 		}
 
 		.top-box {
@@ -374,6 +380,20 @@
 				margin-bottom: 10px;
 				display: flex;
 			}
+		}
+
+		.minimize-menu-button {
+			display: inherit;
+			width: 24px;
+			height: 24px;
+			position: absolute;
+			/*topbox has a dimension of --menu-width * 141 */
+			left: calc(var(--menu-width) * 1px - (24px / 2) - 2px);
+			top: calc(141px - (24px / 2));
+			border-radius: 50%;
+			border: 2px solid var(--main-95);
+			background-color: var(--main-25);
+			cursor: pointer;
 		}
 
 		.accordion-wrapper {

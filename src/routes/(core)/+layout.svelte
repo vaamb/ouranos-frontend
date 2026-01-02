@@ -43,7 +43,8 @@
 	wikiTopics.set(data.wikiTopics);
 
 	// Menu-related parameters
-	let menuWidth = 210;
+	const menuWidth = 210;
+	const menuMinimizedWidth = 45 + 20;
 	let menuMinimized = $state(false);
 
 	let menuItems = $derived(
@@ -131,14 +132,17 @@
 	{$flashMessage.length > 0 ? $flashMessage[0]['message'] : ''}
 </Modal>
 
-<Menu items={menuItems} width={menuWidth} miniWidth={45} bind:minimized={menuMinimized} />
+<Menu items={menuItems} width={menuWidth} miniWidth={menuMinimizedWidth} bind:minimized={menuMinimized} />
 <div class="main" style="--margin-width:{menuWidth}" class:full-page={menuMinimized}>
 	<TopBar
 		development={data.appMode === APP_MODE.development}
-		menuWidth={menuMinimized ? 45 : menuWidth}
+		miniWidth={menuMinimizedWidth}
+		fullPage={menuMinimized}
 	/>
-	<div class="padding-main">
-		{@render children?.()}
+	<div class="transition-wrapper">
+		<div class="padding-main">
+			{@render children?.()}
+		</div>
 	</div>
 	<BottomBar menuWidth={menuMinimized ? 0 : menuWidth} />
 </div>
@@ -157,11 +161,21 @@
 	@media only screen and (min-width: 992px) {
 		.main {
 			margin-top: 0;
-			margin-left: calc(var(--margin-width) * 1px);
 			min-height: calc(100vh - 76px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
+			margin-left: auto;
+			width: calc(100% - var(--margin-width) * 1px);
+
+			transition: width 700ms ease-in-out;
+		}
+
+		.transition-wrapper {
+			width: inherit;
+			position: absolute;
+			right: 0;
 		}
 
 		.full-page {
+			width: 100%;
 			margin-left: 25px;
 		}
 

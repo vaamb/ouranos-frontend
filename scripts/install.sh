@@ -8,28 +8,18 @@ readonly OURANOS_FRONTEND_VERSION="0.9.0"
 readonly OURANOS_FRONTEND_REPO="https://github.com/vaamb/ouranos-frontend.git"
 
 check_ouranos_installed() {
-    # Check that Ouranos variable is set
-    if [[ -z "${OURANOS_DIR:-}" ]]; then
-        echo "OURANOS_DIR environment variable is not set. Please check your installation."
+    # Check if ouranos has been installed
+    if [ ! -d "${OURANOS_DIR}/lib" ]; then
+        echo "Ouranos installation not found. Please install it first using the Ouranos install script."
         exit 1
     fi
-
-    # Check that the directories exist
-    local dirs=("${OURANOS_DIR}" "${OURANOS_DIR}/lib" "${OURANOS_DIR}/logs" "${OURANOS_DIR}/scripts" "${OURANOS_DIR}/python_venv")
-    for dir in "${dirs[@]}"; do
-      if [[ ! -d "$dir" ]]; then
-        echo "Ouranos directories not found at $OURANOS_DIR. Please check your installation."
-        exit 1
-      fi
-    done
 }
 
 setup_logging() {
     # Load logging functions
     readonly DATETIME=$(date +%Y%m%d_%H%M%S)
     readonly LOG_FILE="/tmp/ouranos_frontend_install_${DATETIME}.log"
-    readonly SCRIPT_DIR="${OURANOS_DIR}/scripts"
-    . "${SCRIPT_DIR}/logging.sh"
+    source "${OURANOS_DIR}/scripts/utils/logging.sh" "${LOG_FILE}"
 }
 
 install_requirements() {
@@ -52,10 +42,6 @@ install_requirements() {
 }
 
 install_ouranos_frontend() {
-    # Activate virtual environment
-    source "${OURANOS_DIR}/python_venv/bin/activate" ||
-        log ERROR "Failed to activate Python virtual environment"
-
     # Change to Ouranos lib directory
     cd "${OURANOS_DIR}/lib" ||
         log ERROR "Failed to change to directory: ${OURANOS_DIR}/lib"
@@ -89,14 +75,13 @@ install_ouranos_frontend() {
 
     # Install Python hook
     log INFO "Installing Python wrapper..."
-    cd "python" ||
-        log ERROR "Failed to change to python_wrapper directory"
-    pip install -e . ||
-        log ERROR "Failed to install Python wrapper"
-
-    # Deactivate virtual environment
-    deactivate ||
-        log ERROR "Failed to deactivate virtual environment"
+    cd "${OURANOS_DIR}" ||
+        log ERROR "Failed to change to directory: ${OURANOS_DIR}"
+    uv lock --upgrade ||
+        log ERROR "Failed to update uv lock"
+    # use --inexact to keep packages not defined in pyproject.toml such as the DB drivers
+    uv sync --all-packages --inexact ||
+        log ERROR "Failed to update Python virtual environment"
 }
 
 # Cleanup function to run on exit
@@ -116,17 +101,13 @@ cleanup() {
 }
 
 main() {
-    # Set trap to run cleanup function on exit
-    trap cleanup EXIT
-
-    log INFO "Starting Ouranos frontend installation (v${OURANOS_FRONTEND_VERSION})"
-
     # Check that Ouranos is installed
-    log INFO "Checking if Ouranos is installed..."
     check_ouranos_installed
-    log SUCCESS "Ouranos installation found"
 
     setup_logging
+
+    # Set trap to run cleanup function on exit
+    trap cleanup EXIT
 
     log INFO "Installing dependencies..."
     install_requirements

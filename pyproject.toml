@@ -2,9 +2,9 @@
 name = "ouranos_frontend"
 description = "A frontend plugin for Ouranos"
 authors = [
-    {name = "Valentin Ambroise", email = "valentin.ambroise@outlook.com"}
+    {name = "Valentin Ambroise"}
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 readme = "README.md"
 license = {file = "LICENSE"}
 dynamic = ["version"]

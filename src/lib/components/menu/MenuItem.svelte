@@ -1,6 +1,6 @@
 <script>
 	import { slide } from 'svelte/transition';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	import Fa from 'svelte-fa';
 	import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
@@ -34,7 +34,7 @@
 
 {#if item.children.length === 0}
 	<li>
-		<a href={item.path} class="menu-item" class:active={$page.url.pathname === item.path}>
+		<a href={item.path} class="menu-item" class:active={page.url.pathname === item.path}>
 			<div class="left-ico">
 				{#if item.icon !== undefined}
 					<Fa icon={item.icon} />
@@ -59,7 +59,7 @@
 			<ul transition:animate={{ anyItemClicked: anyItemClicked }}>
 				{#each item.children as child, index}
 					{#if !child.children || child.children.length === 0}
-						<a href={child.path} class="menu-item menu-sub-item" class:active={$page.url.pathname === child.path}>
+						<a href={child.path} class="menu-item menu-sub-item" class:active={page.url.pathname === child.path}>
 							<div class="left-ico">
 								{#if child.icon !== undefined && child.name !== undefined}
 									<Fa icon={child.icon} />
@@ -98,7 +98,7 @@
 									<a
 										href={grandchild.path}
 										class="menu-item menu-sub-item menu-sub-sub-item item-name"
-										class:active={$page.url.pathname === grandchild.path}
+										class:active={page.url.pathname === grandchild.path}
 									>
 										<div class="left-ico">
 											{#if grandchild.icon !== undefined && grandchild.name !== undefined}

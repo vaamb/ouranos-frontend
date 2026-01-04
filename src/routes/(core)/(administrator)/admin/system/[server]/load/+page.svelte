@@ -1,5 +1,5 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	import Box from '$lib/components/layout/Box.svelte';
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
@@ -18,7 +18,7 @@
 	import { capitalize } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
-	let serverName = $derived($page.params.server);
+	let serverName = $derived(page.params.server);
 	let serverInfo = $derived($servers[serverName]);
 
 	const fetchServerData = async function (serverName) {

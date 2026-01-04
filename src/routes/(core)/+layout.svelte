@@ -133,33 +133,38 @@
 </Modal>
 
 <Menu items={menuItems} width={menuWidth} miniWidth={menuMinimizedWidth} bind:minimized={menuMinimized} />
-<div class="main" style="--margin-width:{menuWidth}" class:full-page={menuMinimized}>
+<div class="content-wrapper" style="--margin-width:{menuWidth}" class:full-page={menuMinimized}>
 	<TopBar
 		development={data.appMode === APP_MODE.development}
 		miniWidth={menuMinimizedWidth}
 		fullPage={menuMinimized}
 	/>
 	<div class="transition-wrapper">
-		<div class="padding-main">
+		<main>
 			{@render children?.()}
-		</div>
+		</main>
 	</div>
 	<BottomBar menuWidth={menuMinimized ? 0 : menuWidth} />
 </div>
 
 <style>
-	.main {
+	main {
+		padding: 10px 20px 20px 20px;
+	}
+
+	.content-wrapper {
 		margin-top: 65px;
 		min-height: calc(100vh - 141px); /* 141px = Nav bar (65) + Top bar (45) + border (1) + padding (10+20) */
 	}
 
-	.padding-main {
-		padding: 10px 20px 20px 20px;
-	}
-
 	/* Large devices (laptops/desktops, 992px and up) */
 	@media only screen and (min-width: 992px) {
-		.main {
+		main {
+			padding-top: 56px; /* Top bar (45) + border (1) + base padding (10) */
+			padding-right: 45px;
+		}
+
+		.content-wrapper {
 			margin-top: 0;
 			min-height: calc(100vh - 76px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
 			margin-left: auto;
@@ -177,11 +182,6 @@
 		.full-page {
 			width: 100%;
 			margin-left: 25px;
-		}
-
-		.padding-main {
-			padding-top: 56px; /* Top bar (45) + border (1) + base padding (10) */
-			padding-right: 45px;
 		}
 	}
 </style>

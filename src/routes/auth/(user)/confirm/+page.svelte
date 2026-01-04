@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { navigating, page } from '$app/stores';
+	import { navigating, page } from '$app/state';
 
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
@@ -9,7 +9,7 @@
 	import { checkJWT, getValidationColorClass } from '$lib/utils/functions.js';
 
 	// Token validation
-	let token = $state($page.url.searchParams.get('token'));
+	let token = $state(page.url.searchParams.get('token'));
 	//svelte-ignore state_referenced_locally
 	let newToken = $state(token);
 
@@ -48,11 +48,11 @@
 
 	// Update token on self page navigation
 	$effect(() => {
-		if ($navigating) {
+		if (navigating) {
 			// Coming from a page with a token, to a page without -> the token was invalid, clear it
 			if (
-				$navigating.from.url.searchParams.get('token') &&
-				!$navigating.to.url.searchParams.get('token')
+				navigating.from.url.searchParams.get('token') &&
+				!navigating.to.url.searchParams.get('token')
 			) {
 				token = null;
 				newToken = null;

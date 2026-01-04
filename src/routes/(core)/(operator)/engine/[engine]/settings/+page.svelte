@@ -1,5 +1,5 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
@@ -13,7 +13,7 @@
 	import { formatDateTime, getStatusClass, isEmpty, slugify } from '$lib/utils/functions.js';
 	import { crudRequest } from '$lib/actions.svelte.js';
 
-	let engineUID = $derived($page['params']['engine']);
+	let engineUID = $derived(page['params']['engine']);
 	let engine = $derived($engines[engineUID]);
 	let engineState = $derived($enginesState[engineUID]);
 	let fullEcosystems = $derived.by(() => {

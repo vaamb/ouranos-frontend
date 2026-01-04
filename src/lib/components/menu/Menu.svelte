@@ -1,5 +1,5 @@
 <script>
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 
 	import Fa from 'svelte-fa';
 	import {
@@ -63,7 +63,7 @@
 
 	$effect(() => {
 		// Close menu when changing page if screen is smaller than 992px
-		if ($navigating) {
+		if (navigating) {
 			if (outerWidth < 992) {
 				showMenu = false;
 				//toggledMenuItemIndex = null;

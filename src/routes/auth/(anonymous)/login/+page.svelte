@@ -1,11 +1,11 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 
 	import { logIn } from '$lib/actions.svelte.js';
 
 	// Need to store the previous page as it is set to null when using `logIn`
-	const previousPage = $navigating ? $navigating.from.url.pathname : '/';
+	const previousPage = navigating ? navigating.from.url.pathname : '/';
 
 	let errors = $state({});
 	const resetErrors = function () {

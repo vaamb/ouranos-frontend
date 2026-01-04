@@ -1,5 +1,5 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	import {
 		ecosystems,
@@ -22,7 +22,7 @@
 	const computePageType = function (url) {
 		if (url.includes('/ecosystem/')) {
 			const ecosystem = Object.values($ecosystems).find((ecosystem) => {
-				return slugify(ecosystem['name']) === $page.params['ecosystem'];
+				return slugify(ecosystem['name']) === page.params['ecosystem'];
 			});
 			return {
 				pageType: PAGE_TYPE.ECOSYSTEM,
@@ -31,7 +31,7 @@
 		} else if (url.includes('/engine/')) {
 			return {
 				pageType: PAGE_TYPE.ENGINE,
-				ecosystemOrEngineUID: $page.params['engine']
+				ecosystemOrEngineUID: page.params['engine']
 			};
 		} else {
 			return {
@@ -40,7 +40,7 @@
 			};
 		}
 	};
-	let { pageType, ecosystemOrEngineUID } = $derived(computePageType($page.url.pathname));
+	let { pageType, ecosystemOrEngineUID } = $derived(computePageType(page.url.pathname));
 </script>
 
 <div class="bottom-bar">

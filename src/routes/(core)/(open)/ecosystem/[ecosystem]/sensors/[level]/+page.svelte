@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	import Box from '$lib/components/layout/Box.svelte';
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
@@ -36,7 +36,7 @@
 	let ecosystemName = $derived(data['ecosystemName']);
 	let ecosystemUID = $derived(data['ecosystemUID']);
 
-	let sensorsLevel = $derived($page.params.level);
+	let sensorsLevel = $derived(page.params.level);
 	let pageTitle = $derived(generateTitle(sensorsLevel, ecosystemName));
 	let icons = $derived(graphs[sensorsLevel].icons);
 	let colors = $derived(graphs[sensorsLevel].colors);

@@ -14,6 +14,7 @@
 	let timeout;
 
 	$effect(() => {
+		if (!dialog) return;
 		if (showModal) {
 			displayModal();
 		} else if (dialog.open) {
@@ -29,14 +30,13 @@
 	};
 
 	const closeModal = function () {
-		dialog.close();
 		if (timeout) clearTimeout(timeout);
+		dialog.close();
 	};
 </script>
 
 <dialog
 	bind:this={dialog}
-	tabindex="-1"
 	onclose={() => {
 		showModal = false;
 		onclose();

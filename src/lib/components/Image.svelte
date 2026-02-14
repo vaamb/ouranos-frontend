@@ -5,7 +5,6 @@
 	import { faNotdef, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 	import Modal from '$lib/components/Modal.svelte';
-	import { formatDate } from '$lib/utils/functions.js';
 
 	let {
 		source,
@@ -27,7 +26,6 @@
 		}
 	};
 
-	let image = undefined;  // bound to the image container
 	let loading = $state(false);
 	let loaded = $state(false);
 	let error = $state(false);
@@ -43,10 +41,9 @@
 <div class="thumbnail-wrapper" style="--image-height: {height}; --image-width:{width}">
 	<figure>
 		<img
-			bind:this={image}
 			src={source}
 			{alt}
-		  onload={() => {loading = false; loaded = true; }}
+			onload={() => {loading = false; loaded = true; }}
 			onerror={() => {loading = false; error = true;}}
 			onclick={() => {enlargePicture = true}}
 			style="display: {loaded ? 'inherit' : 'none'}"
@@ -70,7 +67,7 @@
 </div>
 
 <Modal
-  showModal={enlargePicture === true}
+	showModal={enlargePicture}
 	onclose={() => {enlargePicture = false}}
 >
 	{#snippet title()}{alt}{/snippet}

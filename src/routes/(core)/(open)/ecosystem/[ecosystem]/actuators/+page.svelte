@@ -161,14 +161,14 @@
 	{#each Object.entries(actuatorsRecords) as [actuator, actuatorRecords]}
 		{@const actuatorState = $ecosystemsActuatorsState[ecosystemUID][actuator]}
 		{#if actuatorState['active'] || hasBeenActive(actuatorRecords)}
-			{@const drawGraph = actuatorRecords['values'].length >= 3}
+			{@const drawGraph = actuatorState['active'] || actuatorRecords['values'].length >= 3}
 			<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>
-				{#if $ecosystemsActuatorsState[ecosystemUID][actuator]['active']}
+				{#if actuatorState['active']}
 					<BoxItem maxWidth={drawGraph ? '305px' : null}>
 						<Switch
 							actuatorType={actuator}
-							status={$ecosystemsActuatorsState[ecosystemUID][actuator]['status']}
-							mode={$ecosystemsActuatorsState[ecosystemUID][actuator]['mode']}
+							status={actuatorState['status']}
+							mode={actuatorState['mode']}
 							useTimer={true}
 							onswitch={(payload) => {
 								updateActuatorMode(
@@ -181,25 +181,27 @@
 						/>
 					</BoxItem>
 				{/if}
-				<BoxItem>
-					{@const formattedActuatorRecords = formatActuatorsRecords(
-						actuatorRecords,
-						actuatorState,
-						startPoint,
-						endPoint
-					)}
-					{@const graphData = formatRecordsForGraphs(formattedActuatorRecords)}
-					<Graph
-						datasets={graphData.datasets}
-						labels={graphData.labels}
-						suggestedMax="1"
-						height="200px"
-						legend={{
-							display: true,
-							position: 'right'
-						}}
-					/>
-				</BoxItem>
+				{#if drawGraph}
+					<BoxItem>
+						{@const formattedActuatorRecords = formatActuatorsRecords(
+							actuatorRecords,
+							actuatorState,
+							startPoint,
+							endPoint
+						)}
+						{@const graphData = formatRecordsForGraphs(formattedActuatorRecords)}
+						<Graph
+							datasets={graphData.datasets}
+							labels={graphData.labels}
+							suggestedMax="1"
+							height="200px"
+							legend={{
+								display: true,
+								position: 'right'
+							}}
+						/>
+					</BoxItem>
+				{/if}
 			</Box>
 		{/if}
 	{/each}

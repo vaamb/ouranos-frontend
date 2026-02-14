@@ -149,16 +149,14 @@
 				</td>
 				<td>
 					{#if isRequired(required)}
+						{@const valid = row['type'] === 'file'
+							? formDataValues[row['key']]['validate'](formDataValues[row['key']]['files'])
+							: formDataValues[row['key']]['validate'](formDataValues[row['key']]['value'])
+						}
 						&nbsp;
 						<Fa
 							icon={faCircle}
-							class={row['type'] === 'file'
-								? formDataValues[key]['validate'](formDataValues[key]['files'])
-									? 'on'
-									: 'off'
-								: formDataValues[key]['validate'](formDataValues[key]['value'])
-									? 'on'
-									: 'off'}
+							class={valid ? 'on' : 'off'}
 						/>
 					{/if}
 				</td>

@@ -15,7 +15,6 @@
 		});
 	};
 
-	let modal = $state({});
 	let crudAction = $state(null);
 	let crudIndex = $state(null);
 
@@ -44,83 +43,86 @@
 />
 
 <Modal
-	bind:this={modal['create']}
 	showModal={crudAction === 'create'}
 	onclose={resetModal}
 	title="Create a new topic"
 >
-	<Form
-		data={[
-			{ label: 'Name', key: 'name' },
-			{ label: 'Description', key: 'description', required: false },
-			{
-				label: 'Tags',
-				key: 'tags',
-				hint: 'Comma separated tags',
-				required: false,
-				deserializer: splitTags
-			}
-		]}
-		onconfirm={(payload) => {
-			crudRequest(`app/services/wiki/topics/u`, 'create', payload).then(() => refreshTopics());
-			modal['create'].closeModal();
-		}}
-		oncancel={() => modal['create'].closeModal()}
-	/>
-</Modal>
-{#if $wikiTopics[crudIndex]}
-	<Modal
-		bind:this={modal['update']}
-		showModal={crudAction === 'update'}
-		onclose={resetModal}
-		title={`Update ${$wikiTopics[crudIndex]['name']} topic`}
-	>
+	{#snippet children(closeModal)}
 		<Form
 			data={[
-				{ label: 'Name', key: 'name', value: $wikiTopics[crudIndex]['name'], type: 'text' },
-				{
-					label: 'Description',
-					key: 'description',
-					value: $wikiTopics[crudIndex]['description'],
-					required: false
-				},
+				{ label: 'Name', key: 'name' },
+				{ label: 'Description', key: 'description', required: false },
 				{
 					label: 'Tags',
 					key: 'tags',
-					value: $wikiTopics[crudIndex]['tags'],
 					hint: 'Comma separated tags',
 					required: false,
-					serializer: joinTags,
 					deserializer: splitTags
 				}
 			]}
 			onconfirm={(payload) => {
-				crudRequest(
-					`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`,
-					'update',
-					payload
-				).then(() => refreshTopics());
-				modal['update'].closeModal();
+				crudRequest(`app/services/wiki/topics/u`, 'create', payload).then(() => refreshTopics());
+				closeModal();
 			}}
-			oncancel={() => modal['update'].closeModal()}
+			oncancel={() => closeModal()}
 		/>
+	{/snippet}
+</Modal>
+{#if $wikiTopics[crudIndex]}
+	<Modal
+		showModal={crudAction === 'update'}
+		onclose={resetModal}
+		title={`Update ${$wikiTopics[crudIndex]['name']} topic`}
+	>
+		{#snippet children(closeModal)}
+			<Form
+				data={[
+					{ label: 'Name', key: 'name', value: $wikiTopics[crudIndex]['name'], type: 'text' },
+					{
+						label: 'Description',
+						key: 'description',
+						value: $wikiTopics[crudIndex]['description'],
+						required: false
+					},
+					{
+						label: 'Tags',
+						key: 'tags',
+						value: $wikiTopics[crudIndex]['tags'],
+						hint: 'Comma separated tags',
+						required: false,
+						serializer: joinTags,
+						deserializer: splitTags
+					}
+				]}
+				onconfirm={(payload) => {
+					crudRequest(
+						`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`,
+						'update',
+						payload
+					).then(() => refreshTopics());
+					closeModal();
+				}}
+				oncancel={() => closeModal()}
+			/>
+		{/snippet}
 	</Modal>
 	<Modal
-		bind:this={modal['delete']}
 		showModal={crudAction === 'delete'}
 		title={`Delete ${$wikiTopics[crudIndex]['name']} topic`}
 		onclose={resetModal}
 	>
-		<p>Are you sure you want to delete '{$wikiTopics[crudIndex]['name']}' topic ?</p>
-		<ConfirmButtons
-			onconfirm={() => {
-				crudRequest(`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`, 'delete')
-				.then(
-					() => refreshTopics()
-				);
-				modal['delete'].closeModal();
-			}}
-			oncancel={() => modal['delete'].closeModal()}
-		/>
+		{#snippet children(closeModal)}
+			<p>Are you sure you want to delete '{$wikiTopics[crudIndex]['name']}' topic ?</p>
+			<ConfirmButtons
+				onconfirm={() => {
+					crudRequest(`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`, 'delete')
+					.then(
+						() => refreshTopics()
+					);
+					closeModal();
+				}}
+				oncancel={() => closeModal()}
+			/>
+		{/snippet}
 	</Modal>
 {/if}

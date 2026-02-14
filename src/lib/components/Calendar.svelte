@@ -158,7 +158,6 @@
 	let eventsDepths = $derived(computeEventsDepths(events, month, year));
 
 	// Modal
-	let modal = $state();
 	let modalDay = $state(undefined);
 	let crudAction = $state(undefined);
 	let crudIndex = $state(undefined);
@@ -242,12 +241,11 @@
 </div>
 
 <Modal
-	bind:this={modal}
 	showModal={modalDay !== undefined}
 	onclose={resetModal}
 	title={modalDay !== undefined ? formatDate(modalDay) : ''}
 >
-	{#if modalDay !== undefined}
+	{#snippet children(closeModal)}
 		{@const eventsID = getDayEventsID(modalDay)}
 		{@const filteredEventsArray = eventsID.map((eventID) => eventsByID[eventID])}
 		{#if crudAction === undefined}
@@ -292,9 +290,9 @@
 				]}
 				onconfirm={(payload) => {
 					handleCrudEvent('create', payload);
-					modal.closeModal();
+					closeModal();
 				}}
-				oncancel={modal.closeModal}
+				oncancel={closeModal}
 			/>
 		{:else if crudAction === 'update'}
 			<Form
@@ -339,21 +337,21 @@
 						eventID: filteredEventsArray[crudIndex]['id'],
 						...payload
 					});
-					modal.closeModal();
+					closeModal();
 				}}
-				oncancel={modal.closeModal}
+				oncancel={closeModal}
 			/>
 		{:else if crudAction === 'delete'}
 			<p>Delete '{filteredEventsArray[crudIndex]['title']}' event ?</p>
 			<ConfirmButtons
 				onconfirm={() => {
 					handleCrudEvent('delete', { eventID: filteredEventsArray[crudIndex]['id'] });
-					modal.closeModal();
+					closeModal();
 				}}
-				oncancel={modal.closeModal}
+				oncancel={closeModal}
 			/>
 		{/if}
-	{/if}
+	{/snippet}
 </Modal>
 
 <style>

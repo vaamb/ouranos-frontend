@@ -3,7 +3,7 @@
 	import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 	let {
-		showModal = $bindable(false),
+		showModal = false,
 		title = undefined,
 		timeOut = undefined,
 		onclose = () => {},
@@ -14,6 +14,7 @@
 	let timeout;
 
 	$effect(() => {
+		if (!dialog) return;
 		if (showModal) {
 			displayModal();
 		} else if (dialog.open) {
@@ -28,15 +29,14 @@
 		}
 	};
 
-	export const closeModal = function () {
-		dialog.close();
+	const closeModal = function () {
 		if (timeout) clearTimeout(timeout);
+		dialog.close();
 	};
 </script>
 
 <dialog
 	bind:this={dialog}
-	tabindex="-1"
 	onclose={() => {
 		showModal = false;
 		onclose();
@@ -57,7 +57,7 @@
 				</h1>
 			{/if}
 			<div class="content">
-				{@render children?.()}
+				{@render children?.(closeModal)}
 			</div>
 		{/if}
 	</div>

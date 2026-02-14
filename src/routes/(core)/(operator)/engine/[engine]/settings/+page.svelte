@@ -27,8 +27,6 @@
 		return ecosystemsCopy;
 	});
 
-	let modals = $state({});
-
 	// Crud-related variables and functions
 	let crudAction = $state(undefined);
 	let crudIndex = $state(undefined);
@@ -94,19 +92,20 @@
 	</table>
 </div>
 <Modal
-	bind:this={modals['base_info']}
 	showModal={crudAction === 'base_info'}
 	title="Update {engineUID}' base info"
 	onclose={resetCrudData}
 >
-	<Form
-		data={[{ label: 'Uid', key: 'uid', value: engineUID }]}
-		onconfirm={(payload) => {
-			crudRequest(`gaia/engine/u/${engineUID}`, 'update', payload);
-			modals['base_info'].closeModal();
-		}}
-		oncancel={() => modals['base_info'].closeModal()}
-	/>
+	{#snippet children(closeModal)}
+		<Form
+			data={[{ label: 'Uid', key: 'uid', value: engineUID }]}
+			onconfirm={(payload) => {
+				crudRequest(`gaia/engine/u/${engineUID}`, 'update', payload);
+				closeModal();
+			}}
+			oncancel={() => closeModal()}
+		/>
+	{/snippet}
 </Modal>
 
 {#if !isEmpty(engine['ecosystems'])}
@@ -143,54 +142,56 @@
 		}}
 	/>
 	<Modal
-		bind:this={modals['create']}
 		showModal={crudAction === 'create'}
 		title="Create a new ecosystem"
 		onclose={resetCrudData}
 	>
-		<Form
-			data={[
-				{ label: 'Name', key: 'name' },
-				{
-					label: 'Day start',
-					key: 'day_start',
-					type: 'time',
-					hint: 'Time in the HH:MM format'
-				},
-				{
-					label: 'Night start',
-					key: 'night_start',
-					type: 'time',
-					hint: 'Time in the HH:MM format'
-				},
-				{ label: 'Status', key: 'status', value: true, selectFrom: [true, false] }
-			]}
-			onconfirm={(payload) => {
-				payload['engine_uid'] = engineUID;
-				crudRequest(`gaia/ecosystem/u`, 'create', payload);
-				modals['create'].closeModal();
-			}}
-			oncancel={() => modals['create'].closeModal()}
-		/>
+		{#snippet children(closeModal)}
+			<Form
+				data={[
+					{ label: 'Name', key: 'name' },
+					{
+						label: 'Day start',
+						key: 'day_start',
+						type: 'time',
+						hint: 'Time in the HH:MM format'
+					},
+					{
+						label: 'Night start',
+						key: 'night_start',
+						type: 'time',
+						hint: 'Time in the HH:MM format'
+					},
+					{ label: 'Status', key: 'status', value: true, selectFrom: [true, false] }
+				]}
+				onconfirm={(payload) => {
+					payload['engine_uid'] = engineUID;
+					crudRequest(`gaia/ecosystem/u`, 'create', payload);
+					closeModal();
+				}}
+				oncancel={() => closeModal()}
+			/>
+		{/snippet}
 	</Modal>
 	<Modal
-		bind:this={modals['delete']}
 		showModal={crudAction === 'delete'}
 		title="Delete {crudEcosystemName}"
 		onclose={resetCrudData}
 	>
-		<p>
-			Are you sure you want to delete the ecosystem {ecosystemArray['uid']} - {ecosystemArray[
-				'name'
-			]} ?
-		</p>
-		<ConfirmButtons
-			onconfirm={() => {
-				crudRequest(`gaia/ecosystem/u/${crudEcosystemUID}`, 'delete');
-				modals['delete'].closeModal();
-			}}
-			oncancel={() => modals['delete'].closeModal()}
-		/>
+		{#snippet children(closeModal)}
+			<p>
+				Are you sure you want to delete the ecosystem {ecosystemArray['uid']} - {ecosystemArray[
+					'name'
+				]} ?
+			</p>
+			<ConfirmButtons
+				onconfirm={() => {
+					crudRequest(`gaia/ecosystem/u/${crudEcosystemUID}`, 'delete');
+					closeModal();
+				}}
+				oncancel={() => closeModal()}
+			/>
+		{/snippet}
 	</Modal>
 {:else}
 	<p>No linked ecosystem found.</p>

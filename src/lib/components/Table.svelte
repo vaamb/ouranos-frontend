@@ -33,18 +33,17 @@
 		oncrud(payload);
 	};
 
-	const checkCongruency = function () {
+  if (import.meta.env.DEV && data.length > 0) {
+		/**
+		 * Check if columns and data keys match
+		 */
 		for (const column of columns) {
 			if (!Object.prototype.hasOwnProperty.call(data[0], column.key)) {
 				console.warn("SimpleTable '" + tableID + "': Columns and data keys do not match");
 				break;
 			}
 		}
-	};
-
-	if (data.length > 0) {
-		checkCongruency();
-	}
+  }
 </script>
 
 <div class="table-wrap">

@@ -49,11 +49,11 @@
 					: (value) => {
 							return value;
 						};
-			const defaultValue = row['value'] !== undefined ? serializer(row['value']) : ''
+			const originalValue = row['value'] !== undefined ? serializer(row['value']) : ''
 			rv[row['key']] = {
 				type: row['type'] !== undefined ? row['type'] : 'text',
-				defaultValue: defaultValue,
-				value: defaultValue,
+				originalValue: originalValue,
+				value: originalValue,
 				files: undefined,
 				validate: row['validate'] !== undefined ? row['validate'] : defaultValidator,
 				deserializer: deserializer
@@ -88,9 +88,9 @@
 				payload[key] = obj['files'];
 			} else {
 				// Others, need to pass the (deserialized) value
-				const deserializedDefaultValue = obj['deserializer'](obj['defaultValue'])
+				const deserializedOriginalValue = obj['deserializer'](obj['originalValue'])
 				const deserializedValue = obj['deserializer'](obj['value']);
-				if (deserializedValue !== '' && deserializedValue !== deserializedDefaultValue) {
+				if (deserializedValue !== '' && deserializedValue !== deserializedOriginalValue) {
 					payload[key] = deserializedValue;
 				}
 			}

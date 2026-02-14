@@ -11,7 +11,7 @@
 		suggestedMin = defaultMin,
 		defaultMax = 100,
 		suggestedMax = defaultMax,
-		height = 250,
+		height = "250px",
 		legend = null,
 		xScale = null,
 		yScale = null
@@ -20,6 +20,7 @@
 	let canvas = $state();
 	let chart = $state();
 
+	// Chart layout is fixed once the chart is created. It won't be updated if the props change.
 	const chartLayout = {
 		scales: {
 			x: xScale || {
@@ -30,8 +31,8 @@
 			},
 			y: yScale || {
 				display: true,
-				suggestedMin: suggestedMin || defaultMin,
-				suggestedMax: suggestedMax || defaultMax
+				suggestedMin: suggestedMin ?? defaultMin,
+				suggestedMax: suggestedMax ?? defaultMax
 			}
 		},
 		plugins: {
@@ -53,7 +54,7 @@
 		}
 	});
 
-	onMount(async () => {
+	onMount(() => {
 		const ctx = canvas.getContext('2d');
 		chart = new Chart(ctx, {
 			type: 'line',
@@ -65,13 +66,19 @@
 		});
 	});
 
-	onDestroy(async () => {
+	onDestroy(() => {
 		if (chart) {
 			chart.destroy();
 		}
 	});
 </script>
 
-<div class="container" style="height:{height}">
-	<canvas bind:this={canvas} width="clientWidth" height="clientHeight"></canvas>
+<div class="container" style="--height:{height}">
+	<canvas bind:this={canvas}></canvas>
 </div>
+
+<style>
+	.container {
+		height: var(--height);
+	}
+</style>

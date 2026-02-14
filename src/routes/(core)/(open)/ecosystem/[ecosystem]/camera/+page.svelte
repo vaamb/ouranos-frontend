@@ -16,10 +16,9 @@
 	let ecosystemName = $derived(data['ecosystemName']);
 	let ecosystemUID = $derived(data['ecosystemUID']);
 
-	let images = $state({});
-	let cameraPicturesInfo = $state({});
+	let cameraData = $state({});
 	let cameraIDs = $derived(
-		Object.values(cameraPicturesInfo)
+		Object.values(cameraData)
 			.sort(dynamicSort('camera_name'))
 			.map((obj) => ({
 				uid: obj['camera_uid'],
@@ -36,7 +35,14 @@
 	};
 
 	onMount(async () => {
-		cameraPicturesInfo = await fetchCameraPicturesInfo(ecosystemUID);
+		const cameraPicturesInfo = await fetchCameraPicturesInfo(ecosystemUID);
+		Object.keys(cameraPicturesInfo).forEach((cameraUID) => {
+			cameraData[cameraUID] = {};
+			cameraData[cameraUID]['camera_uid'] = cameraUID;
+			cameraData[cameraUID]['camera_name'] = cameraPicturesInfo[cameraUID]['camera_name'];
+			cameraData[cameraUID]['source'] = getSource(cameraPicturesInfo[cameraUID]['path']);
+			cameraData[cameraUID]['caption'] = getCaption(cameraPicturesInfo[cameraUID]['timestamp']);
+		});
 
 		joinRoom('camera_stream');
 		socketio.on('pictures_update', (data) => {
@@ -44,11 +50,9 @@
 				// TODO: add new images if available
 				for (const updatedInfo of data['updated_pictures']) {
 					const cameraUID = updatedInfo['camera_uid'];
-					if (images[cameraUID]) {
-						images[cameraUID].update({
-							source: getSource(updatedInfo['path']),
-							caption: getCaption(updatedInfo['timestamp'])
-						})
+					if (cameraUID in cameraData) {
+            cameraData[cameraUID]['source'] = getSource(updatedInfo['path']);
+            cameraData[cameraUID]['caption'] = getCaption(updatedInfo['timestamp']);
 					}
 				}
 			}
@@ -64,17 +68,16 @@
 <HeaderLine title="Camera stream from {ecosystemName}" />
 
 {#each cameraIDs as cameraID}
-	{@const pictureInfo = cameraPicturesInfo[cameraID['uid']]}
+	{@const pictureInfo = cameraData[cameraID['uid']]}
 	{#if pictureInfo}
 		<Box title={cameraID['name']} maxWidth="450px">
 			<BoxItem>
 				<div style="margin: auto">
 					<Image
-						bind:this={images[cameraID['uid']]}
-						source={getSource(pictureInfo['path'])}
+						source={pictureInfo['source']}
+						caption={pictureInfo['caption']}
 						height="250"
 						width=null
-						caption={getCaption(pictureInfo['timestamp'])}
 						alt={`A picture taken by the camera '${cameraID['name']}'`}
 					/>
 				</div>

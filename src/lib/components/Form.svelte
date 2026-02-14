@@ -104,10 +104,9 @@
 		{#each data as row}
 			{@const { label, key, value, serializer, deserializer, selectFrom, validate, required, ...inputAttrs } = row}
 			<tr>
-				<td>
+				<td class="label-td">
 					<label for={key}>{label || key}</label>
 				</td>
-				<td style="width: 10px"></td>
 				<td>
 					{#if isEmpty(selectFrom)}
 						{#if row['type'] !== 'file'}
@@ -195,5 +194,9 @@
 
 	tr {
 		height: 28px;
+	}
+
+	.label-td {
+		padding-right: 10px;
 	}
 </style>

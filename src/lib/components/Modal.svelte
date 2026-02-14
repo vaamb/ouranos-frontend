@@ -16,6 +16,7 @@
 	} = $props();
 
 	let dialog = $state(); // HTMLDialogElement
+	let timeout;
 
 	$effect(() => {
 		if (showModal) displayModal();
@@ -24,14 +25,13 @@
 	const displayModal = function () {
 		dialog.showModal();
 		if (timeOut) {
-			setTimeout(() => {
-				closeModal();
-			}, timeOut);
+			timeout = setTimeout(() => closeModal(), timeOut);
 		}
 	};
 
 	export const closeModal = function () {
 		dialog.close();
+		if (timeout) clearTimeout(timeout);
 	};
 </script>
 

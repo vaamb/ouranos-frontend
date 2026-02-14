@@ -2,6 +2,7 @@
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
+	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
@@ -158,34 +159,38 @@
 		showModal={crudAction === 'confirm'}
 		onclose={resetCrudAction}
 		title="Confirm {userDescription['username']}'s account"
-		confirmationButtons={true}
-		onconfirm={() => {
-			crudRequest(
-				`user/u/${userDescription['username']}/confirmation_token?send_email=true`,
-				'get'
-			).then(() => {
-				modals['confirm'].closeModal();
-			});
-		}}
 	>
 		<p>Send a confirmation mail to {userDescription['username']}?</p>
+		<ConfirmButtons
+		  onconfirm={() => {
+				crudRequest(
+					`user/u/${userDescription['username']}/confirmation_token?send_email=true`,
+					'get'
+				).then(() => {
+					modals['confirm'].closeModal();
+				});
+			}}
+			oncancel={() => modals['confirm'].closeModal()}
+		/>
 	</Modal>
 	<Modal
 		bind:this={modals['reset_password']}
 		showModal={crudAction === 'reset_password'}
 		onclose={resetCrudAction}
 		title="Change {userDescription['username']}'s password"
-		confirmationButtons={true}
-		onconfirm={() => {
-			crudRequest(
-				`user/u/${userDescription['username']}/password_reset_token?send_email=true`,
-				'get'
-			).then(() => {
-				modals['reset_password'].closeModal();
-			});
-		}}
 	>
 		<p>Send a mail to change {userDescription['username']}'s password ?</p>
+		<ConfirmButtons
+			onconfirm={() => {
+				crudRequest(
+					`user/u/${userDescription['username']}/password_reset_token?send_email=true`,
+					'get'
+				).then(() => {
+					modals['reset_password'].closeModal();
+				});
+			}}
+			oncancel={() => modals['reset_password'].closeModal()}
+		/>
 	</Modal>
 {/if}
 <Modal
@@ -193,12 +198,14 @@
 	showModal={crudAction === 'delete'}
 	onclose={resetCrudAction}
 	title="Delete {userDescription['username']}'s account"
-	confirmationButtons={true}
-	onconfirm={() => {
-		crudRequest(`user/u/${userDescription['username']}/delete`, 'create').then(() => {
-			modals['delete'].closeModal();
-		});
-	}}
 >
 	<p>Are you sure you want to delete {userDescription['username']}'s account ?</p>
+	<ConfirmButtons
+		onconfirm={() => {
+			crudRequest(`user/u/${userDescription['username']}/delete`, 'create').then(() => {
+				modals['delete'].closeModal();
+			});
+		}}
+		oncancel={() => modals['delete'].closeModal()}
+	/>
 </Modal>

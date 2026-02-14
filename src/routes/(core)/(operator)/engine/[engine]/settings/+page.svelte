@@ -4,6 +4,7 @@
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
+	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
@@ -177,17 +178,19 @@
 		showModal={crudAction === 'delete'}
 		title="Delete {crudEcosystemName}"
 		onclose={resetCrudData}
-		confirmationButtons={true}
-		onconfirm={() => {
-			crudRequest(`gaia/ecosystem/u/${crudEcosystemUID}`, 'delete');
-			modals['delete'].closeModal();
-		}}
 	>
 		<p>
 			Are you sure you want to delete the ecosystem {ecosystemArray['uid']} - {ecosystemArray[
 				'name'
 			]} ?
 		</p>
+		<ConfirmButtons
+			onconfirm={() => {
+				crudRequest(`gaia/ecosystem/u/${crudEcosystemUID}`, 'delete');
+				modals['delete'].closeModal();
+			}}
+			oncancel={() => modals['delete'].closeModal()}
+		/>
 	</Modal>
 {:else}
 	<p>No linked ecosystem found.</p>

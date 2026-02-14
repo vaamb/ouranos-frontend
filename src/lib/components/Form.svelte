@@ -20,8 +20,8 @@
 	//   all remaining input parameters
 	// }]
 
-	const isNotFalse = function (obj) {
-		return obj === undefined ? true : obj;
+	const isRequired = function (maybeRequired) {
+		return maybeRequired === undefined ? true : maybeRequired;
 	};
 
 	const notEmptyValue = function (value) {
@@ -38,7 +38,7 @@
 							return value;
 						};
 			const defaultValidator =
-				isNotFalse(row['required'])
+				isRequired(row['required'])
 					? notEmptyValue
 					: (value) => {
 							return true;
@@ -147,7 +147,7 @@
 					{/if}
 				</td>
 				<td>
-					{#if isNotFalse(row['required'])}
+					{#if isRequired(row['required'])}
 						&nbsp;
 						<Fa
 							icon={faCircle}

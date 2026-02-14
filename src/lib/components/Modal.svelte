@@ -32,7 +32,6 @@
 
 	export const closeModal = function () {
 		dialog.close();
-		onclose()
 	};
 </script>
 
@@ -41,6 +40,7 @@
 	tabindex="-1"
 	onclose={() => {
 		showModal = false;
+		onclose();
 	}}
 	onclick={(e) => {
 		if (e.target === dialog) closeModal();

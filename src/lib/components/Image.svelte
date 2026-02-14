@@ -26,9 +26,9 @@
 		}
 	};
 
-	let loading = $state(false);
 	let loaded = $state(false);
 	let error = $state(false);
+	let loading = $derived(!(loaded || error));
 
 	// Modal
 	let enlargePicture = $state(false)
@@ -43,8 +43,8 @@
 		<img
 			src={source}
 			{alt}
-			onload={() => {loading = false; loaded = true; }}
-			onerror={() => {loading = false; error = true;}}
+			onload={() => {loaded = true; }}
+			onerror={() => {error = true;}}
 			onclick={() => {enlargePicture = true}}
 			style="display: {loaded ? 'inherit' : 'none'}"
 			class="thumbnail"

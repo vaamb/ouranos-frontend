@@ -114,11 +114,11 @@
 
 <Modal
 	showModal={updatingContent !== null}
-	title="Text editor"
 	onclose={() => {
 		updatingContent = null;
 	}}
 >
+	{#snippet title()}{"Text editor"}{/snippet}
 	{#snippet children(closeModal)}
 		<div class="modal-content">
 			<div class="editor">

@@ -93,9 +93,9 @@
 </div>
 <Modal
 	showModal={crudAction === 'base_info'}
-	title="Update {engineUID}' base info"
 	onclose={resetCrudData}
 >
+	{#snippet title()}{`Update ${engineUID}' base info`}{/snippet}
 	{#snippet children(closeModal)}
 		<Form
 			data={[{ label: 'Uid', key: 'uid', value: engineUID }]}
@@ -143,9 +143,9 @@
 	/>
 	<Modal
 		showModal={crudAction === 'create'}
-		title="Create a new ecosystem"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{"Create a new ecosystem"}{/snippet}
 		{#snippet children(closeModal)}
 			<Form
 				data={[
@@ -175,9 +175,9 @@
 	</Modal>
 	<Modal
 		showModal={crudAction === 'delete'}
-		title="Delete {crudEcosystemName}"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{`Delete ${crudEcosystemName}`}{/snippet}
 		{#snippet children(closeModal)}
 			<p>
 				Are you sure you want to delete the ecosystem {ecosystemArray['uid']} - {ecosystemArray[

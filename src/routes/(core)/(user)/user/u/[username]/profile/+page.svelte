@@ -133,8 +133,8 @@
 <Modal
 	showModal={crudAction === 'update'}
 	onclose={resetCrudAction}
-	title="Update {userDescription['username']}'s user info"
 >
+	{#snippet title()}{`Update ${userDescription['username']}'s user info`}{/snippet}
 	{#snippet children(closeModal)}
 		<Form
 			data={[
@@ -157,8 +157,8 @@
 	<Modal
 		showModal={crudAction === 'confirm'}
 		onclose={resetCrudAction}
-		title="Confirm {userDescription['username']}'s account"
 	>
+		{#snippet title()}{`Confirm ${userDescription['username']}'s account`}{/snippet}
 		{#snippet children(closeModal)}
 			<p>Send a confirmation mail to {userDescription['username']}?</p>
 			<ConfirmButtons
@@ -177,8 +177,8 @@
 	<Modal
 		showModal={crudAction === 'reset_password'}
 		onclose={resetCrudAction}
-		title="Change {userDescription['username']}'s password"
 	>
+		{#snippet title()}{`Change ${userDescription['username']}'s password`}{/snippet}
 		{#snippet children(closeModal)}
 			<p>Send a mail to change {userDescription['username']}'s password ?</p>
 			<ConfirmButtons
@@ -198,8 +198,8 @@
 <Modal
 	showModal={crudAction === 'delete'}
 	onclose={resetCrudAction}
-	title="Delete {userDescription['username']}'s account"
 >
+	{#snippet title()}{`Delete ${userDescription['username']}'s account`}{/snippet}
 	{#snippet children(closeModal)}
 		<p>Are you sure you want to delete {userDescription['username']}'s account ?</p>
 		<ConfirmButtons

@@ -164,9 +164,9 @@
 </div>
 <Modal
 	showModal={crudTable === 'base_info'}
-	title="Update {ecosystemName}' base info"
 	onclose={resetCrudData}
 >
+	{#snippet title()}{`Update ${ecosystemName}' base info`}{/snippet}
 	{#snippet children(closeModal)}
 		<Form
 			data={[
@@ -239,9 +239,9 @@
 	</div>
 	<Modal
 		showModal={crudTable === 'nycthemeral_info'}
-		title="Update {ecosystemName}' nycthemeral info"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{`Update ${ecosystemName}' nycthemeral info`}{/snippet}
 		{#snippet children(closeModal)}
 			<Form
 				data={[
@@ -325,9 +325,9 @@
 </div>
 <Modal
 	showModal={crudTable === 'management'}
-	title="Update {ecosystemName}' management"
 	onclose={resetCrudData}
 >
+	{#snippet title()}{`Update ${ecosystemName}' management`}{/snippet}
 	{#snippet children(closeModal)}
 		<p>Are you sure you want to update {ecosystemName}' subroutines management?</p>
 		<ConfirmButtons
@@ -359,9 +359,9 @@
 	/>
 	<Modal
 		showModal={crudTable === 'climate_parameter' && crudAction === 'create'}
-		title="Add a new environment parameter"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{"Add a new environment parameter"}{/snippet}
 		{#snippet children(closeModal)}
 			<Form
 				data={[
@@ -381,9 +381,9 @@
 	</Modal>
 	<Modal
 		showModal={crudTable === 'climate_parameter' && crudAction === 'update'}
-		title="Update {environmentParameter['parameter']} environment parameter"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{`Update ${environmentParameter['parameter']} environment parameter`}{/snippet}
 		{#snippet children(closeModal)}
 			<Form
 				data={[
@@ -441,9 +441,9 @@
 	</Modal>
 	<Modal
 		showModal={crudTable === 'climate_parameter' && crudAction === 'delete'}
-		title="Delete {environmentParameter['parameter']} environment parameter"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{`Delete ${environmentParameter['parameter']} environment parameter`}{/snippet}
 		{#snippet children(closeModal)}
 			<p>
 				Are you sure you want to delete the {environmentParameter['parameter']} environment parameter?
@@ -482,9 +482,9 @@
 	/>
 	<Modal
 		showModal={crudTable === 'weather_event' && crudAction === 'create'}
-		title="Add a new weather event"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{"Add a new weather event"}{/snippet}
 		{#snippet children(closeModal)}
 			<Form
 				data={[
@@ -510,9 +510,9 @@
 	</Modal>
 	<Modal
 		showModal={crudTable === 'weather_event' && crudAction === 'update'}
-		title="Update {weatherEvent['parameter']} weather event"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{`Update ${weatherEvent['parameter']} weather event`}{/snippet}
 		{#snippet children(closeModal)}
 			<Form
 				data={[
@@ -569,9 +569,9 @@
 	</Modal>
 	<Modal
 		showModal={crudTable === 'weather_event' && crudAction === 'delete'}
-		title="Delete {weatherEvent['parameter']} weather event"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{`Delete ${weatherEvent['parameter']} weather event`}{/snippet}
 		{#snippet children(closeModal)}
 			<p>
 				Are you sure you want to delete the {weatherEvent['parameter']} weather event?
@@ -617,9 +617,9 @@
 	/>
 	<Modal
 		showModal={crudTable === 'hardware' && crudAction === 'create'}
-		title="Add a new hardware"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{"Add a new hardware"}{/snippet}
 		{#snippet children(closeModal)}
 			<Form
 				data={[
@@ -639,9 +639,9 @@
 	</Modal>
 	<Modal
 		showModal={crudTable === 'hardware' && crudAction === 'update'}
-		title="Update '{hardware['name']}' hardware"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{`Update '${hardware['name']}' hardware`}{/snippet}
 		{#snippet children(closeModal)}
 			<Form
 				data={[
@@ -674,9 +674,9 @@
 	</Modal>
 	<Modal
 		showModal={crudTable === 'hardware' && crudAction === 'delete'}
-		title="Delete '{hardware['name']}' hardware"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{`Delete '${hardware['name']}' hardware`}{/snippet}
 		{#snippet children(closeModal)}
 			<p>Are you sure you want to delete '{hardware['name']}' hardware ?</p>
 			<ConfirmButtons

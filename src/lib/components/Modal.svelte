@@ -4,9 +4,10 @@
 
 	let {
 		showModal = false,
-		title = undefined,
 		timeOut = undefined,
 		onclose = () => {},
+		/* snippets */
+		title,
 		children
 	} = $props();
 
@@ -46,14 +47,13 @@
 	}}
 >
 	<div>
-		<!--The `showModal` is required to update the content when displaying several modals one after the other-->
 		{#if showModal}
 			<button class="reset-button close" onclick={closeModal}>
 				<Fa icon={faXmark} />
 			</button>
 			{#if title}
 				<h1>
-					{title}
+					{@render title()}
 				</h1>
 			{/if}
 			<div class="content">

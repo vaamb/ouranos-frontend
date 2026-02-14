@@ -45,8 +45,8 @@
 <Modal
 	showModal={crudAction === 'create'}
 	onclose={resetModal}
-	title="Create a new topic"
 >
+	{#snippet title()}{"Create a new topic"}{/snippet}
 	{#snippet children(closeModal)}
 		<Form
 			data={[
@@ -72,8 +72,8 @@
 	<Modal
 		showModal={crudAction === 'update'}
 		onclose={resetModal}
-		title={`Update ${$wikiTopics[crudIndex]['name']} topic`}
 	>
+		{#snippet title()}{`Update ${$wikiTopics[crudIndex]['name']} topic`}{/snippet}
 		{#snippet children(closeModal)}
 			<Form
 				data={[
@@ -108,9 +108,9 @@
 	</Modal>
 	<Modal
 		showModal={crudAction === 'delete'}
-		title={`Delete ${$wikiTopics[crudIndex]['name']} topic`}
 		onclose={resetModal}
 	>
+		{#snippet title()}{`Delete ${$wikiTopics[crudIndex]['name']} topic`}{/snippet}
 		{#snippet children(closeModal)}
 			<p>Are you sure you want to delete '{$wikiTopics[crudIndex]['name']}' topic ?</p>
 			<ConfirmButtons

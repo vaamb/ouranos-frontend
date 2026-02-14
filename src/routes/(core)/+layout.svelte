@@ -123,10 +123,10 @@
 <Modal
 	showModal={anyFlashMessage}
 	onclose={refreshModal}
-	title={anyFlashMessage ? $flashMessage[0]['title'] : ''}
 	timeOut={anyFlashMessage ? $flashMessage[0]['timeOut'] : undefined}
 >
-	{anyFlashMessage ? $flashMessage[0]['message'] : ''}
+	{#snippet title()}{$flashMessage[0]['title']}{/snippet}
+	{$flashMessage[0]['message']}
 </Modal>
 
 <Menu items={menuItems} width={menuWidth} miniWidth={menuMinimizedWidth} bind:minimized={menuMinimized} />

@@ -243,8 +243,8 @@
 <Modal
 	showModal={modalDay !== undefined}
 	onclose={resetModal}
-	title={modalDay !== undefined ? formatDate(modalDay) : ''}
 >
+	{#snippet title()}{formatDate(modalDay)}{/snippet}
 	{#snippet children(closeModal)}
 		{@const eventsID = getDayEventsID(modalDay)}
 		{@const filteredEventsArray = eventsID.map((eventID) => eventsByID[eventID])}

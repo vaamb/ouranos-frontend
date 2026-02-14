@@ -61,8 +61,8 @@
 <Modal
 	showModal={crudAction === 'create'}
 	onclose={resetModal}
-	title="Create a new article"
 >
+	{#snippet title()}{"Create a new article"}{/snippet}
 	{#snippet children(closeModal)}
 		<Form
 			data={[
@@ -112,9 +112,9 @@
 {#if articles[crudIndex]}
 	<Modal
 		showModal={crudAction === 'delete'}
-		title={`Delete ${articles[crudIndex]['name']} article`}
 		onclose={resetModal}
 	>
+		{#snippet title()}{`Delete ${articles[crudIndex]['name']} article`}{/snippet}
 		{#snippet children(closeModal)}
 			<p>Are you sure you want to delete '{articles[crudIndex]['name']}' article ?</p>
 			<ConfirmButtons

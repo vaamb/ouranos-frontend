@@ -5,6 +5,7 @@
 	import { faNotdef, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 	import Modal from '$lib/components/Modal.svelte';
+	import { formatDate } from '$lib/utils/functions.js';
 
 	let {
 		source,
@@ -71,8 +72,8 @@
 <Modal
   showModal={enlargePicture === true}
 	onclose={() => {enlargePicture = false}}
-	title={alt}
 >
+	{#snippet title()}{alt}{/snippet}
 	<img
 		src={source}
 		{alt}

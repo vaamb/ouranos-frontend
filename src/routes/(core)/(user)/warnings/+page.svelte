@@ -41,9 +41,9 @@
 	/>
 	<Modal
 		showModal={crudDataIndex !== null}
-		title="Remove a warning"
 		onclose={resetCrudData}
 	>
+		{#snippet title()}{"Remove a warning"}{/snippet}
 		{#snippet children(closeModal)}
 			Are you sure you want to remove the warning '{$warnings[crudDataIndex]
 				? $warnings[crudDataIndex]['title']

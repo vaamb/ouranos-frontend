@@ -55,8 +55,8 @@
 	<Modal
 		showModal={crudAction === 'create'}
 		onclose={resetModal}
-		title="Invite a new user"
 	>
+		{#snippet title()}{"Invite a new user"}{/snippet}
 		{#snippet children(closeModal)}
 			<Form
 				data={[
@@ -81,9 +81,9 @@
 	</Modal>
 	<Modal
 		showModal={crudAction === 'delete'}
-		title={users[crudIndex] ? `Delete ${users[crudIndex]['username']}?` : ''}
 		onclose={resetModal}
 	>
+		{#snippet title()}{`Delete ${users[crudIndex]['username']}?`}{/snippet}
 		{#snippet children(closeModal)}
 			<p>Are you sure you want to delete {users[crudIndex]['username']}?</p>
 			<ConfirmButtons

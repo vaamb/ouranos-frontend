@@ -99,7 +99,10 @@
 		{#if $currentUser.can(permissions.OPERATE) && editable && crudOptions.includes('create')}
 			<tbody>
 				<tr class="table-bigger-line">
-					<td colspan="8" style="text-align: center; vertical-align: middle">
+					<td
+						colspan="{columns.length + (editable ? 1 : 0)}"
+						style="text-align: center; vertical-align: middle"
+					>
 						<button
 							class="crud-button"
 							style="font-size: 2rem"

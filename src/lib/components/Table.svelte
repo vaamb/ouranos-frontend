@@ -33,18 +33,17 @@
 		oncrud(payload);
 	};
 
-	const checkCongruency = function () {
+  if (import.meta.env.DEV && data.length > 0) {
+		/**
+		 * Check if columns and data keys match
+		 */
 		for (const column of columns) {
 			if (!Object.prototype.hasOwnProperty.call(data[0], column.key)) {
 				console.warn("SimpleTable '" + tableID + "': Columns and data keys do not match");
 				break;
 			}
 		}
-	};
-
-	if (data.length > 0) {
-		checkCongruency();
-	}
+  }
 </script>
 
 <div class="table-wrap">
@@ -54,7 +53,7 @@
 				{#each columns as column}
 					<th>{column.label}</th>
 				{/each}
-				{#if $currentUser.can(permissions.OPERATE) & editable}
+				{#if $currentUser.can(permissions.OPERATE) && editable}
 					<th>Action</th>
 				{/if}
 			</tr>
@@ -77,7 +76,7 @@
 							{/if}
 						</td>
 					{/each}
-					{#if $currentUser.can(permissions.OPERATE) & editable & (crudOptions.includes('update') || crudOptions.includes('delete'))}
+					{#if $currentUser.can(permissions.OPERATE) && editable && (crudOptions.includes('update') || crudOptions.includes('delete'))}
 						<td>
 							<div>
 								{#if crudOptions.includes('update')}
@@ -96,10 +95,13 @@
 				</tr>
 			{/each}
 		</tbody>
-		{#if $currentUser.can(permissions.OPERATE) & editable & crudOptions.includes('create')}
+		{#if $currentUser.can(permissions.OPERATE) && editable && crudOptions.includes('create')}
 			<tbody>
 				<tr class="table-bigger-line">
-					<td colspan="8" style="text-align: center; vertical-align: middle">
+					<td
+						colspan="{columns.length + (editable ? 1 : 0)}"
+						style="text-align: center; vertical-align: middle"
+					>
 						<button
 							class="crud-button"
 							style="font-size: 2rem"

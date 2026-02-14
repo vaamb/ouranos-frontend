@@ -3,6 +3,7 @@
 
 	import Fa from 'svelte-fa';
 
+	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
@@ -326,14 +327,16 @@
 	bind:this={modals['management']}
 	showModal={crudTable === 'management'}
 	title="Update {ecosystemName}' management"
-	confirmationButtons={true}
 	onclose={resetCrudData}
-	onconfirm={() => {
-		crudRequest(`gaia/ecosystem/u/${ecosystemUID}/management`, 'update', ecosystemManagement);
-		modals['management'].closeModal();
-	}}
 >
 	<p>Are you sure you want to update {ecosystemName}' subroutines management?</p>
+	<ConfirmButtons
+		onconfirm={() => {
+			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/management`, 'update', ecosystemManagement);
+			modals['management'].closeModal();
+		}}
+		oncancel={() => modals['management'].closeModal()}
+	/>
 </Modal>
 
 {#if environmentParameters !== undefined && ($currentUser.can(permissions.OPERATE) || environmentParameters.length > 0)}
@@ -437,20 +440,22 @@
 		bind:this={modals['climate_parameter_delete']}
 		showModal={crudTable === 'climate_parameter' && crudAction === 'delete'}
 		title="Delete {environmentParameter['parameter']} environment parameter"
-		confirmationButtons={true}
 		onclose={resetCrudData}
-		onconfirm={() => {
-			const parameter = environmentParameter['parameter'];
-			crudRequest(
-				`gaia/ecosystem/u/${ecosystemUID}/environment_parameter/u/${parameter}`,
-				'delete'
-			);
-			modals['climate_parameter_delete'].closeModal();
-		}}
 	>
 		<p>
 			Are you sure you want to delete the {environmentParameter['parameter']} environment parameter?
 		</p>
+		<ConfirmButtons
+			onconfirm={() => {
+				const parameter = environmentParameter['parameter'];
+				crudRequest(
+					`gaia/ecosystem/u/${ecosystemUID}/environment_parameter/u/${parameter}`,
+					'delete'
+				);
+				modals['climate_parameter_delete'].closeModal();
+			}}
+			oncancel={() => modals['climate_parameter_delete'].closeModal()}
+		/>
 	</Modal>
 {/if}
 
@@ -560,17 +565,19 @@
 		bind:this={modals['weather_event_delete']}
 		showModal={crudTable === 'weather_event' && crudAction === 'delete'}
 		title="Delete {weatherEvent['parameter']} weather event"
-		confirmationButtons={true}
 		onclose={resetCrudData}
-		onconfirm={() => {
-			const parameter = weatherEvent['parameter'];
-			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/weather_event/u/${parameter}`, 'delete');
-			modals['weather_event_delete'].closeModal();
-		}}
 	>
 		<p>
 			Are you sure you want to delete the {weatherEvent['parameter']} weather event?
 		</p>
+		<ConfirmButtons
+			onconfirm={() => {
+				const parameter = weatherEvent['parameter'];
+				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/weather_event/u/${parameter}`, 'delete');
+				modals['weather_event_delete'].closeModal();
+			}}
+			oncancel={() => modals['weather_event_delete'].closeModal()}
+		/>
 	</Modal>
 {/if}
 
@@ -660,14 +667,16 @@
 		bind:this={modals['hardware_delete']}
 		showModal={crudTable === 'hardware' && crudAction === 'delete'}
 		title="Delete '{hardware['name']}' hardware"
-		confirmationButtons={true}
 		onclose={resetCrudData}
-		onconfirm={() => {
-			const uid = hardware['uid'];
-			crudRequest(`gaia/ecosystem/u/${ecosystemUID}/hardware/u/${uid}`, 'delete');
-			modals['hardware_delete'].closeModal();
-		}}
 	>
 		<p>Are you sure you want to delete '{hardware['name']}' hardware ?</p>
+		<ConfirmButtons
+			onconfirm={() => {
+				const uid = hardware['uid'];
+				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/hardware/u/${uid}`, 'delete');
+				modals['hardware_delete'].closeModal();
+			}}
+			oncancel={() => modals['hardware_delete'].closeModal()}
+		/>
 	</Modal>
 {/if}

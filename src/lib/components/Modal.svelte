@@ -2,15 +2,10 @@
 	import Fa from 'svelte-fa';
 	import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
-	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
-
 	let {
 		showModal = $bindable(false),
 		title = undefined,
-		confirmationButtons = false,
 		timeOut = undefined,
-		onconfirm = () => {},
-		oncancel = () => {},
 		onclose = () => {},
 		children
 	} = $props();
@@ -64,15 +59,6 @@
 			<div class="content">
 				{@render children?.()}
 			</div>
-			{#if confirmationButtons}
-				<ConfirmButtons
-					onconfirm={onconfirm}
-					oncancel={() => {
-						oncancel();
-						closeModal();
-					}}
-				/>
-			{/if}
 		{/if}
 	</div>
 </dialog>

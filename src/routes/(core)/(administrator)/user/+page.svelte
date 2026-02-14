@@ -5,6 +5,7 @@
 	import Form from '$lib/components/Form.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
+	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 
 	let page = $state(0);
 
@@ -83,11 +84,14 @@
 		showModal={crudAction === 'delete'}
 		title={users[crudIndex] ? `Delete ${users[crudIndex]['username']}?` : ''}
 		onclose={resetModal}
-		onconfirm={() => {
-			crudRequest(`user/u/${users[crudIndex]['username']}`, 'delete');
-			modals['delete'].closeModal();
-		}}
 	>
 		<p>Are you sure you want to delete {users[crudIndex]['username']}?</p>
+		<ConfirmButtons
+			onconfirm={() => {
+				crudRequest(`user/u/${users[crudIndex]['username']}`, 'delete');
+				modals['delete'].closeModal();
+			}}
+			oncancel={() => modals['delete'].closeModal()}
+		/>
 	</Modal>
 {/await}

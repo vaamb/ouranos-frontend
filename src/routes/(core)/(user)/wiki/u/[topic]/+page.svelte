@@ -6,6 +6,7 @@
 
 	import { crudRequest, fetchWikiArticles } from '$lib/actions.svelte.js';
 	import { capitalize } from '$lib/utils/functions.js';
+	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 
 	let { data } = $props();
 
@@ -113,20 +114,22 @@
 		bind:this={modal['delete']}
 		showModal={crudAction === 'delete'}
 		title={`Delete ${articles[crudIndex]['name']} article`}
-		confirmationButtons={true}
 		onclose={resetModal}
-		onconfirm={() => {
-			crudRequest(
-				`app/services/wiki/topics/u/${topic['slug']}/u/${articles[crudIndex]['slug']}`,
-				'delete'
-			).then(() => {
-				fetchWikiArticles(topic['slug']).then((data) => {
-					articles = data;
-					modal['delete'].closeModal();
-				});
-			});
-		}}
 	>
 		<p>Are you sure you want to delete '{articles[crudIndex]['name']}' article ?</p>
+		<ConfirmButtons
+			onconfirm={() => {
+				crudRequest(
+					`app/services/wiki/topics/u/${topic['slug']}/u/${articles[crudIndex]['slug']}`,
+					'delete'
+				).then(() => {
+					fetchWikiArticles(topic['slug']).then((data) => {
+						articles = data;
+						modal['delete'].closeModal();
+					});
+				});
+			}}
+			oncancel={() => modal['delete'].closeModal()}
+		/>
 	</Modal>
 {/if}

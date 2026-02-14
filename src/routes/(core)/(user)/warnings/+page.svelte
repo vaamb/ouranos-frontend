@@ -1,4 +1,5 @@
 <script>
+	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
@@ -44,18 +45,20 @@
 		showModal={crudDataIndex !== null}
 		title="Remove a warning"
 		onclose={resetCrudData}
-		confirmationButtons={true}
-		onconfirm={() => {
-			const warningID = $warnings[crudDataIndex]['id'];
-			crudRequest(`gaia/warning/u/${warningID}/mark_as_solved`, 'create');
-			modal.closeModal();
-		}}
 	>
 		Are you sure you want to remove the warning '{$warnings[crudDataIndex]
 			? $warnings[crudDataIndex]['title']
 			: ''}' created by the ecosystem '{$warnings[crudDataIndex]
 			? $warnings[crudDataIndex]['created_by']
 			: ''}'?
+		<ConfirmButtons
+			onconfirm={() => {
+				const warningID = $warnings[crudDataIndex]['id'];
+				crudRequest(`gaia/warning/u/${warningID}/mark_as_solved`, 'create');
+				modal.closeModal();
+			}}
+			oncancel={() => modal.closeModal()}
+		/>
 	</Modal>
 {:else}
 	No warnings

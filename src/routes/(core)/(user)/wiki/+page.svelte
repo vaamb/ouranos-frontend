@@ -1,4 +1,5 @@
 <script>
+	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
@@ -108,16 +109,18 @@
 		bind:this={modal['delete']}
 		showModal={crudAction === 'delete'}
 		title={`Delete ${$wikiTopics[crudIndex]['name']} topic`}
-		confirmationButtons={true}
 		onclose={resetModal}
-		onconfirm={() => {
-			crudRequest(`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`, 'delete')
-			.then(
-				() => refreshTopics()
-			);
-			modal['delete'].closeModal();
-		}}
 	>
 		<p>Are you sure you want to delete '{$wikiTopics[crudIndex]['name']}' topic ?</p>
+		<ConfirmButtons
+			onconfirm={() => {
+				crudRequest(`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`, 'delete')
+				.then(
+					() => refreshTopics()
+				);
+				modal['delete'].closeModal();
+			}}
+			oncancel={() => modal['delete'].closeModal()}
+		/>
 	</Modal>
 {/if}

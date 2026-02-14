@@ -88,12 +88,12 @@
 		column-gap: 1px;
 		row-gap: 1px;
 		text-align: center;
-		flex-direction: column;
 		background: var(--main-80);
 		margin: 0 10px 0;
 	}
 
 	.row {
+	  /* collapse rows on mobile devices */
 		flex-direction: column;
 	}
 

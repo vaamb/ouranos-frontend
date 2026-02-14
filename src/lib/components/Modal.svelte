@@ -19,7 +19,11 @@
 	let timeout;
 
 	$effect(() => {
-		if (showModal) displayModal();
+		if (showModal) {
+			displayModal();
+		} else if (dialog.open) {
+			closeModal();
+		}
 	});
 
 	const displayModal = function () {

@@ -3,7 +3,7 @@
 	import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 	let {
-		showModal = $bindable(false),
+		showModal = false,
 		title = undefined,
 		timeOut = undefined,
 		onclose = () => {},

@@ -1,5 +1,5 @@
 <script>
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, tick } from 'svelte';
 
 	import BottomBar from '$lib/components/BottomBar.svelte';
 	import Menu from '$lib/components/menu/Menu.svelte';
@@ -60,16 +60,13 @@
 	);
 
 	// Modal-related functions and parameters
-	let showModal = $state($flashMessage.length > 0);
-
-	$effect(() => {
-		showModal = $flashMessage.length > 0;
-		// Hack required to update `showModal` after shifting the messages
-		showModal;
-	});
+	let anyFlashMessage = $state($flashMessage.length > 0);
 
 	const refreshModal = function () {
+		anyFlashMessage = false;
 		$flashMessage.shift();
+		tick();
+		anyFlashMessage = $flashMessage.length > 0;
 	};
 
 	// Ping server, engine and ecosystem connection status
@@ -124,12 +121,12 @@
 </script>
 
 <Modal
-	bind:showModal
+	showModal={anyFlashMessage}
 	onclose={refreshModal}
-	title={$flashMessage.length > 0 ? $flashMessage[0]['title'] : ''}
-	timeOut={$flashMessage.length > 0 ? $flashMessage[0]['timeOut'] : undefined}
+	title={anyFlashMessage ? $flashMessage[0]['title'] : ''}
+	timeOut={anyFlashMessage ? $flashMessage[0]['timeOut'] : undefined}
 >
-	{$flashMessage.length > 0 ? $flashMessage[0]['message'] : ''}
+	{anyFlashMessage ? $flashMessage[0]['message'] : ''}
 </Modal>
 
 <Menu items={menuItems} width={menuWidth} miniWidth={menuMinimizedWidth} bind:minimized={menuMinimized} />

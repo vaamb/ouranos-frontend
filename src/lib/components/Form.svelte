@@ -102,37 +102,38 @@
 <table style="display: table">
 	<tbody>
 		{#each data as row}
+			{@const { label, key, value, serializer, deserializer, selectFrom, validate, required, ...inputAttrs } = row}
 			<tr>
 				<td>
-					<label for={row['key']}>{row['label'] || row['key']}</label>
+					<label for={key}>{label || key}</label>
 				</td>
 				<td style="width: 10px"></td>
 				<td>
-					{#if isEmpty(row['selectFrom'])}
+					{#if isEmpty(selectFrom)}
 						{#if row['type'] !== 'file'}
 							<input
-								id={row['key']}
-								bind:value={formDataValues[row['key']]['value']}
-								{...row}
+								id={key}
+								bind:value={formDataValues[key]['value']}
+								{...inputAttrs}
 							/>
 						{:else}
 							<input
-								id={row['key']}
-								bind:files={formDataValues[row['key']]['files']}
-								{...row}
+								id={key}
+								bind:files={formDataValues[key]['files']}
+								{...inputAttrs}
 								type="file"
 							/>
 						{/if}
 					{:else}
 						<select
-							id={row['key']}
-							bind:value={formDataValues[row['key']]['value']}
-							{...row}
+							id={key}
+							bind:value={formDataValues[key]['value']}
+							{...inputAttrs}
 						>
-							{#if !row['value']}
+							{#if !value}
 								<option disabled value="">Select one</option>
 							{/if}
-							{#each row['selectFrom'] as choice}
+							{#each selectFrom as choice}
 								{#if isObject(choice)}
 									<option value={choice['value']}>
 										{choice['label'] || choice['value']}
@@ -147,15 +148,15 @@
 					{/if}
 				</td>
 				<td>
-					{#if isRequired(row['required'])}
+					{#if isRequired(required)}
 						&nbsp;
 						<Fa
 							icon={faCircle}
 							class={row['type'] === 'file'
-								? formDataValues[row['key']]['validate'](formDataValues[row['key']]['files'])
+								? formDataValues[key]['validate'](formDataValues[key]['files'])
 									? 'on'
 									: 'off'
-								: formDataValues[row['key']]['validate'](formDataValues[row['key']]['value'])
+								: formDataValues[key]['validate'](formDataValues[key]['value'])
 									? 'on'
 									: 'off'}
 						/>

@@ -16,41 +16,38 @@
 	} = $props();
 
 	let dialog = $state(); // HTMLDialogElement
+	let timeout;
 
 	$effect(() => {
-		if (showModal) displayModal();
+		if (showModal) {
+			displayModal();
+		} else if (dialog.open) {
+			closeModal();
+		}
 	});
 
 	const displayModal = function () {
 		dialog.showModal();
 		if (timeOut) {
-			setTimeout(() => {
-				closeModal();
-			}, timeOut);
+			timeout = setTimeout(() => closeModal(), timeOut);
 		}
 	};
 
 	export const closeModal = function () {
 		dialog.close();
-		onclose()
+		if (timeout) clearTimeout(timeout);
 	};
 </script>
 
 <dialog
 	bind:this={dialog}
 	tabindex="-1"
-	aria-hidden="true"
-	aria-modal="true"
 	onclose={() => {
 		showModal = false;
+		onclose();
 	}}
 	onclick={(e) => {
 		if (e.target === dialog) closeModal();
-	}}
-	onkeydown={(e) => {
-		if (e.key === 'Escape') {
-			closeModal();
-		}
 	}}
 >
 	<div>

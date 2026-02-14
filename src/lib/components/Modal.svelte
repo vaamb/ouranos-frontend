@@ -45,11 +45,6 @@
 	onclick={(e) => {
 		if (e.target === dialog) closeModal();
 	}}
-	onkeydown={(e) => {
-		if (e.key === 'Escape') {
-			closeModal();
-		}
-	}}
 >
 	<div>
 		<!--The `showModal` is required to update the content when displaying several modals one after the other-->

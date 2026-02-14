@@ -1,6 +1,4 @@
 <script>
-	import { onMount } from 'svelte';
-
 	import Fa from 'svelte-fa';
 	import { faNotdef, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
@@ -14,28 +12,12 @@
 		caption = undefined
 	} = $props();
 
-	export const update = function (newData) {
-		if (newData["source"]) {
-			source = newData["source"];
-		}
-		if (newData["alt"]) {
-			alt = newData["alt"];
-		}
-		if (newData["caption"]) {
-			caption = newData["caption"];
-		}
-	};
-
 	let loaded = $state(false);
 	let error = $state(false);
 	let loading = $derived(!(loaded || error));
 
 	// Modal
 	let enlargePicture = $state(false)
-
-	onMount(() => {
-		loading = true;
-	});
 </script>
 
 <div class="thumbnail-wrapper" style="--image-height: {height}; --image-width:{width}">

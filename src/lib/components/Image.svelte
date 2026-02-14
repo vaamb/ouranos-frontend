@@ -22,15 +22,16 @@
 
 <div class="thumbnail-wrapper" style="--image-height: {height}; --image-width:{width}">
 	<figure>
-		<img
-			src={source}
-			{alt}
-			onload={() => {loaded = true; }}
-			onerror={() => {error = true;}}
-			onclick={() => {enlargePicture = true}}
-			style="display: {loaded ? 'inherit' : 'none'}"
-			class="thumbnail"
-		/>
+		<button class="reset-button thumbnail-button" onclick={() => {enlargePicture = true}}>
+			<img
+				src={source}
+				{alt}
+				onload={() => {loaded = true; }}
+				onerror={() => {error = true;}}
+				style="display: {loaded ? 'inherit' : 'none'}"
+				class="thumbnail"
+			/>
+		</button>
 		{#if loaded && caption}
 			<figcaption class="thumbnail-caption">
 				{caption}
@@ -68,6 +69,12 @@
 		display: flex;
 		padding: 1px;
 		border: thin var(--derived-50) solid;
+	}
+
+	.thumbnail-button {
+		height: 100%;
+		width: 100%;
+		cursor: pointer;
 	}
 
 	.thumbnail {

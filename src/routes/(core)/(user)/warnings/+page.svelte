@@ -9,7 +9,6 @@
 	import { capitalize, formatDateTime } from "$lib/utils/functions.js";
 
 	// Crud-related variables and functions
-	let modal = $state();
 	let crudDataIndex = $state(null);
 
 	const setCrudData = function (rowIndex) {
@@ -41,24 +40,25 @@
 		}}
 	/>
 	<Modal
-		bind:this={modal}
 		showModal={crudDataIndex !== null}
 		title="Remove a warning"
 		onclose={resetCrudData}
 	>
-		Are you sure you want to remove the warning '{$warnings[crudDataIndex]
-			? $warnings[crudDataIndex]['title']
-			: ''}' created by the ecosystem '{$warnings[crudDataIndex]
-			? $warnings[crudDataIndex]['created_by']
-			: ''}'?
-		<ConfirmButtons
-			onconfirm={() => {
-				const warningID = $warnings[crudDataIndex]['id'];
-				crudRequest(`gaia/warning/u/${warningID}/mark_as_solved`, 'create');
-				modal.closeModal();
-			}}
-			oncancel={() => modal.closeModal()}
-		/>
+		{#snippet children(closeModal)}
+			Are you sure you want to remove the warning '{$warnings[crudDataIndex]
+				? $warnings[crudDataIndex]['title']
+				: ''}' created by the ecosystem '{$warnings[crudDataIndex]
+				? $warnings[crudDataIndex]['created_by']
+				: ''}'?
+			<ConfirmButtons
+				onconfirm={() => {
+					const warningID = $warnings[crudDataIndex]['id'];
+					crudRequest(`gaia/warning/u/${warningID}/mark_as_solved`, 'create');
+					closeModal();
+				}}
+				oncancel={() => closeModal()}
+			/>
+		{/snippet}
 	</Modal>
 {:else}
 	No warnings

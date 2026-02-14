@@ -28,7 +28,7 @@
 		}
 	};
 
-	export const closeModal = function () {
+	const closeModal = function () {
 		dialog.close();
 		if (timeout) clearTimeout(timeout);
 	};
@@ -57,7 +57,7 @@
 				</h1>
 			{/if}
 			<div class="content">
-				{@render children?.()}
+				{@render children?.(closeModal)}
 			</div>
 		{/if}
 	</div>

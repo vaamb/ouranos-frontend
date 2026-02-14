@@ -66,15 +66,12 @@
 	marked.use({ renderer });
 
 	// Update text
-	let modal = $state();
-
 	let updatingContent = $state(null);
 	let parsedUpdatingContent = $derived.by(() => {
 		if (updatingContent) return marked(updatingContent);
 	});
 
 	// Image upload
-	let imageUploadModal = $state();
 	let showImageUploadModal = $state(false);
 	let showImagesAvailable = $state(false);
 
@@ -116,128 +113,130 @@
 </div>
 
 <Modal
-	bind:this={modal}
 	showModal={updatingContent !== null}
 	title="Text editor"
 	onclose={() => {
 		updatingContent = null;
 	}}
 >
-	<div class="modal-content">
-		<div class="editor">
-			<textarea
-				class="text-box"
-				bind:value={updatingContent}
-				style="margin-right: auto; resize: none"
-			></textarea>
-			<div class="text-box rendered">
-				{@html parsedUpdatingContent}
+	{#snippet children(closeModal)}
+		<div class="modal-content">
+			<div class="editor">
+				<textarea
+					class="text-box"
+					bind:value={updatingContent}
+					style="margin-right: auto; resize: none"
+				></textarea>
+				<div class="text-box rendered">
+					{@html parsedUpdatingContent}
+				</div>
 			</div>
-		</div>
-		<div class="center-content" style="margin-top: 20px">
-			<button
-				class="text-button"
-				onclick={() => {
-					crudRequest(
-						`app/services/wiki/topics/u/${article['topic_slug']}/u/${article['slug']}`,
-						'update',
-						{ content: updatingContent }
-					);
-					content = updatingContent;
-					modal.closeModal();
-				}}
-			>
-				Save
-			</button>
-			<button
-				class="text-button"
-				onclick={() => {
-					showImageUploadModal = true;
-				}}
-			>
-				Upload image
-			</button>
-			<button
-				class="text-button"
-				onclick={() => {
-					showImagesAvailable = !showImagesAvailable;
-				}}
-			>
-				Images available
-			</button>
-		</div>
-		{#if pictures && showImagesAvailable}
-			<div style="margin-top: 20px">
-				<Table
-					tableID="pictures"
-					columns={[
-						{ label: 'Name', key: 'name' },
-						{ label: 'Description', key: 'description' },
-						{ label: 'Code', key: 'slug', serializer: (value) => `!picture:${value}!` },
-						{
-							label: 'Link',
-							key: 'path',
-							isLink: true,
-							serializer: (value) => `${STATIC_URL}/${value}`
-						}
-					]}
-					data={pictures}
-				/>
+			<div class="center-content" style="margin-top: 20px">
+				<button
+					class="text-button"
+					onclick={() => {
+						crudRequest(
+							`app/services/wiki/topics/u/${article['topic_slug']}/u/${article['slug']}`,
+							'update',
+							{ content: updatingContent }
+						);
+						content = updatingContent;
+						closeModal();
+					}}
+				>
+					Save
+				</button>
+				<button
+					class="text-button"
+					onclick={() => {
+						showImageUploadModal = true;
+					}}
+				>
+					Upload image
+				</button>
+				<button
+					class="text-button"
+					onclick={() => {
+						showImagesAvailable = !showImagesAvailable;
+					}}
+				>
+					Images available
+				</button>
 			</div>
-		{/if}
-	</div>
+			{#if pictures && showImagesAvailable}
+				<div style="margin-top: 20px">
+					<Table
+						tableID="pictures"
+						columns={[
+							{ label: 'Name', key: 'name' },
+							{ label: 'Description', key: 'description' },
+							{ label: 'Code', key: 'slug', serializer: (value) => `!picture:${value}!` },
+							{
+								label: 'Link',
+								key: 'path',
+								isLink: true,
+								serializer: (value) => `${STATIC_URL}/${value}`
+							}
+						]}
+						data={pictures}
+					/>
+				</div>
+			{/if}
+		</div>
+	{/snippet}
 </Modal>
 
 <Modal
-	bind:this={imageUploadModal}
 	showModal={showImageUploadModal === true}
 	onclose={() => {
 		showImageUploadModal = false;
 	}}
 >
-	<Form
-		data={[
-			{ label: 'Name', key: 'name' },
-			{ label: 'Description', key: 'description', required: false },
-			{
-				label: 'Image',
-				key: 'content',
-				type: 'file',
-				hint: 'Images'
-			},
-			{
-				label: 'Tags',
-				key: 'tags',
-				hint: 'Comma separated tags',
-				required: false,
-				deserializer: splitTags
-			}
-		]}
-		onconfirm={(payload) => {
-			let formData = new FormData();
-			formData.append('name', payload['name']);
-			if (payload['description'] !== undefined) {
-				formData.append('description', payload['description']);
-			}
-			payload['tags'] = payload['tags'] || [];
-			for (const tag of payload['tags']) {
-				formData.append('tags', tag);
-			}
-			formData.append('file', payload.content[0]);
-			crudRequest(
-				`app/services/wiki/topics/u/${article['topic_slug']}/u/${article['slug']}/u/upload_file`,
-				'create',
-				formData
-			).then(
-				fetchWikiPictures(article['topic_slug'], article['slug'])
-				.then((response) => {
-					pictures = response.data;
-				})
-			);
-			imageUploadModal.closeModal();
-		}}
-		oncancel={() => imageUploadModal.closeModal()}
-	/>
+	{#snippet children(closeModal)}
+		<Form
+			data={[
+				{ label: 'Name', key: 'name' },
+				{ label: 'Description', key: 'description', required: false },
+				{
+					label: 'Image',
+					key: 'content',
+					type: 'file',
+					hint: 'Images'
+				},
+				{
+					label: 'Tags',
+					key: 'tags',
+					hint: 'Comma separated tags',
+					required: false,
+					deserializer: splitTags
+				}
+			]}
+			onconfirm={(payload) => {
+				let formData = new FormData();
+				formData.append('name', payload['name']);
+				if (payload['description'] !== undefined) {
+					formData.append('description', payload['description']);
+				}
+				payload['tags'] = payload['tags'] || [];
+				for (const tag of payload['tags']) {
+					formData.append('tags', tag);
+				}
+				formData.append('file', payload.content[0]);
+				crudRequest(
+					`app/services/wiki/topics/u/${article['topic_slug']}/u/${article['slug']}/u/upload_file`,
+					'create',
+					formData
+				).then(
+					fetchWikiPictures(article['topic_slug'], article['slug'])
+					.then((response) => {
+						pictures = response.data;
+					})
+				);
+				closeModal();
+			}}
+			oncancel={() => closeModal()}
+		/>
+	{/snippet}
 </Modal>
 
 <style>

@@ -32,7 +32,6 @@
 	};
 
 	// Modal-related variables and functions
-	let modals = $state({});
 	let crudAction = $state(undefined);
 
 	const setCrudAction = function (action) {
@@ -132,80 +131,84 @@
 	</tbody>
 </table>
 <Modal
-	bind:this={modals['update']}
 	showModal={crudAction === 'update'}
 	onclose={resetCrudAction}
 	title="Update {userDescription['username']}'s user info"
 >
-	<Form
-		data={[
-			{ label: 'Username', key: 'username', value: userDescription['username'], disabled: true },
-			{ label: 'Firstname', key: 'firstname', value: userDescription['firstname'] },
-			{ label: 'Lastname', key: 'lastname', value: userDescription['lastname'] },
-			{ label: 'Role', key: 'role_name', value: userDescription['role_name'], disabled: true },
-			{ label: 'E-mail', key: 'email', value: userDescription['email'], disabled: true }
-		]}
-		onconfirm={(payload) => {
-			crudRequest(`user/u/${userDescription['username']}`, 'update', payload).then(() => {
-				modals['update'].closeModal();
-			});
-		}}
-		oncancel={() => modals['update'].closeModal()}
-	/>
+	{#snippet children(closeModal)}
+		<Form
+			data={[
+				{ label: 'Username', key: 'username', value: userDescription['username'], disabled: true },
+				{ label: 'Firstname', key: 'firstname', value: userDescription['firstname'] },
+				{ label: 'Lastname', key: 'lastname', value: userDescription['lastname'] },
+				{ label: 'Role', key: 'role_name', value: userDescription['role_name'], disabled: true },
+				{ label: 'E-mail', key: 'email', value: userDescription['email'], disabled: true }
+			]}
+			onconfirm={(payload) => {
+				crudRequest(`user/u/${userDescription['username']}`, 'update', payload).then(() => {
+					closeModal();
+				});
+			}}
+			oncancel={() => closeModal()}
+		/>
+	{/snippet}
 </Modal>
 {#if serviceEnabled($services, 'email')}
 	<Modal
-		bind:this={modals['confirm']}
 		showModal={crudAction === 'confirm'}
 		onclose={resetCrudAction}
 		title="Confirm {userDescription['username']}'s account"
 	>
-		<p>Send a confirmation mail to {userDescription['username']}?</p>
-		<ConfirmButtons
-		  onconfirm={() => {
-				crudRequest(
-					`user/u/${userDescription['username']}/confirmation_token?send_email=true`,
-					'get'
-				).then(() => {
-					modals['confirm'].closeModal();
-				});
-			}}
-			oncancel={() => modals['confirm'].closeModal()}
-		/>
+		{#snippet children(closeModal)}
+			<p>Send a confirmation mail to {userDescription['username']}?</p>
+			<ConfirmButtons
+				onconfirm={() => {
+					crudRequest(
+						`user/u/${userDescription['username']}/confirmation_token?send_email=true`,
+						'get'
+					).then(() => {
+						closeModal();
+					});
+				}}
+				oncancel={() => closeModal()}
+			/>
+		{/snippet}
 	</Modal>
 	<Modal
-		bind:this={modals['reset_password']}
 		showModal={crudAction === 'reset_password'}
 		onclose={resetCrudAction}
 		title="Change {userDescription['username']}'s password"
 	>
-		<p>Send a mail to change {userDescription['username']}'s password ?</p>
-		<ConfirmButtons
-			onconfirm={() => {
-				crudRequest(
-					`user/u/${userDescription['username']}/password_reset_token?send_email=true`,
-					'get'
-				).then(() => {
-					modals['reset_password'].closeModal();
-				});
-			}}
-			oncancel={() => modals['reset_password'].closeModal()}
-		/>
+		{#snippet children(closeModal)}
+			<p>Send a mail to change {userDescription['username']}'s password ?</p>
+			<ConfirmButtons
+				onconfirm={() => {
+					crudRequest(
+						`user/u/${userDescription['username']}/password_reset_token?send_email=true`,
+						'get'
+					).then(() => {
+						closeModal();
+					});
+				}}
+				oncancel={() => closeModal()}
+			/>
+		{/snippet}
 	</Modal>
 {/if}
 <Modal
-	bind:this={modals['delete']}
 	showModal={crudAction === 'delete'}
 	onclose={resetCrudAction}
 	title="Delete {userDescription['username']}'s account"
 >
-	<p>Are you sure you want to delete {userDescription['username']}'s account ?</p>
-	<ConfirmButtons
-		onconfirm={() => {
-			crudRequest(`user/u/${userDescription['username']}/delete`, 'create').then(() => {
-				modals['delete'].closeModal();
-			});
-		}}
-		oncancel={() => modals['delete'].closeModal()}
-	/>
+	{#snippet children(closeModal)}
+		<p>Are you sure you want to delete {userDescription['username']}'s account ?</p>
+		<ConfirmButtons
+			onconfirm={() => {
+				crudRequest(`user/u/${userDescription['username']}/delete`, 'create').then(() => {
+					closeModal();
+				});
+			}}
+			oncancel={() => closeModal()}
+		/>
+	{/snippet}
 </Modal>

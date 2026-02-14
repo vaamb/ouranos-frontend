@@ -27,7 +27,6 @@
 		return tags;
 	};
 
-	let modal = $state({});
 	let crudAction = $state(null);
 	let crudIndex = $state(null);
 
@@ -60,76 +59,78 @@
 />
 
 <Modal
-	bind:this={modal['create']}
 	showModal={crudAction === 'create'}
 	onclose={resetModal}
 	title="Create a new article"
 >
-	<Form
-		data={[
-			{ label: 'Name', key: 'name' },
-			{ label: 'Description', key: 'description', required: false },
-			{
-				label: 'Content',
-				key: 'content',
-				required: false,
-				type: 'file',
-				accept: '.md',
-				hint: 'A markdown file'
-			},
-			{
-				label: 'Tags',
-				key: 'tags',
-				required: false,
-				deserializer: splitTags,
-				hint: 'Comma separated tags'
-			}
-		]}
-		onconfirm={(payload) => {
-			let promise;
-			if (payload.content !== undefined) {
-				// Got a file
-				promise = payload.content[0].text();
-			} else {
-				// Got nothing, create a promise providing an empty text
-				promise = new Promise((resolve) => resolve(''));
-			}
-			promise.then((contentText) => {
-				payload.content = contentText;
-				crudRequest(`app/services/wiki/topics/u/${topic['slug']}/u`, 'create', payload)
-				.then(() => {
-					fetchWikiArticles(topic['slug'])
-					.then((data) => {
-						articles = data;
-						modal['create'].closeModal();
+	{#snippet children(closeModal)}
+		<Form
+			data={[
+				{ label: 'Name', key: 'name' },
+				{ label: 'Description', key: 'description', required: false },
+				{
+					label: 'Content',
+					key: 'content',
+					required: false,
+					type: 'file',
+					accept: '.md',
+					hint: 'A markdown file'
+				},
+				{
+					label: 'Tags',
+					key: 'tags',
+					required: false,
+					deserializer: splitTags,
+					hint: 'Comma separated tags'
+				}
+			]}
+			onconfirm={(payload) => {
+				let promise;
+				if (payload.content !== undefined) {
+					// Got a file
+					promise = payload.content[0].text();
+				} else {
+					// Got nothing, create a promise providing an empty text
+					promise = new Promise((resolve) => resolve(''));
+				}
+				promise.then((contentText) => {
+					payload.content = contentText;
+					crudRequest(`app/services/wiki/topics/u/${topic['slug']}/u`, 'create', payload)
+					.then(() => {
+						fetchWikiArticles(topic['slug'])
+						.then((data) => {
+							articles = data;
+							closeModal();
+						});
 					});
 				});
-			});
-		}}
-		oncancel={() => modal['create'].closeModal()}
-	/>
+			}}
+			oncancel={() => closeModal()}
+		/>
+	{/snippet}
 </Modal>
 {#if articles[crudIndex]}
 	<Modal
-		bind:this={modal['delete']}
 		showModal={crudAction === 'delete'}
 		title={`Delete ${articles[crudIndex]['name']} article`}
 		onclose={resetModal}
 	>
-		<p>Are you sure you want to delete '{articles[crudIndex]['name']}' article ?</p>
-		<ConfirmButtons
-			onconfirm={() => {
-				crudRequest(
-					`app/services/wiki/topics/u/${topic['slug']}/u/${articles[crudIndex]['slug']}`,
-					'delete'
-				).then(() => {
-					fetchWikiArticles(topic['slug']).then((data) => {
-						articles = data;
-						modal['delete'].closeModal();
+		{#snippet children(closeModal)}
+			<p>Are you sure you want to delete '{articles[crudIndex]['name']}' article ?</p>
+			<ConfirmButtons
+				onconfirm={() => {
+					crudRequest(
+						`app/services/wiki/topics/u/${topic['slug']}/u/${articles[crudIndex]['slug']}`,
+						'delete'
+					).then(() => {
+						fetchWikiArticles(topic['slug']).then((data) => {
+							articles = data;
+							closeModal();
+						});
 					});
-				});
-			}}
-			oncancel={() => modal['delete'].closeModal()}
-		/>
+				}}
+				oncancel={() => closeModal()}
+			/>
+		{/snippet}
 	</Modal>
 {/if}

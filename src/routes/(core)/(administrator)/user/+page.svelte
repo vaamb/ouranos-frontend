@@ -9,7 +9,6 @@
 
 	let page = $state(0);
 
-	let modals = $state({});
 	let crudAction = $state(null);
 	let crudIndex = $state(null);
 
@@ -54,44 +53,46 @@
 		}}
 	/>
 	<Modal
-		bind:this={modals['create']}
 		showModal={crudAction === 'create'}
 		onclose={resetModal}
 		title="Invite a new user"
 	>
-		<Form
-			data={[
-				{ label: 'Username', key: 'username', required: false },
-				{ label: 'Email', key: 'email', validate: isEmailValid },
-				{
-					label: 'Role',
-					key: 'role',
-					selectFrom: ['User', 'Operator'],
-					value: 'User'
-				},
-				{ label: 'Firstname', key: 'firstname', required: false },
-				{ label: 'Lastname', key: 'lastname', required: false }
-			]}
-			onconfirm={(payload) => {
-				crudRequest(`auth/registration_token?send_email=true`, 'create', payload);
-				modals['create'].closeModal();
-			}}
-			oncancel={() => modals['create'].closeModal()}
-		/>
+		{#snippet children(closeModal)}
+			<Form
+				data={[
+					{ label: 'Username', key: 'username', required: false },
+					{ label: 'Email', key: 'email', validate: isEmailValid },
+					{
+						label: 'Role',
+						key: 'role',
+						selectFrom: ['User', 'Operator'],
+						value: 'User'
+					},
+					{ label: 'Firstname', key: 'firstname', required: false },
+					{ label: 'Lastname', key: 'lastname', required: false }
+				]}
+				onconfirm={(payload) => {
+					crudRequest(`auth/registration_token?send_email=true`, 'create', payload);
+					closeModal();
+				}}
+				oncancel={() => closeModal()}
+			/>
+		{/snippet}
 	</Modal>
 	<Modal
-		bind:this={modals['delete']}
 		showModal={crudAction === 'delete'}
 		title={users[crudIndex] ? `Delete ${users[crudIndex]['username']}?` : ''}
 		onclose={resetModal}
 	>
-		<p>Are you sure you want to delete {users[crudIndex]['username']}?</p>
-		<ConfirmButtons
-			onconfirm={() => {
-				crudRequest(`user/u/${users[crudIndex]['username']}`, 'delete');
-				modals['delete'].closeModal();
-			}}
-			oncancel={() => modals['delete'].closeModal()}
-		/>
+		{#snippet children(closeModal)}
+			<p>Are you sure you want to delete {users[crudIndex]['username']}?</p>
+			<ConfirmButtons
+				onconfirm={() => {
+					crudRequest(`user/u/${users[crudIndex]['username']}`, 'delete');
+					closeModal();
+				}}
+				oncancel={() => closeModal()}
+			/>
+		{/snippet}
 	</Modal>
 {/await}

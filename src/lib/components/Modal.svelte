@@ -39,8 +39,6 @@
 <dialog
 	bind:this={dialog}
 	tabindex="-1"
-	aria-hidden="true"
-	aria-modal="true"
 	onclose={() => {
 		showModal = false;
 	}}

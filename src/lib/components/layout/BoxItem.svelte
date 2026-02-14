@@ -15,7 +15,7 @@
 			<h1>{title}</h1>
 		{/if}
 	</div>
-	<div class="box-item-content {direction}" style="height: 100%; display: flex">
+	<div class="box-item-content {direction}">
 		{#if href}
 			<a href="{href}">
 				{@render children?.()}
@@ -55,6 +55,8 @@
 	}
 
 	.box-item-content {
+		height: 100%;
+		display: flex;
 		padding: 0 10px;
 		text-align: center;
 	}

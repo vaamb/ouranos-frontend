@@ -5,36 +5,34 @@ set -euo pipefail
 
 check_ouranos_frontend() {
     # Check if ouranos-frontend exists
-    if [ ! -d "${OURANOS_DIR}/lib/ouranos-frontend" ]; then
-        log ERROR "Ouranos-frontend installation not found at ${OURANOS_DIR}/lib/ouranos-frontend. Please install using the install script."
+    if [[ ! -d "${OURANOS_DIR}/lib/ouranos-frontend" ]]; then
+        die "Ouranos-frontend installation not found at ${OURANOS_DIR}/lib/ouranos-frontend. Please install using the install script."
     fi
 }
 
 update_ouranos_frontend() {
-    # Update DB
     log INFO "Regenerating the build..."
     if [[ "$DRY_RUN" == false ]]; then
         cd "${OURANOS_DIR}/lib/ouranos-frontend" ||
-            log ERROR "Failed to change to directory: ${OURANOS_DIR}/lib/ouranos-frontend"
+            die "Failed to change to directory: ${OURANOS_DIR}/lib/ouranos-frontend"
 
         log INFO "Updating npm dependencies..."
         npm install ||
-            log ERROR "Failed to update npm dependencies"
+            die "Failed to update npm dependencies"
 
         log INFO "Updating additional npm development dependencies..."
         npm install --save-dev @sveltejs/adapter-node ||
-            log ERROR "Failed to update additional npm dependencies"
+            die "Failed to update additional npm dependencies"
 
         # Build the frontend
         log INFO "Updating Ouranos frontend build..."
         npm run build ||
-            log ERROR "Failed to update Ouranos frontend build"
-        fi
+            die "Failed to update Ouranos frontend build"
     fi
 }
 
 main() {
-    # Check if ouranos-core exists
+    # Check if ouranos-frontend exists
     log INFO "Checking if Ouranos frontend is installed..."
     check_ouranos_frontend
     log SUCCESS "Ouranos frontend installation found"
@@ -42,11 +40,9 @@ main() {
     log INFO "Updating Ouranos frontend..."
     update_ouranos_frontend
     log SUCCESS "Ouranos frontend updated successfully!"
-
-    exit 0
 }
 
-if [ "${BASH_SOURCE[0]}" -ef "$0" ]; then
+if [[ "${BASH_SOURCE[0]}" -ef "$0" ]]; then
     echo "This script should be run from the Ouranos update script."
     exit 1
 else

@@ -48,9 +48,9 @@
 		<div class="disconnected center-content">Disconnected from the server</div>
 	{:else if $pingServerStatus === CONNECTION_STATUS.RECONNECTED}
 		<div class="reconnecting center-content">Reconnected to the server</div>
-	{:else}
-		{@const stateStore = pageType === PAGE_TYPE.ENGINE ? $enginesState : $ecosystemsState}
+	{:else if (pageType & (PAGE_TYPE.ENGINE | PAGE_TYPE.ECOSYSTEM)) === pageType}
 		{@const label = pageType === PAGE_TYPE.ENGINE ? 'engine' : 'ecosystem'}
+		{@const stateStore = pageType === PAGE_TYPE.ENGINE ? $enginesState : $ecosystemsState}
 		{@const connectionStatus = stateStore[ecosystemOrEngineUID]?.connected ?? CONNECTION_STATUS.DISCONNECTED}
 		{#if connectionStatus === CONNECTION_STATUS.DISCONNECTED}
 			<div class="disconnected center-content">The {label} is currently disconnected from GAIA</div>

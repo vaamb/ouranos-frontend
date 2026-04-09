@@ -15,22 +15,27 @@ export async function load({ cookies, parent, request }) {
 
 	const clientSessionCookie = 'session=' + cookies.get('session');
 	const clientUserAgent = request.headers.get('user-agent');
-	const ecosystems = await fetchEcosystems();
-	const engines = await fetchEngines();
+
+	const [ecosystems, ecosystemsManagement, engines, services, servers, warnings, wikiTopics] =
+		await Promise.all([
+			fetchEcosystems(),
+			fetchEcosystemsManagement(),
+			fetchEngines(),
+			fetchServices(),
+			currentUser.isAuthenticated ? fetchServers(clientSessionCookie, clientUserAgent) : {},
+			currentUser.isAuthenticated ? fetchWarnings(clientSessionCookie, clientUserAgent) : [],
+			fetchWikiTopics()
+		]);
 
 	return {
 		ecosystems: ecosystems['info'],
 		ecosystemsState: ecosystems['states'],
-		ecosystemsManagement: await fetchEcosystemsManagement(),
+		ecosystemsManagement,
 		engines: engines['info'],
 		enginesState: engines['states'],
-		services: await fetchServices(),
-		servers: currentUser.isAuthenticated
-			? await fetchServers(clientSessionCookie, clientUserAgent)
-			: {},
-		warnings: currentUser.isAuthenticated
-			? await fetchWarnings(clientSessionCookie, clientUserAgent)
-			: [],
-		wikiTopics: await fetchWikiTopics()
+		services,
+		servers,
+		warnings,
+		wikiTopics
 	};
 }

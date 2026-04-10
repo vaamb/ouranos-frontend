@@ -469,25 +469,22 @@ export const fetchHealthLatestDataForMeasure = async function (ecosystemUID, mea
 	if (storedData !== undefined) {
 		return storedData;
 	}
-	let rv = [];
-	for (const sensor of sensors) {
-		const value = await axios
-			.get(
-				`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensor['uid']}/data/${measure}/historic`,
-				{
-					params: { window_length: 1 }
-				}
-			)
-			.then((response) => {
-				if (response['data']['values'].length === 0) {
-					return null;
-				}
-				return response['data']['values'][0][1];
-			});
-		if (value !== null) {
-			rv.push(value);
-		}
-	}
+	const values = await Promise.all(
+		sensors.map((sensor) =>
+			axios
+				.get(
+					`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensor['uid']}/data/${measure}/historic`,
+					{ params: { window_length: 1 } }
+				)
+				.then((response) => {
+					if (response['data']['values'].length === 0) {
+						return null;
+					}
+					return response['data']['values'][0][1];
+				})
+		)
+	);
+	const rv = values.filter((value) => value !== null);
 	if (rv.length === 0) {
 		return null;
 	}

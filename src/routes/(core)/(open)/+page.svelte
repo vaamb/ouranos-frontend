@@ -212,30 +212,32 @@
 
 <h2>Global overview</h2>
 <Row>
-	<Box title="Calendar - {formatDate(now)}" align="center" href="/calendar">
-		<BoxItem title="Happening now">
-			{#each sortedCalendarEvents['happening'] as event}
-				{@const color = getLevelColor(event['level'])}
-				<p style="text-align: left">
-					<Fa icon={faCircleExclamation} style="color: var({color});" />
-					Until {event['end_time'].toLocaleDateString('en-GB')}: {event['title']}
-				</p>
-			{:else}
-				<p style="text-align: left">There is no event happening currently.</p>
-			{/each}
-		</BoxItem>
-		<BoxItem title="Planned">
-			{#each sortedCalendarEvents['future'] as event}
-				{@const color = getLevelColor(event['level'])}
-				<p style="text-align: left">
-					<Fa icon={faCircleExclamation} style="color: var({color});" />
-					Starting on {event['start_time'].toLocaleDateString('en-GB')}: {event['title']}
-				</p>
-			{:else}
-				<p style="text-align: left">There is no event planned.</p>
-			{/each}
-		</BoxItem>
-	</Box>
+	{#if serviceEnabled($services, 'calendar')}
+		<Box title="Calendar - {formatDate(now)}" align="center" href="/calendar">
+			<BoxItem title="Happening now">
+				{#each sortedCalendarEvents['happening'] as event}
+					{@const color = getLevelColor(event['level'])}
+					<p style="text-align: left">
+						<Fa icon={faCircleExclamation} style="color: var({color});" />
+						Until {event['end_time'].toLocaleDateString('en-GB')}: {event['title']}
+					</p>
+				{:else}
+					<p style="text-align: left">There is no event happening currently.</p>
+				{/each}
+			</BoxItem>
+			<BoxItem title="Planned">
+				{#each sortedCalendarEvents['future'] as event}
+					{@const color = getLevelColor(event['level'])}
+					<p style="text-align: left">
+						<Fa icon={faCircleExclamation} style="color: var({color});" />
+						Starting on {event['start_time'].toLocaleDateString('en-GB')}: {event['title']}
+					</p>
+				{:else}
+					<p style="text-align: left">There is no event planned.</p>
+				{/each}
+			</BoxItem>
+		</Box>
+	{/if}
 	{#if serviceEnabled($services, 'weather') && !isEmpty($weatherCurrently)}
 		<Box title="Current weather" align="center" href="/weather">
 			<WeatherIcon icon={$weatherCurrently['icon']} />

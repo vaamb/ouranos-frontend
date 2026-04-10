@@ -303,7 +303,7 @@
 					{/await}
 				</BoxItem>
 			{/each}
-		</Box>
+    </Box>
 	{/if}
 	{#if $currentUser.isAuthenticated}
 		<Box title="Ecosystem warnings overview" align="center" href="/warnings">
@@ -334,40 +334,15 @@
 	{#each $ecosystemsIds as { uid, name }}
 		{@const ecosystem = $ecosystems[uid]}
 		{#if ecosystem}
+			{@const connected = isConnected($ecosystemsState[uid])}
+			{@const running = $ecosystemsState[uid]['status']}
 			<Box
 				title={name}
 				align="center"
 				status={computeEcosystemStatusClass($ecosystemsState[uid])}
 				direction="row"
 			>
-				{#if !$ecosystemsState[uid]['status']}
-					<BoxItem>
-						{#if isConnected($ecosystemsState[uid])}
-							<p>The ecosystem '{name}' is not currently running</p>
-							{#if $currentUser.can(permissions.OPERATE)}
-								<p>
-									<a href="/ecosystem/{slugify(name)}/settings">
-										Click here to configure {name}
-									</a>
-								</p>
-							{/if}
-						{:else}
-							<p>The ecosystem '{name}' is not currently running and is not connected</p>
-							<p>
-								Last connection to the server on
-								{formatDateTime($ecosystemsState[uid]['last_seen'])}
-							</p>
-						{/if}
-					</BoxItem>
-				{:else if !isConnected($ecosystemsState[uid])}
-					<BoxItem>
-						<p>The ecosystem {name} is not currently connected</p>
-						<p>
-							Last connection to the server on
-							{formatDateTime($ecosystemsState[uid]['last_seen'])}
-						</p>
-					</BoxItem>
-				{:else}{@html '<!--Only connected and running ecosystems afterwards-->'}
+				{#if connected && running}
 					{@const light = getParamStatus($ecosystemsManagement, uid, 'light')}
 					{@const actuator = getParamStatus($ecosystemsManagement, uid, 'actuators')}
 					{@const ecosystemData = getParamStatus($ecosystemsManagement, uid, 'ecosystem_data')}
@@ -530,6 +505,33 @@
 							{/await}
 						</BoxItem>
 					{/if}
+				{:else if connected}  // Connected but not running
+					<BoxItem>
+						<p>The ecosystem '{name}' is not currently running</p>
+							{#if $currentUser.can(permissions.OPERATE)}
+								<p>
+									<a href="/ecosystem/{slugify(name)}/settings">
+										Click here to configure {name}
+									</a>
+								</p>
+							{/if}
+					</BoxItem>
+				{:else if running}  // Was running last time it was seen but is currently not connected
+					<BoxItem>
+						<p>The ecosystem {name} is not currently connected</p>
+						<p>
+							Last connection to the server on
+							{formatDateTime($ecosystemsState[uid]['last_seen'])}
+						</p>
+					</BoxItem>
+				{:else}  // Not connected and not running
+					<BoxItem>
+						<p>The ecosystem '{name}' is not currently running and is not connected</p>
+						<p>
+							Last connection to the server on
+							{formatDateTime($ecosystemsState[uid]['last_seen'])}
+						</p>
+					</BoxItem>
 				{/if}
 			</Box>
 		{/if}

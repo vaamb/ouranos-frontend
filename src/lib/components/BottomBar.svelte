@@ -12,10 +12,10 @@
 
 	// Enums
 	const PAGE_TYPE = {
-		SERVER: 0,
-		DEFAULT: 0,
-		ENGINE: 1,
-		ECOSYSTEM: 2
+		SERVER: 1,
+		DEFAULT: 1,
+		ENGINE: 2,
+		ECOSYSTEM: 4
 	};
 
 	// Page type

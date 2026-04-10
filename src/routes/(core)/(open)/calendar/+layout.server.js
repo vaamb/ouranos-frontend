@@ -4,9 +4,9 @@ export async function load({ parent }) {
 	const data = await parent();
 
 	const service = data['services'].find((service) => {
-		return service['name'] ===  'calendar';
-	})
-	if (!service['status']) {
+		return service['name'] === 'calendar';
+	});
+	if (!service?.status) {
 		redirect(307, '/');
 	}
 }

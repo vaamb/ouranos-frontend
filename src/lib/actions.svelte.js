@@ -26,6 +26,7 @@ import {
 	flashMessage,
 	getFreshStoreData,
 	getStoreDataKey,
+	healthData,
 	serversCurrentData,
 	serversHistoricData,
 	updateStoreData,
@@ -460,6 +461,40 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 		.catch(() => {
 			return {};
 		});
+};
+
+export const fetchHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
+	const dataKey = getStoreDataKey(ecosystemUID, measure);
+	const storedData = healthData[dataKey];
+	if (storedData !== undefined) {
+		return storedData;
+	}
+	let rv = [];
+	for (const sensor of sensors) {
+		const value = await axios
+			.get(
+				`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensor['uid']}/data/${measure}/historic`,
+				{
+					params: { window_length: 1 }
+				}
+			)
+			.then((response) => {
+				if (response['data']['values'].length === 0) {
+					return null;
+				}
+				return response['data']['values'][0][1];
+			});
+		if (value !== null) {
+			rv.push(value);
+		}
+	}
+	if (rv.length === 0) {
+		return null;
+	}
+	const average = (array) => array.reduce((a, b) => a + b) / array.length;
+	const result = average(rv).toFixed(4);
+	healthData[dataKey] = result;
+	return result;
 };
 
 export const fetchCameraPicturesInfo = async function (ecosystemUID) {

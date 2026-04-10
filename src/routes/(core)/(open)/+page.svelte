@@ -265,15 +265,15 @@
 			</BoxItem>
 		</Box>
 	{/if}
-	{#if $currentUser.can(permissions.ADMIN)}
-		<Box title="Server info" align="center">
-			<BoxItem title="Average latency">
-				{#if $pingServerLatency === null}
-					<p>Computing ...</p>
-				{:else}
-					<p>{$pingServerLatency} ms</p>
-				{/if}
-			</BoxItem>
+	<Box title="Server status" align="center">
+		<BoxItem title="Average latency">
+			{#if $pingServerLatency === null}
+				<p>Computing ...</p>
+			{:else}
+				<p>{$pingServerLatency} ms</p>
+			{/if}
+		</BoxItem>
+		{#if $currentUser.can(permissions.ADMIN)}
 			{#each $serversIds as serverIds}
 				{@const serverUid = serverIds['uid']}
 				<BoxItem title={serverIds['name']}>
@@ -303,8 +303,8 @@
 					{/await}
 				</BoxItem>
 			{/each}
-    </Box>
-	{/if}
+		{/if}
+	</Box>
 	{#if $currentUser.isAuthenticated}
 		<Box title="Ecosystem warnings overview" align="center" href="/warnings">
 			{#if $warnings.length > 0}

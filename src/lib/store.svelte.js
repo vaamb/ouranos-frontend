@@ -17,6 +17,7 @@ export const ecosystemsState = writable({});
 export const engines = writable({});
 export const enginesState = writable({});
 export const flashMessage = writable([]);
+export const healthData = $state({});
 export const servers = writable({});
 export const serversCurrentData = writable({});
 export const serversHistoricData = writable({});

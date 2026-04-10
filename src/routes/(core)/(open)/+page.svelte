@@ -1,7 +1,6 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 
-	import axios from 'axios';
 	import Fa from 'svelte-fa';
 	import { faCircle, faCircleExclamation, faMoon, faSun, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
@@ -31,7 +30,7 @@
 		weatherCurrently,
 		weatherHourly
 	} from '$lib/store.svelte.js';
-	import { actuatorTypes, API_URL, permissions } from '$lib/utils/consts.js';
+	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
 		capitalize,
 		computeEcosystemStatusClass,
@@ -53,6 +52,7 @@
 		fetchSensorCurrentData,
 		fetchEcosystemSensorsSkeleton,
 		fetchEcosystemNycthemeralCycleData,
+		fetchHealthLatestDataForMeasure,
 		fetchServerCurrentData,
 		fetchSuntimes,
 		fetchWeatherForecast
@@ -103,40 +103,6 @@
 			rv.push(data);
 		}
 		return rv;
-	};
-
-	let healthData = $state({});
-	const fetchHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
-		const storedData = healthData[getStoreDataKey(ecosystemUID, measure)];
-		if (storedData !== undefined) {
-			return storedData;
-		}
-		let rv = [];
-		for (const sensor of sensors) {
-			const value = await axios
-				.get(
-					`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensor['uid']}/data/${measure}/historic`,
-					{
-						params: { window_length: 1 }
-					}
-				)
-				.then((response) => {
-					if (response['data']['values'].length === 0) {
-						return null;
-					}
-					return response['data']['values'][0][1];
-				});
-			if (value !== null) {
-				rv.push(value);
-			}
-		}
-		if (rv.length === 0) {
-			return null;
-		}
-		const average = (array) => array.reduce((a, b) => a + b) / array.length;
-		const result = average(rv).toFixed(4);
-		healthData[getStoreDataKey(ecosystemUID, measure)] = result;
-		return result;
 	};
 
 	const computeAverageSensorsCurrentDataForMeasure = function (

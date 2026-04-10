@@ -473,7 +473,7 @@
 							{/await}
 						</BoxItem>
 					{/if}
-				{:else if connected}  // Connected but not running
+				{:else if connected}
 					<BoxItem>
 						<p>The ecosystem '{name}' is not currently running</p>
 							{#if $currentUser.can(permissions.OPERATE)}
@@ -484,7 +484,7 @@
 								</p>
 							{/if}
 					</BoxItem>
-				{:else if running}  // Was running last time it was seen but is currently not connected
+				{:else if running}
 					<BoxItem>
 						<p>The ecosystem {name} is not currently connected</p>
 						<p>
@@ -492,7 +492,7 @@
 							{formatDateTime($ecosystemsState[uid]['last_seen'])}
 						</p>
 					</BoxItem>
-				{:else}  // Not connected and not running
+				{:else}
 					<BoxItem>
 						<p>The ecosystem '{name}' is not currently running and is not connected</p>
 						<p>

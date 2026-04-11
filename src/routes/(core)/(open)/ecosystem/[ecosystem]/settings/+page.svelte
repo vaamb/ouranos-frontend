@@ -11,7 +11,7 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import {
-		currentUser,
+		appState,
 		ecosystems,
 		ecosystemsNycthemeralCycle,
 		ecosystemsManagement,
@@ -144,7 +144,7 @@
 				<td>{formatDateTime(ecosystemState['last_seen'])}</td>
 			</tr>
 		</tbody>
-		{#if $currentUser.can(permissions.OPERATE)}
+		{#if appState.currentUser.can(permissions.OPERATE)}
 			<tbody>
 				<tr>
 					<td colspan="2" style="text-align: center; vertical-align: middle">
@@ -219,7 +219,7 @@
 					</td>
 				</tr>
 			</tbody>
-			{#if $currentUser.can(permissions.OPERATE)}
+			{#if appState.currentUser.can(permissions.OPERATE)}
 				<tbody>
 					<tr>
 						<td colspan="2" style="text-align: center; vertical-align: middle">
@@ -299,13 +299,13 @@
 					<td>
 						<SlideButton
 							bind:checked={ecosystemManagement[management]}
-							disabled={!$currentUser.can(permissions.OPERATE)}
+							disabled={!appState.currentUser.can(permissions.OPERATE)}
 						/>
 					</td>
 				</tr>
 			{/each}
 		</tbody>
-		{#if $currentUser.can(permissions.OPERATE)}
+		{#if appState.currentUser.can(permissions.OPERATE)}
 			<tbody>
 				<tr>
 					<td colspan="2" style="text-align: center; vertical-align: middle">
@@ -340,7 +340,7 @@
 	{/snippet}
 </Modal>
 
-{#if environmentParameters !== undefined && ($currentUser.can(permissions.OPERATE) || environmentParameters.length > 0)}
+{#if environmentParameters !== undefined && (appState.currentUser.can(permissions.OPERATE) || environmentParameters.length > 0)}
 	<h2>Environment parameters</h2>
 	<Table
 		tableID="environmentParametersTable"
@@ -463,7 +463,7 @@
 	</Modal>
 {/if}
 
-{#if weatherEvents !== undefined && ($currentUser.can(permissions.OPERATE) || weatherEvents.length > 0)}
+{#if weatherEvents !== undefined && (appState.currentUser.can(permissions.OPERATE) || weatherEvents.length > 0)}
 	<h2>Weather events</h2>
 	<Table
 		tableID="weatherEventsTable"
@@ -588,7 +588,7 @@
 	</Modal>
 {/if}
 
-{#if hardwareObjects !== undefined && ($currentUser.can(permissions.OPERATE) || hardwareObjects.length > 0)}
+{#if hardwareObjects !== undefined && (appState.currentUser.can(permissions.OPERATE) || hardwareObjects.length > 0)}
 	<h2>Hardware</h2>
 	<Table
 		tableID="hardwareTable"

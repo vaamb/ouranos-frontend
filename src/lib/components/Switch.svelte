@@ -2,7 +2,7 @@
 	import Fa from 'svelte-fa';
 	import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
-	import { currentUser } from '$lib/store.svelte.js';
+	import { appState } from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 
 	let {
@@ -37,8 +37,8 @@
 			<div class="switch">
 				<button
 					onclick={() => emitEvent(option)}
-					disabled={!$currentUser.can(permissions.OPERATE)}
-					title={$currentUser.can(permissions.OPERATE)
+					disabled={!appState.currentUser.can(permissions.OPERATE)}
+					title={appState.currentUser.can(permissions.OPERATE)
 						? ''
 						: 'You need to be logged as an operator to toggle switches'}
 				>
@@ -50,7 +50,7 @@
 			<div>
 				<input
 					type="time"
-					disabled={!$currentUser.can(permissions.OPERATE)}
+					disabled={!appState.currentUser.can(permissions.OPERATE)}
 					bind:value={countdown}
 					step="1"
 				/>

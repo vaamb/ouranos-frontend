@@ -10,7 +10,7 @@
 	import { CONNECTION_STATUS, CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
 
 	import {
-		currentUser,
+		appState,
 		ecosystems,
 		ecosystemsIds,
 		ecosystemsManagement,
@@ -49,7 +49,7 @@
 
 	let menuItems = $derived(
 		generateListOfMenuItems(
-			$currentUser,
+			appState.currentUser,
 			$ecosystemsIds,
 			$ecosystemsManagement,
 			$enginesIds,

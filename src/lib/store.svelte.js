@@ -5,7 +5,7 @@ import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 
 class AppState {
-
+	currentUser = $state(User());
 }
 
 export const appState = new AppState();
@@ -24,7 +24,6 @@ export const servicesState = new ServicesState();
 
 
 // Writable stores
-export const currentUser = writable(User());
 export const ecosystems = writable({});
 export const ecosystemsActuatorsState = writable({});
 export const ecosystemsNycthemeralCycle = writable({});

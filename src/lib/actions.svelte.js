@@ -17,7 +17,7 @@ import { Message, User } from '$lib/utils/factories.js';
 import { isEmpty } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
-	currentUser,
+	appState,
 	ecosystemsActuatorsState,
 	ecosystemsNycthemeralCycle,
 	ecosystemsSensorsDataCurrent,
@@ -133,7 +133,7 @@ export const logIn = async function (username, password, remember = false) {
 			if (response.status === 200) {
 				const sessionToken = response.data.session_token;
 				const user = User(response.data.user, sessionToken);
-				currentUser.set(user);
+				appState.currentUser = user;
 				const msgs = get(flashMessage);
 				msgs.push(Message('You are now logged in ' + user.username));
 				flashMessage.set(msgs);
@@ -173,8 +173,8 @@ export const logOut = function () {
 		})
 		.then((response) => {
 			if (response.status === 200) {
-				const user = get(currentUser);
-				currentUser.set(User());
+				const user = appState.currentUser;
+				appState.currentUser = User();
 				logOutSocketio(user.sessionToken);
 			}
 		})

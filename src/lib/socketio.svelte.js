@@ -3,7 +3,7 @@ import { Manager } from 'socket.io-client';
 
 import { APP_MODE, BACKEND_URL, getAppMode } from '$lib/utils/consts.js';
 import {
-	currentUser,
+	appState,
 	ecosystemsActuatorsState,
 	ecosystemsNycthemeralCycle,
 	ecosystemsManagement,
@@ -110,9 +110,7 @@ socketio.on('logout_ack', (data) => {
 });
 
 socketio.on('user_heartbeat_ack', () => {
-	const user = get(currentUser);
-	user.last_seen = new Date();
-	currentUser.set(user);
+	appState.currentUser.last_seen = new Date();
 });
 
 // Rooms

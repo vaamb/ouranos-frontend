@@ -11,7 +11,7 @@
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
 	import {
-		currentUser,
+		appState,
 		ecosystems,
 		ecosystemsIds,
 		ecosystemsActuatorsState,
@@ -241,7 +241,7 @@
 				<p>{$pingServerLatency} ms</p>
 			{/if}
 		</BoxItem>
-		{#if $currentUser.can(permissions.ADMIN)}
+		{#if appState.currentUser.can(permissions.ADMIN)}
 			{#each $serversIds as serverIds}
 				{@const serverUid = serverIds['uid']}
 				<BoxItem title={serverIds['name']}>
@@ -273,7 +273,7 @@
 			{/each}
 		{/if}
 	</Box>
-	{#if $currentUser.isAuthenticated}
+	{#if appState.currentUser.isAuthenticated}
 		<Box title="Ecosystem warnings overview" align="center" href="/warnings">
 			{#if $warnings.length > 0}
 				{#each Object.keys(sortedWarnings) as name}
@@ -320,7 +320,7 @@
 					{#if !(light || actuator || ecosystemData || environmentData || plantsData || pictures)}
 						<BoxItem>
 							<p>No functionality is enabled in {name}</p>
-							{#if $currentUser.can(permissions.OPERATE)}
+							{#if appState.currentUser.can(permissions.OPERATE)}
 								<p>
 									<a href="/ecosystem/{slugify(name)}/settings">
 										Click here to configure {name}
@@ -476,7 +476,7 @@
 				{:else if connected}
 					<BoxItem>
 						<p>The ecosystem '{name}' is not currently running</p>
-							{#if $currentUser.can(permissions.OPERATE)}
+							{#if appState.currentUser.can(permissions.OPERATE)}
 								<p>
 									<a href="/ecosystem/{slugify(name)}/settings">
 										Click here to configure {name}

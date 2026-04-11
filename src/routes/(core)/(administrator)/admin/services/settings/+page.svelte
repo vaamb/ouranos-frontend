@@ -3,7 +3,7 @@
 	import SlideButton from '$lib/components/SlideButton.svelte';
 
 	import { fetchServices, updateService } from '$lib/actions.svelte.js';
-	import { currentUser, services } from '$lib/store.svelte.js';
+	import { appState, services } from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 	import { capitalize } from '$lib/utils/functions.js';
 
@@ -23,13 +23,13 @@
 					<td>
 						<SlideButton
 							bind:checked={service['status']}
-							disabled={!$currentUser.can(permissions.ADMIN)}
+							disabled={!appState.currentUser.can(permissions.ADMIN)}
 						/>
 					</td>
 				</tr>
 			{/each}
 		</tbody>
-		{#if $currentUser.can(permissions.OPERATE)}
+		{#if appState.currentUser.can(permissions.OPERATE)}
 			<tbody>
 				<tr>
 					<td colspan="2" style="text-align: center; vertical-align: middle">

@@ -11,7 +11,6 @@
 
 	import {
 		appState,
-		ecosystemsManagement,
 		ecosystemsState,
 		engines,
 		enginesState,
@@ -27,7 +26,7 @@
 	let { data, children } = $props();
 
 	gaiaState.ecosystems = data.ecosystems;
-	ecosystemsManagement.set(data.ecosystemsManagement);
+	gaiaState.ecosystemsManagement = data.ecosystemsManagement;
 	ecosystemsState.set(data.ecosystemsState);
 	engines.set(data.engines);
 	enginesState.set(data.enginesState);
@@ -45,7 +44,7 @@
 		generateListOfMenuItems(
 			appState.currentUser,
 			gaiaState.ecosystemsIds,
-			$ecosystemsManagement,
+			gaiaState.ecosystemsManagement,
 			$enginesIds,
 			servicesState.services,
 			infraState.serversIds,

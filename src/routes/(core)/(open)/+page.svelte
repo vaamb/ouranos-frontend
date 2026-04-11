@@ -12,7 +12,6 @@
 
 	import {
 		appState,
-		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsSkeleton,
 		ecosystemsState,
@@ -303,12 +302,12 @@
 				direction="row"
 			>
 				{#if connected && running}
-					{@const light = getParamStatus($ecosystemsManagement, uid, 'light')}
-					{@const actuator = getParamStatus($ecosystemsManagement, uid, 'actuators')}
-					{@const ecosystemData = getParamStatus($ecosystemsManagement, uid, 'ecosystem_data')}
-					{@const environmentData = getParamStatus($ecosystemsManagement, uid, 'environment_data')}
-					{@const plantsData = getParamStatus($ecosystemsManagement, uid, 'plants_data')}
-					{@const pictures = getParamStatus($ecosystemsManagement, uid, 'pictures')}
+					{@const light = getParamStatus(gaiaState.ecosystemsManagement, uid, 'light')}
+					{@const actuator = getParamStatus(gaiaState.ecosystemsManagement, uid, 'actuators')}
+					{@const ecosystemData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'ecosystem_data')}
+					{@const environmentData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'environment_data')}
+					{@const plantsData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'plants_data')}
+					{@const pictures = getParamStatus(gaiaState.ecosystemsManagement, uid, 'pictures')}
 					{#if !(light || actuator || ecosystemData || environmentData || plantsData || pictures)}
 						<BoxItem>
 							<p>No functionality is enabled in {name}</p>

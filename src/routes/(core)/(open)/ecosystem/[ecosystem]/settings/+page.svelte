@@ -12,7 +12,6 @@
 
 	import {
 		appState,
-		ecosystemsManagement,
 		ecosystemsState,
 		gaiaState,
 		getStoreDataKey
@@ -52,11 +51,7 @@
 	};
 
 	// Management crud-related function
-	let ecosystemManagement = $state({ ...$ecosystemsManagement[ecosystemUID] });
-
-	$effect(() => {
-		ecosystemManagement = { ...$ecosystemsManagement[ecosystemUID] };
-	});
+	let ecosystemManagement = $derived({ ...gaiaState.ecosystemsManagement[ecosystemUID] });
 
 	const managementChoices = [
 		'sensors',

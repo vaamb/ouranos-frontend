@@ -18,6 +18,7 @@ class GaiaState {
 	ecosystems = $state({});
 	ecosystemsActuatorsState = $state({});
 	ecosystemsNycthemeralCycle = $state({});
+	ecosystemsManagement = $state({});
 
 	get ecosystemsIds() {
 		return Object.values(this.ecosystems).map((obj) => ({ uid: obj['uid'], name: obj['name'] }));
@@ -52,7 +53,6 @@ export const servicesState = new ServicesState();
 
 
 // Writable stores
-export const ecosystemsManagement = writable({});
 export const ecosystemsSensorsSkeleton = writable({});
 export const ecosystemsSensorsDataCurrent = writable({});
 export const ecosystemsSensorsDataHistoric = writable({});

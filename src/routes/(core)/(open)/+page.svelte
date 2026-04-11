@@ -13,7 +13,6 @@
 	import {
 		appState,
 		ecosystemsSensorsDataCurrent,
-		ecosystemsSensorsSkeleton,
 		ecosystemsState,
 		gaiaState,
 		getStoreDataKey,
@@ -374,7 +373,7 @@
 							{#await fetchEcosystemSensorsSkeleton(uid, 'ecosystem')}
 								<p>Collecting health data from the ecosystem</p>
 							{:then sensorsSkeleton}
-								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'ecosystem')] as sensorsBone}
+								{#each gaiaState.ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'ecosystem')] as sensorsBone}
 									{#await fetchHealthLatestDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then averageHealthData}
@@ -399,7 +398,7 @@
 							{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
 								<p>Collecting environment data from the ecosystem</p>
 							{:then sensorsSkeleton}
-								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'environment')] as sensorsBone}
+								{#each gaiaState.ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'environment')] as sensorsBone}
 									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then sensorsData}
@@ -427,7 +426,7 @@
 							{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
 								<p>Collecting plants data from the ecosystem</p>
 							{:then sensorsSkeleton}
-								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'plants')] as sensorsBone}
+								{#each gaiaState.ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'plants')] as sensorsBone}
 									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then sensorsData}

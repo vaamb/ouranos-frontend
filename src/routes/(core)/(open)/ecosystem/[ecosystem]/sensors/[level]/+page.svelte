@@ -17,7 +17,7 @@
 	import {
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsDataHistoric,
-		ecosystemsSensorsSkeleton,
+		gaiaState,
 		getStoreDataKey
 	} from '$lib/store.svelte.js';
 	import { capitalize } from '$lib/utils/functions.js';
@@ -91,7 +91,7 @@
 
 <HeaderLine title={pageTitle} />
 {#await fetchEcosystemSensorsSkeleton(ecosystemUID, sensorsLevel) then sensorsSkeleton}
-	{#each $ecosystemsSensorsSkeleton[getStoreDataKey(ecosystemUID, sensorsLevel)] as sensorsBone}
+	{#each gaiaState.ecosystemsSensorsSkeleton[getStoreDataKey(ecosystemUID, sensorsLevel)] as sensorsBone}
 		<h2>{capitalize(sensorsBone.measure.replace('_', ' '))}</h2>
 		{#each sensorsBone.sensors as sensor}
 			<Row>

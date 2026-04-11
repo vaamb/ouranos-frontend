@@ -18,7 +18,6 @@ import {
 	appState,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
-	ecosystemsSensorsSkeleton,
 	gaiaState,
 	getFreshStateData,
 	getFreshStoreData,
@@ -435,7 +434,7 @@ export const fetchSensorHistoricData = async function (
 
 export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level = null) {
 	const dataKey = getStoreDataKey(ecosystemUID, level);
-	const storedData = getFreshStoreData(ecosystemsSensorsSkeleton, dataKey);
+	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsSkeleton, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
 	}
@@ -445,7 +444,7 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 		})
 		.then((response) => {
 			const data = response['data']['sensors_skeleton'];
-			updateStoreData(ecosystemsSensorsSkeleton, { [dataKey]: data });
+			gaiaState.ecosystemsSensorsSkeleton[dataKey] = data;
 			return data;
 		})
 		.catch(() => {

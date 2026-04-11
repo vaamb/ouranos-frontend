@@ -16,7 +16,7 @@
 	} from '$lib/actions.svelte.js';
 	import {
 		ecosystemsSensorsDataHistoric,
-		ecosystemsSensorsSkeleton,
+		gaiaState,
 		getStoreDataKey
 	} from '$lib/store.svelte.js';
 	import { STATIC_URL } from '$lib/utils/consts.js';
@@ -87,7 +87,7 @@
 <HeaderLine title={ecosystemName + ' ecosystem health'} />
 
 {#await fetchEcosystemSensorsSkeleton(ecosystemUID, 'ecosystem') then sensorsSkeleton}
-	{#each $ecosystemsSensorsSkeleton[getStoreDataKey(ecosystemUID, 'ecosystem')] as sensorsBone}
+	{#each gaiaState.ecosystemsSensorsSkeleton[getStoreDataKey(ecosystemUID, 'ecosystem')] as sensorsBone}
 		<h2>{capitalize(sensorsBone['measure']).replace('_', ' ')}</h2>
 		{#each sensorsBone['sensors'] as sensor}
 			<Row>

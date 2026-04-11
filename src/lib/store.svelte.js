@@ -4,6 +4,25 @@ import { User } from '$lib/utils/factories.js';
 import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 
+class AppState {
+
+}
+
+export const appState = new AppState();
+
+class GaiaState {
+
+}
+
+export const gaiaState = new GaiaState();
+
+class ServicesState {
+
+}
+
+export const servicesState = new ServicesState();
+
+
 // Writable stores
 export const currentUser = writable(User());
 export const ecosystems = writable({});

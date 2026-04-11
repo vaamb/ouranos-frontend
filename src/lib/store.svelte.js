@@ -84,33 +84,10 @@ export const getStoreDataKey = function () {
 	return Array.prototype.slice.call(arguments).join('-');
 };
 
-export const getStoreData = function (store, storageKey) {
-	// Utility function to easily access stored data outside .svelte files
-	const storeData = get(store)[storageKey];
-	if (storeData) {
-		return storeData;
-	} else {
-		return {};
-	}
-};
-
-export const getFreshStoreData = function (store, storageKey) {
-	const now = new Date();
-	if (now - appState.pingServerLastSeen > 60000) {
-		return {};
-	}
-	return getStoreData(store, storageKey);
-};
-
 export const getFreshStateData = function (state, storageKey) {
 	const now = new Date();
 	if (now - appState.pingServerLastSeen > 60000) {
 		return {};
 	}
 	return state[storageKey];
-};
-
-export const updateStoreData = function (store, data) {
-	// Utility function to easily update stored data outside .svelte files
-	store.set({ ...get(store), ...data });
 };

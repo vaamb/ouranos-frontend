@@ -16,7 +16,6 @@ import { isEmpty } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
 	appState,
-	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	gaiaState,
 	getFreshStateData,
@@ -365,7 +364,7 @@ export const fetchEcosystemHardware = async function (ecosystemUID) {
 
 export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, measure) {
 	const dataKey = getStoreDataKey(sensorUID, measure);
-	const storedData = getFreshStoreData(ecosystemsSensorsDataCurrent, dataKey);
+	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsDataCurrent, dataKey);
 	if (checkSensorDataRecency(storedData, 1)) {
 		return storedData;
 	}
@@ -391,7 +390,7 @@ export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, m
 					value: true
 				};
 			}
-			updateStoreData(ecosystemsSensorsDataCurrent, accumulator);
+			gaiaState.ecosystemsSensorsDataCurrent = accumulator;
 			return accumulator[dataKey];
 		})
 		.catch(() => {

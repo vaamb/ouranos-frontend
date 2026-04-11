@@ -15,7 +15,6 @@
 		fetchEcosystemSensorsSkeleton
 	} from '$lib/actions.svelte.js';
 	import {
-		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsDataHistoric,
 		gaiaState,
 		getStoreDataKey
@@ -97,7 +96,7 @@
 			<Row>
 				{#await fetchSensorData(ecosystemUID, sensor.uid, sensorsBone.measure) then sensorData_notUsed}
 					{@const currentSensorsData =
-						$ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
+						gaiaState.ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
 					{@const historicSensorsData =
 						$ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
 					{#if currentSensorsData || historicSensorsData}

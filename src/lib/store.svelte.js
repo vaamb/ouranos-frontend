@@ -19,6 +19,7 @@ class GaiaState {
 	ecosystemsActuatorsState = $state({});
 	ecosystemsNycthemeralCycle = $state({});
 	ecosystemsManagement = $state({});
+	ecosystemsSensorsDataCurrent = $state({});
 	ecosystemsSensorsSkeleton = $state({});
 
 	get ecosystemsIds() {
@@ -54,7 +55,6 @@ export const servicesState = new ServicesState();
 
 
 // Writable stores
-export const ecosystemsSensorsDataCurrent = writable({});
 export const ecosystemsSensorsDataHistoric = writable({});
 export const ecosystemsState = writable({});
 export const engines = writable({});

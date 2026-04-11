@@ -12,7 +12,6 @@
 
 	import {
 		appState,
-		ecosystemsSensorsDataCurrent,
 		ecosystemsState,
 		gaiaState,
 		getStoreDataKey,
@@ -403,7 +402,7 @@
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then sensorsData}
 										{@const averageData = computeAverageSensorsCurrentDataForMeasure(
-											$ecosystemsSensorsDataCurrent,
+											gaiaState.ecosystemsSensorsDataCurrent,
 											sensorsBone.measure,
 											sensorsBone.sensors
 										)}
@@ -431,7 +430,7 @@
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then sensorsData}
 										{@const averageData = computeAverageSensorsCurrentDataForMeasure(
-											$ecosystemsSensorsDataCurrent,
+											gaiaState.ecosystemsSensorsDataCurrent,
 											sensorsBone.measure,
 											sensorsBone.sensors
 										)}

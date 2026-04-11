@@ -4,7 +4,6 @@ import { Manager } from 'socket.io-client';
 import { APP_MODE, BACKEND_URL, getAppMode } from '$lib/utils/consts.js';
 import {
 	appState,
-	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	ecosystemsState,
 	enginesState,
@@ -217,7 +216,7 @@ socketio.on('current_sensors_data', (data) => {
 			value: sensorRecord['value']
 		};
 	}
-	updateStoreData(ecosystemsSensorsDataCurrent, updatedData);
+	gaiaState.ecosystemsSensorsDataCurrent = updatedData;
 });
 
 socketio.on('historic_sensors_data_update', (data) => {

@@ -24,6 +24,7 @@ class GaiaState {
 	ecosystemsSensorsDataHistoric = $state({});
 	ecosystemsSensorsSkeleton = $state({});
 	ecosystemsState = $state({});
+	healthData = $state({});
 	// engines
 	engines = $state({});
 	enginesState = $state({});
@@ -68,7 +69,6 @@ export const servicesState = new ServicesState();
 
 
 // Writable stores
-export const healthData = $state({});
 export const rawWarnings = writable([]);
 
 // Derived stores

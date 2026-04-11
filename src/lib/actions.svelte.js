@@ -19,7 +19,6 @@ import {
 	gaiaState,
 	getFreshStateData,
 	getStoreDataKey,
-	healthData,
 	infraState,
 	servicesState
 } from '$lib/store.svelte.js';
@@ -450,7 +449,7 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 
 export const fetchHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
 	const dataKey = getStoreDataKey(ecosystemUID, measure);
-	const storedData = healthData[dataKey];
+	const storedData = gaiaState.healthData[dataKey];
 	if (storedData !== undefined) {
 		return storedData;
 	}
@@ -475,7 +474,7 @@ export const fetchHealthLatestDataForMeasure = async function (ecosystemUID, mea
 	}
 	const average = (array) => array.reduce((a, b) => a + b) / array.length;
 	const result = average(rv).toFixed(4);
-	healthData[dataKey] = result;
+	gaiaState.healthData[dataKey] = result;
 	return result;
 };
 

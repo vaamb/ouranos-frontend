@@ -4,7 +4,7 @@
 
 	import { logOut } from '$lib/actions.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
-	import { appState, warnings } from '$lib/store.svelte.js';
+	import { appState, gaiaState } from '$lib/store.svelte.js';
 
 	let { development, miniWidth = 45, fullPage = false } = $props();
 </script>
@@ -53,7 +53,7 @@
 			{/if}
 		</div>
 		<div class="warning-button">
-			{#if appState.currentUser.isAuthenticated && $warnings.length > 0}
+			{#if appState.currentUser.isAuthenticated && gaiaState.warnings.length > 0}
 				<a href="/warnings">
 					<Fa icon={faExclamationTriangle} />
 				</a>

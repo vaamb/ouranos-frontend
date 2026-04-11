@@ -13,7 +13,6 @@
 		appState,
 		gaiaState,
 		infraState,
-		rawWarnings,
 		servicesState
 	} from '$lib/store.svelte.js';
 	import { APP_MODE } from '$lib/utils/consts.js';
@@ -26,9 +25,9 @@
 	gaiaState.ecosystemsState = data.ecosystemsState;
 	gaiaState.engines = data.engines;
 	gaiaState.enginesState = data.enginesState;
+	gaiaState.rawWarnings = data.warnings;
 	infraState.servers = data.servers;
 	servicesState.services = data.services;
-	rawWarnings.set(data.warnings);
 	servicesState.wikiTopics = data.wikiTopics;
 
 	// Menu-related parameters

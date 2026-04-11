@@ -28,6 +28,8 @@ class GaiaState {
 	// engines
 	engines = $state({});
 	enginesState = $state({});
+	// warnings
+	rawWarnings = $state([]);
 
 	// derived
 	get ecosystemsIds() {
@@ -38,6 +40,16 @@ class GaiaState {
 		return Object.values(this.engines)
 			.sort(dynamicSort('uid'))
 			.map((obj) => ({ uid: obj['uid'], sid: obj['sid'] }));
+	}
+
+	get warnings() {
+		const warnings = [...this.rawWarnings]
+		warnings.forEach((warning) => {
+			if (this.ecosystems[warning['created_by']]) {
+				warning['created_by'] = this.ecosystems[warning['created_by']]['name'];
+			}
+		});
+		return warnings;
 	}
 }
 
@@ -66,20 +78,6 @@ class ServicesState {
 }
 
 export const servicesState = new ServicesState();
-
-
-// Writable stores
-export const rawWarnings = writable([]);
-
-// Derived stores
-export const warnings = derived([rawWarnings, gaiaState.ecosystems], ([rawWarnings, ecosystems]) => {
-	rawWarnings.forEach((warning) => {
-		if (ecosystems[warning['created_by']]) {
-			warning['created_by'] = ecosystems[warning['created_by']]['name'];
-		}
-	});
-	return rawWarnings;
-});
 
 // Store-related utility functions
 export const getStoreDataKey = function () {

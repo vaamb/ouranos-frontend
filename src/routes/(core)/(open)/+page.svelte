@@ -15,8 +15,7 @@
 		gaiaState,
 		getStoreDataKey,
 		infraState,
-		servicesState,
-		warnings
+		servicesState
 	} from '$lib/store.svelte.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
@@ -60,7 +59,7 @@
 		}
 		return sortedWarnings;
 	};
-	let sortedWarnings = $derived(sortWarningsByEcosystem($warnings));
+	let sortedWarnings = $derived(sortWarningsByEcosystem(gaiaState.warnings));
 
 	let calendarEvents = $state([]);
 	const sortCalendarEventsByHappening = function (events) {
@@ -263,7 +262,7 @@
 	</Box>
 	{#if appState.currentUser.isAuthenticated}
 		<Box title="Ecosystem warnings overview" align="center" href="/warnings">
-			{#if $warnings.length > 0}
+			{#if gaiaState.warnings.length > 0}
 				{#each Object.keys(sortedWarnings) as name}
 					{@const ecosystemWarnings = sortedWarnings[name]}
 					{#if ecosystemWarnings}

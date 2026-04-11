@@ -12,7 +12,7 @@
 		fetchEcosystemActuatorsState,
 		updateActuatorMode
 	} from '$lib/actions.svelte.js';
-	import { ecosystemsActuatorsState } from '$lib/store.svelte.js';
+	import { gaiaState } from '$lib/store.svelte.js';
 
 	import { socketio } from '$lib/socketio.svelte.js';
 	import { actuatorTypes } from '$lib/utils/consts.js';
@@ -159,7 +159,7 @@
 
 {#await fetchEcosystemActuatorsState(ecosystemUID) then actuatorsState_notUsed}
 	{#each Object.entries(actuatorsRecords) as [actuator, actuatorRecords]}
-		{@const actuatorState = $ecosystemsActuatorsState[ecosystemUID][actuator]}
+		{@const actuatorState = gaiaState.ecosystemsActuatorsState[ecosystemUID][actuator]}
 		{#if actuatorState['active'] || hasBeenActive(actuatorRecords)}
 			{@const drawGraph = actuatorState['active'] || actuatorRecords['values'].length >= 3}
 			<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>

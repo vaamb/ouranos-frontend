@@ -4,13 +4,13 @@ import { Manager } from 'socket.io-client';
 import { APP_MODE, BACKEND_URL, getAppMode } from '$lib/utils/consts.js';
 import {
 	appState,
-	ecosystemsActuatorsState,
 	ecosystemsNycthemeralCycle,
 	ecosystemsManagement,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	ecosystemsState,
 	enginesState,
+	gaiaState,
 	getFreshStoreData,
 	getStoreDataKey,
 	infraState,
@@ -200,14 +200,14 @@ socketio.on('actuators_data', (data) => {
 		return acc;
 	}, {});
 
-	const currentEcosystemsActuatorData = get(ecosystemsActuatorsState);
+	const currentEcosystemsActuatorData = gaiaState.ecosystemsActuatorsState;
 	for (const ecosystemUid in dataByEcosystem) {
 		currentEcosystemsActuatorData[ecosystemUid] = {
 			...currentEcosystemsActuatorData[ecosystemUid],
 			...dataByEcosystem[ecosystemUid]
 		};
 	}
-	updateStoreData(ecosystemsActuatorsState, currentEcosystemsActuatorData);
+	gaiaState.ecosystemsActuatorsState = currentEcosystemsActuatorData;
 });
 
 socketio.on('current_sensors_data', (data) => {

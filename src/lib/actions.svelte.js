@@ -16,11 +16,11 @@ import { isEmpty } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
 	appState,
-	ecosystemsActuatorsState,
 	ecosystemsNycthemeralCycle,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	ecosystemsSensorsSkeleton,
+	gaiaState,
 	getFreshStateData,
 	getFreshStoreData,
 	getStoreDataKey,
@@ -317,7 +317,7 @@ export const fetchEcosystemWeatherEvents = async function (ecosystemUID) {
 
 export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
 	const dataKey = getStoreDataKey(ecosystemUID);
-	const storedData = getFreshStoreData(ecosystemsActuatorsState, dataKey);
+	const storedData = getFreshStateData(gaiaState.ecosystemsActuatorsState, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
 	}
@@ -329,8 +329,8 @@ export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
 			for (const actuatorType of actuatorTypes) {
 				storedData[actuatorType] = states[actuatorType];
 			}
-			updateStoreData(ecosystemsActuatorsState, { [dataKey]: storedData });
-			return data;
+			gaiaState.ecosystemsActuatorsState[dataKey] = storedData;
+			return storedData;
 		})
 		.catch(() => {
 			return {};

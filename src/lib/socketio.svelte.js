@@ -1,10 +1,8 @@
-import { get } from 'svelte/store';
 import { Manager } from 'socket.io-client';
 
 import { APP_MODE, BACKEND_URL, getAppMode } from '$lib/utils/consts.js';
 import {
 	appState,
-	enginesState,
 	gaiaState,
 	getFreshStateData,
 	getStoreDataKey,
@@ -153,10 +151,8 @@ socketio.on('weather_daily', (data) => {
 // Ecosystems
 socketio.on('ecosystems_heartbeat', (data) => {
 	const now = new Date();
-	const enginesObj = get(enginesState);
-	if (enginesObj[data['engine_uid']]) {
-		enginesObj[data['engine_uid']]['last_seen'] = now;
-		enginesState.set(enginesObj);
+	if (gaiaState.enginesState[data['engine_uid']]) {
+		gaiaState.enginesState[data['engine_uid']]['last_seen'] = now;
 	}
 	const ecosystemsStateObj = gaiaState.ecosystemsState;
 	for (const ecosystemData of data['ecosystems']) {

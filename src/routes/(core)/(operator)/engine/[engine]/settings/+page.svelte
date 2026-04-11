@@ -10,13 +10,13 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { enginesState, gaiaState } from '$lib/store.svelte.js';
+	import { gaiaState } from '$lib/store.svelte.js';
 	import { formatDateTime, getStatusClass, isEmpty, slugify } from '$lib/utils/functions.js';
 	import { crudRequest } from '$lib/actions.svelte.js';
 
 	let engineUID = $derived(page['params']['engine']);
 	let engine = $derived(gaiaState.engines[engineUID]);
-	let engineState = $derived($enginesState[engineUID]);
+	let engineState = $derived(gaiaState.enginesState[engineUID]);
 	let fullEcosystems = $derived.by(() => {
 		let ecosystemsCopy = structuredClone(gaiaState.ecosystems);
 		ecosystemsCopy = Object.values(ecosystemsCopy);

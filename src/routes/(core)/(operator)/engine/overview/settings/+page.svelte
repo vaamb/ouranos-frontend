@@ -2,15 +2,15 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { enginesState, gaiaState } from '$lib/store.svelte.js';
+	import { gaiaState } from '$lib/store.svelte.js';
 	import { formatDateTime } from '$lib/utils/functions.js';
 
 	let fullEngines = $derived.by(() => {
 		let enginesCopy = structuredClone(gaiaState.engines);
 		enginesCopy = Object.values(enginesCopy);
 		enginesCopy.forEach((engine) => {
-			engine['last_seen'] = $enginesState[engine['uid']]['last_seen'];
-			engine['connected'] = $enginesState[engine['uid']]['connected'];
+			engine['last_seen'] = gaiaState.enginesState[engine['uid']]['last_seen'];
+			engine['connected'] = gaiaState.enginesState[engine['uid']]['connected'];
 		});
 		return enginesCopy;
 	});

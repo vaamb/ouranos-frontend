@@ -26,6 +26,7 @@ class GaiaState {
 	ecosystemsState = $state({});
 	// engines
 	engines = $state({});
+	enginesState = $state({});
 
 	// derived
 	get ecosystemsIds() {
@@ -67,7 +68,6 @@ export const servicesState = new ServicesState();
 
 
 // Writable stores
-export const enginesState = writable({});
 export const healthData = $state({});
 export const rawWarnings = writable([]);
 

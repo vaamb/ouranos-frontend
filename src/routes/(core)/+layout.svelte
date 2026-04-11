@@ -11,7 +11,6 @@
 
 	import {
 		appState,
-		enginesState,
 		gaiaState,
 		infraState,
 		rawWarnings,
@@ -26,7 +25,7 @@
 	gaiaState.ecosystemsManagement = data.ecosystemsManagement;
 	gaiaState.ecosystemsState = data.ecosystemsState;
 	gaiaState.engines = data.engines;
-	enginesState.set(data.enginesState);
+	gaiaState.enginesState = data.enginesState;
 	infraState.servers = data.servers;
 	servicesState.services = data.services;
 	rawWarnings.set(data.warnings);

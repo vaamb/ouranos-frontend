@@ -23,7 +23,6 @@ import {
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	ecosystemsSensorsSkeleton,
-	flashMessage,
 	getFreshStoreData,
 	getStoreDataKey,
 	healthData,
@@ -52,9 +51,7 @@ const setFlashMsgError = function (error) {
 	} else {
 		errorMsg = Message(ERROR_MSG);
 	}
-	const msgs = get(flashMessage);
-	msgs.push(errorMsg);
-	flashMessage.set(msgs);
+	appState.flashMessage.push(errorMsg);
 };
 
 export const probePath = async function (path) {
@@ -134,9 +131,7 @@ export const logIn = async function (username, password, remember = false) {
 				const sessionToken = response.data.session_token;
 				const user = User(response.data.user, sessionToken);
 				appState.currentUser = user;
-				const msgs = get(flashMessage);
-				msgs.push(Message('You are now logged in ' + user.username));
-				flashMessage.set(msgs);
+				appState.flashMessage.push(Message('You are now logged in ' + user.username));
 				logInSocketio(sessionToken);
 				return {
 					success: true,
@@ -674,9 +669,7 @@ export const updateService = async function (serviceName, status) {
 		data: { status: status }
 	})
 		.then((response) => {
-			const msgs = get(flashMessage);
-			msgs.push(Message(response.data, null, 1500));
-			flashMessage.set(msgs);
+			appState.flashMessage.push(Message(response.data, null, 1500));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);
@@ -829,9 +822,7 @@ export const crudRequest = function (relRoute, action, payload = undefined) {
 
 	return axios(`${API_URL}/${relRoute}`, options)
 		.then((response) => {
-			const msgs = get(flashMessage);
-			msgs.push(Message(response.data, null, 3000));
-			flashMessage.set(msgs);
+			appState.flashMessage.push(Message(response.data, null, 3000));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);
@@ -848,9 +839,7 @@ export const updateActuatorMode = function (ecosystemUID, actuatorType, mode, co
 		}
 	})
 		.then((response) => {
-			const msgs = get(flashMessage);
-			msgs.push(Message(response.data, null, 1500));
-			flashMessage.set(msgs);
+			appState.flashMessage.push(Message(response.data, null, 1500));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);

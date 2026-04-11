@@ -7,7 +7,7 @@
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
-	import { appState, flashMessage } from '$lib/store.svelte.js';
+	import { appState } from '$lib/store.svelte.js';
 	import { API_URL } from '$lib/utils/consts.js';
 	import { Message, User } from '$lib/utils/factories.js';
 	import {
@@ -127,9 +127,7 @@
 				serverError = null;
 				const user = User(response.data.user);
 				appState.currentUser = user;
-				let msgs = $flashMessage;
-				msgs.push(Message('Hello ' + user['username'] + ', welcome to Ouranos'));
-				flashMessage.set(msgs);
+				appState.flashMessage.push(Message('Hello ' + user['username'] + ', welcome to Ouranos'));
 				goto(`/`);
 			})
 			.catch((error) => {

@@ -39,6 +39,7 @@ class ServicesState {
 	weatherCurrently = $state({});
 	weatherDaily = $state([]);
 	weatherHourly = $state([]);
+	wikiTopics = $state([]);
 }
 
 export const servicesState = new ServicesState();
@@ -57,7 +58,6 @@ export const engines = writable({});
 export const enginesState = writable({});
 export const healthData = $state({});
 export const rawWarnings = writable([]);
-export const wikiTopics = writable([]);
 
 // Derived stores
 export const ecosystemsIds = derived(ecosystems, (ecosystems) => {

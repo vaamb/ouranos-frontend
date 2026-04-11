@@ -6,12 +6,12 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import { crudRequest, fetchWikiTopics } from '$lib/actions.svelte.js';
-	import { wikiTopics } from '$lib/store.svelte.js';
+	import { servicesState } from '$lib/store.svelte.js';
 	import { capitalize, joinTags, splitTags } from '$lib/utils/functions.js';
 
 	const refreshTopics = function () {
 		fetchWikiTopics().then((data) => {
-			wikiTopics.set(data);
+			servicesState.wikiTopics = data;
 		});
 	};
 
@@ -34,7 +34,7 @@
 		{ label: 'Tags', key: 'tags', serializer: joinTags },
 		{ label: 'Link', key: 'slug', isLink: true, serializer: (value) => `/wiki/u/${value}` }
 	]}
-	data={$wikiTopics}
+	data={servicesState.wikiTopics}
 	editable={true}
 	oncrud={(payload) => {
 		crudAction = payload['action'];
@@ -68,26 +68,26 @@
 		/>
 	{/snippet}
 </Modal>
-{#if $wikiTopics[crudIndex]}
+{#if servicesState.wikiTopics[crudIndex]}
 	<Modal
 		showModal={crudAction === 'update'}
 		onclose={resetModal}
 	>
-		{#snippet title()}{`Update ${$wikiTopics[crudIndex]['name']} topic`}{/snippet}
+		{#snippet title()}{`Update ${servicesState.wikiTopics[crudIndex]['name']} topic`}{/snippet}
 		{#snippet children(closeModal)}
 			<Form
 				data={[
-					{ label: 'Name', key: 'name', value: $wikiTopics[crudIndex]['name'], type: 'text' },
+					{ label: 'Name', key: 'name', value: servicesState.wikiTopics[crudIndex]['name'], type: 'text' },
 					{
 						label: 'Description',
 						key: 'description',
-						value: $wikiTopics[crudIndex]['description'],
+						value: servicesState.wikiTopics[crudIndex]['description'],
 						required: false
 					},
 					{
 						label: 'Tags',
 						key: 'tags',
-						value: $wikiTopics[crudIndex]['tags'],
+						value: servicesState.wikiTopics[crudIndex]['tags'],
 						hint: 'Comma separated tags',
 						required: false,
 						serializer: joinTags,
@@ -96,7 +96,7 @@
 				]}
 				onconfirm={(payload) => {
 					crudRequest(
-						`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`,
+						`app/services/wiki/topics/u/${servicesState.wikiTopics[crudIndex]['name']}`,
 						'update',
 						payload
 					).then(() => refreshTopics());
@@ -110,12 +110,12 @@
 		showModal={crudAction === 'delete'}
 		onclose={resetModal}
 	>
-		{#snippet title()}{`Delete ${$wikiTopics[crudIndex]['name']} topic`}{/snippet}
+		{#snippet title()}{`Delete ${servicesState.wikiTopics[crudIndex]['name']} topic`}{/snippet}
 		{#snippet children(closeModal)}
-			<p>Are you sure you want to delete '{$wikiTopics[crudIndex]['name']}' topic ?</p>
+			<p>Are you sure you want to delete '{servicesState.wikiTopics[crudIndex]['name']}' topic ?</p>
 			<ConfirmButtons
 				onconfirm={() => {
-					crudRequest(`app/services/wiki/topics/u/${$wikiTopics[crudIndex]['name']}`, 'delete')
+					crudRequest(`app/services/wiki/topics/u/${servicesState.wikiTopics[crudIndex]['name']}`, 'delete')
 					.then(
 						() => refreshTopics()
 					);

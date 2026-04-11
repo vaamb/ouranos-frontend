@@ -20,8 +20,7 @@
 		enginesIds,
 		infraState,
 		rawWarnings,
-		servicesState,
-		wikiTopics
+		servicesState
 	} from '$lib/store.svelte.js';
 	import { APP_MODE } from '$lib/utils/consts.js';
 
@@ -36,7 +35,7 @@
 	infraState.servers = data.servers;
 	servicesState.services = data.services;
 	rawWarnings.set(data.warnings);
-	wikiTopics.set(data.wikiTopics);
+	servicesState.wikiTopics = data.wikiTopics;
 
 	// Menu-related parameters
 	const menuWidth = 210;
@@ -51,7 +50,7 @@
 			$enginesIds,
 			servicesState.services,
 			infraState.serversIds,
-			$wikiTopics
+			servicesState.wikiTopics
 		)
 	);
 

@@ -29,7 +29,7 @@ class GaiaState {
 	engines = $state({});
 	enginesState = $state({});
 	// warnings
-	rawWarnings = $state([]);
+	warnings = $state([]);
 
 	// derived
 	get ecosystemsIds() {
@@ -40,16 +40,6 @@ class GaiaState {
 		return Object.values(this.engines)
 			.sort(dynamicSort('uid'))
 			.map((obj) => ({ uid: obj['uid'], sid: obj['sid'] }));
-	}
-
-	get warnings() {
-		const warnings = [...this.rawWarnings]
-		warnings.forEach((warning) => {
-			if (this.ecosystems[warning['created_by']]) {
-				warning['created_by'] = this.ecosystems[warning['created_by']]['name'];
-			}
-		});
-		return warnings;
 	}
 }
 

@@ -20,12 +20,18 @@
 	// Fill stores with pre-fetched data
 	let { data, children } = $props();
 
+	data.warnings.forEach((warning) => {
+		if (data.ecosystems[warning['created_by']]) {
+			warning['created_by'] = data.ecosystems[warning['created_by']]['name'];
+		}
+	});
+
 	gaiaState.ecosystems = data.ecosystems;
 	gaiaState.ecosystemsManagement = data.ecosystemsManagement;
 	gaiaState.ecosystemsState = data.ecosystemsState;
 	gaiaState.engines = data.engines;
 	gaiaState.enginesState = data.enginesState;
-	gaiaState.rawWarnings = data.warnings;
+	gaiaState.warnings = data.warnings;
 	infraState.servers = data.servers;
 	servicesState.services = data.services;
 	servicesState.wikiTopics = data.wikiTopics;

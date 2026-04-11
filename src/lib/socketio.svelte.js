@@ -13,7 +13,6 @@ import {
 	enginesState,
 	getFreshStoreData,
 	getStoreDataKey,
-	pingServerLastSeen,
 	pingServerLatency,
 	servers,
 	serversCurrentData,
@@ -60,7 +59,7 @@ socketio.on('disconnect', () => {
 
 socketio.on('pong', () => {
 	const now = new Date();
-	pingServerLastSeen.set(now);
+	appState.pingServerLastSeen = now;
 	latencyArray.push(now - pingTime);
 	latencyArray = latencyArray.slice(-5);
 	let sum = 0;

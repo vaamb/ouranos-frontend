@@ -20,6 +20,12 @@ class GaiaState {
 
 export const gaiaState = new GaiaState();
 
+class InfraState {
+
+}
+
+export const infraState = new InfraState();
+
 class ServicesState {
 
 }

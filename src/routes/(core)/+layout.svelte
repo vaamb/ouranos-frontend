@@ -18,9 +18,8 @@
 		engines,
 		enginesState,
 		enginesIds,
+		infraState,
 		rawWarnings,
-		servers,
-		serversIds,
 		services,
 		wikiTopics
 	} from '$lib/store.svelte.js';
@@ -34,7 +33,7 @@
 	ecosystemsState.set(data.ecosystemsState);
 	engines.set(data.engines);
 	enginesState.set(data.enginesState);
-	servers.set(data.servers);
+	infraState.servers = data.servers;
 	services.set(data.services);
 	rawWarnings.set(data.warnings);
 	wikiTopics.set(data.wikiTopics);
@@ -51,7 +50,7 @@
 			$ecosystemsManagement,
 			$enginesIds,
 			$services,
-			$serversIds,
+			infraState.serversIds,
 			$wikiTopics
 		)
 	);

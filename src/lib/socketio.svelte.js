@@ -13,7 +13,7 @@ import {
 	enginesState,
 	getFreshStoreData,
 	getStoreDataKey,
-	servers,
+	infraState,
 	serversCurrentData,
 	updateStoreData,
 	weatherCurrently,
@@ -181,10 +181,8 @@ socketio.on('current_server_data', (data) => {
 	//TODO: temporary workaround, to change
 	const serverUid = 'base_server';
 	const dataKey = getStoreDataKey(serverUid);
-	const serversObj = get(servers);
-	if (serversObj[dataKey]) {
-		serversObj[dataKey]['last_seen'] = new Date();
-		servers.set(serversObj);
+	if (infraState.servers[dataKey]) {
+		infraState.servers[dataKey]['last_seen'] = new Date();
 		updateStoreData(serversCurrentData, { [dataKey]: data });
 	}
 });

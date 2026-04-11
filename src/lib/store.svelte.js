@@ -21,7 +21,13 @@ class GaiaState {
 export const gaiaState = new GaiaState();
 
 class InfraState {
+	servers = $state({});
 
+	get serversIds() {
+		return Object.values(this.servers)
+			.sort(dynamicSort('uid'))
+			.map((obj) => ({ uid: obj['uid'], name: capitalize(obj['uid'].replace('_', ' ')) }));
+	}
 }
 
 export const infraState = new InfraState();
@@ -45,7 +51,6 @@ export const ecosystemsState = writable({});
 export const engines = writable({});
 export const enginesState = writable({});
 export const healthData = $state({});
-export const servers = writable({});
 export const serversCurrentData = writable({});
 export const serversHistoricData = writable({});
 export const services = writable([]);
@@ -65,12 +70,6 @@ export const enginesIds = derived(engines, (engines) => {
 	return Object.values(engines)
 		.sort(dynamicSort('uid'))
 		.map((obj) => ({ uid: obj['uid'], sid: obj['sid'] }));
-});
-
-export const serversIds = derived(servers, (servers) => {
-	return Object.values(servers)
-		.sort(dynamicSort('uid'))
-		.map((obj) => ({ uid: obj['uid'], name: capitalize(obj['uid'].replace('_', ' ')) }));
 });
 
 export const warnings = derived([rawWarnings, ecosystems], ([rawWarnings, ecosystems]) => {

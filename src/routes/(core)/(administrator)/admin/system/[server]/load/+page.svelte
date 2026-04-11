@@ -11,7 +11,7 @@
 	import { fetchServerCurrentData, fetchServerHistoricData } from '$lib/actions.svelte.js';
 	import {
 		getStoreDataKey,
-		servers,
+		infraState,
 		serversCurrentData,
 		serversHistoricData
 	} from '$lib/store.svelte.js';
@@ -19,7 +19,7 @@
 	import { graphs } from '$lib/utils/styling.js';
 
 	let serverName = $derived(page.params.server);
-	let serverInfo = $derived($servers[serverName]);
+	let serverInfo = $derived(infraState.servers[serverName]);
 
 	const fetchServerData = async function (serverName) {
 		await fetchServerCurrentData(serverName);

@@ -21,9 +21,8 @@
 		ecosystemsSensorsSkeleton,
 		ecosystemsState,
 		getStoreDataKey,
-		servers,
+		infraState,
 		serversCurrentData,
-		serversIds,
 		services,
 		warnings,
 		weatherCurrently,
@@ -241,11 +240,11 @@
 			{/if}
 		</BoxItem>
 		{#if appState.currentUser.can(permissions.ADMIN)}
-			{#each $serversIds as serverIds}
+			{#each infraState.serversIds as serverIds}
 				{@const serverUid = serverIds['uid']}
 				<BoxItem title={serverIds['name']}>
 					{#await fetchServerCurrentData(serverUid) then serverCurrentData_notUsed}
-						{@const server = $servers[serverUid]}
+						{@const server = infraState.servers[serverUid]}
 						{@const serverCurrentData = $serversCurrentData[serverUid]}
 						{#if server && serverCurrentData}
 							<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">Uptime</p>

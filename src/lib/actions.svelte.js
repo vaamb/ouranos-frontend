@@ -23,10 +23,11 @@ import {
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
 	ecosystemsSensorsSkeleton,
+	getFreshStateData,
 	getFreshStoreData,
 	getStoreDataKey,
 	healthData,
-	serversCurrentData,
+	infraState,
 	serversHistoricData,
 	updateStoreData,
 	weatherCurrently,
@@ -604,7 +605,7 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 
 export const fetchServerCurrentData = async function (serverUid) {
 	const dataKey = getStoreDataKey(serverUid);
-	const storedData = getFreshStoreData(serversCurrentData, dataKey);
+	const storedData = getFreshStateData(infraState.serversCurrentData, dataKey);
 
 	if (!isEmpty(storedData)) {
 		return storedData;
@@ -616,12 +617,12 @@ export const fetchServerCurrentData = async function (serverUid) {
 		})
 		.then((response) => {
 			const data = response['data']['values'];
-			updateStoreData(serversCurrentData, { [dataKey]: data });
+			infraState.serversCurrentData[dataKey] = data;
 			return data;
 		})
 		.catch(() => {
 			const data = [];
-			updateStoreData(serversCurrentData, { [dataKey]: data });
+			infraState.serversCurrentData[dataKey] = data;
 			return data;
 		});
 };

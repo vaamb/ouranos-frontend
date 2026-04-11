@@ -22,7 +22,6 @@
 		ecosystemsState,
 		getStoreDataKey,
 		infraState,
-		serversCurrentData,
 		services,
 		warnings,
 		weatherCurrently,
@@ -245,7 +244,7 @@
 				<BoxItem title={serverIds['name']}>
 					{#await fetchServerCurrentData(serverUid) then serverCurrentData_notUsed}
 						{@const server = infraState.servers[serverUid]}
-						{@const serverCurrentData = $serversCurrentData[serverUid]}
+						{@const serverCurrentData = infraState.serversCurrentData[serverUid]}
 						{#if server && serverCurrentData}
 							<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">Uptime</p>
 							<p>

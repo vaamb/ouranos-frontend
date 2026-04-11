@@ -14,7 +14,6 @@ import {
 	getFreshStoreData,
 	getStoreDataKey,
 	infraState,
-	serversCurrentData,
 	updateStoreData,
 	weatherCurrently,
 	weatherDaily,
@@ -183,7 +182,7 @@ socketio.on('current_server_data', (data) => {
 	const dataKey = getStoreDataKey(serverUid);
 	if (infraState.servers[dataKey]) {
 		infraState.servers[dataKey]['last_seen'] = new Date();
-		updateStoreData(serversCurrentData, { [dataKey]: data });
+		infraState.serversCurrentData[dataKey] = data;
 	}
 });
 

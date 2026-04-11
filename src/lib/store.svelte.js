@@ -22,6 +22,7 @@ export const gaiaState = new GaiaState();
 
 class InfraState {
 	servers = $state({});
+	serversCurrentData = $state({});
 
 	get serversIds() {
 		return Object.values(this.servers)
@@ -51,7 +52,6 @@ export const ecosystemsState = writable({});
 export const engines = writable({});
 export const enginesState = writable({});
 export const healthData = $state({});
-export const serversCurrentData = writable({});
 export const serversHistoricData = writable({});
 export const services = writable([]);
 export const rawWarnings = writable([]);
@@ -102,6 +102,14 @@ export const getFreshStoreData = function (store, storageKey) {
 		return {};
 	}
 	return getStoreData(store, storageKey);
+};
+
+export const getFreshStateData = function (state, storageKey) {
+	const now = new Date();
+	if (now - appState.pingServerLastSeen > 60000) {
+		return {};
+	}
+	return state[storageKey];
 };
 
 export const updateStoreData = function (store, data) {

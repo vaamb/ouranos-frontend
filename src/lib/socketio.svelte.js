@@ -4,7 +4,6 @@ import { Manager } from 'socket.io-client';
 import { APP_MODE, BACKEND_URL, getAppMode } from '$lib/utils/consts.js';
 import {
 	appState,
-	ecosystemsState,
 	enginesState,
 	gaiaState,
 	getFreshStateData,
@@ -159,14 +158,14 @@ socketio.on('ecosystems_heartbeat', (data) => {
 		enginesObj[data['engine_uid']]['last_seen'] = now;
 		enginesState.set(enginesObj);
 	}
-	const ecosystemsStateObj = get(ecosystemsState);
+	const ecosystemsStateObj = gaiaState.ecosystemsState;
 	for (const ecosystemData of data['ecosystems']) {
 		if (ecosystemsStateObj[ecosystemData['uid']]) {
 			ecosystemsStateObj[ecosystemData['uid']]['last_seen'] = now;
 			ecosystemsStateObj[ecosystemData['uid']]['status'] = ecosystemData['status'];
 		}
 	}
-	ecosystemsState.set(ecosystemsStateObj);
+	gaiaState.ecosystemsState = ecosystemsStateObj;
 });
 
 socketio.on('current_server_data', (data) => {

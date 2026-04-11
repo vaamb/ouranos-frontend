@@ -10,7 +10,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import {  ecosystemsState, engines, enginesState, gaiaState } from '$lib/store.svelte.js';
+	import { engines, enginesState, gaiaState } from '$lib/store.svelte.js';
 	import { formatDateTime, getStatusClass, isEmpty, slugify } from '$lib/utils/functions.js';
 	import { crudRequest } from '$lib/actions.svelte.js';
 
@@ -21,8 +21,8 @@
 		let ecosystemsCopy = structuredClone(gaiaState.ecosystems);
 		ecosystemsCopy = Object.values(ecosystemsCopy);
 		ecosystemsCopy.forEach((ecosystem) => {
-			ecosystem['last_seen'] = $ecosystemsState[ecosystem['uid']]['last_seen'];
-			ecosystem['status'] = $ecosystemsState[ecosystem['uid']]['status'];
+			ecosystem['last_seen'] = gaiaState.ecosystemsState[ecosystem['uid']]['last_seen'];
+			ecosystem['status'] = gaiaState.ecosystemsState[ecosystem['uid']]['status'];
 		});
 		return ecosystemsCopy;
 	});

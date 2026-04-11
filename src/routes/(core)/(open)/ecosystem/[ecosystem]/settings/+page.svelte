@@ -12,7 +12,6 @@
 
 	import {
 		appState,
-		ecosystemsState,
 		gaiaState,
 		getStoreDataKey
 	} from '$lib/store.svelte.js';
@@ -44,7 +43,7 @@
 	let ecosystemUID = $derived(data['ecosystemUID']);
 
 	let ecosystem = $derived({ ...gaiaState.ecosystems[ecosystemUID] });
-	let ecosystemState = $derived($ecosystemsState[ecosystemUID]);
+	let ecosystemState = $derived(gaiaState.ecosystemsState[ecosystemUID]);
 
 	const valueOrNone = function (value) {
 		return value === null ? 'None' : value;
@@ -122,7 +121,7 @@
 				<td>Name</td>
 				<td>
 					{ecosystem['name']} &nbsp;
-					<Fa icon={faCircle} class={computeEcosystemStatusClass($ecosystemsState[ecosystemUID])} />
+					<Fa icon={faCircle} class={computeEcosystemStatusClass(gaiaState.ecosystemsState[ecosystemUID])} />
 				</td>
 			</tr>
 			<tr>

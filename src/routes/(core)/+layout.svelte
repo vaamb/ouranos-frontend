@@ -11,7 +11,6 @@
 
 	import {
 		appState,
-		ecosystemsState,
 		engines,
 		enginesState,
 		enginesIds,
@@ -27,7 +26,7 @@
 
 	gaiaState.ecosystems = data.ecosystems;
 	gaiaState.ecosystemsManagement = data.ecosystemsManagement;
-	ecosystemsState.set(data.ecosystemsState);
+	gaiaState.ecosystemsState = data.ecosystemsState;
 	engines.set(data.engines);
 	enginesState.set(data.enginesState);
 	infraState.servers = data.servers;
@@ -91,11 +90,11 @@
 		}
 
 		// Ecosystems
-		for (const ecosystemUID in $ecosystemsState) {
-			const ecosystem = $ecosystemsState[ecosystemUID];
+		for (const ecosystemUID in gaiaState.ecosystemsState) {
+			const ecosystem = gaiaState.ecosystemsState[ecosystemUID];
 			const newEcosystemStatus = getStatus(ecosystem['last_seen'], ecosystem['connected'], 90);
 			if (ecosystem['connected'] !== newEcosystemStatus) {
-				$ecosystemsState[ecosystemUID]['connected'] = newEcosystemStatus;
+				gaiaState.ecosystemsState[ecosystemUID]['connected'] = newEcosystemStatus;
 			}
 		}
 	};

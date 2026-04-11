@@ -12,7 +12,6 @@
 
 	import {
 		appState,
-		ecosystemsState,
 		gaiaState,
 		getStoreDataKey,
 		infraState,
@@ -141,7 +140,7 @@
 		});
 
 		for (const { uid, name } of gaiaState.ecosystemsIds) {
-			if (isConnected($ecosystemsState[uid]) && $ecosystemsState[uid]['status']) {
+			if (isConnected(gaiaState.ecosystemsState[uid]) && gaiaState.ecosystemsState[uid]['status']) {
 				await fetchEcosystemActuatorsState(uid);
 			}
 		}
@@ -291,12 +290,13 @@
 	{#each gaiaState.ecosystemsIds as { uid, name }}
 		{@const ecosystem = gaiaState.ecosystems[uid]}
 		{#if ecosystem}
-			{@const connected = isConnected($ecosystemsState[uid])}
-			{@const running = $ecosystemsState[uid]['status']}
+			{@const ecosystemState = gaiaState.ecosystemsState[uid]}
+			{@const connected = isConnected(ecosystemState)}
+			{@const running = ecosystemState['status']}
 			<Box
 				title={name}
 				align="center"
-				status={computeEcosystemStatusClass($ecosystemsState[uid])}
+				status={computeEcosystemStatusClass(ecosystemState)}
 				direction="row"
 			>
 				{#if connected && running}
@@ -478,7 +478,7 @@
 						<p>The ecosystem {name} is not currently connected</p>
 						<p>
 							Last connection to the server on
-							{formatDateTime($ecosystemsState[uid]['last_seen'])}
+							{formatDateTime(ecosystemState['last_seen'])}
 						</p>
 					</BoxItem>
 				{:else}
@@ -486,7 +486,7 @@
 						<p>The ecosystem '{name}' is not currently running and is not connected</p>
 						<p>
 							Last connection to the server on
-							{formatDateTime($ecosystemsState[uid]['last_seen'])}
+							{formatDateTime(ecosystemState['last_seen'])}
 						</p>
 					</BoxItem>
 				{/if}

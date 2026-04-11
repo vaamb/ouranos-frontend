@@ -3,7 +3,6 @@
 
 	import {
 		appState,
-		ecosystemsState,
 		enginesState,
 		gaiaState
 	} from '$lib/store.svelte.js';
@@ -50,7 +49,7 @@
 		<div class="reconnecting center-content">Reconnected to the server</div>
 	{:else if (pageType & (PAGE_TYPE.ENGINE | PAGE_TYPE.ECOSYSTEM)) === pageType}
 		{@const label = pageType === PAGE_TYPE.ENGINE ? 'engine' : 'ecosystem'}
-		{@const stateStore = pageType === PAGE_TYPE.ENGINE ? $enginesState : $ecosystemsState}
+		{@const stateStore = pageType === PAGE_TYPE.ENGINE ? enginesState : gaiaState.ecosystemsState}
 		{@const connectionStatus = stateStore[ecosystemOrEngineUID]?.connected ?? CONNECTION_STATUS.DISCONNECTED}
 		{#if connectionStatus === CONNECTION_STATUS.DISCONNECTED}
 			<div class="disconnected center-content">The {label} is currently disconnected from GAIA</div>

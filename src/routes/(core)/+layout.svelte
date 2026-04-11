@@ -19,7 +19,6 @@
 		enginesState,
 		enginesIds,
 		pingServerLastSeen,
-		pingServerStatus,
 		rawWarnings,
 		servers,
 		serversIds,
@@ -82,9 +81,9 @@
 		};
 
 		// Ping server
-		const newServerStatus = getStatus($pingServerLastSeen, $pingServerStatus, CONNECTION_TIMEOUT);
-		if ($pingServerStatus !== newServerStatus) {
-			$pingServerStatus = newServerStatus;
+		const newServerStatus = getStatus($pingServerLastSeen, appState.pingServerStatus, CONNECTION_TIMEOUT);
+		if (appState.pingServerStatus !== newServerStatus) {
+			appState.pingServerStatus = newServerStatus;
 		}
 
 		// Engines

@@ -7,6 +7,7 @@ import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 class AppState {
 	currentUser = $state(User());
 	flashMessage = $state([]);
+	pingServerStatus = $state(CONNECTION_STATUS.CONNECTED);
 }
 
 export const appState = new AppState();
@@ -39,7 +40,6 @@ export const healthData = $state({});
 export const servers = writable({});
 export const serversCurrentData = writable({});
 export const serversHistoricData = writable({});
-export const pingServerStatus = writable(CONNECTION_STATUS.CONNECTED);
 export const pingServerLastSeen = writable(new Date(0));
 export const pingServerLatency = writable(null);
 export const services = writable([]);

@@ -2,10 +2,10 @@
 	import { page } from '$app/state';
 
 	import {
+		appState,
 		ecosystems,
 		ecosystemsState,
-		enginesState,
-		pingServerStatus
+		enginesState
 	} from '$lib/store.svelte.js';
 	import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 	import { slugify } from '$lib/utils/functions.js';
@@ -44,9 +44,9 @@
 </script>
 
 <div class="bottom-bar">
-	{#if $pingServerStatus === CONNECTION_STATUS.DISCONNECTED}
+	{#if appState.pingServerStatus === CONNECTION_STATUS.DISCONNECTED}
 		<div class="disconnected center-content">Disconnected from the server</div>
-	{:else if $pingServerStatus === CONNECTION_STATUS.RECONNECTED}
+	{:else if appState.pingServerStatus === CONNECTION_STATUS.RECONNECTED}
 		<div class="reconnecting center-content">Reconnected to the server</div>
 	{:else if (pageType & (PAGE_TYPE.ENGINE | PAGE_TYPE.ECOSYSTEM)) === pageType}
 		{@const label = pageType === PAGE_TYPE.ENGINE ? 'engine' : 'ecosystem'}

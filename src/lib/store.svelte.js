@@ -37,6 +37,7 @@ export const infraState = new InfraState();
 class ServicesState {
 	services = $state([]);
 	weatherCurrently = $state({});
+	weatherHourly = $state([]);
 }
 
 export const servicesState = new ServicesState();
@@ -55,7 +56,6 @@ export const engines = writable({});
 export const enginesState = writable({});
 export const healthData = $state({});
 export const rawWarnings = writable([]);
-export const weatherHourly = writable([]);
 export const weatherDaily = writable([]);
 export const wikiTopics = writable([]);
 

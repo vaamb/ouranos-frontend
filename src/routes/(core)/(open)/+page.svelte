@@ -23,8 +23,7 @@
 		getStoreDataKey,
 		infraState,
 		servicesState,
-		warnings,
-		weatherHourly
+		warnings
 	} from '$lib/store.svelte.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
@@ -206,9 +205,9 @@
 			<BoxItem title={capitalize(servicesState.weatherCurrently['summary'])}>
 				<p>Temperature: {servicesState.weatherCurrently['temperature'].toFixed(1)} °C</p>
 				<p>Humidity: {servicesState.weatherCurrently['humidity'].toFixed(1)} %</p>
-				{#if !isEmpty($weatherHourly)}
+				{#if !isEmpty(servicesState.weatherHourly)}
 					<p>
-						Precipitation: {($weatherHourly[0]['precipitation_probability'] * 100).toFixed(1)} %
+						Precipitation: {(servicesState.weatherHourly[0]['precipitation_probability'] * 100).toFixed(1)} %
 					</p>
 				{/if}
 				<p>Wind: {servicesState.weatherCurrently['wind_speed'].toFixed(1)} km/h</p>

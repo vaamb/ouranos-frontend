@@ -30,8 +30,7 @@ import {
 	infraState,
 	updateStoreData,
 	servicesState,
-	weatherDaily,
-	weatherHourly
+	weatherDaily
 } from '$lib/store.svelte.js';
 
 // Flash messages utility functions
@@ -512,7 +511,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 	if (include.includes('currently') && isEmpty(servicesState.weatherCurrently)) {
 		exclude = exclude.filter((element) => element !== 'currently');
 	}
-	if (include.includes('hourly') && !get(weatherHourly).length > 0) {
+	if (include.includes('hourly') && !servicesState.weatherHourly.length > 0) {
 		exclude = exclude.filter((element) => element !== 'hourly');
 	}
 	if (include.includes('daily') && !get(weatherDaily).length > 0) {
@@ -539,7 +538,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 				servicesState.weatherCurrently = response['data']['currently'];
 			}
 			if (response['data']['hourly']) {
-				weatherHourly.set(response['data']['hourly']);
+				servicesState.weatherHourly = response['data']['hourly'];
 			}
 			if (response['data']['daily']) {
 				weatherDaily.set(response['data']['daily']);
@@ -550,7 +549,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 				servicesState.weatherCurrently = {};
 			}
 			if (!exclude.includes('hourly')) {
-				weatherHourly.set([]);
+				servicesState.weatherHourly = [];
 			}
 			if (!exclude.includes('daily')) {
 				weatherDaily.set([]);

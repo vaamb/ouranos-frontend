@@ -11,7 +11,7 @@
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
 	import { fetchSuntimes, fetchWeatherForecast } from '$lib/actions.svelte.js';
-	import { services, weatherCurrently, weatherDaily, weatherHourly } from '$lib/store.svelte.js';
+	import { servicesState, weatherCurrently, weatherDaily, weatherHourly } from '$lib/store.svelte.js';
 	import {
 		capitalize,
 		formatDate,
@@ -91,11 +91,11 @@
 	};
 
 	onMount(async () => {
-		if (serviceEnabled($services, 'weather')) {
+		if (serviceEnabled(servicesState.services, 'weather')) {
 			await fetchWeatherForecast();
 		}
 
-		if (serviceEnabled($services, 'suntimes')) {
+		if (serviceEnabled(servicesState.services, 'suntimes')) {
 			suntimes = await fetchSuntimes();
 		}
 	});

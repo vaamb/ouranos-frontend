@@ -20,7 +20,7 @@
 		enginesIds,
 		infraState,
 		rawWarnings,
-		services,
+		servicesState,
 		wikiTopics
 	} from '$lib/store.svelte.js';
 	import { APP_MODE } from '$lib/utils/consts.js';
@@ -34,7 +34,7 @@
 	engines.set(data.engines);
 	enginesState.set(data.enginesState);
 	infraState.servers = data.servers;
-	services.set(data.services);
+	servicesState.services = data.services;
 	rawWarnings.set(data.warnings);
 	wikiTopics.set(data.wikiTopics);
 
@@ -49,7 +49,7 @@
 			$ecosystemsIds,
 			$ecosystemsManagement,
 			$enginesIds,
-			$services,
+			servicesState.services,
 			infraState.serversIds,
 			$wikiTopics
 		)

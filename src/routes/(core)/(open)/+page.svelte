@@ -22,7 +22,7 @@
 		ecosystemsState,
 		getStoreDataKey,
 		infraState,
-		services,
+		servicesState,
 		warnings,
 		weatherCurrently,
 		weatherHourly
@@ -153,15 +153,15 @@
 				await fetchEcosystemActuatorsState(uid);
 			}
 		}
-		if (serviceEnabled($services, 'weather')) {
+		if (serviceEnabled(servicesState.services, 'weather')) {
 			await fetchWeatherForecast();
 		}
 
-		if (serviceEnabled($services, 'suntimes')) {
+		if (serviceEnabled(servicesState.services, 'suntimes')) {
 			suntimes = await fetchSuntimes();
 		}
 
-		if (serviceEnabled($services, 'calendar')) {
+		if (serviceEnabled(servicesState.services, 'calendar')) {
 			calendarEvents = await fetchCalendarEvents();
 		}
 	});
@@ -175,7 +175,7 @@
 
 <h2>Global overview</h2>
 <Row>
-	{#if serviceEnabled($services, 'calendar')}
+	{#if serviceEnabled(servicesState.services, 'calendar')}
 		<Box title="Calendar - {formatDate(now)}" align="center" href="/calendar">
 			<BoxItem title="Happening now">
 				{#each sortedCalendarEvents['happening'] as event}
@@ -201,7 +201,7 @@
 			</BoxItem>
 		</Box>
 	{/if}
-	{#if serviceEnabled($services, 'weather') && !isEmpty($weatherCurrently)}
+	{#if serviceEnabled(servicesState.services, 'weather') && !isEmpty($weatherCurrently)}
 		<Box title="Current weather" align="center" href="/weather">
 			<WeatherIcon icon={$weatherCurrently['icon']} />
 			<BoxItem title={capitalize($weatherCurrently['summary'])}>

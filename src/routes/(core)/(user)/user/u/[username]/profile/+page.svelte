@@ -8,7 +8,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
-	import { services } from '$lib/store.svelte.js';
+	import { servicesState } from '$lib/store.svelte.js';
 	import {
 		capitalize,
 		getStatusClass,
@@ -87,7 +87,7 @@
 				</button>
 			</td>
 		</tr>
-		{#if serviceEnabled($services, 'email')}
+		{#if serviceEnabled(servicesState.services, 'email')}
 			{#if !userDescription['confirmed_at']}
 				<tr>
 					<td colspan="2" style="text-align: center; vertical-align: middle">
@@ -153,7 +153,7 @@
 		/>
 	{/snippet}
 </Modal>
-{#if serviceEnabled($services, 'email')}
+{#if serviceEnabled(servicesState.services, 'email')}
 	<Modal
 		showModal={crudAction === 'confirm'}
 		onclose={resetCrudAction}

@@ -3,11 +3,11 @@
 	import SlideButton from '$lib/components/SlideButton.svelte';
 
 	import { fetchServices, updateService } from '$lib/actions.svelte.js';
-	import { appState, services } from '$lib/store.svelte.js';
+	import { appState, servicesState } from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 	import { capitalize } from '$lib/utils/functions.js';
 
-	let updatedServices = $state([...$services]);
+	let updatedServices = $state([...servicesState.services]);
 </script>
 
 <HeaderLine title="Service settings" />
@@ -37,8 +37,8 @@
 							class="text-button"
 							onclick={() => {
 								let anyUpdated = false;
-								for (const serviceIndex in $services) {
-									const service = $services[serviceIndex];
+								for (const serviceIndex in servicesState.services) {
+									const service = servicesState.services[serviceIndex];
 									const updatedService = updatedServices[serviceIndex];
 									if (service['status'] !== updatedService['status']) {
 										updateService(updatedService['name'], updatedService['status']).then(() => {
@@ -48,8 +48,8 @@
 								}
 								if (anyUpdated) {
 									fetchServices(false).then((data) => {
-										$services = data;
-										updatedServices = [...$services];
+										servicesState.services = data;
+										updatedServices = [...servicesState.services];
 									});
 								}
 							}}

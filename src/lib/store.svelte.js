@@ -15,6 +15,7 @@ class AppState {
 export const appState = new AppState();
 
 class GaiaState {
+	// ecosystems
 	ecosystems = $state({});
 	ecosystemsActuatorsState = $state({});
 	ecosystemsNycthemeralCycle = $state({});
@@ -23,9 +24,18 @@ class GaiaState {
 	ecosystemsSensorsDataHistoric = $state({});
 	ecosystemsSensorsSkeleton = $state({});
 	ecosystemsState = $state({});
+	// engines
+	engines = $state({});
 
+	// derived
 	get ecosystemsIds() {
 		return Object.values(this.ecosystems).map((obj) => ({ uid: obj['uid'], name: obj['name'] }));
+	}
+
+	get enginesIds() {
+		return Object.values(this.engines)
+			.sort(dynamicSort('uid'))
+			.map((obj) => ({ uid: obj['uid'], sid: obj['sid'] }));
 	}
 }
 
@@ -57,18 +67,11 @@ export const servicesState = new ServicesState();
 
 
 // Writable stores
-export const engines = writable({});
 export const enginesState = writable({});
 export const healthData = $state({});
 export const rawWarnings = writable([]);
 
 // Derived stores
-export const enginesIds = derived(engines, (engines) => {
-	return Object.values(engines)
-		.sort(dynamicSort('uid'))
-		.map((obj) => ({ uid: obj['uid'], sid: obj['sid'] }));
-});
-
 export const warnings = derived([rawWarnings, gaiaState.ecosystems], ([rawWarnings, ecosystems]) => {
 	rawWarnings.forEach((warning) => {
 		if (ecosystems[warning['created_by']]) {

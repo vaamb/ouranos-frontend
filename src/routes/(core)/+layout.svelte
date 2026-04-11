@@ -11,9 +11,7 @@
 
 	import {
 		appState,
-		engines,
 		enginesState,
-		enginesIds,
 		gaiaState,
 		infraState,
 		rawWarnings,
@@ -27,7 +25,7 @@
 	gaiaState.ecosystems = data.ecosystems;
 	gaiaState.ecosystemsManagement = data.ecosystemsManagement;
 	gaiaState.ecosystemsState = data.ecosystemsState;
-	engines.set(data.engines);
+	gaiaState.engines = data.engines;
 	enginesState.set(data.enginesState);
 	infraState.servers = data.servers;
 	servicesState.services = data.services;
@@ -44,7 +42,7 @@
 			appState.currentUser,
 			gaiaState.ecosystemsIds,
 			gaiaState.ecosystemsManagement,
-			$enginesIds,
+			gaiaState.enginesIds,
 			servicesState.services,
 			infraState.serversIds,
 			servicesState.wikiTopics
@@ -81,11 +79,11 @@
 		}
 
 		// Engines
-		for (const engineUID in $engines) {
-			const engine = $engines[engineUID];
+		for (const engineUID in gaiaState.engines) {
+			const engine = gaiaState.engines[engineUID];
 			const newEngineStatus = getStatus(engine['last_seen'], engine['connected'], 90);
-			if ($engines[engineUID]['connected'] !== newEngineStatus) {
-				$engines[engineUID]['connected'] = newEngineStatus;
+			if (gaiaState.engines[engineUID]['connected'] !== newEngineStatus) {
+				gaiaState.engines[engineUID]['connected'] = newEngineStatus;
 			}
 		}
 

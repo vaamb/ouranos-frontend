@@ -15,8 +15,7 @@ import {
 	getStoreDataKey,
 	infraState,
 	updateStoreData,
-	servicesState,
-	weatherDaily
+	servicesState
 } from '$lib/store.svelte.js';
 
 // Socket.IO manager, connection and disconnection
@@ -154,7 +153,7 @@ socketio.on('weather_hourly', (data) => {
 });
 
 socketio.on('weather_daily', (data) => {
-	weatherDaily.set(data);
+	servicesState.weatherDaily = data;
 });
 
 // Ecosystems

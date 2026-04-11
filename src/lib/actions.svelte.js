@@ -1,5 +1,3 @@
-import { get } from 'svelte/store';
-
 import axios from 'axios';
 
 import {
@@ -29,8 +27,7 @@ import {
 	healthData,
 	infraState,
 	updateStoreData,
-	servicesState,
-	weatherDaily
+	servicesState
 } from '$lib/store.svelte.js';
 
 // Flash messages utility functions
@@ -514,7 +511,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 	if (include.includes('hourly') && !servicesState.weatherHourly.length > 0) {
 		exclude = exclude.filter((element) => element !== 'hourly');
 	}
-	if (include.includes('daily') && !get(weatherDaily).length > 0) {
+	if (include.includes('daily') && !servicesState.weatherDaily.length > 0) {
 		exclude = exclude.filter((element) => element !== 'daily');
 	}
 
@@ -541,7 +538,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 				servicesState.weatherHourly = response['data']['hourly'];
 			}
 			if (response['data']['daily']) {
-				weatherDaily.set(response['data']['daily']);
+				servicesState.weatherDaily = response['data']['daily'];
 			}
 		})
 		.catch(() => {
@@ -552,7 +549,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 				servicesState.weatherHourly = [];
 			}
 			if (!exclude.includes('daily')) {
-				weatherDaily.set([]);
+				servicesState.weatherDaily = [];
 			}
 		});
 };

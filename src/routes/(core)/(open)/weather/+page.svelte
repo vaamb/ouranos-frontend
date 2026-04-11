@@ -11,7 +11,7 @@
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
 	import { fetchSuntimes, fetchWeatherForecast } from '$lib/actions.svelte.js';
-	import { servicesState, weatherDaily } from '$lib/store.svelte.js';
+	import { servicesState } from '$lib/store.svelte.js';
 	import {
 		capitalize,
 		formatDate,
@@ -162,7 +162,7 @@
 </Box>
 
 <Box title="Week forecast" direction="row" align="center">
-	{#each $weatherDaily as weather, index}
+	{#each servicesState.weatherDaily as weather, index}
 		{#if index > 0 && index < 7}
 			<BoxItem title={formatDate(new Date(weather['timestamp']))} minWidth="175px">
 				<WeatherIcon icon={weather['icon']} size="45px" height="75px" />

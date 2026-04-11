@@ -13,7 +13,7 @@
 	import {
 		appState,
 		gaiaState,
-		getStoreDataKey
+		getKey
 	} from '$lib/store.svelte.js';
 	import {
 		climateParameters,
@@ -175,8 +175,8 @@
 	{/snippet}
 </Modal>
 
-{#if gaiaState.ecosystemsNycthemeralCycle[getStoreDataKey(ecosystemUID)]}
-	{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[getStoreDataKey(ecosystemUID)]}
+{#if gaiaState.ecosystemsNycthemeralCycle[getKey(ecosystemUID)]}
+	{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[getKey(ecosystemUID)]}
 	<h2>Nycthemeral cycle info</h2>
 	<div style="overflow-x: auto">
 		<table class="table-base table-alternate-colors table-narrow" style="padding-bottom: 35px;">

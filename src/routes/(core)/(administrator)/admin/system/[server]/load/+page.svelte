@@ -10,7 +10,7 @@
 
 	import { fetchServerCurrentData, fetchServerHistoricData } from '$lib/actions.svelte.js';
 	import {
-		getStoreDataKey,
+		getKey,
 		infraState
 	} from '$lib/store.svelte.js';
 	import { capitalize } from '$lib/utils/functions.js';
@@ -66,8 +66,8 @@
 <HeaderLine title="Server load of {capitalize(serverName).replace('_', ' ')}" />
 
 {#await fetchServerData(serverName) then serverData_notUsed}
-	{@const currentData = infraState.serversCurrentData[getStoreDataKey(serverName)]}
-	{@const rawHistoricData = infraState.serversHistoricData[getStoreDataKey(serverName)]}
+	{@const currentData = infraState.serversCurrentData[getKey(serverName)]}
+	{@const rawHistoricData = infraState.serversHistoricData[getKey(serverName)]}
 	{@const formattedHistoricData = formatHistoricData(rawHistoricData)}
 	{#each dataKeys as dataKey}
 		{#if currentData[dataKey] !== null}

@@ -18,7 +18,7 @@ import {
 	appState,
 	gaiaState,
 	getFreshStateData,
-	getStoreDataKey,
+	getKey,
 	infraState,
 	servicesState
 } from '$lib/store.svelte.js';
@@ -268,7 +268,7 @@ export const fetchEcosystemsManagement = async function () {
 };
 
 export const fetchEcosystemNycthemeralCycleData = async function (ecosystemUID) {
-	const dataKey = getStoreDataKey(ecosystemUID);
+	const dataKey = getKey(ecosystemUID);
 	const storedData = getFreshStateData(gaiaState.ecosystemsNycthemeralCycle, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
@@ -309,7 +309,7 @@ export const fetchEcosystemWeatherEvents = async function (ecosystemUID) {
 };
 
 export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
-	const dataKey = getStoreDataKey(ecosystemUID);
+	const dataKey = getKey(ecosystemUID);
 	const storedData = getFreshStateData(gaiaState.ecosystemsActuatorsState, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
@@ -359,7 +359,7 @@ export const fetchEcosystemHardware = async function (ecosystemUID) {
 };
 
 export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, measure) {
-	const dataKey = getStoreDataKey(sensorUID, measure);
+	const dataKey = getKey(sensorUID, measure);
 	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsDataCurrent, dataKey);
 	if (checkSensorDataRecency(storedData, 1)) {
 		return storedData;
@@ -372,7 +372,7 @@ export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, m
 			const accumulator = {};
 			for (const ecosystem of response['data']) {
 				for (const sensorRecord of ecosystem['values']) {
-					const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
+					const storageKey = getKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
 					accumulator[storageKey] = {
 						timestamp: new Date(sensorRecord['timestamp']),
 						value: sensorRecord['value']
@@ -400,7 +400,7 @@ export const fetchSensorHistoricData = async function (
 	measure,
 	windowLength = undefined
 ) {
-	const dataKey = getStoreDataKey(sensorUID, measure);
+	const dataKey = getKey(sensorUID, measure);
 	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsDataHistoric, dataKey);
 	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 10)) {
 		return storedData;
@@ -428,7 +428,7 @@ export const fetchSensorHistoricData = async function (
 };
 
 export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level = null) {
-	const dataKey = getStoreDataKey(ecosystemUID, level);
+	const dataKey = getKey(ecosystemUID, level);
 	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsSkeleton, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
@@ -448,7 +448,7 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 };
 
 export const fetchHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
-	const dataKey = getStoreDataKey(ecosystemUID, measure);
+	const dataKey = getKey(ecosystemUID, measure);
 	const storedData = gaiaState.healthData[dataKey];
 	if (storedData !== undefined) {
 		return storedData;
@@ -592,7 +592,7 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 };
 
 export const fetchServerCurrentData = async function (serverUid) {
-	const dataKey = getStoreDataKey(serverUid);
+	const dataKey = getKey(serverUid);
 	const storedData = getFreshStateData(infraState.serversCurrentData, dataKey);
 
 	if (!isEmpty(storedData)) {
@@ -616,7 +616,7 @@ export const fetchServerCurrentData = async function (serverUid) {
 };
 
 export const fetchServerHistoricData = async function (serverUid) {
-	const dataKey = getStoreDataKey(serverUid);
+	const dataKey = getKey(serverUid);
 	const storedData = getFreshStateData(infraState.serversHistoricData, dataKey);
 
 	if (!isEmpty(storedData)) {

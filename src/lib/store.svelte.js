@@ -80,7 +80,7 @@ class ServicesState {
 export const servicesState = new ServicesState();
 
 // Store-related utility functions
-export const getStoreDataKey = function () {
+export const getKey = function () {
 	return Array.prototype.slice.call(arguments).join('-');
 };
 

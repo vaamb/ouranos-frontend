@@ -5,7 +5,7 @@ import {
 	appState,
 	gaiaState,
 	getFreshStateData,
-	getStoreDataKey,
+	getKey,
 	infraState,
 	servicesState
 } from '$lib/store.svelte.js';
@@ -167,7 +167,7 @@ socketio.on('ecosystems_heartbeat', (data) => {
 socketio.on('current_server_data', (data) => {
 	//TODO: temporary workaround, to change
 	const serverUid = 'base_server';
-	const dataKey = getStoreDataKey(serverUid);
+	const dataKey = getKey(serverUid);
 	if (infraState.servers[dataKey]) {
 		infraState.servers[dataKey]['last_seen'] = new Date();
 		infraState.serversCurrentData[dataKey] = data;
@@ -203,7 +203,7 @@ socketio.on('actuators_data', (data) => {
 socketio.on('current_sensors_data', (data) => {
 	const updatedData = {};
 	for (const sensorRecord of data) {
-		const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
+		const storageKey = getKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
 		updatedData[storageKey] = {
 			timestamp: new Date(sensorRecord['timestamp']),
 			value: sensorRecord['value']
@@ -216,7 +216,7 @@ socketio.on('historic_sensors_data_update', (data) => {
 	const maxValues = 6 * 24 * 7; // one record every 10 mins for a week
 	const updatedData = {};
 	for (const sensorRecord of data) {
-		const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
+		const storageKey = getKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
 		const currentData = getFreshStateData(gaiaState.ecosystemsSensorsDataHistoric, storageKey);
 		if (!currentData['values']) {
 			// No historic data, will wait for some to be loaded from api before appending new data

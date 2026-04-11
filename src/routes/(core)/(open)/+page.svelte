@@ -13,7 +13,7 @@
 	import {
 		appState,
 		gaiaState,
-		getStoreDataKey,
+		getKey,
 		infraState,
 		servicesState
 	} from '$lib/store.svelte.js';
@@ -99,7 +99,7 @@
 	) {
 		let rv = [];
 		for (const sensor of sensors) {
-			const data = ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, measure)];
+			const data = ecosystemsSensorsDataCurrent[getKey(sensor.uid, measure)];
 			if (data) {
 				rv.push(data.value);
 			}
@@ -321,7 +321,7 @@
 						{#await fetchEcosystemNycthemeralCycleData(uid)}
 							<p>Fetching data</p>
 						{:then ecosystemLightData_notUsed}
-							{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[getStoreDataKey(uid)]}
+							{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[getKey(uid)]}
 							{@const formatTime = (timeStr) => {
 								return strHoursToDate(timeStr).toLocaleTimeString([], {
 									timeStyle: 'short',
@@ -371,7 +371,7 @@
 							{#await fetchEcosystemSensorsSkeleton(uid, 'ecosystem')}
 								<p>Collecting health data from the ecosystem</p>
 							{:then sensorsSkeleton}
-								{#each gaiaState.ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'ecosystem')] as sensorsBone}
+								{#each gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')] as sensorsBone}
 									{#await fetchHealthLatestDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then averageHealthData}
@@ -396,7 +396,7 @@
 							{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
 								<p>Collecting environment data from the ecosystem</p>
 							{:then sensorsSkeleton}
-								{#each gaiaState.ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'environment')] as sensorsBone}
+								{#each gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')] as sensorsBone}
 									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then sensorsData}
@@ -424,7 +424,7 @@
 							{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
 								<p>Collecting plants data from the ecosystem</p>
 							{:then sensorsSkeleton}
-								{#each gaiaState.ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'plants')] as sensorsBone}
+								{#each gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')] as sensorsBone}
 									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then sensorsData}

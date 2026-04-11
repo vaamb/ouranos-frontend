@@ -21,7 +21,6 @@
 		ecosystemsSensorsSkeleton,
 		ecosystemsState,
 		getStoreDataKey,
-		pingServerLatency,
 		servers,
 		serversCurrentData,
 		serversIds,
@@ -235,10 +234,10 @@
 	{/if}
 	<Box title="Server status" align="center">
 		<BoxItem title="Average latency">
-			{#if $pingServerLatency === null}
+			{#if appState.pingServerLatency === null}
 				<p>Computing ...</p>
 			{:else}
-				<p>{$pingServerLatency} ms</p>
+				<p>{appState.pingServerLatency} ms</p>
 			{/if}
 		</BoxItem>
 		{#if appState.currentUser.can(permissions.ADMIN)}

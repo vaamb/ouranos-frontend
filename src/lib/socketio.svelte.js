@@ -13,7 +13,6 @@ import {
 	enginesState,
 	getFreshStoreData,
 	getStoreDataKey,
-	pingServerLatency,
 	servers,
 	serversCurrentData,
 	updateStoreData,
@@ -66,7 +65,7 @@ socketio.on('pong', () => {
 	for (let i = 0; i < latencyArray.length; i++) {
 		sum += latencyArray[i];
 	}
-	pingServerLatency.set((Math.round((10 * sum) / latencyArray.length) / 10).toFixed(1));
+	appState.pingServerLatency = (Math.round((10 * sum) / latencyArray.length) / 10).toFixed(1);
 });
 
 // User-related events

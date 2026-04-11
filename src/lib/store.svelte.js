@@ -9,6 +9,7 @@ class AppState {
 	flashMessage = $state([]);
 	pingServerStatus = $state(CONNECTION_STATUS.CONNECTED);
 	pingServerLastSeen = $state(new Date(0));
+	pingServerLatency = $state(null);
 }
 
 export const appState = new AppState();
@@ -41,7 +42,6 @@ export const healthData = $state({});
 export const servers = writable({});
 export const serversCurrentData = writable({});
 export const serversHistoricData = writable({});
-export const pingServerLatency = writable(null);
 export const services = writable([]);
 export const rawWarnings = writable([]);
 export const weatherCurrently = writable({});

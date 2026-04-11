@@ -24,7 +24,6 @@
 		infraState,
 		servicesState,
 		warnings,
-		weatherCurrently,
 		weatherHourly
 	} from '$lib/store.svelte.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
@@ -201,19 +200,19 @@
 			</BoxItem>
 		</Box>
 	{/if}
-	{#if serviceEnabled(servicesState.services, 'weather') && !isEmpty($weatherCurrently)}
+	{#if serviceEnabled(servicesState.services, 'weather') && !isEmpty(servicesState.weatherCurrently)}
 		<Box title="Current weather" align="center" href="/weather">
-			<WeatherIcon icon={$weatherCurrently['icon']} />
-			<BoxItem title={capitalize($weatherCurrently['summary'])}>
-				<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
-				<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
+			<WeatherIcon icon={servicesState.weatherCurrently['icon']} />
+			<BoxItem title={capitalize(servicesState.weatherCurrently['summary'])}>
+				<p>Temperature: {servicesState.weatherCurrently['temperature'].toFixed(1)} °C</p>
+				<p>Humidity: {servicesState.weatherCurrently['humidity'].toFixed(1)} %</p>
 				{#if !isEmpty($weatherHourly)}
 					<p>
 						Precipitation: {($weatherHourly[0]['precipitation_probability'] * 100).toFixed(1)} %
 					</p>
 				{/if}
-				<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
-				<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
+				<p>Wind: {servicesState.weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
+				<p>Cloud cover: {servicesState.weatherCurrently['cloud_cover'].toFixed(1)} %</p>
 				{#if !isEmpty(suntimes)}
 					<div>
 						<Fa icon={faSun} />&nbsp{suntimes[0]['sunrise'].toLocaleTimeString([], {

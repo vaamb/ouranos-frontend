@@ -15,7 +15,7 @@ import {
 	getStoreDataKey,
 	infraState,
 	updateStoreData,
-	weatherCurrently,
+	servicesState,
 	weatherDaily,
 	weatherHourly
 } from '$lib/store.svelte.js';
@@ -147,7 +147,7 @@ socketio.on('leave_room_ack', (data) => {
 
 // Weather
 socketio.on('weather_current', (data) => {
-	weatherCurrently.set(data);
+	servicesState.weatherCurrently = data;
 });
 
 socketio.on('weather_hourly', (data) => {

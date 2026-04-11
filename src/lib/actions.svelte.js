@@ -29,7 +29,7 @@ import {
 	healthData,
 	infraState,
 	updateStoreData,
-	weatherCurrently,
+	servicesState,
 	weatherDaily,
 	weatherHourly
 } from '$lib/store.svelte.js';
@@ -509,7 +509,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 	let exclude = ['currently', 'hourly', 'daily'];
 
 	// TODO: check for data recency
-	if (include.includes('currently') && isEmpty(get(weatherCurrently))) {
+	if (include.includes('currently') && isEmpty(servicesState.weatherCurrently)) {
 		exclude = exclude.filter((element) => element !== 'currently');
 	}
 	if (include.includes('hourly') && !get(weatherHourly).length > 0) {
@@ -536,7 +536,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 		})
 		.then((response) => {
 			if (response['data']['currently']) {
-				weatherCurrently.set(response['data']['currently']);
+				servicesState.weatherCurrently = response['data']['currently'];
 			}
 			if (response['data']['hourly']) {
 				weatherHourly.set(response['data']['hourly']);
@@ -547,7 +547,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 		})
 		.catch(() => {
 			if (!exclude.includes('currently')) {
-				weatherCurrently.set({});
+				servicesState.weatherCurrently = {};
 			}
 			if (!exclude.includes('hourly')) {
 				weatherHourly.set([]);

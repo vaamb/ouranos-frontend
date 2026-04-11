@@ -12,7 +12,6 @@
 
 	import {
 		appState,
-		ecosystemsNycthemeralCycle,
 		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsSkeleton,
@@ -326,7 +325,7 @@
 						{#await fetchEcosystemNycthemeralCycleData(uid)}
 							<p>Fetching data</p>
 						{:then ecosystemLightData_notUsed}
-							{@const nycthemeralCycle = $ecosystemsNycthemeralCycle[getStoreDataKey(uid)]}
+							{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[getStoreDataKey(uid)]}
 							{@const formatTime = (timeStr) => {
 								return strHoursToDate(timeStr).toLocaleTimeString([], {
 									timeStyle: 'short',

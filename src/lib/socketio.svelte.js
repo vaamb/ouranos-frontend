@@ -4,7 +4,6 @@ import { Manager } from 'socket.io-client';
 import { APP_MODE, BACKEND_URL, getAppMode } from '$lib/utils/consts.js';
 import {
 	appState,
-	ecosystemsNycthemeralCycle,
 	ecosystemsManagement,
 	ecosystemsSensorsDataCurrent,
 	ecosystemsSensorsDataHistoric,
@@ -251,7 +250,7 @@ socketio.on('nycthemeral_info', (data) => {
 		ecosystem['data']['span'] = ecosystem['data']['lighting'] ? 'mimic' : 'fixed';
 	});
 	const updatedData = data.reduce((a, v) => ({ ...a, [v['uid']]: v['data'] }), {});
-	updateStoreData(ecosystemsNycthemeralCycle, updatedData);
+	gaiaState.ecosystemsNycthemeralCycle = updatedData;
 });
 
 socketio.on('management', (data) => {

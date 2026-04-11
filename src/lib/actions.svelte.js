@@ -16,14 +16,11 @@ import { isEmpty } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
 	appState,
-	ecosystemsSensorsDataHistoric,
 	gaiaState,
 	getFreshStateData,
-	getFreshStoreData,
 	getStoreDataKey,
 	healthData,
 	infraState,
-	updateStoreData,
 	servicesState
 } from '$lib/store.svelte.js';
 
@@ -405,7 +402,7 @@ export const fetchSensorHistoricData = async function (
 	windowLength = undefined
 ) {
 	const dataKey = getStoreDataKey(sensorUID, measure);
-	const storedData = getFreshStoreData(ecosystemsSensorsDataHistoric, dataKey);
+	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsDataHistoric, dataKey);
 	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 10)) {
 		return storedData;
 	}
@@ -423,7 +420,7 @@ export const fetchSensorHistoricData = async function (
 				span: response['data']['span'],
 				values: response['data']['values']
 			};
-			updateStoreData(ecosystemsSensorsDataHistoric, { [dataKey]: data });
+			gaiaState.ecosystemsSensorsDataHistoric[dataKey] = data;
 			return data;
 		})
 		.catch(() => {

@@ -4,14 +4,12 @@ import { Manager } from 'socket.io-client';
 import { APP_MODE, BACKEND_URL, getAppMode } from '$lib/utils/consts.js';
 import {
 	appState,
-	ecosystemsSensorsDataHistoric,
 	ecosystemsState,
 	enginesState,
 	gaiaState,
-	getFreshStoreData,
+	getFreshStateData,
 	getStoreDataKey,
 	infraState,
-	updateStoreData,
 	servicesState
 } from '$lib/store.svelte.js';
 
@@ -224,7 +222,7 @@ socketio.on('historic_sensors_data_update', (data) => {
 	const updatedData = {};
 	for (const sensorRecord of data) {
 		const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
-		const currentData = getFreshStoreData(ecosystemsSensorsDataHistoric, storageKey);
+		const currentData = getFreshStateData(gaiaState.ecosystemsSensorsDataHistoric, storageKey);
 		if (!currentData['values']) {
 			// No historic data, will wait for some to be loaded from api before appending new data
 			continue;
@@ -239,7 +237,7 @@ socketio.on('historic_sensors_data_update', (data) => {
 			values: values.slice(-maxValues)
 		};
 	}
-	updateStoreData(ecosystemsSensorsDataHistoric, updatedData);
+	gaiaState.ecosystemsSensorsDataHistoric = updatedData;
 });
 
 socketio.on('nycthemeral_info', (data) => {

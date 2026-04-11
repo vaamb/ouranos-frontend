@@ -15,7 +15,6 @@
 		probePath
 	} from '$lib/actions.svelte.js';
 	import {
-		ecosystemsSensorsDataHistoric,
 		gaiaState,
 		getStoreDataKey
 	} from '$lib/store.svelte.js';
@@ -93,7 +92,7 @@
 			<Row>
 				{#await fetchSensorHistoricData(ecosystemUID, sensor['uid'], sensorsBone['measure'], 31) then sensorData_notUsed}
 					{@const historicSensorsData =
-						$ecosystemsSensorsDataHistoric[getStoreDataKey(sensor['uid'], sensorsBone['measure'])]}
+						gaiaState.ecosystemsSensorsDataHistoric[getStoreDataKey(sensor['uid'], sensorsBone['measure'])]}
 					{#if historicSensorsData}
 						{@const imagePath = `${STATIC_URL}/ecosystem_health/${ecosystemUID}/${sensor['uid']}/${sensorsBone['measure']}.jpeg?${new Date().getTime()}`}
 						<Box title={sensor['name']} direction="row" icon={faKitMedical}>

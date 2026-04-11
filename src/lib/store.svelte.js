@@ -15,7 +15,11 @@ class AppState {
 export const appState = new AppState();
 
 class GaiaState {
+	ecosystems = $state({});
 
+	get ecosystemsIds() {
+		return Object.values(this.ecosystems).map((obj) => ({ uid: obj['uid'], name: obj['name'] }));
+	}
 }
 
 export const gaiaState = new GaiaState();
@@ -46,7 +50,6 @@ export const servicesState = new ServicesState();
 
 
 // Writable stores
-export const ecosystems = writable({});
 export const ecosystemsActuatorsState = writable({});
 export const ecosystemsNycthemeralCycle = writable({});
 export const ecosystemsManagement = writable({});
@@ -60,18 +63,13 @@ export const healthData = $state({});
 export const rawWarnings = writable([]);
 
 // Derived stores
-export const ecosystemsIds = derived(ecosystems, (ecosystems) => {
-	return Object.values(ecosystems)
-		.map((obj) => ({ uid: obj['uid'], name: obj['name'] }));
-});
-
 export const enginesIds = derived(engines, (engines) => {
 	return Object.values(engines)
 		.sort(dynamicSort('uid'))
 		.map((obj) => ({ uid: obj['uid'], sid: obj['sid'] }));
 });
 
-export const warnings = derived([rawWarnings, ecosystems], ([rawWarnings, ecosystems]) => {
+export const warnings = derived([rawWarnings, gaiaState.ecosystems], ([rawWarnings, ecosystems]) => {
 	rawWarnings.forEach((warning) => {
 		if (ecosystems[warning['created_by']]) {
 			warning['created_by'] = ecosystems[warning['created_by']]['name'];

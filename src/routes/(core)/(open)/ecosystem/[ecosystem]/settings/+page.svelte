@@ -12,10 +12,10 @@
 
 	import {
 		appState,
-		ecosystems,
 		ecosystemsNycthemeralCycle,
 		ecosystemsManagement,
 		ecosystemsState,
+		gaiaState,
 		getStoreDataKey
 	} from '$lib/store.svelte.js';
 	import {
@@ -45,7 +45,7 @@
 	let ecosystemName = $derived(data['ecosystemName']);
 	let ecosystemUID = $derived(data['ecosystemUID']);
 
-	let ecosystem = $derived({ ...$ecosystems[ecosystemUID] });
+	let ecosystem = $derived({ ...gaiaState.ecosystems[ecosystemUID] });
 	let ecosystemState = $derived($ecosystemsState[ecosystemUID]);
 
 	const valueOrNone = function (value) {

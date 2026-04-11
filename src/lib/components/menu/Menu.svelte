@@ -18,7 +18,7 @@
 	import MenuItem from '$lib/components/menu/MenuItem.svelte';
 
 	import { permissions } from '$lib/utils/consts.js';
-	import { appState, ecosystemsIds } from '$lib/store.svelte.js';
+	import { appState, gaiaState } from '$lib/store.svelte.js';
 
 	let { items, width, miniWidth = 45, minimized = $bindable(false) } = $props();
 
@@ -36,7 +36,7 @@
 	// Menu item to open
 	let toggledMenuItemIndex = $state(null);
 	// Pre-open ecosystems submenu if there are less than 3 ecosystems
-	if ($ecosystemsIds.length < 3) {
+	if (gaiaState.ecosystemsIds.length < 3) {
 		const index = items.findIndex((item) => item.name === 'Ecosystems');
 		if (index !== -1) {
 			toggledMenuItemIndex = index;

@@ -3,9 +3,9 @@
 
 	import {
 		appState,
-		ecosystems,
 		ecosystemsState,
-		enginesState
+		enginesState,
+		gaiaState
 	} from '$lib/store.svelte.js';
 	import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 	import { slugify } from '$lib/utils/functions.js';
@@ -21,7 +21,7 @@
 	// Page type
 	const computePageType = function (url) {
 		if (url.includes('/ecosystem/')) {
-			const ecosystem = Object.values($ecosystems).find((ecosystem) => {
+			const ecosystem = Object.values(gaiaState.ecosystems).find((ecosystem) => {
 				return slugify(ecosystem['name']) === page.params['ecosystem'];
 			});
 			return {

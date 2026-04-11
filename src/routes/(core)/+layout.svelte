@@ -11,13 +11,12 @@
 
 	import {
 		appState,
-		ecosystems,
-		ecosystemsIds,
 		ecosystemsManagement,
 		ecosystemsState,
 		engines,
 		enginesState,
 		enginesIds,
+		gaiaState,
 		infraState,
 		rawWarnings,
 		servicesState
@@ -27,7 +26,7 @@
 	// Fill stores with pre-fetched data
 	let { data, children } = $props();
 
-	ecosystems.set(data.ecosystems);
+	gaiaState.ecosystems = data.ecosystems;
 	ecosystemsManagement.set(data.ecosystemsManagement);
 	ecosystemsState.set(data.ecosystemsState);
 	engines.set(data.engines);
@@ -45,7 +44,7 @@
 	let menuItems = $derived(
 		generateListOfMenuItems(
 			appState.currentUser,
-			$ecosystemsIds,
+			gaiaState.ecosystemsIds,
 			$ecosystemsManagement,
 			$enginesIds,
 			servicesState.services,

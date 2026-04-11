@@ -12,14 +12,13 @@
 
 	import {
 		appState,
-		ecosystems,
-		ecosystemsIds,
 		ecosystemsActuatorsState,
 		ecosystemsNycthemeralCycle,
 		ecosystemsManagement,
 		ecosystemsSensorsDataCurrent,
 		ecosystemsSensorsSkeleton,
 		ecosystemsState,
+		gaiaState,
 		getStoreDataKey,
 		infraState,
 		servicesState,
@@ -146,7 +145,7 @@
 			sensorsPrimed = true;
 		});
 
-		for (const { uid, name } of $ecosystemsIds) {
+		for (const { uid, name } of gaiaState.ecosystemsIds) {
 			if (isConnected($ecosystemsState[uid]) && $ecosystemsState[uid]['status']) {
 				await fetchEcosystemActuatorsState(uid);
 			}
@@ -292,10 +291,10 @@
 	{/if}
 </Row>
 
-{#if $ecosystemsIds.length > 0}
+{#if gaiaState.ecosystemsIds.length > 0}
 	<h2>Ecosystems overview</h2>
-	{#each $ecosystemsIds as { uid, name }}
-		{@const ecosystem = $ecosystems[uid]}
+	{#each gaiaState.ecosystemsIds as { uid, name }}
+		{@const ecosystem = gaiaState.ecosystems[uid]}
 		{#if ecosystem}
 			{@const connected = isConnected($ecosystemsState[uid])}
 			{@const running = $ecosystemsState[uid]['status']}

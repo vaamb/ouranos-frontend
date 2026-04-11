@@ -11,8 +11,7 @@
 	import { fetchServerCurrentData, fetchServerHistoricData } from '$lib/actions.svelte.js';
 	import {
 		getStoreDataKey,
-		infraState,
-		serversHistoricData
+		infraState
 	} from '$lib/store.svelte.js';
 	import { capitalize } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
@@ -68,7 +67,7 @@
 
 {#await fetchServerData(serverName) then serverData_notUsed}
 	{@const currentData = infraState.serversCurrentData[getStoreDataKey(serverName)]}
-	{@const rawHistoricData = $serversHistoricData[getStoreDataKey(serverName)]}
+	{@const rawHistoricData = infraState.serversHistoricData[getStoreDataKey(serverName)]}
 	{@const formattedHistoricData = formatHistoricData(rawHistoricData)}
 	{#each dataKeys as dataKey}
 		{#if currentData[dataKey] !== null}

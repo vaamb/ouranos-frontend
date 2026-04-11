@@ -23,6 +23,7 @@ export const gaiaState = new GaiaState();
 class InfraState {
 	servers = $state({});
 	serversCurrentData = $state({});
+	serversHistoricData = $state({});
 
 	get serversIds() {
 		return Object.values(this.servers)
@@ -52,7 +53,6 @@ export const ecosystemsState = writable({});
 export const engines = writable({});
 export const enginesState = writable({});
 export const healthData = $state({});
-export const serversHistoricData = writable({});
 export const services = writable([]);
 export const rawWarnings = writable([]);
 export const weatherCurrently = writable({});

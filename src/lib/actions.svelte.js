@@ -28,7 +28,6 @@ import {
 	getStoreDataKey,
 	healthData,
 	infraState,
-	serversHistoricData,
 	updateStoreData,
 	weatherCurrently,
 	weatherDaily,
@@ -629,7 +628,7 @@ export const fetchServerCurrentData = async function (serverUid) {
 
 export const fetchServerHistoricData = async function (serverUid) {
 	const dataKey = getStoreDataKey(serverUid);
-	const storedData = getFreshStoreData(serversHistoricData, dataKey);
+	const storedData = getFreshStateData(infraState.serversHistoricData, dataKey);
 
 	if (!isEmpty(storedData)) {
 		return storedData;
@@ -641,12 +640,12 @@ export const fetchServerHistoricData = async function (serverUid) {
 		})
 		.then((response) => {
 			const data = response['data']['values'];
-			updateStoreData(serversHistoricData, { [dataKey]: data });
+			infraState.serversHistoricData[dataKey] = data
 			return data;
 		})
 		.catch(() => {
 			const data = [];
-			updateStoreData(serversHistoricData, { [dataKey]: data });
+			infraState.serversHistoricData[dataKey] = data
 			return data;
 		});
 };

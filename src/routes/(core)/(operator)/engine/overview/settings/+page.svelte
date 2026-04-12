@@ -6,10 +6,10 @@
 	import { formatDateTime } from '$lib/utils/functions.js';
 
 	let fullEngines = $derived.by(() => {
-		return Object.values(gaiaState.engines).map((ecosystem) => ({
-			...ecosystem,
-			last_seen: gaiaState.enginesState[ecosystem['uid']]['last_seen'],
-			connected: gaiaState.enginesState[ecosystem['uid']]['connected'],
+		return Object.values(gaiaState.engines).map((engine) => ({
+			...engine,
+			last_seen: gaiaState.enginesState[engine['uid']]['last_seen'],
+			connected: gaiaState.enginesState[engine['uid']]['connected'],
 		}));
 	});
 </script>

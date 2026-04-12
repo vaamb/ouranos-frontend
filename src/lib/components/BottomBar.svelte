@@ -31,7 +31,7 @@
 				return {
 					pageType: PAGE_TYPE.DEFAULT,
 					ecosystemOrEngineUID: undefined
-				}
+				};
 			}
 			return {
 				pageType: PAGE_TYPE.ENGINE,

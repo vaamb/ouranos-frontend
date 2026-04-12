@@ -374,18 +374,18 @@
 					{#if ecosystemData && ecosystemSensorsSkeleton}
 						<BoxItem title="Ecosystem health" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/ecosystem">
 							{#each ecosystemSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone['measure']}`)}
-								{#await fetchHealthLatestDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
-									<p>Collecting sensors data for {sensorsBone.measure} measure</p>
+								{#await fetchHealthLatestDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
+									<p>Collecting sensors data for {sensorsBone['measure']} measure</p>
 								{:then averageHealthData}
 									{#if averageHealthData !== null}
 										<p style="margin-bottom: 0">
-											{capitalize(sensorsBone.measure).replace('_', ' ')}:
+											{capitalize(sensorsBone['measure']).replace('_', ' ')}:
 											{averageHealthData}
-											{sensorsBone.units[0]}
+											{sensorsBone['units'][0]}
 										</p>
 									{:else}
 										<p style="margin-bottom: 0">
-											No recent data for {capitalize(sensorsBone.measure).replace('_', ' ')}
+											No recent data for {capitalize(sensorsBone['measure']).replace('_', ' ')}
 										</p>
 									{/if}
 								{/await}
@@ -395,19 +395,19 @@
 					{#if environmentData && environmentSensorsSkeleton && sensorsPrimed}
 						<BoxItem title="Environment" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/environment">
 							{#each environmentSensorsSkeleton as sensorsBone (`${uid}-environment-${sensorsBone['measure']}`)}
-								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
-									<p>Collecting sensors data for {sensorsBone.measure} measure</p>
+								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
+									<p>Collecting sensors data for {sensorsBone['measure']} measure</p>
 								{:then _}
 									{@const averageData = computeAverageSensorsCurrentDataForMeasure(
 										gaiaState.ecosystemsSensorsDataCurrent,
-										sensorsBone.measure,
-										sensorsBone.sensors
+										sensorsBone['measure'],
+										sensorsBone['sensors']
 									)}
 									{#if averageData !== null}
 										<p style="margin-bottom: 0">
-											{capitalize(sensorsBone.measure).replace('_', ' ')}:
+											{capitalize(sensorsBone['measure']).replace('_', ' ')}:
 											{averageData}
-											{sensorsBone.units[0]}
+											{sensorsBone['units'][0]}
 										</p>
 									{/if}
 								{/await}
@@ -419,19 +419,19 @@
 					{#if plantsData && plantsSensorsSkeleton && sensorsPrimed}
 						<BoxItem title="Plants" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/plants">
 							{#each plantsSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone['measure']}`)}
-								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
-									<p>Collecting sensors data for {sensorsBone.measure} measure</p>
+								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
+									<p>Collecting sensors data for {sensorsBone['measure']} measure</p>
 								{:then _}
 									{@const averageData = computeAverageSensorsCurrentDataForMeasure(
 										gaiaState.ecosystemsSensorsDataCurrent,
-										sensorsBone.measure,
-										sensorsBone.sensors
+										sensorsBone['measure'],
+										sensorsBone['sensors']
 									)}
 									{#if averageData !== null}
 										<p style="margin-bottom: 0">
-											{capitalize(sensorsBone.measure).replace('_', ' ')}:
+											{capitalize(sensorsBone['measure']).replace('_', ' ')}:
 											{averageData}
-											{sensorsBone.units[0]}
+											{sensorsBone['units'][0]}
 										</p>
 									{/if}
 								{/await}

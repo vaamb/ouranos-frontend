@@ -51,6 +51,20 @@
 	};
 	let updateNowInterval = null;
 
+	// Warning and calendar
+	const getLevelColor = function (level) {
+		if (level === 'High') {
+			return '--yellow';
+		} else if (level === 'Severe') {
+			return '--orange';
+		} else if (level === 'Critical') {
+			return '--red';
+		} else {
+			return '--green';
+		}
+	};
+
+	// Warnings
 	const sortWarningsByEcosystem = function (warnings) {
 		const sortedWarnings = {};
 		for (const warning of warnings) {
@@ -61,6 +75,7 @@
 	};
 	let sortedWarnings = $derived(sortWarningsByEcosystem(gaiaState.warnings));
 
+	// Calendar
 	let calendarEvents = $state([]);
 	const sortCalendarEventsByHappening = function (events) {
 		const sortedEvents = {
@@ -79,6 +94,7 @@
 	};
 	let sortedCalendarEvents = $derived(sortCalendarEventsByHappening(calendarEvents));
 
+	// Ecosystems
 	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {
 		let rv = [];
 		for (const sensor of sensors) {
@@ -111,27 +127,15 @@
 		return average(rv).toFixed(2);
 	};
 
-	const getLevelColor = function (level) {
-		['High', 'Severe', 'Critical'];
-		if (level === 'High') {
-			return '--yellow';
-		} else if (level === 'Severe') {
-			return '--orange';
-		} else if (level === 'Critical') {
-			return '--red';
-		} else {
-			return '--green';
-		}
-	};
-
 	let suntimes = $state([]);
 	let sensorsPrimed = $state(false);
+	let ecosystemsDataLoaded = $state({})
 
 	const recentPicture = function (timestamp, now) {
 		return now - new Date(timestamp) < 5 * 60 * 1000 ? "--green": "--red"
 	}
 
-	let ecosystemsDataLoaded = $state({})
+	// On mount
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 

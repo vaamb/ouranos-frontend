@@ -422,7 +422,7 @@
 					{/if}
 					{#if plantsData && plantsSensorsSkeleton && sensorsPrimed}
 						<BoxItem title="Plants" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/plants">
-							{#each plantsSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone['measure']}`)}
+							{#each plantsSensorsSkeleton as sensorsBone (`${uid}-plants-${sensorsBone['measure']}`)}
 								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
 									<p>Collecting sensors data for {sensorsBone['measure']} measure</p>
 								{:then _}

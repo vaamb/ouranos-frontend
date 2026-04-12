@@ -131,6 +131,7 @@
 		return now - new Date(timestamp) < 5 * 60 * 1000 ? "--green": "--red"
 	}
 
+	let ecosystemsDataLoaded = $state({})
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
@@ -138,11 +139,25 @@
 			sensorsPrimed = true;
 		});
 
-		for (const { uid, name } of gaiaState.ecosystemsIds) {
-			if (isConnected(gaiaState.ecosystemsState[uid]) && gaiaState.ecosystemsState[uid]['status']) {
-				await fetchEcosystemActuatorsState(uid);
-			}
+		const fetchEcosystemData = async function (uid) {
+			await Promise.all([
+				fetchEcosystemActuatorsState(uid),
+				fetchEcosystemNycthemeralCycleData(uid),
+				fetchEcosystemSensorsSkeleton(uid, 'ecosystem'),
+				fetchEcosystemSensorsSkeleton(uid, 'environment'),
+				fetchEcosystemSensorsSkeleton(uid, 'plants'),
+				fetchCameraPicturesInfo(uid)
+			]);
+			ecosystemsDataLoaded[uid] = true;
 		}
+
+		await Promise.all(
+			gaiaState.ecosystemsIds
+				.map((ecosystemIds) => ecosystemIds['uid'])
+				.filter((uid) => isConnected(gaiaState.ecosystemsState[uid]) && gaiaState.ecosystemsState[uid]['status'])
+				.map((uid) => fetchEcosystemData(uid))
+		)
+
 		if (serviceEnabled(servicesState.services, 'weather')) {
 			await fetchWeatherForecast();
 		}
@@ -288,7 +303,7 @@
 	<h2>Ecosystems overview</h2>
 	{#each gaiaState.ecosystemsIds as { uid } (uid)}
 		{@const ecosystem = gaiaState.ecosystems[uid]}
-		{#if ecosystem}
+		{#if ecosystemsDataLoaded[uid] === true}
 			{@const ecosystemState = gaiaState.ecosystemsState[uid]}
 			{@const connected = isConnected(ecosystemState)}
 			{@const running = ecosystemState['status']}

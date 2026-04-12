@@ -130,6 +130,7 @@
 	let suntimes = $state([]);
 	let sensorsPrimed = $state(false);
 	let ecosystemsDataLoaded = $state({})
+	let ecosystemsCameraPicturesInfo = $state({})
 
 	const recentPicture = function (timestamp, now) {
 		return now - new Date(timestamp) < 5 * 60 * 1000 ? "--green": "--red"
@@ -144,14 +145,16 @@
 		});
 
 		const fetchEcosystemData = async function (uid) {
-			await Promise.all([
-				fetchEcosystemActuatorsState(uid),
-				fetchEcosystemNycthemeralCycleData(uid),
-				fetchEcosystemSensorsSkeleton(uid, 'ecosystem'),
-				fetchEcosystemSensorsSkeleton(uid, 'environment'),
-				fetchEcosystemSensorsSkeleton(uid, 'plants'),
-				fetchCameraPicturesInfo(uid)
-			]);
+			const [actuatorsState, nycthemeralCycle, ecosystemSensorsSkeleton, environmentSensorsSkeleton, plantsSensorsSkeleton, cameraPicturesInfo] =
+					await Promise.all([
+					fetchEcosystemActuatorsState(uid),
+					fetchEcosystemNycthemeralCycleData(uid),
+					fetchEcosystemSensorsSkeleton(uid, 'ecosystem'),
+					fetchEcosystemSensorsSkeleton(uid, 'environment'),
+					fetchEcosystemSensorsSkeleton(uid, 'plants'),
+					fetchCameraPicturesInfo(uid)
+				]);
+			ecosystemsCameraPicturesInfo[uid] = cameraPicturesInfo;
 			ecosystemsDataLoaded[uid] = true;
 		}
 
@@ -329,6 +332,7 @@
 					{@const ecosystemSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')]}
 					{@const environmentSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')]}
 					{@const plantsSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')]}
+					{@const cameraPicturesInfo = ecosystemsCameraPicturesInfo[uid]}
 					{#if nycthemeralCycle}
 						<BoxItem title="Nycthemeral cycle" href="/ecosystem/{slugify(ecosystem['name'])}/settings">
 							{@const formatTime = (timeStr) => {
@@ -444,18 +448,14 @@
 							{/each}
 						</BoxItem>
 					{/if}
-					{#if pictures}
+					{#if pictures && cameraPicturesInfo}
 						<BoxItem title="Camera" href="/ecosystem/{slugify(ecosystem['name'])}/camera">
-							{#await fetchCameraPicturesInfo(uid)}
-								<p>Loading camera information</p>
-							{:then camerasInfo}
-								{#each Object.values(camerasInfo) as cameraInfo (`${uid}-${cameraInfo["camera_name"]}`)}
-									<p>
-										{cameraInfo["camera_name"]}
-										<Fa icon={faCircle} style="color: var({recentPicture(cameraInfo['timestamp'], now)});" />
-									</p>
-								{/each}
-							{/await}
+							{#each Object.values(cameraPicturesInfo) as cameraInfo (`${uid}-${cameraInfo["camera_name"]}`)}
+								<p>
+									{cameraInfo["camera_name"]}
+									<Fa icon={faCircle} style="color: var({recentPicture(cameraInfo['timestamp'], now)});" />
+								</p>
+							{/each}
 						</BoxItem>
 					{/if}
 				{:else if connected}

@@ -1,4 +1,7 @@
-<div class="center-content">
+<script>
+</script>
+
+<div class="main center-content">
 	<div style="max-width: 80%">
 		<h1>Sorry,</h1>
 		<p>Ouranos is currently under maintenance</p>
@@ -12,5 +15,10 @@
 
 	p {
 		font-size: 1.5rem;
+	}
+
+	.main {
+		height: 100vh;
+		width: 100vw;
 	}
 </style>

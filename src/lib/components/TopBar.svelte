@@ -4,7 +4,7 @@
 
 	import { logOut } from '$lib/actions.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
-	import { currentUser, warnings } from '$lib/store.svelte.js';
+	import { appState, gaiaState } from '$lib/store.svelte.js';
 
 	let { development, miniWidth = 45, fullPage = false } = $props();
 </script>
@@ -13,9 +13,9 @@
 	<div class="left" class:full-page={fullPage}>
 		<div style="margin-right: 10px"></div>
 		<div class="user-permission">
-			{#if $currentUser.can(permissions.ADMIN)}
+			{#if appState.currentUser.can(permissions.ADMIN)}
 				<div>Logged as Admin</div>
-			{:else if $currentUser.can(permissions.OPERATE)}
+			{:else if appState.currentUser.can(permissions.OPERATE)}
 				<div>Logged as Operator</div>
 			{/if}
 		</div>
@@ -30,7 +30,7 @@
 	</div>
 	<div class="right">
 		<div class="user-menu">
-			{#if $currentUser.isAnonymous}
+			{#if appState.currentUser.isAnonymous}
 				<a href="/auth/login">
 					<div class="center-button" style="display: flex">
 						<div style="margin: auto">
@@ -40,11 +40,11 @@
 				</a>
 			{:else}
 				<button class="reset-button dropdown-button center-button">
-					{$currentUser.username}
+					{appState.currentUser.username}
 				</button>
 				<div class="dropdown-content" id="userDropdownContent">
 					<div>
-						<a href="/user/u/{$currentUser.username}/profile">Profile</a>
+						<a href="/user/u/{appState.currentUser.username}/profile">Profile</a>
 					</div>
 					<div>
 						<button class="reset-button clickable" onclick={logOut}>Log out</button>
@@ -53,7 +53,7 @@
 			{/if}
 		</div>
 		<div class="warning-button">
-			{#if $currentUser.isAuthenticated && $warnings.length > 0}
+			{#if appState.currentUser.isAuthenticated && gaiaState.warnings.length > 0}
 				<a href="/warnings">
 					<Fa icon={faExclamationTriangle} />
 				</a>

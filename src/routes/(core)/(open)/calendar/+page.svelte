@@ -3,7 +3,7 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 
 	import { crudRequest, fetchCalendarEvents } from '$lib/actions.svelte.js';
-	import { currentUser } from '$lib/store.svelte.js';
+	import { appState } from '$lib/store.svelte.js';
 
 	const now = new Date();
 	let month = $state(now.getMonth());
@@ -19,7 +19,7 @@
 	};
 
 	$effect(() => {
-		if ($currentUser.isAuthenticated) {
+		if (appState.currentUser.isAuthenticated) {
 			refreshEvents()
 		}
 	});

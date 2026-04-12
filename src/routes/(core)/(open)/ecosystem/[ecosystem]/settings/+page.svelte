@@ -11,12 +11,9 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import {
-		currentUser,
-		ecosystems,
-		ecosystemsNycthemeralCycle,
-		ecosystemsManagement,
-		ecosystemsState,
-		getStoreDataKey
+		appState,
+		gaiaState,
+		getKey
 	} from '$lib/store.svelte.js';
 	import {
 		climateParameters,
@@ -45,19 +42,15 @@
 	let ecosystemName = $derived(data['ecosystemName']);
 	let ecosystemUID = $derived(data['ecosystemUID']);
 
-	let ecosystem = $derived({ ...$ecosystems[ecosystemUID] });
-	let ecosystemState = $derived($ecosystemsState[ecosystemUID]);
+	let ecosystem = $derived({ ...gaiaState.ecosystems[ecosystemUID] });
+	let ecosystemState = $derived(gaiaState.ecosystemsState[ecosystemUID]);
 
 	const valueOrNone = function (value) {
 		return value === null ? 'None' : value;
 	};
 
 	// Management crud-related function
-	let ecosystemManagement = $state({ ...$ecosystemsManagement[ecosystemUID] });
-
-	$effect(() => {
-		ecosystemManagement = { ...$ecosystemsManagement[ecosystemUID] };
-	});
+	let ecosystemManagement = $derived({ ...gaiaState.ecosystemsManagement[ecosystemUID] });
 
 	const managementChoices = [
 		'sensors',
@@ -128,7 +121,7 @@
 				<td>Name</td>
 				<td>
 					{ecosystem['name']} &nbsp;
-					<Fa icon={faCircle} class={computeEcosystemStatusClass($ecosystemsState[ecosystemUID])} />
+					<Fa icon={faCircle} class={computeEcosystemStatusClass(gaiaState.ecosystemsState[ecosystemUID])} />
 				</td>
 			</tr>
 			<tr>
@@ -144,7 +137,7 @@
 				<td>{formatDateTime(ecosystemState['last_seen'])}</td>
 			</tr>
 		</tbody>
-		{#if $currentUser.can(permissions.OPERATE)}
+		{#if appState.currentUser.can(permissions.OPERATE)}
 			<tbody>
 				<tr>
 					<td colspan="2" style="text-align: center; vertical-align: middle">
@@ -182,8 +175,8 @@
 	{/snippet}
 </Modal>
 
-{#if $ecosystemsNycthemeralCycle[getStoreDataKey(ecosystemUID)]}
-	{@const nycthemeralCycle = $ecosystemsNycthemeralCycle[getStoreDataKey(ecosystemUID)]}
+{#if gaiaState.ecosystemsNycthemeralCycle[getKey(ecosystemUID)]}
+	{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[getKey(ecosystemUID)]}
 	<h2>Nycthemeral cycle info</h2>
 	<div style="overflow-x: auto">
 		<table class="table-base table-alternate-colors table-narrow" style="padding-bottom: 35px;">
@@ -219,7 +212,7 @@
 					</td>
 				</tr>
 			</tbody>
-			{#if $currentUser.can(permissions.OPERATE)}
+			{#if appState.currentUser.can(permissions.OPERATE)}
 				<tbody>
 					<tr>
 						<td colspan="2" style="text-align: center; vertical-align: middle">
@@ -299,13 +292,13 @@
 					<td>
 						<SlideButton
 							bind:checked={ecosystemManagement[management]}
-							disabled={!$currentUser.can(permissions.OPERATE)}
+							disabled={!appState.currentUser.can(permissions.OPERATE)}
 						/>
 					</td>
 				</tr>
 			{/each}
 		</tbody>
-		{#if $currentUser.can(permissions.OPERATE)}
+		{#if appState.currentUser.can(permissions.OPERATE)}
 			<tbody>
 				<tr>
 					<td colspan="2" style="text-align: center; vertical-align: middle">
@@ -340,7 +333,7 @@
 	{/snippet}
 </Modal>
 
-{#if environmentParameters !== undefined && ($currentUser.can(permissions.OPERATE) || environmentParameters.length > 0)}
+{#if environmentParameters !== undefined && (appState.currentUser.can(permissions.OPERATE) || environmentParameters.length > 0)}
 	<h2>Environment parameters</h2>
 	<Table
 		tableID="environmentParametersTable"
@@ -463,7 +456,7 @@
 	</Modal>
 {/if}
 
-{#if weatherEvents !== undefined && ($currentUser.can(permissions.OPERATE) || weatherEvents.length > 0)}
+{#if weatherEvents !== undefined && (appState.currentUser.can(permissions.OPERATE) || weatherEvents.length > 0)}
 	<h2>Weather events</h2>
 	<Table
 		tableID="weatherEventsTable"
@@ -588,7 +581,7 @@
 	</Modal>
 {/if}
 
-{#if hardwareObjects !== undefined && ($currentUser.can(permissions.OPERATE) || hardwareObjects.length > 0)}
+{#if hardwareObjects !== undefined && (appState.currentUser.can(permissions.OPERATE) || hardwareObjects.length > 0)}
 	<h2>Hardware</h2>
 	<Table
 		tableID="hardwareTable"

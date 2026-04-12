@@ -13,7 +13,7 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import { crudRequest, fetchWikiPictures } from '$lib/actions.svelte.js';
-	import { currentUser } from '$lib/store.svelte.js';
+	import { appState } from '$lib/store.svelte.js';
 	import { permissions, STATIC_URL } from '$lib/utils/consts.js';
 	import { capitalize, splitTags } from '$lib/utils/functions.js';
 
@@ -91,7 +91,7 @@
 </script>
 
 {#snippet update()}
-	{#if $currentUser.can(permissions.OPERATE)}
+	{#if appState.currentUser.can(permissions.OPERATE)}
 		<button
 			class="reset-button"
 			style="margin-left: 20px; cursor: pointer"

@@ -1,26 +1,13 @@
-import { get } from 'svelte/store';
 import { Manager } from 'socket.io-client';
 
 import { APP_MODE, BACKEND_URL, getAppMode } from '$lib/utils/consts.js';
 import {
-	currentUser,
-	ecosystemsActuatorsState,
-	ecosystemsNycthemeralCycle,
-	ecosystemsManagement,
-	ecosystemsSensorsDataCurrent,
-	ecosystemsSensorsDataHistoric,
-	ecosystemsState,
-	enginesState,
-	getFreshStoreData,
-	getStoreDataKey,
-	pingServerLastSeen,
-	pingServerLatency,
-	servers,
-	serversCurrentData,
-	updateStoreData,
-	weatherCurrently,
-	weatherDaily,
-	weatherHourly
+	appState,
+	gaiaState,
+	getFreshStateData,
+	getKey,
+	infraState,
+	servicesState
 } from '$lib/store.svelte.js';
 
 // Socket.IO manager, connection and disconnection
@@ -60,14 +47,14 @@ socketio.on('disconnect', () => {
 
 socketio.on('pong', () => {
 	const now = new Date();
-	pingServerLastSeen.set(now);
+	appState.pingServerLastSeen = now;
 	latencyArray.push(now - pingTime);
 	latencyArray = latencyArray.slice(-5);
 	let sum = 0;
 	for (let i = 0; i < latencyArray.length; i++) {
 		sum += latencyArray[i];
 	}
-	pingServerLatency.set((Math.round((10 * sum) / latencyArray.length) / 10).toFixed(1));
+	appState.pingServerLatency = (Math.round((10 * sum) / latencyArray.length) / 10).toFixed(1);
 });
 
 // User-related events
@@ -110,9 +97,7 @@ socketio.on('logout_ack', (data) => {
 });
 
 socketio.on('user_heartbeat_ack', () => {
-	const user = get(currentUser);
-	user.last_seen = new Date();
-	currentUser.set(user);
+	appState.currentUser.last_seen = new Date();
 });
 
 // Rooms
@@ -152,44 +137,40 @@ socketio.on('leave_room_ack', (data) => {
 
 // Weather
 socketio.on('weather_current', (data) => {
-	weatherCurrently.set(data);
+	servicesState.weatherCurrently = data;
 });
 
 socketio.on('weather_hourly', (data) => {
-	weatherHourly.set(data);
+	servicesState.weatherHourly = data;
 });
 
 socketio.on('weather_daily', (data) => {
-	weatherDaily.set(data);
+	servicesState.weatherDaily = data;
 });
 
 // Ecosystems
 socketio.on('ecosystems_heartbeat', (data) => {
 	const now = new Date();
-	const enginesObj = get(enginesState);
-	if (enginesObj[data['engine_uid']]) {
-		enginesObj[data['engine_uid']]['last_seen'] = now;
-		enginesState.set(enginesObj);
+	if (gaiaState.enginesState[data['engine_uid']]) {
+		gaiaState.enginesState[data['engine_uid']]['last_seen'] = now;
 	}
-	const ecosystemsStateObj = get(ecosystemsState);
+	const ecosystemsStateObj = gaiaState.ecosystemsState;
 	for (const ecosystemData of data['ecosystems']) {
 		if (ecosystemsStateObj[ecosystemData['uid']]) {
 			ecosystemsStateObj[ecosystemData['uid']]['last_seen'] = now;
 			ecosystemsStateObj[ecosystemData['uid']]['status'] = ecosystemData['status'];
 		}
 	}
-	ecosystemsState.set(ecosystemsStateObj);
+	gaiaState.ecosystemsState = ecosystemsStateObj;
 });
 
 socketio.on('current_server_data', (data) => {
 	//TODO: temporary workaround, to change
 	const serverUid = 'base_server';
-	const dataKey = getStoreDataKey(serverUid);
-	const serversObj = get(servers);
-	if (serversObj[dataKey]) {
-		serversObj[dataKey]['last_seen'] = new Date();
-		servers.set(serversObj);
-		updateStoreData(serversCurrentData, { [dataKey]: data });
+	const dataKey = getKey(serverUid);
+	if (infraState.servers[dataKey]) {
+		infraState.servers[dataKey]['last_seen'] = new Date();
+		infraState.serversCurrentData[dataKey] = data;
 	}
 });
 
@@ -209,34 +190,34 @@ socketio.on('actuators_data', (data) => {
 		return acc;
 	}, {});
 
-	const currentEcosystemsActuatorData = get(ecosystemsActuatorsState);
+	const currentEcosystemsActuatorData = gaiaState.ecosystemsActuatorsState;
 	for (const ecosystemUid in dataByEcosystem) {
 		currentEcosystemsActuatorData[ecosystemUid] = {
 			...currentEcosystemsActuatorData[ecosystemUid],
 			...dataByEcosystem[ecosystemUid]
 		};
 	}
-	updateStoreData(ecosystemsActuatorsState, currentEcosystemsActuatorData);
+	gaiaState.ecosystemsActuatorsState = currentEcosystemsActuatorData;
 });
 
 socketio.on('current_sensors_data', (data) => {
 	const updatedData = {};
 	for (const sensorRecord of data) {
-		const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
+		const storageKey = getKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
 		updatedData[storageKey] = {
 			timestamp: new Date(sensorRecord['timestamp']),
 			value: sensorRecord['value']
 		};
 	}
-	updateStoreData(ecosystemsSensorsDataCurrent, updatedData);
+	gaiaState.ecosystemsSensorsDataCurrent = updatedData;
 });
 
 socketio.on('historic_sensors_data_update', (data) => {
 	const maxValues = 6 * 24 * 7; // one record every 10 mins for a week
 	const updatedData = {};
 	for (const sensorRecord of data) {
-		const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
-		const currentData = getFreshStoreData(ecosystemsSensorsDataHistoric, storageKey);
+		const storageKey = getKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
+		const currentData = getFreshStateData(gaiaState.ecosystemsSensorsDataHistoric, storageKey);
 		if (!currentData['values']) {
 			// No historic data, will wait for some to be loaded from api before appending new data
 			continue;
@@ -251,7 +232,7 @@ socketio.on('historic_sensors_data_update', (data) => {
 			values: values.slice(-maxValues)
 		};
 	}
-	updateStoreData(ecosystemsSensorsDataHistoric, updatedData);
+	gaiaState.ecosystemsSensorsDataHistoric = updatedData;
 });
 
 socketio.on('nycthemeral_info', (data) => {
@@ -260,10 +241,10 @@ socketio.on('nycthemeral_info', (data) => {
 		ecosystem['data']['span'] = ecosystem['data']['lighting'] ? 'mimic' : 'fixed';
 	});
 	const updatedData = data.reduce((a, v) => ({ ...a, [v['uid']]: v['data'] }), {});
-	updateStoreData(ecosystemsNycthemeralCycle, updatedData);
+	gaiaState.ecosystemsNycthemeralCycle = updatedData;
 });
 
 socketio.on('management', (data) => {
 	const updatedData = data.reduce((a, v) => ({ ...a, [v['uid']]: v['data'] }), {});
-	updateStoreData(ecosystemsManagement, updatedData);
+	gaiaState.ecosystemsManagement = updatedData;
 });

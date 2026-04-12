@@ -1,5 +1,3 @@
-import { get } from 'svelte/store';
-
 import axios from 'axios';
 
 import {
@@ -17,22 +15,12 @@ import { Message, User } from '$lib/utils/factories.js';
 import { isEmpty } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
-	currentUser,
-	ecosystemsActuatorsState,
-	ecosystemsNycthemeralCycle,
-	ecosystemsSensorsDataCurrent,
-	ecosystemsSensorsDataHistoric,
-	ecosystemsSensorsSkeleton,
-	flashMessage,
-	getFreshStoreData,
-	getStoreDataKey,
-	healthData,
-	serversCurrentData,
-	serversHistoricData,
-	updateStoreData,
-	weatherCurrently,
-	weatherDaily,
-	weatherHourly
+	appState,
+	gaiaState,
+	getFreshStateData,
+	getKey,
+	infraState,
+	servicesState
 } from '$lib/store.svelte.js';
 
 // Flash messages utility functions
@@ -52,9 +40,7 @@ const setFlashMsgError = function (error) {
 	} else {
 		errorMsg = Message(ERROR_MSG);
 	}
-	const msgs = get(flashMessage);
-	msgs.push(errorMsg);
-	flashMessage.set(msgs);
+	appState.flashMessage.push(errorMsg);
 };
 
 export const probePath = async function (path) {
@@ -133,10 +119,8 @@ export const logIn = async function (username, password, remember = false) {
 			if (response.status === 200) {
 				const sessionToken = response.data.session_token;
 				const user = User(response.data.user, sessionToken);
-				currentUser.set(user);
-				const msgs = get(flashMessage);
-				msgs.push(Message('You are now logged in ' + user.username));
-				flashMessage.set(msgs);
+				appState.currentUser = user;
+				appState.flashMessage.push(Message('You are now logged in ' + user.username));
 				logInSocketio(sessionToken);
 				return {
 					success: true,
@@ -173,8 +157,8 @@ export const logOut = function () {
 		})
 		.then((response) => {
 			if (response.status === 200) {
-				const user = get(currentUser);
-				currentUser.set(User());
+				const user = appState.currentUser;
+				appState.currentUser = User();
 				logOutSocketio(user.sessionToken);
 			}
 		})
@@ -284,8 +268,8 @@ export const fetchEcosystemsManagement = async function () {
 };
 
 export const fetchEcosystemNycthemeralCycleData = async function (ecosystemUID) {
-	const dataKey = getStoreDataKey(ecosystemUID);
-	const storedData = getFreshStoreData(ecosystemsNycthemeralCycle, dataKey);
+	const dataKey = getKey(ecosystemUID);
+	const storedData = getFreshStateData(gaiaState.ecosystemsNycthemeralCycle, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
 	}
@@ -294,7 +278,7 @@ export const fetchEcosystemNycthemeralCycleData = async function (ecosystemUID) 
 		.then((response) => {
 			const data = response.data;
 			delete data['ecosystem_uid'];
-			updateStoreData(ecosystemsNycthemeralCycle, { [dataKey]: data });
+			gaiaState.ecosystemsNycthemeralCycle[dataKey] = data;
 			return data;
 		})
 		.catch(() => {
@@ -325,8 +309,8 @@ export const fetchEcosystemWeatherEvents = async function (ecosystemUID) {
 };
 
 export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
-	const dataKey = getStoreDataKey(ecosystemUID);
-	const storedData = getFreshStoreData(ecosystemsActuatorsState, dataKey);
+	const dataKey = getKey(ecosystemUID);
+	const storedData = getFreshStateData(gaiaState.ecosystemsActuatorsState, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
 	}
@@ -338,8 +322,8 @@ export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
 			for (const actuatorType of actuatorTypes) {
 				storedData[actuatorType] = states[actuatorType];
 			}
-			updateStoreData(ecosystemsActuatorsState, { [dataKey]: storedData });
-			return data;
+			gaiaState.ecosystemsActuatorsState[dataKey] = storedData;
+			return storedData;
 		})
 		.catch(() => {
 			return {};
@@ -375,8 +359,8 @@ export const fetchEcosystemHardware = async function (ecosystemUID) {
 };
 
 export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, measure) {
-	const dataKey = getStoreDataKey(sensorUID, measure);
-	const storedData = getFreshStoreData(ecosystemsSensorsDataCurrent, dataKey);
+	const dataKey = getKey(sensorUID, measure);
+	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsDataCurrent, dataKey);
 	if (checkSensorDataRecency(storedData, 1)) {
 		return storedData;
 	}
@@ -388,7 +372,7 @@ export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, m
 			const accumulator = {};
 			for (const ecosystem of response['data']) {
 				for (const sensorRecord of ecosystem['values']) {
-					const storageKey = getStoreDataKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
+					const storageKey = getKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
 					accumulator[storageKey] = {
 						timestamp: new Date(sensorRecord['timestamp']),
 						value: sensorRecord['value']
@@ -402,7 +386,7 @@ export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, m
 					value: true
 				};
 			}
-			updateStoreData(ecosystemsSensorsDataCurrent, accumulator);
+			gaiaState.ecosystemsSensorsDataCurrent = accumulator;
 			return accumulator[dataKey];
 		})
 		.catch(() => {
@@ -416,8 +400,8 @@ export const fetchSensorHistoricData = async function (
 	measure,
 	windowLength = undefined
 ) {
-	const dataKey = getStoreDataKey(sensorUID, measure);
-	const storedData = getFreshStoreData(ecosystemsSensorsDataHistoric, dataKey);
+	const dataKey = getKey(sensorUID, measure);
+	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsDataHistoric, dataKey);
 	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 10)) {
 		return storedData;
 	}
@@ -435,7 +419,7 @@ export const fetchSensorHistoricData = async function (
 				span: response['data']['span'],
 				values: response['data']['values']
 			};
-			updateStoreData(ecosystemsSensorsDataHistoric, { [dataKey]: data });
+			gaiaState.ecosystemsSensorsDataHistoric[dataKey] = data;
 			return data;
 		})
 		.catch(() => {
@@ -444,8 +428,8 @@ export const fetchSensorHistoricData = async function (
 };
 
 export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level = null) {
-	const dataKey = getStoreDataKey(ecosystemUID, level);
-	const storedData = getFreshStoreData(ecosystemsSensorsSkeleton, dataKey);
+	const dataKey = getKey(ecosystemUID, level);
+	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsSkeleton, dataKey);
 	if (!isEmpty(storedData)) {
 		return storedData;
 	}
@@ -455,7 +439,7 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 		})
 		.then((response) => {
 			const data = response['data']['sensors_skeleton'];
-			updateStoreData(ecosystemsSensorsSkeleton, { [dataKey]: data });
+			gaiaState.ecosystemsSensorsSkeleton[dataKey] = data;
 			return data;
 		})
 		.catch(() => {
@@ -464,8 +448,8 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 };
 
 export const fetchHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
-	const dataKey = getStoreDataKey(ecosystemUID, measure);
-	const storedData = healthData[dataKey];
+	const dataKey = getKey(ecosystemUID, measure);
+	const storedData = gaiaState.healthData[dataKey];
 	if (storedData !== undefined) {
 		return storedData;
 	}
@@ -490,7 +474,7 @@ export const fetchHealthLatestDataForMeasure = async function (ecosystemUID, mea
 	}
 	const average = (array) => array.reduce((a, b) => a + b) / array.length;
 	const result = average(rv).toFixed(4);
-	healthData[dataKey] = result;
+	gaiaState.healthData[dataKey] = result;
 	return result;
 };
 
@@ -514,13 +498,13 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 	let exclude = ['currently', 'hourly', 'daily'];
 
 	// TODO: check for data recency
-	if (include.includes('currently') && isEmpty(get(weatherCurrently))) {
+	if (include.includes('currently') && isEmpty(servicesState.weatherCurrently)) {
 		exclude = exclude.filter((element) => element !== 'currently');
 	}
-	if (include.includes('hourly') && !get(weatherHourly).length > 0) {
+	if (include.includes('hourly') && !servicesState.weatherHourly.length > 0) {
 		exclude = exclude.filter((element) => element !== 'hourly');
 	}
-	if (include.includes('daily') && !get(weatherDaily).length > 0) {
+	if (include.includes('daily') && !servicesState.weatherDaily.length > 0) {
 		exclude = exclude.filter((element) => element !== 'daily');
 	}
 
@@ -541,24 +525,24 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 		})
 		.then((response) => {
 			if (response['data']['currently']) {
-				weatherCurrently.set(response['data']['currently']);
+				servicesState.weatherCurrently = response['data']['currently'];
 			}
 			if (response['data']['hourly']) {
-				weatherHourly.set(response['data']['hourly']);
+				servicesState.weatherHourly = response['data']['hourly'];
 			}
 			if (response['data']['daily']) {
-				weatherDaily.set(response['data']['daily']);
+				servicesState.weatherDaily = response['data']['daily'];
 			}
 		})
 		.catch(() => {
 			if (!exclude.includes('currently')) {
-				weatherCurrently.set({});
+				servicesState.weatherCurrently = {};
 			}
 			if (!exclude.includes('hourly')) {
-				weatherHourly.set([]);
+				servicesState.weatherHourly = [];
 			}
 			if (!exclude.includes('daily')) {
-				weatherDaily.set([]);
+				servicesState.weatherDaily = [];
 			}
 		});
 };
@@ -608,8 +592,8 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 };
 
 export const fetchServerCurrentData = async function (serverUid) {
-	const dataKey = getStoreDataKey(serverUid);
-	const storedData = getFreshStoreData(serversCurrentData, dataKey);
+	const dataKey = getKey(serverUid);
+	const storedData = getFreshStateData(infraState.serversCurrentData, dataKey);
 
 	if (!isEmpty(storedData)) {
 		return storedData;
@@ -621,19 +605,19 @@ export const fetchServerCurrentData = async function (serverUid) {
 		})
 		.then((response) => {
 			const data = response['data']['values'];
-			updateStoreData(serversCurrentData, { [dataKey]: data });
+			infraState.serversCurrentData[dataKey] = data;
 			return data;
 		})
 		.catch(() => {
 			const data = [];
-			updateStoreData(serversCurrentData, { [dataKey]: data });
+			infraState.serversCurrentData[dataKey] = data;
 			return data;
 		});
 };
 
 export const fetchServerHistoricData = async function (serverUid) {
-	const dataKey = getStoreDataKey(serverUid);
-	const storedData = getFreshStoreData(serversHistoricData, dataKey);
+	const dataKey = getKey(serverUid);
+	const storedData = getFreshStateData(infraState.serversHistoricData, dataKey);
 
 	if (!isEmpty(storedData)) {
 		return storedData;
@@ -645,12 +629,12 @@ export const fetchServerHistoricData = async function (serverUid) {
 		})
 		.then((response) => {
 			const data = response['data']['values'];
-			updateStoreData(serversHistoricData, { [dataKey]: data });
+			infraState.serversHistoricData[dataKey] = data
 			return data;
 		})
 		.catch(() => {
 			const data = [];
-			updateStoreData(serversHistoricData, { [dataKey]: data });
+			infraState.serversHistoricData[dataKey] = data
 			return data;
 		});
 };
@@ -674,9 +658,7 @@ export const updateService = async function (serviceName, status) {
 		data: { status: status }
 	})
 		.then((response) => {
-			const msgs = get(flashMessage);
-			msgs.push(Message(response.data, null, 1500));
-			flashMessage.set(msgs);
+			appState.flashMessage.push(Message(response.data, null, 1500));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);
@@ -829,9 +811,7 @@ export const crudRequest = function (relRoute, action, payload = undefined) {
 
 	return axios(`${API_URL}/${relRoute}`, options)
 		.then((response) => {
-			const msgs = get(flashMessage);
-			msgs.push(Message(response.data, null, 3000));
-			flashMessage.set(msgs);
+			appState.flashMessage.push(Message(response.data, null, 3000));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);
@@ -848,9 +828,7 @@ export const updateActuatorMode = function (ecosystemUID, actuatorType, mode, co
 		}
 	})
 		.then((response) => {
-			const msgs = get(flashMessage);
-			msgs.push(Message(response.data, null, 1500));
-			flashMessage.set(msgs);
+			appState.flashMessage.push(Message(response.data, null, 1500));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);

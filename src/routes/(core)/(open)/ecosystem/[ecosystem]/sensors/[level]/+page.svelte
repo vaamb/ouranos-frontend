@@ -15,10 +15,8 @@
 		fetchEcosystemSensorsSkeleton
 	} from '$lib/actions.svelte.js';
 	import {
-		ecosystemsSensorsDataCurrent,
-		ecosystemsSensorsDataHistoric,
-		ecosystemsSensorsSkeleton,
-		getStoreDataKey
+		gaiaState,
+		getKey
 	} from '$lib/store.svelte.js';
 	import { capitalize } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
@@ -91,15 +89,15 @@
 
 <HeaderLine title={pageTitle} />
 {#await fetchEcosystemSensorsSkeleton(ecosystemUID, sensorsLevel) then sensorsSkeleton}
-	{#each $ecosystemsSensorsSkeleton[getStoreDataKey(ecosystemUID, sensorsLevel)] as sensorsBone}
+	{#each gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, sensorsLevel)] as sensorsBone}
 		<h2>{capitalize(sensorsBone.measure.replace('_', ' '))}</h2>
 		{#each sensorsBone.sensors as sensor}
 			<Row>
 				{#await fetchSensorData(ecosystemUID, sensor.uid, sensorsBone.measure) then sensorData_notUsed}
 					{@const currentSensorsData =
-						$ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
+						gaiaState.ecosystemsSensorsDataCurrent[getKey(sensor.uid, sensorsBone.measure)]}
 					{@const historicSensorsData =
-						$ecosystemsSensorsDataHistoric[getStoreDataKey(sensor.uid, sensorsBone.measure)]}
+						gaiaState.ecosystemsSensorsDataHistoric[getKey(sensor.uid, sensorsBone.measure)]}
 					{#if currentSensorsData || historicSensorsData}
 						<Box title={sensor.name} direction="row" icon={icons[sensorsBone.measure]}>
 							{#if currentSensorsData}

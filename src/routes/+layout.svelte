@@ -11,33 +11,32 @@
 		logInSocketio,
 		logOutSocketio
 	} from '$lib/socketio.svelte.js';
-	import { currentUser, pingServerLastSeen } from '$lib/store.svelte.js';
+	import { appState } from '$lib/store.svelte.js';
 	import { APP_MODE, SERVER_STATUS } from '$lib/utils/consts.js';
 	import { User } from '$lib/utils/factories.js';
 
 	let { data, children } = $props();
 	const { appMode, serverStatus, userData } = data;
 
-	const user = User(userData);
-	currentUser.set(user);
+	appState.currentUser = User(userData);
 
 	if (serverStatus === SERVER_STATUS.connected) {
-		pingServerLastSeen.set(new Date());
+		appState.pingServerLastSeen = new Date();
 	}
 
 	onMount(async () => {
 		if (serverStatus === SERVER_STATUS.connected) {
 			connectSocketio();
-			if ($currentUser.isAuthenticated) {
-				logInSocketio($currentUser.sessionToken);
+			if (appState.currentUser.isAuthenticated) {
+				logInSocketio(appState.currentUser.sessionToken);
 				await refreshSessionCookie();
 			}
 		}
 
 		return () => {
 			disconnectSocketio();
-			if ($currentUser.isAuthenticated) {
-				logOutSocketio($currentUser.sessionToken);
+			if (appState.currentUser.isAuthenticated) {
+				logOutSocketio(appState.currentUser.sessionToken);
 			}
 		};
 	});

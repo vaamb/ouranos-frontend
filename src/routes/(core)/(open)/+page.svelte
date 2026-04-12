@@ -11,24 +11,11 @@
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
 	import {
-		currentUser,
-		ecosystems,
-		ecosystemsIds,
-		ecosystemsActuatorsState,
-		ecosystemsNycthemeralCycle,
-		ecosystemsManagement,
-		ecosystemsSensorsDataCurrent,
-		ecosystemsSensorsSkeleton,
-		ecosystemsState,
-		getStoreDataKey,
-		pingServerLatency,
-		servers,
-		serversCurrentData,
-		serversIds,
-		services,
-		warnings,
-		weatherCurrently,
-		weatherHourly
+		appState,
+		gaiaState,
+		getKey,
+		infraState,
+		servicesState
 	} from '$lib/store.svelte.js';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
@@ -72,7 +59,7 @@
 		}
 		return sortedWarnings;
 	};
-	let sortedWarnings = $derived(sortWarningsByEcosystem($warnings));
+	let sortedWarnings = $derived(sortWarningsByEcosystem(gaiaState.warnings));
 
 	let calendarEvents = $state([]);
 	const sortCalendarEventsByHappening = function (events) {
@@ -112,7 +99,7 @@
 	) {
 		let rv = [];
 		for (const sensor of sensors) {
-			const data = ecosystemsSensorsDataCurrent[getStoreDataKey(sensor.uid, measure)];
+			const data = ecosystemsSensorsDataCurrent[getKey(sensor.uid, measure)];
 			if (data) {
 				rv.push(data.value);
 			}
@@ -151,20 +138,20 @@
 			sensorsPrimed = true;
 		});
 
-		for (const { uid, name } of $ecosystemsIds) {
-			if (isConnected($ecosystemsState[uid]) && $ecosystemsState[uid]['status']) {
+		for (const { uid, name } of gaiaState.ecosystemsIds) {
+			if (isConnected(gaiaState.ecosystemsState[uid]) && gaiaState.ecosystemsState[uid]['status']) {
 				await fetchEcosystemActuatorsState(uid);
 			}
 		}
-		if (serviceEnabled($services, 'weather')) {
+		if (serviceEnabled(servicesState.services, 'weather')) {
 			await fetchWeatherForecast();
 		}
 
-		if (serviceEnabled($services, 'suntimes')) {
+		if (serviceEnabled(servicesState.services, 'suntimes')) {
 			suntimes = await fetchSuntimes();
 		}
 
-		if (serviceEnabled($services, 'calendar')) {
+		if (serviceEnabled(servicesState.services, 'calendar')) {
 			calendarEvents = await fetchCalendarEvents();
 		}
 	});
@@ -178,7 +165,7 @@
 
 <h2>Global overview</h2>
 <Row>
-	{#if serviceEnabled($services, 'calendar')}
+	{#if serviceEnabled(servicesState.services, 'calendar')}
 		<Box title="Calendar - {formatDate(now)}" align="center" href="/calendar">
 			<BoxItem title="Happening now">
 				{#each sortedCalendarEvents['happening'] as event}
@@ -204,19 +191,19 @@
 			</BoxItem>
 		</Box>
 	{/if}
-	{#if serviceEnabled($services, 'weather') && !isEmpty($weatherCurrently)}
+	{#if serviceEnabled(servicesState.services, 'weather') && !isEmpty(servicesState.weatherCurrently)}
 		<Box title="Current weather" align="center" href="/weather">
-			<WeatherIcon icon={$weatherCurrently['icon']} />
-			<BoxItem title={capitalize($weatherCurrently['summary'])}>
-				<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
-				<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
-				{#if !isEmpty($weatherHourly)}
+			<WeatherIcon icon={servicesState.weatherCurrently['icon']} />
+			<BoxItem title={capitalize(servicesState.weatherCurrently['summary'])}>
+				<p>Temperature: {servicesState.weatherCurrently['temperature'].toFixed(1)} °C</p>
+				<p>Humidity: {servicesState.weatherCurrently['humidity'].toFixed(1)} %</p>
+				{#if !isEmpty(servicesState.weatherHourly)}
 					<p>
-						Precipitation: {($weatherHourly[0]['precipitation_probability'] * 100).toFixed(1)} %
+						Precipitation: {(servicesState.weatherHourly[0]['precipitation_probability'] * 100).toFixed(1)} %
 					</p>
 				{/if}
-				<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
-				<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
+				<p>Wind: {servicesState.weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
+				<p>Cloud cover: {servicesState.weatherCurrently['cloud_cover'].toFixed(1)} %</p>
 				{#if !isEmpty(suntimes)}
 					<div>
 						<Fa icon={faSun} />&nbsp{suntimes[0]['sunrise'].toLocaleTimeString([], {
@@ -235,19 +222,19 @@
 	{/if}
 	<Box title="Server status" align="center">
 		<BoxItem title="Average latency">
-			{#if $pingServerLatency === null}
+			{#if appState.pingServerLatency === null}
 				<p>Computing ...</p>
 			{:else}
-				<p>{$pingServerLatency} ms</p>
+				<p>{appState.pingServerLatency} ms</p>
 			{/if}
 		</BoxItem>
-		{#if $currentUser.can(permissions.ADMIN)}
-			{#each $serversIds as serverIds}
+		{#if appState.currentUser.can(permissions.ADMIN)}
+			{#each infraState.serversIds as serverIds}
 				{@const serverUid = serverIds['uid']}
 				<BoxItem title={serverIds['name']}>
 					{#await fetchServerCurrentData(serverUid) then serverCurrentData_notUsed}
-						{@const server = $servers[serverUid]}
-						{@const serverCurrentData = $serversCurrentData[serverUid]}
+						{@const server = infraState.servers[serverUid]}
+						{@const serverCurrentData = infraState.serversCurrentData[serverUid]}
 						{#if server && serverCurrentData}
 							<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">Uptime</p>
 							<p>
@@ -273,9 +260,9 @@
 			{/each}
 		{/if}
 	</Box>
-	{#if $currentUser.isAuthenticated}
+	{#if appState.currentUser.isAuthenticated}
 		<Box title="Ecosystem warnings overview" align="center" href="/warnings">
-			{#if $warnings.length > 0}
+			{#if gaiaState.warnings.length > 0}
 				{#each Object.keys(sortedWarnings) as name}
 					{@const ecosystemWarnings = sortedWarnings[name]}
 					{#if ecosystemWarnings}
@@ -297,30 +284,31 @@
 	{/if}
 </Row>
 
-{#if $ecosystemsIds.length > 0}
+{#if gaiaState.ecosystemsIds.length > 0}
 	<h2>Ecosystems overview</h2>
-	{#each $ecosystemsIds as { uid, name }}
-		{@const ecosystem = $ecosystems[uid]}
+	{#each gaiaState.ecosystemsIds as { uid, name }}
+		{@const ecosystem = gaiaState.ecosystems[uid]}
 		{#if ecosystem}
-			{@const connected = isConnected($ecosystemsState[uid])}
-			{@const running = $ecosystemsState[uid]['status']}
+			{@const ecosystemState = gaiaState.ecosystemsState[uid]}
+			{@const connected = isConnected(ecosystemState)}
+			{@const running = ecosystemState['status']}
 			<Box
 				title={name}
 				align="center"
-				status={computeEcosystemStatusClass($ecosystemsState[uid])}
+				status={computeEcosystemStatusClass(ecosystemState)}
 				direction="row"
 			>
 				{#if connected && running}
-					{@const light = getParamStatus($ecosystemsManagement, uid, 'light')}
-					{@const actuator = getParamStatus($ecosystemsManagement, uid, 'actuators')}
-					{@const ecosystemData = getParamStatus($ecosystemsManagement, uid, 'ecosystem_data')}
-					{@const environmentData = getParamStatus($ecosystemsManagement, uid, 'environment_data')}
-					{@const plantsData = getParamStatus($ecosystemsManagement, uid, 'plants_data')}
-					{@const pictures = getParamStatus($ecosystemsManagement, uid, 'pictures')}
+					{@const light = getParamStatus(gaiaState.ecosystemsManagement, uid, 'light')}
+					{@const actuator = getParamStatus(gaiaState.ecosystemsManagement, uid, 'actuators')}
+					{@const ecosystemData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'ecosystem_data')}
+					{@const environmentData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'environment_data')}
+					{@const plantsData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'plants_data')}
+					{@const pictures = getParamStatus(gaiaState.ecosystemsManagement, uid, 'pictures')}
 					{#if !(light || actuator || ecosystemData || environmentData || plantsData || pictures)}
 						<BoxItem>
 							<p>No functionality is enabled in {name}</p>
-							{#if $currentUser.can(permissions.OPERATE)}
+							{#if appState.currentUser.can(permissions.OPERATE)}
 								<p>
 									<a href="/ecosystem/{slugify(name)}/settings">
 										Click here to configure {name}
@@ -333,7 +321,7 @@
 						{#await fetchEcosystemNycthemeralCycleData(uid)}
 							<p>Fetching data</p>
 						{:then ecosystemLightData_notUsed}
-							{@const nycthemeralCycle = $ecosystemsNycthemeralCycle[getStoreDataKey(uid)]}
+							{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[getKey(uid)]}
 							{@const formatTime = (timeStr) => {
 								return strHoursToDate(timeStr).toLocaleTimeString([], {
 									timeStyle: 'short',
@@ -364,7 +352,7 @@
 					{#if actuator}
 						<BoxItem title="Actuators" href="/ecosystem/{slugify(name)}/actuators">
 							{#each actuatorTypes as actuatorType}
-								{@const actuator = $ecosystemsActuatorsState[uid] && $ecosystemsActuatorsState[uid][actuatorType]}
+								{@const actuator = gaiaState.ecosystemsActuatorsState[uid] && gaiaState.ecosystemsActuatorsState[uid][actuatorType]}
 								{#if actuator && actuator['active']}
 									<p>
 										{capitalize(actuatorType)}:
@@ -383,7 +371,7 @@
 							{#await fetchEcosystemSensorsSkeleton(uid, 'ecosystem')}
 								<p>Collecting health data from the ecosystem</p>
 							{:then sensorsSkeleton}
-								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'ecosystem')] as sensorsBone}
+								{#each gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')] as sensorsBone}
 									{#await fetchHealthLatestDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then averageHealthData}
@@ -408,12 +396,12 @@
 							{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
 								<p>Collecting environment data from the ecosystem</p>
 							{:then sensorsSkeleton}
-								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'environment')] as sensorsBone}
+								{#each gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')] as sensorsBone}
 									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then sensorsData}
 										{@const averageData = computeAverageSensorsCurrentDataForMeasure(
-											$ecosystemsSensorsDataCurrent,
+											gaiaState.ecosystemsSensorsDataCurrent,
 											sensorsBone.measure,
 											sensorsBone.sensors
 										)}
@@ -436,12 +424,12 @@
 							{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
 								<p>Collecting plants data from the ecosystem</p>
 							{:then sensorsSkeleton}
-								{#each $ecosystemsSensorsSkeleton[getStoreDataKey(uid, 'plants')] as sensorsBone}
+								{#each gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')] as sensorsBone}
 									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 									{:then sensorsData}
 										{@const averageData = computeAverageSensorsCurrentDataForMeasure(
-											$ecosystemsSensorsDataCurrent,
+											gaiaState.ecosystemsSensorsDataCurrent,
 											sensorsBone.measure,
 											sensorsBone.sensors
 										)}
@@ -476,7 +464,7 @@
 				{:else if connected}
 					<BoxItem>
 						<p>The ecosystem '{name}' is not currently running</p>
-							{#if $currentUser.can(permissions.OPERATE)}
+							{#if appState.currentUser.can(permissions.OPERATE)}
 								<p>
 									<a href="/ecosystem/{slugify(name)}/settings">
 										Click here to configure {name}
@@ -489,7 +477,7 @@
 						<p>The ecosystem {name} is not currently connected</p>
 						<p>
 							Last connection to the server on
-							{formatDateTime($ecosystemsState[uid]['last_seen'])}
+							{formatDateTime(ecosystemState['last_seen'])}
 						</p>
 					</BoxItem>
 				{:else}
@@ -497,7 +485,7 @@
 						<p>The ecosystem '{name}' is not currently running and is not connected</p>
 						<p>
 							Last connection to the server on
-							{formatDateTime($ecosystemsState[uid]['last_seen'])}
+							{formatDateTime(ecosystemState['last_seen'])}
 						</p>
 					</BoxItem>
 				{/if}

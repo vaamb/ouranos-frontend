@@ -18,7 +18,7 @@
 	import MenuItem from '$lib/components/menu/MenuItem.svelte';
 
 	import { permissions } from '$lib/utils/consts.js';
-	import { currentUser, ecosystemsIds } from '$lib/store.svelte.js';
+	import { appState, gaiaState } from '$lib/store.svelte.js';
 
 	let { items, width, miniWidth = 45, minimized = $bindable(false) } = $props();
 
@@ -36,7 +36,7 @@
 	// Menu item to open
 	let toggledMenuItemIndex = $state(null);
 	// Pre-open ecosystems submenu if there are less than 3 ecosystems
-	if ($ecosystemsIds.length < 3) {
+	if (gaiaState.ecosystemsIds.length < 3) {
 		const index = items.findIndex((item) => item.name === 'Ecosystems');
 		if (index !== -1) {
 			toggledMenuItemIndex = index;
@@ -52,7 +52,7 @@
 	};
 
 	const restartServer = function () {
-		if (!currentUser.can(permissions.ADMIN)) {
+		if (!appState.currentUser.can(permissions.ADMIN)) {
 			return;
 		}
 	};
@@ -115,18 +115,18 @@
 			</div>
 			<div class="user-box">
 				<enhanced:img
-					src={avatarMapping[$currentUser.avatar]}
+					src={avatarMapping[appState.currentUser.avatar]}
 					alt="User avatar"
 					class="user-box-img"
 					sizes="50px"
 				/>
 				<div class="welcome">
-					{#if $currentUser.isAuthenticated}
+					{#if appState.currentUser.isAuthenticated}
 						<div>Welcome,</div>
-						{#if $currentUser.firstname}
-							<div>{$currentUser.firstname}</div>
+						{#if appState.currentUser.firstname}
+							<div>{appState.currentUser.firstname}</div>
 						{:else}
-							<div>{$currentUser.username}</div>
+							<div>{appState.currentUser.username}</div>
 						{/if}
 					{:else}
 						<div>Welcome</div>
@@ -151,10 +151,10 @@
 			</ul>
 			<div class="bottom-box">
 				<a href="/about"><Fa icon={faAddressCard} /></a>
-				{#if $currentUser.isAuthenticated}
+				{#if appState.currentUser.isAuthenticated}
 					<a href="/user/settings"><Fa icon={faUserCog} /></a>
 				{/if}
-				{#if $currentUser.can(permissions.ADMIN)}
+				{#if appState.currentUser.can(permissions.ADMIN)}
 					<button class="reset-button" onclick={restartServer}><Fa icon={faPowerOff} /></button>
 				{/if}
 			</div>

@@ -11,7 +11,7 @@
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
 	import { fetchSuntimes, fetchWeatherForecast } from '$lib/actions.svelte.js';
-	import { services, weatherCurrently, weatherDaily, weatherHourly } from '$lib/store.svelte.js';
+	import { servicesState } from '$lib/store.svelte.js';
 	import {
 		capitalize,
 		formatDate,
@@ -91,11 +91,11 @@
 	};
 
 	onMount(async () => {
-		if (serviceEnabled($services, 'weather')) {
+		if (serviceEnabled(servicesState.services, 'weather')) {
 			await fetchWeatherForecast();
 		}
 
-		if (serviceEnabled($services, 'suntimes')) {
+		if (serviceEnabled(servicesState.services, 'suntimes')) {
 			suntimes = await fetchSuntimes();
 		}
 	});
@@ -103,7 +103,7 @@
 
 {#snippet timestamp()}
 <div style="margin: auto 0 0 auto; font-size: 0.97rem">
-	{lastUpdate($weatherCurrently['timestamp'])}
+	{lastUpdate(servicesState.weatherCurrently['timestamp'])}
 </div>
 {/snippet}
 
@@ -111,16 +111,16 @@
 
 <Box title="Day forecast" direction="row" align="center">
 	<BoxItem maxWidth="250px">
-		{#if !isEmpty($weatherCurrently)}
-			<WeatherIcon icon={$weatherCurrently['icon']} />
-			<h1>{capitalize($weatherCurrently['summary'])}</h1>
-			<p>Temperature: {$weatherCurrently['temperature'].toFixed(1)} °C</p>
-			<p>Humidity: {$weatherCurrently['humidity'].toFixed(1)} %</p>
-			{#if !isEmpty($weatherHourly)}
-				<p>Precipitation: {($weatherHourly[0]['precipitation_probability']*100).toFixed(1)} %</p>
+		{#if !isEmpty(servicesState.weatherCurrently)}
+			<WeatherIcon icon={servicesState.weatherCurrently['icon']} />
+			<h1>{capitalize(servicesState.weatherCurrently['summary'])}</h1>
+			<p>Temperature: {servicesState.weatherCurrently['temperature'].toFixed(1)} °C</p>
+			<p>Humidity: {servicesState.weatherCurrently['humidity'].toFixed(1)} %</p>
+			{#if !isEmpty(servicesState.weatherHourly)}
+				<p>Precipitation: {(servicesState.weatherHourly[0]['precipitation_probability']*100).toFixed(1)} %</p>
 			{/if}
-			<p>Wind: {$weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
-			<p>Cloud cover: {$weatherCurrently['cloud_cover'].toFixed(1)} %</p>
+			<p>Wind: {servicesState.weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
+			<p>Cloud cover: {servicesState.weatherCurrently['cloud_cover'].toFixed(1)} %</p>
 			{#if !isEmpty(suntimes)}
 				<div>
 					<Fa icon={faSun} />&nbsp{suntimes[0]['sunrise'].toLocaleTimeString([], { timeStyle: 'short', hour12: false })}
@@ -133,7 +133,7 @@
 		{/if}
 	</BoxItem>
 	<BoxItem>
-		{#if !isEmpty($weatherHourly)}
+		{#if !isEmpty(servicesState.weatherHourly)}
 			<div class="weather-buttons">
 				{#each Object.entries(measures) as [measureName, measure]}
 					<button
@@ -152,8 +152,8 @@
 			</div>
 			<Graph
 				height="200px"
-				datasets={[getHourlyDataset($weatherHourly, currentMeasure, 47)]}
-				labels={$weatherHourly.slice(0, 47).map((elem) => new Date(elem['timestamp']))}
+				datasets={[getHourlyDataset(servicesState.weatherHourly, currentMeasure, 47)]}
+				labels={servicesState.weatherHourly.slice(0, 47).map((elem) => new Date(elem['timestamp']))}
 				suggestedMin={getSuggestedMin(currentMeasure)}
 				suggestedMax={getSuggestedMax(currentMeasure)}
 			/>
@@ -162,7 +162,7 @@
 </Box>
 
 <Box title="Week forecast" direction="row" align="center">
-	{#each $weatherDaily as weather, index}
+	{#each servicesState.weatherDaily as weather, index}
 		{#if index > 0 && index < 7}
 			<BoxItem title={formatDate(new Date(weather['timestamp']))} minWidth="175px">
 				<WeatherIcon icon={weather['icon']} size="45px" height="75px" />

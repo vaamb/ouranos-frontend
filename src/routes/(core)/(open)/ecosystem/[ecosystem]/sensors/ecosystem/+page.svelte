@@ -15,9 +15,8 @@
 		probePath
 	} from '$lib/actions.svelte.js';
 	import {
-		ecosystemsSensorsDataHistoric,
-		ecosystemsSensorsSkeleton,
-		getStoreDataKey
+		gaiaState,
+		getKey
 	} from '$lib/store.svelte.js';
 	import { STATIC_URL } from '$lib/utils/consts.js';
 	import { capitalize } from '$lib/utils/functions.js';
@@ -87,13 +86,13 @@
 <HeaderLine title={ecosystemName + ' ecosystem health'} />
 
 {#await fetchEcosystemSensorsSkeleton(ecosystemUID, 'ecosystem') then sensorsSkeleton}
-	{#each $ecosystemsSensorsSkeleton[getStoreDataKey(ecosystemUID, 'ecosystem')] as sensorsBone}
+	{#each gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, 'ecosystem')] as sensorsBone}
 		<h2>{capitalize(sensorsBone['measure']).replace('_', ' ')}</h2>
 		{#each sensorsBone['sensors'] as sensor}
 			<Row>
 				{#await fetchSensorHistoricData(ecosystemUID, sensor['uid'], sensorsBone['measure'], 31) then sensorData_notUsed}
 					{@const historicSensorsData =
-						$ecosystemsSensorsDataHistoric[getStoreDataKey(sensor['uid'], sensorsBone['measure'])]}
+						gaiaState.ecosystemsSensorsDataHistoric[getKey(sensor['uid'], sensorsBone['measure'])]}
 					{#if historicSensorsData}
 						{@const imagePath = `${STATIC_URL}/ecosystem_health/${ecosystemUID}/${sensor['uid']}/${sensorsBone['measure']}.jpeg?${new Date().getTime()}`}
 						<Box title={sensor['name']} direction="row" icon={faKitMedical}>
@@ -101,7 +100,7 @@
 								{#if validPath}
 									<BoxItem maxWidth="225px">
 										<Image
-											bind:this={images[getStoreDataKey(sensor['uid'], sensorsBone['measure'])]}
+											bind:this={images[getKey(sensor['uid'], sensorsBone['measure'])]}
 											source={imagePath}
 											width="200"
 											height="200"

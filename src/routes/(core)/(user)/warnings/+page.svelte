@@ -5,7 +5,7 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
-	import { warnings } from '$lib/store.svelte.js';
+	import { gaiaState } from '$lib/store.svelte.js';
 	import { capitalize, formatDateTime } from "$lib/utils/functions.js";
 
 	// Crud-related variables and functions
@@ -22,7 +22,7 @@
 
 <HeaderLine title="Ecosystem warnings" />
 
-{#if $warnings.length > 0}
+{#if gaiaState.warnings.length > 0}
 	<Table
 		tableID="warnings"
 		columns={[
@@ -32,7 +32,7 @@
 			{ label: 'Description', key: 'description' },
 			{ label: 'Created on', key: 'created_on', serializer: formatDateTime }
 		]}
-		data={$warnings}
+		data={gaiaState.warnings}
 		editable={true}
 		crudOptions={['delete']}
 		oncrud={(payload) => {
@@ -45,14 +45,14 @@
 	>
 		{#snippet title()}{"Remove a warning"}{/snippet}
 		{#snippet children(closeModal)}
-			Are you sure you want to remove the warning '{$warnings[crudDataIndex]
-				? $warnings[crudDataIndex]['title']
-				: ''}' created by the ecosystem '{$warnings[crudDataIndex]
-				? $warnings[crudDataIndex]['created_by']
+			Are you sure you want to remove the warning '{gaiaState.warnings[crudDataIndex]
+				? gaiaState.warnings[crudDataIndex]['title']
+				: ''}' created by the ecosystem '{gaiaState.warnings[crudDataIndex]
+				? gaiaState.warnings[crudDataIndex]['created_by']
 				: ''}'?
 			<ConfirmButtons
 				onconfirm={() => {
-					const warningID = $warnings[crudDataIndex]['id'];
+					const warningID = gaiaState.warnings[crudDataIndex]['id'];
 					crudRequest(`gaia/warning/u/${warningID}/mark_as_solved`, 'create');
 					closeModal();
 				}}

@@ -4,84 +4,80 @@ import { User } from '$lib/utils/factories.js';
 import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 
-// Writable stores
-export const currentUser = writable(User());
-export const ecosystems = writable({});
-export const ecosystemsActuatorsState = writable({});
-export const ecosystemsNycthemeralCycle = writable({});
-export const ecosystemsManagement = writable({});
-export const ecosystemsSensorsSkeleton = writable({});
-export const ecosystemsSensorsDataCurrent = writable({});
-export const ecosystemsSensorsDataHistoric = writable({});
-export const ecosystemsState = writable({});
-export const engines = writable({});
-export const enginesState = writable({});
-export const flashMessage = writable([]);
-export const healthData = $state({});
-export const servers = writable({});
-export const serversCurrentData = writable({});
-export const serversHistoricData = writable({});
-export const pingServerStatus = writable(CONNECTION_STATUS.CONNECTED);
-export const pingServerLastSeen = writable(new Date(0));
-export const pingServerLatency = writable(null);
-export const services = writable([]);
-export const rawWarnings = writable([]);
-export const weatherCurrently = writable({});
-export const weatherHourly = writable([]);
-export const weatherDaily = writable([]);
-export const wikiTopics = writable([]);
+class AppState {
+	currentUser = $state(User());
+	flashMessage = $state([]);
+	pingServerStatus = $state(CONNECTION_STATUS.CONNECTED);
+	pingServerLastSeen = $state(new Date(0));
+	pingServerLatency = $state(null);
+}
 
-// Derived stores
-export const ecosystemsIds = derived(ecosystems, (ecosystems) => {
-	return Object.values(ecosystems)
-		.map((obj) => ({ uid: obj['uid'], name: obj['name'] }));
-});
+export const appState = new AppState();
 
-export const enginesIds = derived(engines, (engines) => {
-	return Object.values(engines)
-		.sort(dynamicSort('uid'))
-		.map((obj) => ({ uid: obj['uid'], sid: obj['sid'] }));
-});
+class GaiaState {
+	// ecosystems
+	ecosystems = $state({});
+	ecosystemsActuatorsState = $state({});
+	ecosystemsNycthemeralCycle = $state({});
+	ecosystemsManagement = $state({});
+	ecosystemsSensorsDataCurrent = $state({});
+	ecosystemsSensorsDataHistoric = $state({});
+	ecosystemsSensorsSkeleton = $state({});
+	ecosystemsState = $state({});
+	healthData = $state({});
+	// engines
+	engines = $state({});
+	enginesState = $state({});
+	// warnings
+	warnings = $state([]);
 
-export const serversIds = derived(servers, (servers) => {
-	return Object.values(servers)
-		.sort(dynamicSort('uid'))
-		.map((obj) => ({ uid: obj['uid'], name: capitalize(obj['uid'].replace('_', ' ')) }));
-});
+	// derived
+	get ecosystemsIds() {
+		return Object.values(this.ecosystems).map((obj) => ({ uid: obj['uid'], name: obj['name'] }));
+	}
 
-export const warnings = derived([rawWarnings, ecosystems], ([rawWarnings, ecosystems]) => {
-	rawWarnings.forEach((warning) => {
-		if (ecosystems[warning['created_by']]) {
-			warning['created_by'] = ecosystems[warning['created_by']]['name'];
-		}
-	});
-	return rawWarnings;
-});
+	get enginesIds() {
+		return Object.values(this.engines)
+			.sort(dynamicSort('uid'))
+			.map((obj) => ({ uid: obj['uid'], sid: obj['sid'] }));
+	}
+}
+
+export const gaiaState = new GaiaState();
+
+class InfraState {
+	servers = $state({});
+	serversCurrentData = $state({});
+	serversHistoricData = $state({});
+
+	get serversIds() {
+		return Object.values(this.servers)
+			.sort(dynamicSort('uid'))
+			.map((obj) => ({ uid: obj['uid'], name: capitalize(obj['uid'].replace('_', ' ')) }));
+	}
+}
+
+export const infraState = new InfraState();
+
+class ServicesState {
+	services = $state([]);
+	weatherCurrently = $state({});
+	weatherDaily = $state([]);
+	weatherHourly = $state([]);
+	wikiTopics = $state([]);
+}
+
+export const servicesState = new ServicesState();
 
 // Store-related utility functions
-export const getStoreDataKey = function () {
+export const getKey = function () {
 	return Array.prototype.slice.call(arguments).join('-');
 };
 
-export const getStoreData = function (store, storageKey) {
-	// Utility function to easily access stored data outside .svelte files
-	const storeData = get(store)[storageKey];
-	if (storeData) {
-		return storeData;
-	} else {
-		return {};
-	}
-};
-
-export const getFreshStoreData = function (store, storageKey) {
+export const getFreshStateData = function (state, storageKey) {
 	const now = new Date();
-	if (now - get(pingServerLastSeen) > 60000) {
+	if (now - appState.pingServerLastSeen > 60000) {
 		return {};
 	}
-	return getStoreData(store, storageKey);
-};
-
-export const updateStoreData = function (store, data) {
-	// Utility function to easily update stored data outside .svelte files
-	store.set({ ...get(store), ...data });
+	return state[storageKey] || {};
 };

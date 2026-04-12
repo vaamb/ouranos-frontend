@@ -65,25 +65,24 @@
 	};
 
 	// Warnings
-	const sortWarningsByEcosystem = function (warnings) {
+	let sortedWarnings = $derived.by(() => {
 		const sortedWarnings = {};
-		for (const warning of warnings) {
+		for (const warning of gaiaState.warnings) {
 			sortedWarnings[warning['created_by']] = sortedWarnings[warning['created_by']] || [];
 			sortedWarnings[warning['created_by']].push(warning);
 		}
 		return sortedWarnings;
-	};
-	let sortedWarnings = $derived(sortWarningsByEcosystem(gaiaState.warnings));
+	});
 
 	// Calendar
 	let calendarEvents = $state([]);
-	const sortCalendarEventsByHappening = function (events) {
+	let sortedCalendarEvents = $derived.by(() => {
 		const sortedEvents = {
 			happening: [],
 			future: []
 		};
 		const now = new Date();
-		for (const event of events) {
+		for (const event of calendarEvents) {
 			if (event['start_time'] <= now && now <= event['end_time']) {
 				sortedEvents['happening'].push(event);
 			} else if (now <= event['start_time']) {
@@ -91,8 +90,7 @@
 			}
 		}
 		return sortedEvents;
-	};
-	let sortedCalendarEvents = $derived(sortCalendarEventsByHappening(calendarEvents));
+	});
 
 	// Ecosystems
 	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {

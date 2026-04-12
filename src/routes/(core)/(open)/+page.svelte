@@ -127,14 +127,17 @@
 		return average(rv).toFixed(2);
 	};
 
-	let suntimes = $state([]);
 	let sensorsPrimed = $state(false);
 	let ecosystemsDataLoaded = $state({})
+	// Camera pictures info is not stored in gaiaState as it changes frequently (new picture every ~1 min)
 	let ecosystemsCameraPicturesInfo = $state({})
 
 	const recentPicture = function (timestamp, now) {
 		return now - new Date(timestamp) < 5 * 60 * 1000 ? "--green": "--red"
 	}
+
+	// Other
+	let suntimes = $state([]);
 
 	// On mount
 	onMount(async () => {

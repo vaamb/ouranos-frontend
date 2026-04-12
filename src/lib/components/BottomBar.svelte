@@ -27,6 +27,12 @@
 				ecosystemOrEngineUID: ecosystem ? ecosystem.uid : undefined
 			};
 		} else if (url.includes('/engine/')) {
+			if (url === '/engine/overview/settings') {
+				return {
+					pageType: PAGE_TYPE.DEFAULT,
+					ecosystemOrEngineUID: undefined
+				}
+			}
 			return {
 				pageType: PAGE_TYPE.ENGINE,
 				ecosystemOrEngineUID: page.params['engine']

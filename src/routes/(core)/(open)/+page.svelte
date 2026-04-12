@@ -305,18 +305,6 @@
 					{@const environmentData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'environment_data')}
 					{@const plantsData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'plants_data')}
 					{@const pictures = getParamStatus(gaiaState.ecosystemsManagement, uid, 'pictures')}
-					{#if !(light || actuator || ecosystemData || environmentData || plantsData || pictures)}
-						<BoxItem>
-							<p>No functionality is enabled in {name}</p>
-							{#if appState.currentUser.can(permissions.OPERATE)}
-								<p>
-									<a href="/ecosystem/{slugify(name)}/settings">
-										Click here to configure {name}
-									</a>
-								</p>
-							{/if}
-						</BoxItem>
-					{/if}
 					<BoxItem title="Nycthemeral cycle" href="/ecosystem/{slugify(name)}/settings">
 						{#await fetchEcosystemNycthemeralCycleData(uid)}
 							<p>Fetching data</p>

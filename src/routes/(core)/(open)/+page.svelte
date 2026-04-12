@@ -373,7 +373,7 @@
 					{/if}
 					{#if ecosystemData && ecosystemSensorsSkeleton}
 						<BoxItem title="Ecosystem health" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/ecosystem">
-							{#each ecosystemSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone}`)}
+							{#each ecosystemSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone['measure']}`)}
 								{#await fetchHealthLatestDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 									<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 								{:then averageHealthData}
@@ -394,7 +394,7 @@
 					{/if}
 					{#if environmentData && environmentSensorsSkeleton && sensorsPrimed}
 						<BoxItem title="Environment" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/environment">
-							{#each environmentSensorsSkeleton as sensorsBone (`${uid}-environment-${sensorsBone}`)}
+							{#each environmentSensorsSkeleton as sensorsBone (`${uid}-environment-${sensorsBone['measure']}`)}
 								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 									<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 								{:then _}
@@ -418,7 +418,7 @@
 					{/if}
 					{#if plantsData && plantsSensorsSkeleton && sensorsPrimed}
 						<BoxItem title="Plants" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/plants">
-							{#each plantsSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone}`)}
+							{#each plantsSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone['measure']}`)}
 								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
 									<p>Collecting sensors data for {sensorsBone.measure} measure</p>
 								{:then _}

@@ -293,7 +293,7 @@
 			{@const connected = isConnected(ecosystemState)}
 			{@const running = ecosystemState['status']}
 			<Box
-				title={name}
+				title={ecosystem['name']}
 				align="center"
 				status={computeEcosystemStatusClass(ecosystemState)}
 				direction="row"
@@ -305,7 +305,7 @@
 					{@const environmentData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'environment_data')}
 					{@const plantsData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'plants_data')}
 					{@const pictures = getParamStatus(gaiaState.ecosystemsManagement, uid, 'pictures')}
-					<BoxItem title="Nycthemeral cycle" href="/ecosystem/{slugify(name)}/settings">
+					<BoxItem title="Nycthemeral cycle" href="/ecosystem/{slugify(ecosystem['name'])}/settings">
 						{#await fetchEcosystemNycthemeralCycleData(uid)}
 							<p>Fetching data</p>
 						{:then ecosystemLightData_notUsed}
@@ -338,7 +338,7 @@
 						{/await}
 					</BoxItem>
 					{#if actuator}
-						<BoxItem title="Actuators" href="/ecosystem/{slugify(name)}/actuators">
+						<BoxItem title="Actuators" href="/ecosystem/{slugify(ecosystem['name'])}/actuators">
 							{#each actuatorTypes as actuatorType}
 								{@const actuator = gaiaState.ecosystemsActuatorsState[uid] && gaiaState.ecosystemsActuatorsState[uid][actuatorType]}
 								{#if actuator && actuator['active']}
@@ -355,7 +355,7 @@
 						</BoxItem>
 					{/if}
 					{#if ecosystemData}
-						<BoxItem title="Ecosystem health" href="/ecosystem/{slugify(name)}/sensors/ecosystem">
+						<BoxItem title="Ecosystem health" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/ecosystem">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'ecosystem')}
 								<p>Collecting health data from the ecosystem</p>
 							{:then sensorsSkeleton}
@@ -380,7 +380,7 @@
 						</BoxItem>
 					{/if}
 					{#if environmentData && sensorsPrimed}
-						<BoxItem title="Environment" href="/ecosystem/{slugify(name)}/sensors/environment">
+						<BoxItem title="Environment" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/environment">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
 								<p>Collecting environment data from the ecosystem</p>
 							{:then sensorsSkeleton}
@@ -408,7 +408,7 @@
 						</BoxItem>
 					{/if}
 					{#if plantsData && sensorsPrimed}
-						<BoxItem title="Plants" href="/ecosystem/{slugify(name)}/sensors/plants">
+						<BoxItem title="Plants" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/plants">
 							{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
 								<p>Collecting plants data from the ecosystem</p>
 							{:then sensorsSkeleton}
@@ -436,7 +436,7 @@
 						</BoxItem>
 					{/if}
 					{#if pictures}
-						<BoxItem title="Camera" href="/ecosystem/{slugify(name)}/camera">
+						<BoxItem title="Camera" href="/ecosystem/{slugify(ecosystem['name'])}/camera">
 							{#await fetchCameraPicturesInfo(uid)}
 								<p>Loading camera information</p>
 							{:then camerasInfo}
@@ -451,18 +451,18 @@
 					{/if}
 				{:else if connected}
 					<BoxItem>
-						<p>The ecosystem '{name}' is not currently running</p>
+						<p>The ecosystem '{ecosystem['name']}' is not currently running</p>
 							{#if appState.currentUser.can(permissions.OPERATE)}
 								<p>
-									<a href="/ecosystem/{slugify(name)}/settings">
-										Click here to configure {name}
+									<a href="/ecosystem/{slugify(ecosystem['name'])}/settings">
+										Click here to configure {ecosystem['name']}
 									</a>
 								</p>
 							{/if}
 					</BoxItem>
 				{:else if running}
 					<BoxItem>
-						<p>The ecosystem {name} is not currently connected</p>
+						<p>The ecosystem {ecosystem['name']} is not currently connected</p>
 						<p>
 							Last connection to the server on
 							{formatDateTime(ecosystemState['last_seen'])}
@@ -470,7 +470,7 @@
 					</BoxItem>
 				{:else}
 					<BoxItem>
-						<p>The ecosystem '{name}' is not currently running and is not connected</p>
+						<p>The ecosystem '{ecosystem['name']}' is not currently running and is not connected</p>
 						<p>
 							Last connection to the server on
 							{formatDateTime(ecosystemState['last_seen'])}

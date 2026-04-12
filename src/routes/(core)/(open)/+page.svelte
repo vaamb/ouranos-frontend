@@ -286,7 +286,7 @@
 
 {#if gaiaState.ecosystemsIds.length > 0}
 	<h2>Ecosystems overview</h2>
-	{#each gaiaState.ecosystemsIds as { uid, name }}
+	{#each gaiaState.ecosystemsIds as { uid } (uid)}
 		{@const ecosystem = gaiaState.ecosystems[uid]}
 		{#if ecosystem}
 			{@const ecosystemState = gaiaState.ecosystemsState[uid]}

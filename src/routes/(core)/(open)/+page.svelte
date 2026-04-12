@@ -320,11 +320,13 @@
 					{@const environmentData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'environment_data')}
 					{@const plantsData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'plants_data')}
 					{@const pictures = getParamStatus(gaiaState.ecosystemsManagement, uid, 'pictures')}
-					<BoxItem title="Nycthemeral cycle" href="/ecosystem/{slugify(ecosystem['name'])}/settings">
-						{#await fetchEcosystemNycthemeralCycleData(uid)}
-							<p>Fetching data</p>
-						{:then ecosystemLightData_notUsed}
-							{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[getKey(uid)]}
+					{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[uid]}
+					{@const actuatorsState = gaiaState.ecosystemsActuatorsState[uid]}
+					{@const ecosystemSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')]}
+					{@const environmentSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')]}
+					{@const plantsSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')]}
+					{#if nycthemeralCycle}
+						<BoxItem title="Nycthemeral cycle" href="/ecosystem/{slugify(ecosystem['name'])}/settings">
 							{@const formatTime = (timeStr) => {
 								return strHoursToDate(timeStr).toLocaleTimeString([], {
 									timeStyle: 'short',
@@ -344,18 +346,18 @@
 									Lighting
 								</p>
 								<p>Method: {nycthemeralCycle['lighting']}</p>
-								{#each computeLightingHours(nycthemeralCycle, 'short') as lightingHours}
+								{#each computeLightingHours(nycthemeralCycle, 'short') as lightingHours, index (`${uid}-${index}`)}
 									<p>{lightingHours}</p>
 								{:else}
 									<p>No lighting needed</p>
 								{/each}
 							{/if}
-						{/await}
-					</BoxItem>
-					{#if actuator}
+						</BoxItem>
+					{/if}
+					{#if actuator && actuatorsState}
 						<BoxItem title="Actuators" href="/ecosystem/{slugify(ecosystem['name'])}/actuators">
-							{#each actuatorTypes as actuatorType}
-								{@const actuator = gaiaState.ecosystemsActuatorsState[uid] && gaiaState.ecosystemsActuatorsState[uid][actuatorType]}
+							{#each actuatorTypes as actuatorType (`${uid}-${actuatorType}`)}
+								{@const actuator = actuatorsState[actuatorType]}
 								{#if actuator && actuator['active']}
 									<p>
 										{capitalize(actuatorType)}:
@@ -369,85 +371,73 @@
 							{/each}
 						</BoxItem>
 					{/if}
-					{#if ecosystemData}
+					{#if ecosystemData && ecosystemSensorsSkeleton}
 						<BoxItem title="Ecosystem health" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/ecosystem">
-							{#await fetchEcosystemSensorsSkeleton(uid, 'ecosystem')}
-								<p>Collecting health data from the ecosystem</p>
-							{:then sensorsSkeleton}
-								{#each gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')] as sensorsBone}
-									{#await fetchHealthLatestDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
-										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
-									{:then averageHealthData}
-										{#if averageHealthData !== null}
-											<p style="margin-bottom: 0">
-												{capitalize(sensorsBone.measure).replace('_', ' ')}:
-												{averageHealthData}
-												{sensorsBone.units[0]}
-											</p>
-										{:else}
-											<p style="margin-bottom: 0">
-												No recent data for {capitalize(sensorsBone.measure).replace('_', ' ')}
-											</p>
-										{/if}
-									{/await}
-								{/each}
-							{/await}
+							{#each ecosystemSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone}`)}
+								{#await fetchHealthLatestDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
+									<p>Collecting sensors data for {sensorsBone.measure} measure</p>
+								{:then averageHealthData}
+									{#if averageHealthData !== null}
+										<p style="margin-bottom: 0">
+											{capitalize(sensorsBone.measure).replace('_', ' ')}:
+											{averageHealthData}
+											{sensorsBone.units[0]}
+										</p>
+									{:else}
+										<p style="margin-bottom: 0">
+											No recent data for {capitalize(sensorsBone.measure).replace('_', ' ')}
+										</p>
+									{/if}
+								{/await}
+							{/each}
 						</BoxItem>
 					{/if}
-					{#if environmentData && sensorsPrimed}
+					{#if environmentData && environmentSensorsSkeleton && sensorsPrimed}
 						<BoxItem title="Environment" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/environment">
-							{#await fetchEcosystemSensorsSkeleton(uid, 'environment')}
-								<p>Collecting environment data from the ecosystem</p>
-							{:then sensorsSkeleton}
-								{#each gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')] as sensorsBone}
-									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
-										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
-									{:then sensorsData}
-										{@const averageData = computeAverageSensorsCurrentDataForMeasure(
-											gaiaState.ecosystemsSensorsDataCurrent,
-											sensorsBone.measure,
-											sensorsBone.sensors
-										)}
-										{#if averageData !== null}
-											<p style="margin-bottom: 0">
-												{capitalize(sensorsBone.measure).replace('_', ' ')}:
-												{averageData}
-												{sensorsBone.units[0]}
-											</p>
-										{/if}
-									{/await}
-								{:else}
-									<p style="margin-bottom: 0">No sensor data available</p>
-								{/each}
-							{/await}
+							{#each environmentSensorsSkeleton as sensorsBone (`${uid}-environment-${sensorsBone}`)}
+								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
+									<p>Collecting sensors data for {sensorsBone.measure} measure</p>
+								{:then _}
+									{@const averageData = computeAverageSensorsCurrentDataForMeasure(
+										gaiaState.ecosystemsSensorsDataCurrent,
+										sensorsBone.measure,
+										sensorsBone.sensors
+									)}
+									{#if averageData !== null}
+										<p style="margin-bottom: 0">
+											{capitalize(sensorsBone.measure).replace('_', ' ')}:
+											{averageData}
+											{sensorsBone.units[0]}
+										</p>
+									{/if}
+								{/await}
+							{:else}
+								<p style="margin-bottom: 0">No sensor data available</p>
+							{/each}
 						</BoxItem>
 					{/if}
-					{#if plantsData && sensorsPrimed}
+					{#if plantsData && plantsSensorsSkeleton && sensorsPrimed}
 						<BoxItem title="Plants" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/plants">
-							{#await fetchEcosystemSensorsSkeleton(uid, 'plants')}
-								<p>Collecting plants data from the ecosystem</p>
-							{:then sensorsSkeleton}
-								{#each gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')] as sensorsBone}
-									{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
-										<p>Collecting sensors data for {sensorsBone.measure} measure</p>
-									{:then sensorsData}
-										{@const averageData = computeAverageSensorsCurrentDataForMeasure(
-											gaiaState.ecosystemsSensorsDataCurrent,
-											sensorsBone.measure,
-											sensorsBone.sensors
-										)}
-										{#if averageData !== null}
-											<p style="margin-bottom: 0">
-												{capitalize(sensorsBone.measure).replace('_', ' ')}:
-												{averageData}
-												{sensorsBone.units[0]}
-											</p>
-										{/if}
-									{/await}
-								{:else}
-									<p style="margin-bottom: 0">No sensor data available</p>
-								{/each}
-							{/await}
+							{#each plantsSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone}`)}
+								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone.measure, sensorsBone.sensors)}
+									<p>Collecting sensors data for {sensorsBone.measure} measure</p>
+								{:then _}
+									{@const averageData = computeAverageSensorsCurrentDataForMeasure(
+										gaiaState.ecosystemsSensorsDataCurrent,
+										sensorsBone.measure,
+										sensorsBone.sensors
+									)}
+									{#if averageData !== null}
+										<p style="margin-bottom: 0">
+											{capitalize(sensorsBone.measure).replace('_', ' ')}:
+											{averageData}
+											{sensorsBone.units[0]}
+										</p>
+									{/if}
+								{/await}
+							{:else}
+								<p style="margin-bottom: 0">No sensor data available</p>
+							{/each}
 						</BoxItem>
 					{/if}
 					{#if pictures}
@@ -455,7 +445,7 @@
 							{#await fetchCameraPicturesInfo(uid)}
 								<p>Loading camera information</p>
 							{:then camerasInfo}
-								{#each Object.values(camerasInfo) as cameraInfo}
+								{#each Object.values(camerasInfo) as cameraInfo (`${uid}-${cameraInfo["camera_name"]}`)}
 									<p>
 										{cameraInfo["camera_name"]}
 										<Fa icon={faCircle} style="color: var({recentPicture(cameraInfo['timestamp'], now)});" />

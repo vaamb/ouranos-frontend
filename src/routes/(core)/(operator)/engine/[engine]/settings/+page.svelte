@@ -18,13 +18,11 @@
 	let engine = $derived(gaiaState.engines[engineUID]);
 	let engineState = $derived(gaiaState.enginesState[engineUID]);
 	let fullEcosystems = $derived.by(() => {
-		let ecosystemsCopy = structuredClone(gaiaState.ecosystems);
-		ecosystemsCopy = Object.values(ecosystemsCopy);
-		ecosystemsCopy.forEach((ecosystem) => {
-			ecosystem['last_seen'] = gaiaState.ecosystemsState[ecosystem['uid']]['last_seen'];
-			ecosystem['status'] = gaiaState.ecosystemsState[ecosystem['uid']]['status'];
-		});
-		return ecosystemsCopy;
+		return Object.values(gaiaState.ecosystems).map((ecosystem) => ({
+			...ecosystem,
+			last_seen: gaiaState.ecosystemsState[ecosystem['uid']]['last_seen'],
+			status: gaiaState.ecosystemsState[ecosystem['uid']]['status'],
+		}));
 	});
 
 	// Crud-related variables and functions

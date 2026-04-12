@@ -6,13 +6,11 @@
 	import { formatDateTime } from '$lib/utils/functions.js';
 
 	let fullEngines = $derived.by(() => {
-		let enginesCopy = structuredClone(gaiaState.engines);
-		enginesCopy = Object.values(enginesCopy);
-		enginesCopy.forEach((engine) => {
-			engine['last_seen'] = gaiaState.enginesState[engine['uid']]['last_seen'];
-			engine['connected'] = gaiaState.enginesState[engine['uid']]['connected'];
-		});
-		return enginesCopy;
+		return Object.values(gaiaState.engines).map((engine) => ({
+			...engine,
+			last_seen: gaiaState.enginesState[engine['uid']]['last_seen'],
+			connected: gaiaState.enginesState[engine['uid']]['connected'],
+		}));
 	});
 </script>
 

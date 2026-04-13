@@ -94,16 +94,9 @@
 
 	// Ecosystems
 	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {
-		let rv = [];
-		for (const sensor of sensors) {
-			const data = await fetchSensorCurrentData(
-				ecosystemUID,
-				sensor['uid'],
-				measure.replace(' ', '_')
-			);
-			rv.push(data);
-		}
-		return rv;
+		return Promise.all(
+			sensors.map((sensor) => fetchSensorCurrentData(ecosystemUID, sensor['uid'], measure.replace(' ', '_')))
+		);
 	};
 
 	const computeAverageSensorsCurrentDataForMeasure = function (

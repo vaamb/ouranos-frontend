@@ -125,8 +125,20 @@
 		return average(rv).toFixed(2);
 	};
 
+	const ecosystemIsConnected = function (uid) {
+    return isConnected(gaiaState.ecosystemsState[uid])
+	}
+
+	const ecosystemIsRunning = function (uid) {
+    return gaiaState.ecosystemsState[uid]['status']
+	}
+
+	const ecosystemIsOperational = function (uid) {
+    return ecosystemIsConnected(uid) && ecosystemIsRunning(uid)
+	}
+
 	let sensorsPrimed = $state(false);
-	let ecosystemsDataLoaded = $state({})
+	let ecosystemsReady = $state({})
 	// Camera pictures info is not stored in gaiaState as it changes frequently (new picture every ~1 min)
 	let ecosystemsCameraPicturesInfo = $state({})
 
@@ -156,15 +168,22 @@
 					fetchCameraPicturesInfo(uid)
 				]);
 			ecosystemsCameraPicturesInfo[uid] = cameraPicturesInfo;
-			ecosystemsDataLoaded[uid] = true;
+			ecosystemsReady[uid] = true;
 		}
 
+		// Load data for ecosystems that are live (connected and running)
 		await Promise.all(
 			gaiaState.ecosystemsIds
 				.map((ecosystemIds) => ecosystemIds['uid'])
-				.filter((uid) => isConnected(gaiaState.ecosystemsState[uid]) && gaiaState.ecosystemsState[uid]['status'])
+				.filter((uid) => ecosystemIsOperational(uid))
 				.map((uid) => fetchEcosystemData(uid))
 		)
+
+		// Mark other ecosystems as ready
+		gaiaState.ecosystemsIds
+			.map((ecosystemIds) => ecosystemIds['uid'])
+			.filter((uid) => !ecosystemIsOperational(uid))
+			.forEach((uid) => { ecosystemsReady[uid] = true; } )
 
 		if (serviceEnabled(servicesState.services, 'weather')) {
 			await fetchWeatherForecast();
@@ -311,17 +330,15 @@
 	<h2>Ecosystems overview</h2>
 	{#each gaiaState.ecosystemsIds as { uid } (uid)}
 		{@const ecosystem = gaiaState.ecosystems[uid]}
-		{#if ecosystemsDataLoaded[uid] === true}
+		{#if ecosystemsReady[uid] === true}
 			{@const ecosystemState = gaiaState.ecosystemsState[uid]}
-			{@const connected = isConnected(ecosystemState)}
-			{@const running = ecosystemState['status']}
 			<Box
 				title={ecosystem['name']}
 				align="center"
 				status={computeEcosystemStatusClass(ecosystemState)}
 				direction="row"
 			>
-				{#if connected && running}
+				{#if ecosystemIsOperational(uid)}
 					{@const light = getParamStatus(gaiaState.ecosystemsManagement, uid, 'light')}
 					{@const actuator = getParamStatus(gaiaState.ecosystemsManagement, uid, 'actuators')}
 					{@const ecosystemData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'ecosystem_data')}
@@ -459,20 +476,20 @@
 							{/each}
 						</BoxItem>
 					{/if}
-				{:else if connected}
+				{:else if ecosystemIsConnected(uid)}
 					<BoxItem>
 						<p>The ecosystem '{ecosystem['name']}' is not currently running</p>
 							{#if appState.currentUser.can(permissions.OPERATE)}
 								<p>
 									<a href="/ecosystem/{slugify(ecosystem['name'])}/settings">
-										Click here to configure {ecosystem['name']}
+										Click here to configure it and start it
 									</a>
 								</p>
 							{/if}
 					</BoxItem>
-				{:else if running}
+				{:else if ecosystemIsRunning(uid)}
 					<BoxItem>
-						<p>The ecosystem {ecosystem['name']} is not currently connected</p>
+						<p>The ecosystem '{ecosystem['name']}' is not currently connected</p>
 						<p>
 							Last connection to the server on
 							{formatDateTime(ecosystemState['last_seen'])}

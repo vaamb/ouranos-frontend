@@ -203,7 +203,7 @@
 	});
 </script>
 
-<HeaderLine title={'Home'} />
+<HeaderLine title='Home' />
 
 <h2>Global overview</h2>
 <Row>

@@ -335,11 +335,6 @@
 			>
 				{#if ecosystemIsOperational(uid)}
 					{@const light = canManage(uid, 'light')}
-					{@const actuator = canManage(uid, 'actuators')}
-					{@const ecosystemData = canManage(uid, 'ecosystem_data')}
-					{@const environmentData = canManage(uid, 'environment_data')}
-					{@const plantsData = canManage(uid, 'plants_data')}
-					{@const pictures = canManage(uid, 'pictures')}
 					{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[uid]}
 					{@const actuatorsState = gaiaState.ecosystemsActuatorsState[uid]}
 					{@const ecosystemSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')]}
@@ -375,7 +370,7 @@
 							{/if}
 						</BoxItem>
 					{/if}
-					{#if actuator && actuatorsState}
+					{#if !isEmpty(actuatorsState)}
 						<BoxItem title="Actuators" href="/ecosystem/{slugify(ecosystem['name'])}/actuators">
 							{#each actuatorTypes as actuatorType (`${uid}-${actuatorType}`)}
 								{@const actuator = actuatorsState[actuatorType]}
@@ -392,7 +387,7 @@
 							{/each}
 						</BoxItem>
 					{/if}
-					{#if ecosystemData && ecosystemSensorsSkeleton}
+					{#if !isEmpty(ecosystemSensorsSkeleton)}
 						<BoxItem title="Ecosystem health" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/ecosystem">
 							{#each ecosystemSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone['measure']}`)}
 								{#await fetchHealthLatestDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
@@ -413,7 +408,7 @@
 							{/each}
 						</BoxItem>
 					{/if}
-					{#if environmentData && environmentSensorsSkeleton && sensorsPrimed}
+					{#if !isEmpty(environmentSensorsSkeleton) && sensorsPrimed}
 						<BoxItem title="Environment" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/environment">
 							{#each environmentSensorsSkeleton as sensorsBone (`${uid}-environment-${sensorsBone['measure']}`)}
 								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
@@ -437,7 +432,7 @@
 							{/each}
 						</BoxItem>
 					{/if}
-					{#if plantsData && plantsSensorsSkeleton && sensorsPrimed}
+					{#if !isEmpty(plantsSensorsSkeleton) && sensorsPrimed}
 						<BoxItem title="Plants" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/plants">
 							{#each plantsSensorsSkeleton as sensorsBone (`${uid}-plants-${sensorsBone['measure']}`)}
 								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
@@ -461,7 +456,7 @@
 							{/each}
 						</BoxItem>
 					{/if}
-					{#if pictures && cameraPicturesInfo}
+					{#if !isEmpty(cameraPicturesInfo)}
 						<BoxItem title="Camera" href="/ecosystem/{slugify(ecosystem['name'])}/camera">
 							{#each Object.values(cameraPicturesInfo) as cameraInfo (`${uid}-${cameraInfo["camera_name"]}`)}
 								<p>

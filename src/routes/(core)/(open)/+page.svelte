@@ -475,7 +475,7 @@
 					{/if}
 				{:else if ecosystemIsConnected(uid)}
 					<BoxItem>
-						<p>The ecosystem '{ecosystem['name']}' is not currently running</p>
+						<p>The ecosystem is not currently running</p>
 							{#if appState.currentUser.can(permissions.OPERATE)}
 								<p>
 									<a href="/ecosystem/{slugify(ecosystem['name'])}/settings">
@@ -486,7 +486,7 @@
 					</BoxItem>
 				{:else if ecosystemIsRunning(uid)}
 					<BoxItem>
-						<p>The ecosystem '{ecosystem['name']}' is not currently connected</p>
+						<p>The ecosystem is not currently connected</p>
 						<p>
 							Last connection to the server on
 							{formatDateTime(ecosystemState['last_seen'])}
@@ -494,7 +494,7 @@
 					</BoxItem>
 				{:else}
 					<BoxItem>
-						<p>The ecosystem '{ecosystem['name']}' is not currently running and is not connected</p>
+						<p>The ecosystem is not currently running and is not connected</p>
 						<p>
 							Last connection to the server on
 							{formatDateTime(ecosystemState['last_seen'])}

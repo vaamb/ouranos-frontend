@@ -335,12 +335,12 @@
 				direction="row"
 			>
 				{#if ecosystemIsOperational(uid)}
-					{@const light = getParamStatus(gaiaState.ecosystemsManagement, uid, 'light')}
-					{@const actuator = getParamStatus(gaiaState.ecosystemsManagement, uid, 'actuators')}
-					{@const ecosystemData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'ecosystem_data')}
-					{@const environmentData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'environment_data')}
-					{@const plantsData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'plants_data')}
-					{@const pictures = getParamStatus(gaiaState.ecosystemsManagement, uid, 'pictures')}
+					{@const light = canManage(uid, 'light')}
+					{@const actuator = canManage(uid, 'actuators')}
+					{@const ecosystemData = canManage(uid, 'ecosystem_data')}
+					{@const environmentData = canManage(uid, 'environment_data')}
+					{@const plantsData = canManage(uid, 'plants_data')}
+					{@const pictures = canManage(uid, 'pictures')}
 					{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[uid]}
 					{@const actuatorsState = gaiaState.ecosystemsActuatorsState[uid]}
 					{@const ecosystemSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')]}

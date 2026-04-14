@@ -1,7 +1,7 @@
 import humanizeDuration from 'humanize-duration';
 import jwt_decode from 'jwt-decode';
 
-import { CONNECTION_STATUS } from '$lib/utils/consts.js';
+import { CONNECTION_STATUS, ecosystemOperationStatus } from '$lib/utils/consts.js';
 
 export class InvalidTokenError extends Error {}
 
@@ -133,9 +133,9 @@ export const isConnected = function (state) {
 
 export const getStatusClass = function (status) {
 	if (status) {
-		return 'on';
+		return ecosystemOperationStatus.on;
 	} else {
-		return 'off';
+		return ecosystemOperationStatus.off;
 	}
 };
 
@@ -143,7 +143,7 @@ export const computeEcosystemStatusClass = function (ecosystemState) {
 	if (isConnected(ecosystemState)) {
 		return getStatusClass(ecosystemState['status']);
 	} else {
-		return 'deco';
+		return ecosystemOperationStatus.disconnected;
 	}
 };
 

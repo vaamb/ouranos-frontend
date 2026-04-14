@@ -204,14 +204,6 @@ export const serviceEnabled = function (services, serviceName) {
 	return service['status'] ? service['status'] : false;
 };
 
-export const getParamStatus = function (store, ecosystemUID, param) {
-	const ecosystem = store[ecosystemUID];
-	if (ecosystem) {
-		return ecosystem[param] === true;
-	}
-	return false;
-};
-
 export const setCookie = function (name, value, expDays = 90) {
 	let date = new Date();
 	date.setTime(date.getTime() + expDays * 24 * 60 * 60 * 1000);

@@ -25,7 +25,6 @@
 		computeServerUptime,
 		formatDate,
 		formatDateTime,
-		getParamStatus,
 		isConnected,
 		isEmpty,
 		serviceEnabled,
@@ -116,6 +115,10 @@
 		}
 		const average = (array) => array.reduce((a, b) => a + b) / array.length;
 		return average(rv).toFixed(2);
+	};
+
+	const canManage = function (uid, management) {
+		return gaiaState.ecosystemsManagement?.[uid]?.[management] === true
 	};
 
 	const ecosystemIsConnected = function (uid) {

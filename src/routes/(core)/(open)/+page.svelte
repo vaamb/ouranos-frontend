@@ -80,7 +80,6 @@
 			happening: [],
 			future: []
 		};
-		const now = new Date();
 		for (const event of calendarEvents) {
 			if (event['start_time'] <= now && now <= event['end_time']) {
 				sortedEvents['happening'].push(event);

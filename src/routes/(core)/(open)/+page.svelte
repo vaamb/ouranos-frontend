@@ -25,7 +25,6 @@
 		computeServerUptime,
 		formatDate,
 		formatDateTime,
-		getParamStatus,
 		isConnected,
 		isEmpty,
 		serviceEnabled,
@@ -118,6 +117,10 @@
 		return average(rv).toFixed(2);
 	};
 
+	const canManage = function (uid, management) {
+		return gaiaState.ecosystemsManagement?.[uid]?.[management] === true
+	};
+
 	const ecosystemIsConnected = function (uid) {
     return isConnected(gaiaState.ecosystemsState[uid])
 	}
@@ -151,15 +154,14 @@
 		});
 
 		const fetchEcosystemData = async function (uid) {
-			const [actuatorsState, nycthemeralCycle, ecosystemSensorsSkeleton, environmentSensorsSkeleton, plantsSensorsSkeleton, cameraPicturesInfo] =
-					await Promise.all([
-					fetchEcosystemActuatorsState(uid),
-					fetchEcosystemNycthemeralCycleData(uid),
-					fetchEcosystemSensorsSkeleton(uid, 'ecosystem'),
-					fetchEcosystemSensorsSkeleton(uid, 'environment'),
-					fetchEcosystemSensorsSkeleton(uid, 'plants'),
-					fetchCameraPicturesInfo(uid)
-				]);
+			const [cameraPicturesInfo] = await Promise.all([
+				canManage(uid, 'pictures') ? fetchCameraPicturesInfo(uid) : {},
+				canManage(uid, 'ecosystem_data') ? fetchEcosystemSensorsSkeleton(uid, 'ecosystem') : {},
+				canManage(uid, 'environment_data') ? fetchEcosystemSensorsSkeleton(uid, 'environment') : {},
+				canManage(uid, 'plants_data') ? fetchEcosystemSensorsSkeleton(uid, 'plants') : {},
+				canManage(uid, 'actuators') ? fetchEcosystemActuatorsState(uid) : {},
+				fetchEcosystemNycthemeralCycleData(uid),  // Always needed
+			]);
 			ecosystemsCameraPicturesInfo[uid] = cameraPicturesInfo;
 			ecosystemsReady[uid] = true;
 		}
@@ -332,19 +334,14 @@
 				direction="row"
 			>
 				{#if ecosystemIsOperational(uid)}
-					{@const light = getParamStatus(gaiaState.ecosystemsManagement, uid, 'light')}
-					{@const actuator = getParamStatus(gaiaState.ecosystemsManagement, uid, 'actuators')}
-					{@const ecosystemData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'ecosystem_data')}
-					{@const environmentData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'environment_data')}
-					{@const plantsData = getParamStatus(gaiaState.ecosystemsManagement, uid, 'plants_data')}
-					{@const pictures = getParamStatus(gaiaState.ecosystemsManagement, uid, 'pictures')}
+					{@const light = canManage(uid, 'light')}
 					{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[uid]}
 					{@const actuatorsState = gaiaState.ecosystemsActuatorsState[uid]}
 					{@const ecosystemSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')]}
 					{@const environmentSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')]}
 					{@const plantsSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')]}
 					{@const cameraPicturesInfo = ecosystemsCameraPicturesInfo[uid]}
-					{#if nycthemeralCycle}
+					{#if !isEmpty(nycthemeralCycle)}
 						<BoxItem title="Nycthemeral cycle" href="/ecosystem/{slugify(ecosystem['name'])}/settings">
 							{@const formatTime = (timeStr) => {
 								return strHoursToDate(timeStr).toLocaleTimeString([], {
@@ -373,7 +370,7 @@
 							{/if}
 						</BoxItem>
 					{/if}
-					{#if actuator && actuatorsState}
+					{#if !isEmpty(actuatorsState)}
 						<BoxItem title="Actuators" href="/ecosystem/{slugify(ecosystem['name'])}/actuators">
 							{#each actuatorTypes as actuatorType (`${uid}-${actuatorType}`)}
 								{@const actuator = actuatorsState[actuatorType]}
@@ -390,7 +387,7 @@
 							{/each}
 						</BoxItem>
 					{/if}
-					{#if ecosystemData && ecosystemSensorsSkeleton}
+					{#if !isEmpty(ecosystemSensorsSkeleton)}
 						<BoxItem title="Ecosystem health" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/ecosystem">
 							{#each ecosystemSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone['measure']}`)}
 								{#await fetchHealthLatestDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
@@ -411,7 +408,7 @@
 							{/each}
 						</BoxItem>
 					{/if}
-					{#if environmentData && environmentSensorsSkeleton && sensorsPrimed}
+					{#if !isEmpty(environmentSensorsSkeleton) && sensorsPrimed}
 						<BoxItem title="Environment" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/environment">
 							{#each environmentSensorsSkeleton as sensorsBone (`${uid}-environment-${sensorsBone['measure']}`)}
 								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
@@ -435,7 +432,7 @@
 							{/each}
 						</BoxItem>
 					{/if}
-					{#if plantsData && plantsSensorsSkeleton && sensorsPrimed}
+					{#if !isEmpty(plantsSensorsSkeleton) && sensorsPrimed}
 						<BoxItem title="Plants" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/plants">
 							{#each plantsSensorsSkeleton as sensorsBone (`${uid}-plants-${sensorsBone['measure']}`)}
 								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
@@ -459,7 +456,7 @@
 							{/each}
 						</BoxItem>
 					{/if}
-					{#if pictures && cameraPicturesInfo}
+					{#if !isEmpty(cameraPicturesInfo)}
 						<BoxItem title="Camera" href="/ecosystem/{slugify(ecosystem['name'])}/camera">
 							{#each Object.values(cameraPicturesInfo) as cameraInfo (`${uid}-${cameraInfo["camera_name"]}`)}
 								<p>

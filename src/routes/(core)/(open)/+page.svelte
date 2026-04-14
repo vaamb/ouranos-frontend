@@ -154,15 +154,14 @@
 		});
 
 		const fetchEcosystemData = async function (uid) {
-			const [actuatorsState, nycthemeralCycle, ecosystemSensorsSkeleton, environmentSensorsSkeleton, plantsSensorsSkeleton, cameraPicturesInfo] =
-					await Promise.all([
-					fetchEcosystemActuatorsState(uid),
-					fetchEcosystemNycthemeralCycleData(uid),
-					fetchEcosystemSensorsSkeleton(uid, 'ecosystem'),
-					fetchEcosystemSensorsSkeleton(uid, 'environment'),
-					fetchEcosystemSensorsSkeleton(uid, 'plants'),
-					fetchCameraPicturesInfo(uid)
-				]);
+			const [cameraPicturesInfo] = await Promise.all([
+				canManage(uid, 'pictures') ? fetchCameraPicturesInfo(uid) : {},
+				canManage(uid, 'ecosystem_data') ? fetchEcosystemSensorsSkeleton(uid, 'ecosystem') : {},
+				canManage(uid, 'environment_data') ? fetchEcosystemSensorsSkeleton(uid, 'environment') : {},
+				canManage(uid, 'plants_data') ? fetchEcosystemSensorsSkeleton(uid, 'plants') : {},
+				canManage(uid, 'actuators') ? fetchEcosystemActuatorsState(uid) : {},
+				fetchEcosystemNycthemeralCycleData(uid),  // Always needed
+			]);
 			ecosystemsCameraPicturesInfo[uid] = cameraPicturesInfo;
 			ecosystemsReady[uid] = true;
 		}

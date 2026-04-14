@@ -341,7 +341,7 @@
 					{@const environmentSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')]}
 					{@const plantsSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')]}
 					{@const cameraPicturesInfo = ecosystemsCameraPicturesInfo[uid]}
-					{#if nycthemeralCycle}
+					{#if isEmpty(nycthemeralCycle)}
 						<BoxItem title="Nycthemeral cycle" href="/ecosystem/{slugify(ecosystem['name'])}/settings">
 							{@const formatTime = (timeStr) => {
 								return strHoursToDate(timeStr).toLocaleTimeString([], {

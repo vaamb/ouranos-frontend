@@ -2,6 +2,8 @@
 	import Fa from 'svelte-fa';
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
+	import { ecosystemOperationStatus } from '$lib/utils/consts.js';
+
 	let {
 		title,
 		icon = null,
@@ -15,6 +17,16 @@
 		href = null,
 		children
 	} = $props();
+
+	const getTooltip = function (status) {
+		if (status === ecosystemOperationStatus.on) {
+			return 'Running';
+		} else if (status === ecosystemOperationStatus.off) {
+			return 'Not started';
+		} else if (status === ecosystemOperationStatus.disconnected) {
+			return 'Disconnected';
+		}
+	};
 </script>
 
 <div
@@ -24,7 +36,7 @@
 	<h1 class={align}>
 		{#if status}
 			{title} &nbsp;
-			<Fa icon={faCircle} class={status} />
+			<Fa icon={faCircle} class={status} title={getTooltip(status)} />
 		{:else}
 			{#if icon}
 				<Fa {icon} />
@@ -34,7 +46,7 @@
 	</h1>
 	<div class="box-content {direction}">
 		{#if href}
-			<a href="{href}">
+			<a {href}>
 				{@render children?.()}
 			</a>
 		{:else}
@@ -93,7 +105,7 @@
 	}
 
 	.row {
-	  /* collapse rows on mobile devices */
+		/* collapse rows on mobile devices */
 		flex-direction: column;
 	}
 

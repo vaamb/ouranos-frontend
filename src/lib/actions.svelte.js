@@ -270,7 +270,7 @@ export const fetchEcosystemsManagement = async function () {
 export const fetchEcosystemNycthemeralCycleData = async function (ecosystemUID) {
 	const dataKey = getKey(ecosystemUID);
 	const storedData = getFreshStateData(gaiaState.ecosystemsNycthemeralCycle, dataKey);
-	if (!isEmpty(storedData)) {
+	if (storedData !== null) {
 		return storedData;
 	}
 	return axios
@@ -311,7 +311,7 @@ export const fetchEcosystemWeatherEvents = async function (ecosystemUID) {
 export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
 	const dataKey = getKey(ecosystemUID);
 	const storedData = getFreshStateData(gaiaState.ecosystemsActuatorsState, dataKey);
-	if (!isEmpty(storedData)) {
+	if (storedData !== null) {
 		return storedData;
 	}
 	return axios
@@ -319,11 +319,12 @@ export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
 		.then((response) => {
 			const data = response.data;
 			const states = data['actuators_state'].reduce((a, v) => ({ ...a, [v['type']]: v }), {});
+			const result = {};
 			for (const actuatorType of actuatorTypes) {
-				storedData[actuatorType] = states[actuatorType];
+				result[actuatorType] = states[actuatorType];
 			}
-			gaiaState.ecosystemsActuatorsState[dataKey] = storedData;
-			return storedData;
+			gaiaState.ecosystemsActuatorsState[dataKey] = result;
+			return result;
 		})
 		.catch(() => {
 			return {};
@@ -361,7 +362,7 @@ export const fetchEcosystemHardware = async function (ecosystemUID) {
 export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, measure) {
 	const dataKey = getKey(sensorUID, measure);
 	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsDataCurrent, dataKey);
-	if (checkSensorDataRecency(storedData, 1)) {
+	if (storedData !== null && checkSensorDataRecency(storedData, 1)) {
 		return storedData;
 	}
 	return axios
@@ -402,7 +403,7 @@ export const fetchSensorHistoricData = async function (
 ) {
 	const dataKey = getKey(sensorUID, measure);
 	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsDataHistoric, dataKey);
-	if (!isEmpty(storedData) && checkSensorDataRecency(storedData, 10)) {
+	if (storedData !== null && checkSensorDataRecency(storedData, 10)) {
 		return storedData;
 	}
 
@@ -430,7 +431,7 @@ export const fetchSensorHistoricData = async function (
 export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level = null) {
 	const dataKey = getKey(ecosystemUID, level);
 	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsSkeleton, dataKey);
-	if (!isEmpty(storedData)) {
+	if (storedData !== null) {
 		return storedData;
 	}
 	return axios
@@ -594,8 +595,7 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 export const fetchServerCurrentData = async function (serverUid) {
 	const dataKey = getKey(serverUid);
 	const storedData = getFreshStateData(infraState.serversCurrentData, dataKey);
-
-	if (!isEmpty(storedData)) {
+	if (storedData !== null) {
 		return storedData;
 	}
 
@@ -618,8 +618,7 @@ export const fetchServerCurrentData = async function (serverUid) {
 export const fetchServerHistoricData = async function (serverUid) {
 	const dataKey = getKey(serverUid);
 	const storedData = getFreshStateData(infraState.serversHistoricData, dataKey);
-
-	if (!isEmpty(storedData)) {
+	if (storedData !== null) {
 		return storedData;
 	}
 

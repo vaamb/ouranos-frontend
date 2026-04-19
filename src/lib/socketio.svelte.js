@@ -218,7 +218,7 @@ socketio.on('historic_sensors_data_update', (data) => {
 	for (const sensorRecord of data) {
 		const storageKey = getKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
 		const currentData = getFreshStateData(gaiaState.ecosystemsSensorsDataHistoric, storageKey);
-		if (!currentData['values']) {
+		if (currentData === null || !currentData['values']) {
 			// No historic data, will wait for some to be loaded from api before appending new data
 			continue;
 		}

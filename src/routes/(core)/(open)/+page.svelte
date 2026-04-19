@@ -272,8 +272,8 @@
 		</BoxItem>
 		{#if appState.currentUser.can(permissions.ADMIN)}
 			{#each infraState.serversIds as serverIds}
-				{@const server = infraState.servers[serverUid]}
 				{@const serverUid = serverIds['uid']}
+				{@const server = infraState.servers[serverUid]}
 				{#if !isEmpty(infraState.serversCurrentData[serverUid])}
 					{@const serverCurrentData = infraState.serversCurrentData[serverUid]}
 					<BoxItem title={serverIds['name']}>

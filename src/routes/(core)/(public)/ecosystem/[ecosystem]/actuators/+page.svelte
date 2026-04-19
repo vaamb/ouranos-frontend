@@ -139,13 +139,15 @@
 	};
 
 	onMount(async () => {
-		await fetchEcosystemActuatorsState(ecosystemUID)
-		for (const actuatorType of actuatorTypes) {
-			actuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(
-				ecosystemUID,
-				actuatorType
-			);
-		}
+		await Promise.all([
+			fetchEcosystemActuatorsState(ecosystemUID),
+			...actuatorTypes.map(async (actuatorType) => {
+				actuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(
+					ecosystemUID,
+					actuatorType
+				);
+			})
+		]);
 		socketio.on('actuators_data', updateActuatorsData);
 		timeUpdate = setInterval(updateTime, 1000 * 60 * 5);
 	});

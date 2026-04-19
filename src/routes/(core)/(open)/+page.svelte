@@ -180,6 +180,12 @@
 			.filter((uid) => !ecosystemIsOperational(uid))
 			.forEach((uid) => { ecosystemsReady[uid] = true; } )
 
+		if (appState.currentUser.can(permissions.ADMIN)) {
+			await Promise.all(
+				infraState.serversIds.map(({ uid }) => fetchServerCurrentData(uid))
+			);
+		}
+
 		if (serviceEnabled(servicesState.services, 'weather')) {
 			await fetchWeatherForecast();
 		}
@@ -267,33 +273,31 @@
 		</BoxItem>
 		{#if appState.currentUser.can(permissions.ADMIN)}
 			{#each infraState.serversIds as serverIds}
+				{@const server = infraState.servers[serverUid]}
 				{@const serverUid = serverIds['uid']}
-				<BoxItem title={serverIds['name']}>
-					{#await fetchServerCurrentData(serverUid) then serverCurrentData_notUsed}
-						{@const server = infraState.servers[serverUid]}
-						{@const serverCurrentData = infraState.serversCurrentData[serverUid]}
-						{#if server && serverCurrentData}
-							<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">Uptime</p>
-							<p>
-								{computeServerUptime(server['start_time'], now)}
-							</p>
+				{#if !isEmpty(infraState.serversCurrentData[serverUid])}
+					{@const serverCurrentData = infraState.serversCurrentData[serverUid]}
+					<BoxItem title={serverIds['name']}>
+						<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">Uptime</p>
+						<p>
+							{computeServerUptime(server['start_time'], now)}
+						</p>
 
-							<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">System usage</p>
-							<p>Average CPU load: {serverCurrentData.CPU_used} %</p>
-							{#if serverCurrentData.CPU_temp}
-								<p>CPU temperature: {serverCurrentData.CPU_temp} °C</p>
-							{/if}
-							<p>
-								RAM used:
-								{serverCurrentData.RAM_used} GB / {server.RAM_total} GB
-							</p>
-							<p>
-								Disk used:
-								{serverCurrentData.DISK_used} GB / {server.DISK_total} GB
-							</p>
+						<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">System usage</p>
+						<p>Average CPU load: {serverCurrentData.CPU_used} %</p>
+						{#if serverCurrentData.CPU_temp}
+							<p>CPU temperature: {serverCurrentData.CPU_temp} °C</p>
 						{/if}
-					{/await}
-				</BoxItem>
+						<p>
+							RAM used:
+							{serverCurrentData.RAM_used} GB / {server.RAM_total} GB
+						</p>
+						<p>
+							Disk used:
+							{serverCurrentData.DISK_used} GB / {server.DISK_total} GB
+						</p>
+					</BoxItem>
+				{/if}
 			{/each}
 		{/if}
 	</Box>

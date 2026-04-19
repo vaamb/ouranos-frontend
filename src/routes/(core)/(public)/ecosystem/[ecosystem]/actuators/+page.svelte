@@ -163,7 +163,7 @@
 {#if gaiaState.ecosystemsActuatorsState[ecosystemUID]}
 	{#each Object.entries(actuatorsRecords) as [actuator, actuatorRecords]}
 		{@const actuatorState = gaiaState.ecosystemsActuatorsState[ecosystemUID][actuator]}
-		{#if actuatorState['active'] || hasBeenActive(actuatorRecords)}
+		{#if actuatorState && (actuatorState['active'] || hasBeenActive(actuatorRecords))}
 			{@const drawGraph = actuatorState['active'] || actuatorRecords['values'].length >= 3}
 			<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>
 				{#if actuatorState['active']}

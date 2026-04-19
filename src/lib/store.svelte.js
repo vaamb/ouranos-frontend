@@ -77,7 +77,7 @@ export const getKey = function () {
 export const getFreshStateData = function (state, storageKey) {
 	const now = new Date();
 	if (now - appState.pingServerLastSeen > 60000) {
-		return {};
+		return null;
 	}
-	return state[storageKey] || {};
+	return state[storageKey] ?? null;
 };

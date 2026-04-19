@@ -40,7 +40,7 @@ const setFlashMsgError = function (error) {
 	} else {
 		errorMsg = Message(ERROR_MSG);
 	}
-	appState.flashMessage.push(errorMsg);
+	appState.flashMessages.push(errorMsg);
 };
 
 export const probePath = async function (path) {
@@ -120,7 +120,7 @@ export const logIn = async function (username, password, remember = false) {
 				const sessionToken = response.data.session_token;
 				const user = createUser(response.data.user, sessionToken);
 				appState.currentUser = user;
-				appState.flashMessage.push(Message('You are now logged in ' + user.username));
+				appState.flashMessages.push(Message('You are now logged in ' + user.username));
 				logInSocketio(sessionToken);
 				return {
 					success: true,
@@ -657,7 +657,7 @@ export const updateService = async function (serviceName, status) {
 		data: { status: status }
 	})
 		.then((response) => {
-			appState.flashMessage.push(Message(response.data, null, 1500));
+			appState.flashMessages.push(Message(response.data, null, 1500));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);
@@ -810,7 +810,7 @@ export const crudRequest = function (relRoute, action, payload = undefined) {
 
 	return axios(`${API_URL}/${relRoute}`, options)
 		.then((response) => {
-			appState.flashMessage.push(Message(response.data, null, 3000));
+			appState.flashMessages.push(Message(response.data, null, 3000));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);
@@ -827,7 +827,7 @@ export const updateActuatorMode = function (ecosystemUID, actuatorType, mode, co
 		}
 	})
 		.then((response) => {
-			appState.flashMessage.push(Message(response.data, null, 1500));
+			appState.flashMessages.push(Message(response.data, null, 1500));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);

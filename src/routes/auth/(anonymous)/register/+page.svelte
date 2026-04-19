@@ -127,7 +127,7 @@
 				serverError = null;
 				const user = createUser(response.data.user);
 				appState.currentUser = user;
-				appState.flashMessage.push(Message('Hello ' + user['username'] + ', welcome to Ouranos'));
+				appState.flashMessages.push(Message('Hello ' + user['username'] + ', welcome to Ouranos'));
 				goto(`/`);
 			})
 			.catch((error) => {

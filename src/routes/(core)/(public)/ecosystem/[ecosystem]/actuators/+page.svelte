@@ -161,7 +161,7 @@
 <HeaderLine title="Actuators in {ecosystemName}" />
 
 {#if gaiaState.ecosystemsActuatorsState[ecosystemUID]}
-	{#each Object.entries(actuatorsRecords) as [actuator, actuatorRecords]}
+	{#each Object.entries(actuatorsRecords) as [actuator, actuatorRecords] (actuator)}
 		{@const actuatorState = gaiaState.ecosystemsActuatorsState[ecosystemUID][actuator]}
 		{#if actuatorState && (actuatorState['active'] || hasBeenActive(actuatorRecords))}
 			{@const drawGraph = actuatorState['active'] || actuatorRecords['values'].length >= 3}

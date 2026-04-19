@@ -139,6 +139,7 @@
 	};
 
 	onMount(async () => {
+		await fetchEcosystemActuatorsState(ecosystemUID)
 		for (const actuatorType of actuatorTypes) {
 			actuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(
 				ecosystemUID,
@@ -157,7 +158,7 @@
 
 <HeaderLine title="Actuators in {ecosystemName}" />
 
-{#await fetchEcosystemActuatorsState(ecosystemUID) then actuatorsState_notUsed}
+{#if gaiaState.ecosystemsActuatorsState[ecosystemUID]}
 	{#each Object.entries(actuatorsRecords) as [actuator, actuatorRecords]}
 		{@const actuatorState = gaiaState.ecosystemsActuatorsState[ecosystemUID][actuator]}
 		{#if actuatorState['active'] || hasBeenActive(actuatorRecords)}
@@ -205,4 +206,4 @@
 			</Box>
 		{/if}
 	{/each}
-{/await}
+{/if}

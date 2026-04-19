@@ -5,7 +5,7 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
-	import { gaiaState } from '$lib/store.svelte.js';
+	import { gaiaState } from '$lib/store.svelte.ts';
 	import { capitalize, formatDateTime } from "$lib/utils/functions.js";
 
 	// Crud-related variables and functions

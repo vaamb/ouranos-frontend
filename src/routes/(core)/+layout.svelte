@@ -14,7 +14,7 @@
 		gaiaState,
 		infraState,
 		servicesState
-	} from '$lib/store.svelte.js';
+	} from '$lib/store.svelte.ts';
 	import { APP_MODE } from '$lib/utils/consts.js';
 
 	// Fill stores with pre-fetched data

@@ -17,7 +17,7 @@
 	import {
 		gaiaState,
 		getKey
-	} from '$lib/store.svelte.js';
+	} from '$lib/store.svelte.ts';
 	import { capitalize } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 

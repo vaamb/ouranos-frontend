@@ -14,7 +14,7 @@
 		appState,
 		gaiaState,
 		getKey
-	} from '$lib/store.svelte.js';
+	} from '$lib/store.svelte.ts';
 	import {
 		climateParameters,
 		hardwareLevels,

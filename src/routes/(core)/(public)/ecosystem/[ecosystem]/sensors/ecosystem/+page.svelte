@@ -19,7 +19,7 @@
 	import {
 		gaiaState,
 		getKey
-	} from '$lib/store.svelte.js';
+	} from '$lib/store.svelte.ts';
 	import { STATIC_URL } from '$lib/utils/consts.js';
 	import { capitalize } from '$lib/utils/functions.js';
 	import { colors } from '$lib/utils/styling.js';

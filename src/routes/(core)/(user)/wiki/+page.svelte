@@ -6,7 +6,7 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import { crudRequest, fetchWikiTopics } from '$lib/actions.svelte.js';
-	import { servicesState } from '$lib/store.svelte.js';
+	import { servicesState } from '$lib/store.svelte.ts';
 	import { capitalize, joinTags, splitTags } from '$lib/utils/functions.js';
 
 	const refreshTopics = function () {

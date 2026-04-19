@@ -13,12 +13,12 @@
 	} from '$lib/socketio.svelte.js';
 	import { appState } from '$lib/store.svelte.ts';
 	import { APP_MODE, SERVER_STATUS } from '$lib/utils/consts.js';
-	import { User } from '$lib/utils/factories.js';
+	import { createUser } from '$lib/utils/factories.js';
 
 	let { data, children } = $props();
 	const { appMode, serverStatus, userData } = data;
 
-	appState.currentUser = User(userData);
+	appState.currentUser = createUser(userData);
 
 	if (serverStatus === SERVER_STATUS.connected) {
 		appState.pingServerLastSeen = new Date();

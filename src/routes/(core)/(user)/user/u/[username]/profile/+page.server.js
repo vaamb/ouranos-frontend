@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 
 import { fetchUserDescription } from '$lib/actions.svelte.js';
-import { User } from '$lib/utils/factories.js';
+import { createUser } from '$lib/utils/factories.js';
 import { permissions } from '$lib/utils/consts.js';
 
 export async function load({ cookies, params, parent, request }) {
@@ -15,7 +15,7 @@ export async function load({ cookies, params, parent, request }) {
 		return rv
 	}
 	const data = await parent();
-	const currentUser = User(data.userData);
+	const currentUser = createUser(data.userData);
 	let username = params['username'];
 	// If the logged user isn't the same as the requested user and is not an admin -> cannot access the resource
 	if (currentUser['username'] !== username && !currentUser.can(permissions.ADMIN)) {

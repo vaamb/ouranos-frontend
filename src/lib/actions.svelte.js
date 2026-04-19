@@ -11,7 +11,7 @@ import {
 	LOCAL_API_URL,
 	SERVER_STATUS
 } from '$lib/utils/consts.js';
-import { Message, User } from '$lib/utils/factories.js';
+import { Message, createUser } from '$lib/utils/factories.js';
 import { isEmpty } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
@@ -118,7 +118,7 @@ export const logIn = async function (username, password, remember = false) {
 		.then((response) => {
 			if (response.status === 200) {
 				const sessionToken = response.data.session_token;
-				const user = User(response.data.user, sessionToken);
+				const user = createUser(response.data.user, sessionToken);
 				appState.currentUser = user;
 				appState.flashMessage.push(Message('You are now logged in ' + user.username));
 				logInSocketio(sessionToken);
@@ -158,7 +158,7 @@ export const logOut = function () {
 		.then((response) => {
 			if (response.status === 200) {
 				const user = appState.currentUser;
-				appState.currentUser = User();
+				appState.currentUser = createUser();
 				logOutSocketio(user.sessionToken);
 			}
 		})

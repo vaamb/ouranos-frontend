@@ -1,4 +1,4 @@
-export function User(userObject = {}, sessionToken = null) {
+export function createUser(userObject = {}, sessionToken = null) {
 	const username = userObject['username'] || null;
 	const isAuthenticated = userObject['isAuthenticated'] || userObject['is_authenticated'] || false;
 	const lastSeen = userObject['lastSeen'] || userObject['last_seen'] || null;

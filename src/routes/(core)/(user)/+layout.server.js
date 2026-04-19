@@ -1,10 +1,10 @@
 import { redirect } from '@sveltejs/kit';
 
-import { User } from '$lib/utils/factories.js';
+import { createUser } from '$lib/utils/factories.js';
 
 export async function load({ parent }) {
 	const data = await parent();
-	const currentUser = User(data.userData);
+	const currentUser = createUser(data.userData);
 
 	if (currentUser.isAnonymous) {
 		redirect(307, '/');

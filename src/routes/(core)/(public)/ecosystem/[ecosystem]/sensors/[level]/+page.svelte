@@ -84,58 +84,63 @@
 
 	onMount(async () => {
 		await fetchSensorCurrentData(undefined, 'priming', undefined);
+		await fetchEcosystemSensorsSkeleton(ecosystemUID, sensorsLevel);
+		const skeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, sensorsLevel)] ?? [];
+		await Promise.all(
+			skeleton.flatMap((bone) =>
+				bone['sensors'].map((sensor) => fetchSensorData(ecosystemUID, sensor['uid'], bone['measure']))
+			)
+		);
 	});
 </script>
 
 <HeaderLine title={pageTitle} />
-{#await fetchEcosystemSensorsSkeleton(ecosystemUID, sensorsLevel) then sensorsSkeleton}
-	{#each gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, sensorsLevel)] as sensorsBone}
-		<h2>{capitalize(sensorsBone.measure.replace('_', ' '))}</h2>
-		{#each sensorsBone.sensors as sensor}
+{#if gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, sensorsLevel)]}
+	{#each gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, sensorsLevel)] as sensorsBone (sensorsBone['measure'])}
+		<h2>{capitalize(sensorsBone['measure'].replace('_', ' '))}</h2>
+		{#each sensorsBone['sensors'] as sensor (sensorsBone['measure'] + '-' + sensor['uid'])}
 			<Row>
-				{#await fetchSensorData(ecosystemUID, sensor.uid, sensorsBone.measure) then sensorData_notUsed}
-					{@const currentSensorsData =
-						gaiaState.ecosystemsSensorsDataCurrent[getKey(sensor.uid, sensorsBone.measure)]}
-					{@const historicSensorsData =
-						gaiaState.ecosystemsSensorsDataHistoric[getKey(sensor.uid, sensorsBone.measure)]}
-					{#if currentSensorsData || historicSensorsData}
-						<Box title={sensor.name} direction="row" icon={icons[sensorsBone.measure]}>
-							{#if currentSensorsData}
-								<BoxItem maxWidth="300px">
-									<Gauge
-										value={currentSensorsData.value.toFixed(2)}
-										unit={sensor.unit}
-										minValue={minValues[sensorsBone.measure]}
-										maxValue={maxValues[sensorsBone.measure]}
-									/>
-								</BoxItem>
-							{/if}
-							<BoxItem>
-								{#if historicSensorsData && historicSensorsData.values.length > 5}
-									{@const formattedHistoricSensorsData = formatHistoricData(
-										historicSensorsData,
-										sensorsBone.measure
-									)}
-									<Graph
-										datasets={formattedHistoricSensorsData.datasets}
-										labels={formattedHistoricSensorsData.labels}
-										suggestedMin={minValues[sensorsBone.measure]}
-										suggestedMax={maxValues[sensorsBone.measure]}
-										height="200px"
-									/>
-								{:else}
-									<div style="margin: auto">
-										<p style="margin-bottom: 0">
-											There is not currently enough data points to draw a graph.
-										</p>
-										<p style="margin-bottom: 0">Please come back later to see your graph.</p>
-									</div>
-								{/if}
+				{@const currentSensorsData =
+					gaiaState.ecosystemsSensorsDataCurrent[getKey(sensor['uid'], sensorsBone['measure'])]}
+				{@const historicSensorsData =
+					gaiaState.ecosystemsSensorsDataHistoric[getKey(sensor['uid'], sensorsBone['measure'])]}
+				{#if currentSensorsData || historicSensorsData}
+					<Box title={sensor['name']} direction="row" icon={icons[sensorsBone['measure']]}>
+						{#if currentSensorsData}
+							<BoxItem maxWidth="300px">
+								<Gauge
+									value={currentSensorsData['value'].toFixed(2)}
+									unit={sensor['unit']}
+									minValue={minValues[sensorsBone['measure']]}
+									maxValue={maxValues[sensorsBone['measure']]}
+								/>
 							</BoxItem>
-						</Box>
-					{/if}
-				{/await}
+						{/if}
+						<BoxItem>
+							{#if historicSensorsData && historicSensorsData['values'].length > 5}
+								{@const formattedHistoricSensorsData = formatHistoricData(
+									historicSensorsData,
+									sensorsBone['measure']
+								)}
+								<Graph
+									datasets={formattedHistoricSensorsData['datasets']}
+									labels={formattedHistoricSensorsData['labels']}
+									suggestedMin={minValues[sensorsBone['measure']]}
+									suggestedMax={maxValues[sensorsBone['measure']]}
+									height="200px"
+								/>
+							{:else}
+								<div style="margin: auto">
+									<p style="margin-bottom: 0">
+										There is not currently enough data points to draw a graph.
+									</p>
+									<p style="margin-bottom: 0">Please come back later to see your graph.</p>
+								</div>
+							{/if}
+						</BoxItem>
+					</Box>
+				{/if}
 			</Row>
 		{/each}
 	{/each}
-{/await}
+{/if}

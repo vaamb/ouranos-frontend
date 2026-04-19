@@ -80,7 +80,6 @@
 			happening: [],
 			future: []
 		};
-		const now = new Date();
 		for (const event of calendarEvents) {
 			if (event['start_time'] <= now && now <= event['end_time']) {
 				sortedEvents['happening'].push(event);
@@ -138,7 +137,7 @@
 	// Camera pictures info is not stored in gaiaState as it changes frequently (new picture every ~1 min)
 	let ecosystemsCameraPicturesInfo = $state({})
 
-	const recentPicture = function (timestamp, now) {
+	const recentPicture = function (timestamp) {
 		return now - new Date(timestamp) < 5 * 60 * 1000 ? "--green": "--red"
 	}
 
@@ -465,7 +464,7 @@
 							{#each Object.values(cameraPicturesInfo) as cameraInfo (`${uid}-${cameraInfo["camera_name"]}`)}
 								<p>
 									{cameraInfo["camera_name"]}
-									<Fa icon={faCircle} style="color: var({recentPicture(cameraInfo['timestamp'], now)});" />
+									<Fa icon={faCircle} style="color: var({recentPicture(cameraInfo['timestamp'])});" />
 								</p>
 							{/each}
 						</BoxItem>

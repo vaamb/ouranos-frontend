@@ -154,7 +154,7 @@
 
 		const fetchEcosystemData = async function (uid) {
 			const [cameraPicturesInfo] = await Promise.all([
-				canManage(uid, 'pictures') ? fetchCameraPicturesInfo(uid) : {},
+				canManage(uid, 'recent_picture') || canManage(uid, 'pictures') ? fetchCameraPicturesInfo(uid) : {},
 				canManage(uid, 'ecosystem_data') ? fetchEcosystemSensorsSkeleton(uid, 'ecosystem') : {},
 				canManage(uid, 'environment_data') ? fetchEcosystemSensorsSkeleton(uid, 'environment') : {},
 				canManage(uid, 'plants_data') ? fetchEcosystemSensorsSkeleton(uid, 'plants') : {},

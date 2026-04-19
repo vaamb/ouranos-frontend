@@ -138,7 +138,7 @@
 	let ecosystemsCameraPicturesInfo = $state({})
 
 	const recentPicture = function (timestamp) {
-		return now - new Date(timestamp) < 5 * 60 * 1000 ? "--green": "--red"
+		return now - new Date(timestamp) < 5 * 60 * 1000
 	}
 
 	// Other
@@ -462,9 +462,13 @@
 					{#if !isEmpty(cameraPicturesInfo)}
 						<BoxItem title="Camera" href="/ecosystem/{slugify(ecosystem['name'])}/camera">
 							{#each Object.values(cameraPicturesInfo) as cameraInfo (`${uid}-${cameraInfo["camera_name"]}`)}
+								{@const hasRecentPicture = recentPicture(cameraInfo['timestamp'])}
 								<p>
 									{cameraInfo["camera_name"]}
-									<Fa icon={faCircle} style="color: var({recentPicture(cameraInfo['timestamp'])});" />
+									<Fa
+										icon={faCircle}
+										class={hasRecentPicture ? 'on' : 'off'}
+										title={hasRecentPicture ? 'Recent picture available' : 'No recent picture available'} />
 								</p>
 							{/each}
 						</BoxItem>

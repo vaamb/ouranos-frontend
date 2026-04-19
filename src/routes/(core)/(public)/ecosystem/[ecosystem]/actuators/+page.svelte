@@ -139,12 +139,15 @@
 	};
 
 	onMount(async () => {
-		for (const actuatorType of actuatorTypes) {
-			actuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(
-				ecosystemUID,
-				actuatorType
-			);
-		}
+		await Promise.all([
+			fetchEcosystemActuatorsState(ecosystemUID),
+			...actuatorTypes.map(async (actuatorType) => {
+				actuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(
+					ecosystemUID,
+					actuatorType
+				);
+			})
+		]);
 		socketio.on('actuators_data', updateActuatorsData);
 		timeUpdate = setInterval(updateTime, 1000 * 60 * 5);
 	});
@@ -157,10 +160,10 @@
 
 <HeaderLine title="Actuators in {ecosystemName}" />
 
-{#await fetchEcosystemActuatorsState(ecosystemUID) then actuatorsState_notUsed}
-	{#each Object.entries(actuatorsRecords) as [actuator, actuatorRecords]}
+{#if gaiaState.ecosystemsActuatorsState[ecosystemUID]}
+	{#each Object.entries(actuatorsRecords) as [actuator, actuatorRecords] (actuator)}
 		{@const actuatorState = gaiaState.ecosystemsActuatorsState[ecosystemUID][actuator]}
-		{#if actuatorState['active'] || hasBeenActive(actuatorRecords)}
+		{#if actuatorState && (actuatorState['active'] || hasBeenActive(actuatorRecords))}
 			{@const drawGraph = actuatorState['active'] || actuatorRecords['values'].length >= 3}
 			<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>
 				{#if actuatorState['active']}
@@ -205,4 +208,4 @@
 			</Box>
 		{/if}
 	{/each}
-{/await}
+{/if}

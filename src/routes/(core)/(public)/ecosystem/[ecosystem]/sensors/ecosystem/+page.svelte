@@ -1,4 +1,6 @@
 <script>
+	import { onMount } from 'svelte';
+
 	import Fa from 'svelte-fa';
 	import { faArrowRight, faKitMedical } from '@fortawesome/free-solid-svg-icons';
 
@@ -28,6 +30,18 @@
 	let ecosystemUID = $derived(data['ecosystemUID']);
 
 	let images = $state({});
+
+	onMount(async () => {
+		await fetchEcosystemSensorsSkeleton(ecosystemUID, 'ecosystem');
+		const skeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, 'ecosystem')] ?? [];
+		await Promise.all(
+			skeleton.flatMap((bone) =>
+				bone['sensors'].map((sensor) =>
+					fetchSensorHistoricData(ecosystemUID, sensor['uid'], bone['measure'], 31)
+				)
+			)
+		);
+	});
 
 	const formatHistoricData = function (data, measureName) {
 		const records = data['values'];
@@ -85,63 +99,61 @@
 
 <HeaderLine title={ecosystemName + ' ecosystem health'} />
 
-{#await fetchEcosystemSensorsSkeleton(ecosystemUID, 'ecosystem') then sensorsSkeleton}
-	{#each gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, 'ecosystem')] as sensorsBone}
+{#if gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, 'ecosystem')]}
+	{#each gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, 'ecosystem')] as sensorsBone (sensorsBone['measure'])}
 		<h2>{capitalize(sensorsBone['measure']).replace('_', ' ')}</h2>
-		{#each sensorsBone['sensors'] as sensor}
+		{#each sensorsBone['sensors'] as sensor (sensorsBone['measure'] + '-' + sensor['uid'])}
 			<Row>
-				{#await fetchSensorHistoricData(ecosystemUID, sensor['uid'], sensorsBone['measure'], 31) then sensorData_notUsed}
-					{@const historicSensorsData =
-						gaiaState.ecosystemsSensorsDataHistoric[getKey(sensor['uid'], sensorsBone['measure'])]}
-					{#if historicSensorsData}
-						{@const imagePath = `${STATIC_URL}/ecosystem_health/${ecosystemUID}/${sensor['uid']}/${sensorsBone['measure']}.jpeg?${new Date().getTime()}`}
-						<Box title={sensor['name']} direction="row" icon={faKitMedical}>
-							{#await probePath(imagePath) then validPath}
-								{#if validPath}
-									<BoxItem maxWidth="225px">
-										<Image
-											bind:this={images[getKey(sensor['uid'], sensorsBone['measure'])]}
-											source={imagePath}
-											width="200"
-											height="200"
-										/>
-									</BoxItem>
-								{/if}
-							{/await}
-							<BoxItem>
-								{#if historicSensorsData && historicSensorsData['values'].length >= 2}
-									{@const formattedHistoricSensorsData = formatHistoricData(
-										historicSensorsData,
-										sensorsBone['measure']
-									)}
-									<Graph
-										datasets={formattedHistoricSensorsData['datasets']}
-										labels={formattedHistoricSensorsData['labels']}
-										height="200px"
-										suggestedMax="1"
+				{@const historicSensorsData =
+					gaiaState.ecosystemsSensorsDataHistoric[getKey(sensor['uid'], sensorsBone['measure'])]}
+				{#if historicSensorsData}
+					{@const imagePath = `${STATIC_URL}/ecosystem_health/${ecosystemUID}/${sensor['uid']}/${sensorsBone['measure']}.jpeg?${new Date().getTime()}`}
+					<Box title={sensor['name']} direction="row" icon={faKitMedical}>
+						{#await probePath(imagePath) then validPath}
+							{#if validPath}
+								<BoxItem maxWidth="225px">
+									<Image
+										bind:this={images[getKey(sensor['uid'], sensorsBone['measure'])]}
+										source={imagePath}
+										width="200"
+										height="200"
 									/>
-								{:else}
-									<div style="margin: auto">
-										<p style="margin-bottom: 0">
-											There is not currently enough data points to draw a graph.
-										</p>
-										<p style="margin-bottom: 0">Please come back later to see your graph.</p>
-									</div>
-								{/if}
-							</BoxItem>
-							<BoxItem title="Trend" minWidth="150px" maxWidth="150px">
+								</BoxItem>
+							{/if}
+						{/await}
+						<BoxItem>
+							{#if historicSensorsData && historicSensorsData['values'].length >= 2}
+								{@const formattedHistoricSensorsData = formatHistoricData(
+									historicSensorsData,
+									sensorsBone['measure']
+								)}
+								<Graph
+									datasets={formattedHistoricSensorsData['datasets']}
+									labels={formattedHistoricSensorsData['labels']}
+									height="200px"
+									suggestedMax="1"
+								/>
+							{:else}
 								<div style="margin: auto">
-									<Fa
-										icon={faArrowRight}
-										rotate={computeTrendAngle(historicSensorsData)}
-										style="height: 85px"
-									/>
+									<p style="margin-bottom: 0">
+										There is not currently enough data points to draw a graph.
+									</p>
+									<p style="margin-bottom: 0">Please come back later to see your graph.</p>
 								</div>
-							</BoxItem>
-						</Box>
-					{/if}
-				{/await}
+							{/if}
+						</BoxItem>
+						<BoxItem title="Trend" minWidth="150px" maxWidth="150px">
+							<div style="margin: auto">
+								<Fa
+									icon={faArrowRight}
+									rotate={computeTrendAngle(historicSensorsData)}
+									style="height: 85px"
+								/>
+							</div>
+						</BoxItem>
+					</Box>
+				{/if}
 			</Row>
 		{/each}
 	{/each}
-{/await}
+{/if}

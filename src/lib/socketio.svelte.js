@@ -154,14 +154,14 @@ socketio.on('ecosystems_heartbeat', (data) => {
 	if (gaiaState.enginesState[data['engine_uid']]) {
 		gaiaState.enginesState[data['engine_uid']]['last_seen'] = now;
 	}
-	const ecosystemsStateObj = gaiaState.ecosystemsState;
 	for (const ecosystemData of data['ecosystems']) {
-		if (ecosystemsStateObj[ecosystemData['uid']]) {
-			ecosystemsStateObj[ecosystemData['uid']]['last_seen'] = now;
-			ecosystemsStateObj[ecosystemData['uid']]['status'] = ecosystemData['status'];
+		if (gaiaState.ecosystemsState[ecosystemData['uid']]) {
+			gaiaState.ecosystemsState[ecosystemData['uid']] = {
+				last_seen: now,
+				status: ecosystemData['status'],
+			};
 		}
 	}
-	gaiaState.ecosystemsState = ecosystemsStateObj;
 });
 
 socketio.on('current_server_data', (data) => {

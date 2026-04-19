@@ -201,15 +201,20 @@ socketio.on('actuators_data', (data) => {
 });
 
 socketio.on('current_sensors_data', (data) => {
-	const updatedData = {};
 	for (const sensorRecord of data) {
 		const storageKey = getKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
-		updatedData[storageKey] = {
+		gaiaState.ecosystemsSensorsDataCurrent[storageKey] = {
 			timestamp: new Date(sensorRecord['timestamp']),
 			value: sensorRecord['value']
 		};
 	}
-	gaiaState.ecosystemsSensorsDataCurrent = updatedData;
+	// Remove stale data
+	const now = Date.now()
+	for (const storageKey of Object.keys(gaiaState.ecosystemsSensorsDataCurrent)) {
+		if (gaiaState.ecosystemsSensorsDataCurrent[storageKey]['timestamp'] < now - 1000 * 60 * 5) {
+			delete gaiaState.ecosystemsSensorsDataCurrent[storageKey];
+		}
+	}
 });
 
 socketio.on('historic_sensors_data_update', (data) => {

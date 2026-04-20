@@ -34,3 +34,21 @@ export interface EcosystemState {
 	last_seen: Date;
 	connected: boolean;
 }
+
+interface EcosystemIDs {
+	uid: string;
+	name: string;
+}
+
+export interface Engine {
+	uid: string;
+	sid: string; // a stringified uuid
+	registration_date: Date;
+	address: string;
+	ecosystems: Array<EcosystemIDs>;
+}
+
+export interface EngineState {
+	last_seen: Date;
+	connected: boolean;
+}

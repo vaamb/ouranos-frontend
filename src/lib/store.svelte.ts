@@ -1,4 +1,11 @@
-import type { Ecosystem, EcosystemState, FlashMessage, User } from '$lib/types.ts';
+import type {
+	Ecosystem,
+	EcosystemState,
+	Engine,
+	EngineState,
+	FlashMessage,
+	User
+} from '$lib/types.ts';
 
 import { createUser } from '$lib/utils/factories.js';
 import { CONNECTION_STATUS } from '$lib/utils/consts.js';
@@ -26,8 +33,8 @@ class GaiaState {
 	ecosystemsState = $state<Record<string, EcosystemState>>({});
 	healthData = $state({});
 	// engines
-	engines = $state({});
-	enginesState = $state({});
+	engines = $state<Record<string, Engine>>({});
+	enginesState = $state<Record<string, EngineState>>({});
 	// warnings
 	warnings = $state([]);
 

@@ -1,9 +1,11 @@
+import type { User } from '$lib/types.ts';
+
 import { createUser } from '$lib/utils/factories.js';
 import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 
 class AppState {
-	currentUser = $state(createUser());
+	currentUser = $state<User>(createUser());
 	flashMessage = $state([]);
 	pingServerStatus = $state(CONNECTION_STATUS.CONNECTED);
 	pingServerLastSeen = $state(new Date(0));

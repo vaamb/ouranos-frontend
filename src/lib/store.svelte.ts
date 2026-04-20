@@ -7,7 +7,8 @@ import type {
 	Engine,
 	EngineState,
 	FlashMessage,
-	User
+	User,
+	Warning
 } from '$lib/types.ts';
 
 import { createUser } from '$lib/utils/factories.js';
@@ -39,7 +40,7 @@ class GaiaState {
 	engines = $state<Record<string, Engine>>({});
 	enginesState = $state<Record<string, EngineState>>({});
 	// warnings
-	warnings = $state([]);
+	warnings = $state<Warning[]>([]);
 
 	// derived
 	get ecosystemsIds() {

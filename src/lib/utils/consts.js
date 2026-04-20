@@ -71,6 +71,7 @@ export const actuatorTypes = ['light', 'heater', 'cooler', 'humidifier', 'dehumi
 
 export const hardwareTypes = ['sensor', ...actuatorTypes];
 
+// TODO: migrated to .ts, add `as const` to the end, and use `type EventLevels = typeof eventLevels[number]` for `Warning`
 export const eventLevels = ['low', 'moderate', 'high', 'severe', 'critical'];
 
 export const eventVisibility = ['public', 'users', 'private'];

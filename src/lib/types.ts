@@ -96,3 +96,14 @@ export interface EngineState {
 	last_seen: Date;
 	connected: boolean;
 }
+
+export interface Warning {
+	id: number;
+	level: string;
+	title: string;
+	description: string;
+	created_on: Date;
+	created_by: string;
+	seen_on: Date;
+	solved_on: Date;
+}

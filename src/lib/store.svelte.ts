@@ -1,4 +1,4 @@
-import type { FlashMessage, User } from '$lib/types.ts';
+import type { Ecosystem, EcosystemState, FlashMessage, User } from '$lib/types.ts';
 
 import { createUser } from '$lib/utils/factories.js';
 import { CONNECTION_STATUS } from '$lib/utils/consts.js';
@@ -16,14 +16,14 @@ export const appState = new AppState();
 
 class GaiaState {
 	// ecosystems
-	ecosystems = $state({});
+	ecosystems = $state<Record<string, Ecosystem>>({});
 	ecosystemsActuatorsState = $state({});
 	ecosystemsNycthemeralCycle = $state({});
 	ecosystemsManagement = $state({});
 	ecosystemsSensorsDataCurrent = $state({});
 	ecosystemsSensorsDataHistoric = $state({});
 	ecosystemsSensorsSkeleton = $state({});
-	ecosystemsState = $state({});
+	ecosystemsState = $state<Record<string, EcosystemState>>({});
 	healthData = $state({});
 	// engines
 	engines = $state({});

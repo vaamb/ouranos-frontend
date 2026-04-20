@@ -19,3 +19,18 @@ export interface FlashMessage {
 	title: string;
 	description: string;
 }
+
+export interface Ecosystem {
+	uid: string;
+	engine_uid: string;
+	name: string;
+	registration_date: Date;
+	in_config: boolean;
+	management_value: number;
+}
+
+export interface EcosystemState {
+	status: boolean;
+	last_seen: Date;
+	connected: boolean;
+}

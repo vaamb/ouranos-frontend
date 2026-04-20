@@ -1,4 +1,4 @@
-import type { User } from '$lib/types.ts';
+import type { FlashMessage, User } from '$lib/types.ts';
 
 import { createUser } from '$lib/utils/factories.js';
 import { CONNECTION_STATUS } from '$lib/utils/consts.js';
@@ -6,7 +6,7 @@ import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 
 class AppState {
 	currentUser = $state<User>(createUser());
-	flashMessages = $state([]);
+	flashMessages = $state<FlashMessage[]>([]);
 	pingServerStatus = $state(CONNECTION_STATUS.CONNECTED);
 	pingServerLastSeen = $state(new Date(0));
 	pingServerLatency = $state(null);

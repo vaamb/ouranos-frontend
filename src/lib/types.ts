@@ -13,3 +13,9 @@ export interface User {
 	can: (perm: number) => boolean;
 	flatten: () => Omit<User, 'can' | 'flatten'>;
 }
+
+export interface FlashMessage {
+	level: number;
+	title: string;
+	description: string;
+}

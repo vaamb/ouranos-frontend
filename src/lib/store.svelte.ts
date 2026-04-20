@@ -1,6 +1,7 @@
 import type {
 	Ecosystem,
 	EcosystemState,
+	EcosystemActuatorState,
 	Engine,
 	EngineState,
 	FlashMessage,
@@ -24,7 +25,7 @@ export const appState = new AppState();
 class GaiaState {
 	// ecosystems
 	ecosystems = $state<Record<string, Ecosystem>>({});
-	ecosystemsActuatorsState = $state({});
+	ecosystemsActuatorsState = $state<Record<string, Record<string, EcosystemActuatorState>>>({});
 	ecosystemsNycthemeralCycle = $state({});
 	ecosystemsManagement = $state({});
 	ecosystemsSensorsDataCurrent = $state({});

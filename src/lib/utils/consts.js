@@ -66,6 +66,7 @@ export const weatherParameters = ['rain', 'fog', 'wind_gust'];
 
 export const hardwareLevels = ['environment', 'plants'];
 
+// TODO: migrated to .ts, add `as const` to the end, and use `type ActuatorType = typeof actuatorTypes[number]` for `ecosystemsActuatorsState`
 export const actuatorTypes = ['light', 'heater', 'cooler', 'humidifier', 'dehumidifier', 'fan'];
 
 export const hardwareTypes = ['sensor', ...actuatorTypes];

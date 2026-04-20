@@ -1,3 +1,4 @@
+// App state
 export interface User {
 	username: string | null;
 	firstname: string | null;
@@ -20,6 +21,7 @@ export interface FlashMessage {
 	description: string;
 }
 
+// Gaia state
 export interface Ecosystem {
 	uid: string;
 	engine_uid: string;
@@ -33,6 +35,14 @@ export interface EcosystemState {
 	status: boolean;
 	last_seen: Date;
 	connected: boolean;
+}
+
+export interface EcosystemActuatorState {
+	type: number;
+	active: boolean;
+	mode: 'manual' | 'automatic';
+	status: boolean;
+	level: number;
 }
 
 interface EcosystemIDs {

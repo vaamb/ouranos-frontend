@@ -65,6 +65,20 @@ export interface EcosystemManagement {
 	pictures: boolean;
 }
 
+export interface EcosystemNycthemeralCycle {
+	uid: string;
+	name: string;
+	span: 'fixed' | 'mimic';
+	lighting: 'fixed' | 'elongate';
+	target: null | string;
+	day: string; // '08:00:00';
+	night: string; // '20:00:00';
+	morning_start: string; // '08:00:00';
+	morning_end: string; // '13:59:59.999000';
+	evening_start: string; // '14:00:00';
+	evening_end: string; // '20:00:00';
+}
+
 interface EcosystemIDs {
 	uid: string;
 	name: string;

@@ -7,9 +7,9 @@ import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 class AppState {
 	currentUser = $state<User>(createUser());
 	flashMessages = $state<FlashMessage[]>([]);
-	pingServerStatus = $state(CONNECTION_STATUS.CONNECTED);
-	pingServerLastSeen = $state(new Date(0));
-	pingServerLatency = $state(null);
+	pingServerStatus = $state<number>(CONNECTION_STATUS.CONNECTED);
+	pingServerLastSeen = $state<Date>(new Date(0));
+	pingServerLatency = $state<number | null>(null);
 }
 
 export const appState = new AppState();

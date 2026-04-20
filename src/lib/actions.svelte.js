@@ -11,7 +11,7 @@ import {
 	LOCAL_API_URL,
 	SERVER_STATUS
 } from '$lib/utils/consts.js';
-import { Message, createUser } from '$lib/utils/factories.js';
+import { createFlashMessage, createUser } from '$lib/utils/factories.js';
 import { isEmpty } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
@@ -33,12 +33,12 @@ const setFlashMsgError = function (error) {
 	if (appMode === APP_MODE.development) {
 		console.log(error);
 		if (error.response.data.detail !== undefined) {
-			errorMsg = Message(error.response.data.detail, 'Encountered an error');
+			errorMsg = createFlashMessage(error.response.data.detail, 'Encountered an error');
 		} else {
-			errorMsg = Message(JSON.stringify(error.response.data), 'Encountered an error');
+			errorMsg = createFlashMessage(JSON.stringify(error.response.data), 'Encountered an error');
 		}
 	} else {
-		errorMsg = Message(ERROR_MSG);
+		errorMsg = createFlashMessage(ERROR_MSG);
 	}
 	appState.flashMessages.push(errorMsg);
 };

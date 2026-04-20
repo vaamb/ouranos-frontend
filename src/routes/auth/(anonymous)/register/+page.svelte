@@ -9,7 +9,7 @@
 
 	import { appState } from '$lib/store.svelte.ts';
 	import { API_URL } from '$lib/utils/consts.js';
-	import { Message, createUser } from '$lib/utils/factories.js';
+	import { createFlashMessage, createUser } from '$lib/utils/factories.js';
 	import {
 		checkJWT,
 		getValidationColorClass,
@@ -127,7 +127,7 @@
 				serverError = null;
 				const user = createUser(response.data.user);
 				appState.currentUser = user;
-				appState.flashMessages.push(Message('Hello ' + user['username'] + ', welcome to Ouranos'));
+				appState.flashMessages.push(createFlashMessage('Hello ' + user['username'] + ', welcome to Ouranos'));
 				goto(`/`);
 			})
 			.catch((error) => {

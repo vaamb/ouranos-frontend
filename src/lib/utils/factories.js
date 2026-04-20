@@ -38,6 +38,6 @@ export function createUser(userObject = {}, sessionToken = null) {
 	};
 }
 
-export const Message = function (message, title = undefined, timeOut = undefined) {
+export const createFlashMessage = function (message, title = undefined, timeOut = undefined) {
 	return { message: message, title: title, timeOut: timeOut };
 };

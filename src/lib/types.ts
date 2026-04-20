@@ -45,6 +45,26 @@ export interface EcosystemActuatorState {
 	level: number;
 }
 
+export interface EcosystemManagement {
+	uid: string;
+	name: string;
+	actuators: boolean;
+	ecosystem_data: boolean;
+	environment_data: boolean;
+	plants_data: boolean;
+	recent_picture: boolean;
+	sensors: boolean;
+	light: boolean;
+	camera: boolean;
+	database: boolean;
+	weather: boolean;
+	alarms: boolean;
+	climate: boolean;
+	watering: boolean;
+	health: boolean;
+	pictures: boolean;
+}
+
 interface EcosystemIDs {
 	uid: string;
 	name: string;

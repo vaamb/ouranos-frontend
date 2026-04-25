@@ -537,7 +537,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 		})
 		.catch(() => {
 			if (!exclude.includes('currently')) {
-				servicesState.weatherCurrently = {};
+				servicesState.weatherCurrently = undefined;
 			}
 			if (!exclude.includes('hourly')) {
 				servicesState.weatherHourly = [];

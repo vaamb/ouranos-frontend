@@ -165,3 +165,23 @@ export interface Service {
 	level: string;
 	status: boolean;
 }
+
+ export interface WeatherCurrent {
+	timestamp: Date;
+	temperature: number;
+	humidity: number;
+	dew_point: number;
+	wind_speed: number;
+	cloud_cover: number;
+	summary: string;
+	icon: string;
+}
+
+export interface WeatherHour extends WeatherCurrent {
+	precipitation_probability: number;
+}
+
+export interface WeatherDay extends WeatherHour {
+	temperature_min: number;
+	temperature_max: number;
+}

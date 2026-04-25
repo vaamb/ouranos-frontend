@@ -92,7 +92,7 @@ export const servicesState = new ServicesState();
 
 // Store-related utility functions
 export const getKey = function (...args: Array<string>) {
-	return Array.prototype.slice.call(args).join('-');
+	return args.join('-');
 };
 
 export const getFreshStateData = function (state: Record<string, unknown>, storageKey: string) {

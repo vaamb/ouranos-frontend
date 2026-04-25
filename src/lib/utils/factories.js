@@ -1,4 +1,4 @@
-export function User(userObject = {}, sessionToken = null) {
+export function createUser(userObject = {}, sessionToken = null) {
 	const username = userObject['username'] || null;
 	const isAuthenticated = userObject['isAuthenticated'] || userObject['is_authenticated'] || false;
 	const lastSeen = userObject['lastSeen'] || userObject['last_seen'] || null;
@@ -38,6 +38,6 @@ export function User(userObject = {}, sessionToken = null) {
 	};
 }
 
-export const Message = function (message, title = undefined, timeOut = undefined) {
+export const createFlashMessage = function (message, title = undefined, timeOut = undefined) {
 	return { message: message, title: title, timeOut: timeOut };
 };

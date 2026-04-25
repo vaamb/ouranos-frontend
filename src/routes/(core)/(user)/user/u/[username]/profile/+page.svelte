@@ -8,7 +8,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
-	import { servicesState } from '$lib/store.svelte.js';
+	import { servicesState } from '$lib/store.svelte.ts';
 	import {
 		capitalize,
 		getStatusClass,

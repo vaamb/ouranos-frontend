@@ -12,7 +12,7 @@
 		fetchEcosystemActuatorsState,
 		updateActuatorMode
 	} from '$lib/actions.svelte.js';
-	import { gaiaState } from '$lib/store.svelte.js';
+	import { gaiaState } from '$lib/store.svelte.ts';
 
 	import { socketio } from '$lib/socketio.svelte.js';
 	import { actuatorTypes } from '$lib/utils/consts.js';

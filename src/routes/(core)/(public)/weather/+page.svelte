@@ -11,7 +11,7 @@
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
 	import { fetchSuntimes, fetchWeatherForecast } from '$lib/actions.svelte.js';
-	import { servicesState } from '$lib/store.svelte.js';
+	import { servicesState } from '$lib/store.svelte.ts';
 	import {
 		capitalize,
 		formatDate,

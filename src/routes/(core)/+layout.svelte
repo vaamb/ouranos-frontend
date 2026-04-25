@@ -14,7 +14,7 @@
 		gaiaState,
 		infraState,
 		servicesState
-	} from '$lib/store.svelte.js';
+	} from '$lib/store.svelte.ts';
 	import { APP_MODE } from '$lib/utils/consts.js';
 
 	// Fill stores with pre-fetched data
@@ -54,13 +54,13 @@
 	);
 
 	// Modal-related functions and parameters
-	let anyFlashMessage = $state(appState.flashMessage.length > 0);
+	let anyFlashMessage = $state(appState.flashMessages.length > 0);
 
 	const refreshModal = function () {
 		anyFlashMessage = false;
-		appState.flashMessage.shift();
+		appState.flashMessages.shift();
 		tick();
-		anyFlashMessage = appState.flashMessage.length > 0;
+		anyFlashMessage = appState.flashMessages.length > 0;
 	};
 
 	// Ping server, engine and ecosystem connection status
@@ -117,10 +117,10 @@
 <Modal
 	showModal={anyFlashMessage}
 	onclose={refreshModal}
-	timeOut={anyFlashMessage ? appState.flashMessage[0]['timeOut'] : undefined}
+	timeOut={anyFlashMessage ? appState.flashMessages[0]['timeOut'] : undefined}
 >
-	{#snippet title()}{appState.flashMessage[0]['title']}{/snippet}
-	{appState.flashMessage[0]['message']}
+	{#snippet title()}{appState.flashMessages[0]['title']}{/snippet}
+	{appState.flashMessages[0]['message']}
 </Modal>
 
 <Menu items={menuItems} width={menuWidth} miniWidth={menuMinimizedWidth} bind:minimized={menuMinimized} />

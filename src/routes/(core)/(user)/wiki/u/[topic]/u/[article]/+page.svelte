@@ -13,7 +13,7 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import { crudRequest, fetchWikiPictures } from '$lib/actions.svelte.js';
-	import { appState } from '$lib/store.svelte.js';
+	import { appState } from '$lib/store.svelte.ts';
 	import { permissions, STATIC_URL } from '$lib/utils/consts.js';
 	import { capitalize, splitTags } from '$lib/utils/functions.js';
 

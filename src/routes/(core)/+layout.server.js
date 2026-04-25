@@ -7,11 +7,11 @@ import {
 	fetchWarnings,
 	fetchWikiTopics
 } from '$lib/actions.svelte.js';
-import { User } from '$lib/utils/factories.js';
+import { createUser } from '$lib/utils/factories.js';
 
 export async function load({ cookies, parent, request }) {
 	const data = await parent();
-	let currentUser = User(data.userData);
+	let currentUser = createUser(data.userData);
 
 	const clientSessionCookie = 'session=' + cookies.get('session');
 	const clientUserAgent = request.headers.get('user-agent');

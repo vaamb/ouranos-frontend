@@ -64,12 +64,15 @@ export const climateParameters = ['temperature', 'humidity', 'light'];
 
 export const weatherParameters = ['rain', 'fog', 'wind_gust'];
 
-export const hardwareLevels = ['environment', 'plants'];
+// TODO: migrated to .ts, add `as const` to the end, and use `type HardwareLevels = typeof actuatorTypes[number]` for `EcosystemSensorsSkeleton`
+export const hardwareLevels = ['environment', 'plants', 'ecosystem'];
 
+// TODO: migrated to .ts, add `as const` to the end, and use `type ActuatorType = typeof actuatorTypes[number]` for `ecosystemsActuatorsState`
 export const actuatorTypes = ['light', 'heater', 'cooler', 'humidifier', 'dehumidifier', 'fan'];
 
 export const hardwareTypes = ['sensor', ...actuatorTypes];
 
+// TODO: migrated to .ts, add `as const` to the end, and use `type EventLevels = typeof eventLevels[number]` for `Warning`
 export const eventLevels = ['low', 'moderate', 'high', 'severe', 'critical'];
 
 export const eventVisibility = ['public', 'users', 'private'];

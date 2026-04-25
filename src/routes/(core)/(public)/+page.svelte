@@ -16,7 +16,7 @@
 		getKey,
 		infraState,
 		servicesState
-	} from '$lib/store.svelte.js';
+	} from '$lib/store.svelte.ts';
 	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
 	import {
 		capitalize,

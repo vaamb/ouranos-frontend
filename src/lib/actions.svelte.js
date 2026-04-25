@@ -11,7 +11,7 @@ import {
 	LOCAL_API_URL,
 	SERVER_STATUS
 } from '$lib/utils/consts.js';
-import { Message, User } from '$lib/utils/factories.js';
+import { createFlashMessage, createUser } from '$lib/utils/factories.js';
 import { isEmpty } from '$lib/utils/functions.js';
 import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
 import {
@@ -33,14 +33,14 @@ const setFlashMsgError = function (error) {
 	if (appMode === APP_MODE.development) {
 		console.log(error);
 		if (error.response.data.detail !== undefined) {
-			errorMsg = Message(error.response.data.detail, 'Encountered an error');
+			errorMsg = createFlashMessage(error.response.data.detail, 'Encountered an error');
 		} else {
-			errorMsg = Message(JSON.stringify(error.response.data), 'Encountered an error');
+			errorMsg = createFlashMessage(JSON.stringify(error.response.data), 'Encountered an error');
 		}
 	} else {
-		errorMsg = Message(ERROR_MSG);
+		errorMsg = createFlashMessage(ERROR_MSG);
 	}
-	appState.flashMessage.push(errorMsg);
+	appState.flashMessages.push(errorMsg);
 };
 
 export const probePath = async function (path) {
@@ -97,11 +97,10 @@ export const fetchCurrentUserData = async function (clientSessionCookie, clientU
 };
 
 export const refreshSessionCookie = async function () {
-	return axios
-		.get(`${API_URL}/auth/refresh_session`, {
-			withCredentials: true
-		})
-}
+	return axios.get(`${API_URL}/auth/refresh_session`, {
+		withCredentials: true
+	});
+};
 
 export const logIn = async function (username, password, remember = false) {
 	return axios
@@ -118,9 +117,9 @@ export const logIn = async function (username, password, remember = false) {
 		.then((response) => {
 			if (response.status === 200) {
 				const sessionToken = response.data.session_token;
-				const user = User(response.data.user, sessionToken);
+				const user = createUser(response.data.user, sessionToken);
 				appState.currentUser = user;
-				appState.flashMessage.push(Message('You are now logged in ' + user.username));
+				appState.flashMessages.push(createFlashMessage('You are now logged in ' + user.username));
 				logInSocketio(sessionToken);
 				return {
 					success: true,
@@ -158,7 +157,7 @@ export const logOut = function () {
 		.then((response) => {
 			if (response.status === 200) {
 				const user = appState.currentUser;
-				appState.currentUser = User();
+				appState.currentUser = createUser();
 				logOutSocketio(user.sessionToken);
 			}
 		})
@@ -537,7 +536,7 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 		})
 		.catch(() => {
 			if (!exclude.includes('currently')) {
-				servicesState.weatherCurrently = {};
+				servicesState.weatherCurrently = undefined;
 			}
 			if (!exclude.includes('hourly')) {
 				servicesState.weatherHourly = [];
@@ -628,12 +627,12 @@ export const fetchServerHistoricData = async function (serverUid) {
 		})
 		.then((response) => {
 			const data = response['data']['values'];
-			infraState.serversHistoricData[dataKey] = data
+			infraState.serversHistoricData[dataKey] = data;
 			return data;
 		})
 		.catch(() => {
 			const data = [];
-			infraState.serversHistoricData[dataKey] = data
+			infraState.serversHistoricData[dataKey] = data;
 			return data;
 		});
 };
@@ -657,7 +656,7 @@ export const updateService = async function (serviceName, status) {
 		data: { status: status }
 	})
 		.then((response) => {
-			appState.flashMessage.push(Message(response.data, null, 1500));
+			appState.flashMessages.push(createFlashMessage(response.data, null, 1500));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);
@@ -677,6 +676,8 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 			const warnings = response.data;
 			warnings.forEach((warning) => {
 				warning['created_on'] = new Date(warning['created_on']);
+				warning['seen_on'] = new Date(warning['seen_on']);
+				warning['solved_on'] = new Date(warning['solved_on']);
 				warning['level'] = eventLevels[warning['level']];
 			});
 			return warnings;
@@ -687,16 +688,13 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 };
 
 // Calendar-related actions
-export const fetchCalendarEvents = async function (
-	startTime = undefined,
-	endTime = undefined
-) {
+export const fetchCalendarEvents = async function (startTime = undefined, endTime = undefined) {
 	return axios
 		.get(`${API_URL}/app/services/calendar`, {
 			params: {
 				start_time: startTime,
 				end_time: endTime,
-				visibility: 'private',
+				visibility: 'private'
 			},
 			withCredentials: true
 		})
@@ -810,7 +808,7 @@ export const crudRequest = function (relRoute, action, payload = undefined) {
 
 	return axios(`${API_URL}/${relRoute}`, options)
 		.then((response) => {
-			appState.flashMessage.push(Message(response.data, null, 3000));
+			appState.flashMessages.push(createFlashMessage(response.data, null, 3000));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);
@@ -827,7 +825,7 @@ export const updateActuatorMode = function (ecosystemUID, actuatorType, mode, co
 		}
 	})
 		.then((response) => {
-			appState.flashMessage.push(Message(response.data, null, 1500));
+			appState.flashMessages.push(createFlashMessage(response.data, null, 1500));
 		})
 		.catch((error) => {
 			setFlashMsgError(error);

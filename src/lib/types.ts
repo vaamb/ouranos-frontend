@@ -149,3 +149,12 @@ export interface Server {
 	RAM_total: number;
 	DISK_total: number;
 }
+
+export type ServerTimedValue = [
+	timestamp: Date,
+	CPU_used: number,
+	CPU_temp: number | undefined,
+	RAM_process: number,
+	RAM_used: number,
+	DISK_used: number
+];

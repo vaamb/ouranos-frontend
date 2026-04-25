@@ -11,6 +11,7 @@ import type {
 	EngineState,
 	FlashMessage,
 	Server,
+	ServerTimedValue,
 	User,
 	Warning
 } from '$lib/types.ts';
@@ -62,8 +63,8 @@ export const gaiaState = new GaiaState();
 
 class InfraState {
 	servers = $state<Record<string, Server>>({});
-	serversCurrentData = $state({});
-	serversHistoricData = $state({});
+	serversCurrentData = $state<Record<string, ServerTimedValue>>({});
+	serversHistoricData = $state<Record<string, Array<[ServerTimedValue]>>>({});
 
 	get serversIds() {
 		return Object.values(this.servers)

@@ -159,6 +159,7 @@ socketio.on('ecosystems_heartbeat', (data) => {
 			gaiaState.ecosystemsState[ecosystemData['uid']] = {
 				last_seen: now,
 				status: ecosystemData['status'],
+				...gaiaState.ecosystemsState[ecosystemData['uid']]
 			};
 		}
 	}

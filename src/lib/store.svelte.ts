@@ -38,7 +38,7 @@ class GaiaState {
 	ecosystemsSensorsDataHistoric = $state<Record<string, EcosystemSensorHistoricTimedValues>>({});
 	ecosystemsSensorsSkeleton = $state<Record<string, EcosystemSensorsSkeleton>>({});
 	ecosystemsState = $state<Record<string, EcosystemState>>({});
-	healthData = $state({});
+	healthData = $state<Record<string, number>>({});
 	// engines
 	engines = $state<Record<string, Engine>>({});
 	enginesState = $state<Record<string, EngineState>>({});

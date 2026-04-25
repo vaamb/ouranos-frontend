@@ -185,3 +185,12 @@ export interface WeatherDay extends WeatherHour {
 	temperature_min: number;
 	temperature_max: number;
 }
+
+export interface WikiTopic {
+	name: string;
+	slug: string;
+	description: string;
+	tags: Array<string>;
+	tags_slug: Array<string>;
+	path: string;
+}

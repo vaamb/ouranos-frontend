@@ -17,7 +17,8 @@ import type {
 	Warning,
 	WeatherCurrent,
 	WeatherDay,
-	WeatherHour
+	WeatherHour,
+	WikiTopic
 } from '$lib/types.ts';
 
 import { createUser } from '$lib/utils/factories.js';
@@ -84,7 +85,7 @@ class ServicesState {
 	weatherCurrently = $state<WeatherCurrent | undefined>(undefined);
 	weatherDaily = $state<Array<[WeatherDay]>>([]);
 	weatherHourly = $state<Array<[WeatherHour]>>([]);
-	wikiTopics = $state([]);
+	wikiTopics = $state<Array<[WikiTopic]>>([]);
 }
 
 export const servicesState = new ServicesState();

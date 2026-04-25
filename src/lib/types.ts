@@ -90,6 +90,28 @@ export interface EcosystemSensorHistoricTimedValues {
 	values: Array<[Date, number]>;
 }
 
+interface EcosystemSensorSkeleton {
+	measure: string;
+	units: Array<[string]>;
+	sensors: Array<
+		[
+			{
+				uid: string;
+				name: string;
+				unit: string;
+			}
+		]
+	>;
+}
+
+export interface EcosystemSensorsSkeleton {
+	uid: string;
+	name: string;
+	level: Array<[string]>;
+	span: [Date, Date];
+	sensors_skeleton: Array<[EcosystemSensorSkeleton]>;
+}
+
 interface EcosystemIDs {
 	uid: string;
 	name: string;

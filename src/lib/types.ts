@@ -16,9 +16,9 @@ export interface User {
 }
 
 export interface FlashMessage {
-	level: number;
-	title: string;
-	description: string;
+	message: string;
+	title: string | undefined;
+	timeOut: number | undefined;
 }
 
 // Gaia state

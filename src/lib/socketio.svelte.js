@@ -157,9 +157,9 @@ socketio.on('ecosystems_heartbeat', (data) => {
 	for (const ecosystemData of data['ecosystems']) {
 		if (gaiaState.ecosystemsState[ecosystemData['uid']]) {
 			gaiaState.ecosystemsState[ecosystemData['uid']] = {
+				...gaiaState.ecosystemsState[ecosystemData['uid']],
 				last_seen: now,
-				status: ecosystemData['status'],
-				...gaiaState.ecosystemsState[ecosystemData['uid']]
+				status: ecosystemData['status']
 			};
 		}
 	}

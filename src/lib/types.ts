@@ -79,6 +79,11 @@ export interface EcosystemNycthemeralCycle {
 	evening_end: string; // '20:00:00';
 }
 
+export interface EcosystemSensorRecord {
+	timestamp: Date;
+	value: number;
+}
+
 interface EcosystemIDs {
 	uid: string;
 	name: string;

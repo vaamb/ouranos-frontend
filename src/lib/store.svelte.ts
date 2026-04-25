@@ -91,13 +91,13 @@ class ServicesState {
 export const servicesState = new ServicesState();
 
 // Store-related utility functions
-export const getKey = function () {
-	return Array.prototype.slice.call(arguments).join('-');
+export const getKey = function (...args: Array<string>) {
+	return Array.prototype.slice.call(args).join('-');
 };
 
-export const getFreshStateData = function (state, storageKey) {
+export const getFreshStateData = function (state: Record<string, unknown>, storageKey: string) {
 	const now = new Date();
-	if (now - appState.pingServerLastSeen > 60000) {
+	if (now.getTime() - appState.pingServerLastSeen.getTime() > 60000) {
 		return null;
 	}
 	return state[storageKey] ?? null;

@@ -84,6 +84,12 @@ export interface EcosystemSensorRecord {
 	value: number;
 }
 
+export interface EcosystemSensorHistoricTimedValues {
+	timestamp: Date;
+	span: [Date, Date];
+	values: Array<[Date, number]>;
+}
+
 interface EcosystemIDs {
 	uid: string;
 	name: string;

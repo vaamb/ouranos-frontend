@@ -5,6 +5,7 @@ import type {
 	EcosystemManagement,
 	EcosystemNycthemeralCycle,
 	EcosystemSensorRecord,
+	EcosystemSensorHistoricTimedValues,
 	Engine,
 	EngineState,
 	FlashMessage,
@@ -33,7 +34,7 @@ class GaiaState {
 	ecosystemsManagement = $state<Record<string, EcosystemManagement>>({});
 	ecosystemsNycthemeralCycle = $state<Record<string, EcosystemNycthemeralCycle>>({});
 	ecosystemsSensorsDataCurrent = $state<Record<string, EcosystemSensorRecord>>({});
-	ecosystemsSensorsDataHistoric = $state({});
+	ecosystemsSensorsDataHistoric = $state<Record<string, EcosystemSensorHistoricTimedValues>>({});
 	ecosystemsSensorsSkeleton = $state({});
 	ecosystemsState = $state<Record<string, EcosystemState>>({});
 	healthData = $state({});

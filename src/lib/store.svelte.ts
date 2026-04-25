@@ -10,6 +10,7 @@ import type {
 	Engine,
 	EngineState,
 	FlashMessage,
+	Server,
 	User,
 	Warning
 } from '$lib/types.ts';
@@ -60,7 +61,7 @@ class GaiaState {
 export const gaiaState = new GaiaState();
 
 class InfraState {
-	servers = $state({});
+	servers = $state<Record<string, Server>>({});
 	serversCurrentData = $state({});
 	serversHistoricData = $state({});
 

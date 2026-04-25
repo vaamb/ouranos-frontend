@@ -140,3 +140,12 @@ export interface Warning {
 	seen_on: Date;
 	solved_on: Date;
 }
+
+// Infra state
+export interface Server {
+	uid: string;
+	hostname: string;
+	start_time: Date;
+	RAM_total: number;
+	DISK_total: number;
+}

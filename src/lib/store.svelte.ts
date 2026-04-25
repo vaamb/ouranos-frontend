@@ -27,7 +27,7 @@ import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 
 class AppState {
 	currentUser = $state<User>(createUser());
-	flashMessages = $state<FlashMessage[]>([]);
+	flashMessages = $state<Array<FlashMessage>>([]);
 	pingServerStatus = $state<number>(CONNECTION_STATUS.CONNECTED);
 	pingServerLastSeen = $state<Date>(new Date(0));
 	pingServerLatency = $state<number | null>(null);
@@ -69,7 +69,7 @@ export const gaiaState = new GaiaState();
 class InfraState {
 	servers = $state<Record<string, Server>>({});
 	serversCurrentData = $state<Record<string, ServerTimedValue>>({});
-	serversHistoricData = $state<Record<string, Array<[ServerTimedValue]>>>({});
+	serversHistoricData = $state<Record<string, Array<ServerTimedValue>>>({});
 
 	get serversIds() {
 		return Object.values(this.servers)
@@ -81,11 +81,11 @@ class InfraState {
 export const infraState = new InfraState();
 
 class ServicesState {
-	services = $state<Array<[Service]>>([]);
+	services = $state<Array<Service>>([]);
 	weatherCurrently = $state<WeatherCurrent | undefined>(undefined);
-	weatherDaily = $state<Array<[WeatherDay]>>([]);
-	weatherHourly = $state<Array<[WeatherHour]>>([]);
-	wikiTopics = $state<Array<[WikiTopic]>>([]);
+	weatherDaily = $state<Array<WeatherDay>>([]);
+	weatherHourly = $state<Array<WeatherHour>>([]);
+	wikiTopics = $state<Array<WikiTopic>>([]);
 }
 
 export const servicesState = new ServicesState();

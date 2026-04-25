@@ -158,3 +158,10 @@ export type ServerTimedValue = [
 	RAM_used: number,
 	DISK_used: number
 ];
+
+// Services state
+export interface Service {
+	name: string;
+	level: string;
+	status: boolean;
+}

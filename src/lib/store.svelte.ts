@@ -12,6 +12,7 @@ import type {
 	FlashMessage,
 	Server,
 	ServerTimedValue,
+	Service,
 	User,
 	Warning
 } from '$lib/types.ts';
@@ -76,7 +77,7 @@ class InfraState {
 export const infraState = new InfraState();
 
 class ServicesState {
-	services = $state([]);
+	services = $state<Array<[Service]>>([]);
 	weatherCurrently = $state({});
 	weatherDaily = $state([]);
 	weatherHourly = $state([]);

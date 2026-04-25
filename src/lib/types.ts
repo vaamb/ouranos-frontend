@@ -135,8 +135,8 @@ export interface Warning {
 	description: string;
 	created_on: Date;
 	created_by: string;
-	seen_on: Date;
-	solved_on: Date;
+	seen_on: Date | null;
+	solved_on: Date | null;
 }
 
 // Infra state

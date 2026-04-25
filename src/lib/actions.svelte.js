@@ -97,11 +97,10 @@ export const fetchCurrentUserData = async function (clientSessionCookie, clientU
 };
 
 export const refreshSessionCookie = async function () {
-	return axios
-		.get(`${API_URL}/auth/refresh_session`, {
-			withCredentials: true
-		})
-}
+	return axios.get(`${API_URL}/auth/refresh_session`, {
+		withCredentials: true
+	});
+};
 
 export const logIn = async function (username, password, remember = false) {
 	return axios
@@ -628,12 +627,12 @@ export const fetchServerHistoricData = async function (serverUid) {
 		})
 		.then((response) => {
 			const data = response['data']['values'];
-			infraState.serversHistoricData[dataKey] = data
+			infraState.serversHistoricData[dataKey] = data;
 			return data;
 		})
 		.catch(() => {
 			const data = [];
-			infraState.serversHistoricData[dataKey] = data
+			infraState.serversHistoricData[dataKey] = data;
 			return data;
 		});
 };
@@ -689,16 +688,13 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 };
 
 // Calendar-related actions
-export const fetchCalendarEvents = async function (
-	startTime = undefined,
-	endTime = undefined
-) {
+export const fetchCalendarEvents = async function (startTime = undefined, endTime = undefined) {
 	return axios
 		.get(`${API_URL}/app/services/calendar`, {
 			params: {
 				start_time: startTime,
 				end_time: endTime,
-				visibility: 'private',
+				visibility: 'private'
 			},
 			withCredentials: true
 		})

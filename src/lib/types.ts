@@ -93,13 +93,11 @@ export interface EcosystemSensorHistoricTimedValues {
 interface EcosystemSensorSkeleton {
 	measure: string;
 	units: Array<string>;
-	sensors: Array<
-		{
-			uid: string;
-			name: string;
-			unit: string;
-		}
-	>;
+	sensors: Array<{
+		uid: string;
+		name: string;
+		unit: string;
+	}>;
 }
 
 export interface EcosystemSensorsSkeleton {
@@ -164,7 +162,7 @@ export interface Service {
 	status: boolean;
 }
 
- export interface WeatherCurrent {
+export interface WeatherCurrent {
 	timestamp: Date;
 	temperature: number;
 	humidity: number;

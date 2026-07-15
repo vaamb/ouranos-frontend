@@ -48,7 +48,6 @@ const setFlashMsgError = function (error) {
 	appState.flashMessages.push(errorMsg);
 };
 
-//TODO: move in utils ?
 export const probePath = async function (path) {
 	return await axios
 		.get(path)

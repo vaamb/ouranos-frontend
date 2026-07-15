@@ -1,7 +1,17 @@
 import axios from 'axios';
 
 import {
-	actuatorTypes,
+	fetchEcosystemActuatorsState,
+	fetchEcosystemNycthemeralCycleData,
+	fetchSensorsCurrentData,
+	fetchSensorHistoricData,
+	fetchEcosystemSensorsSkeleton,
+	fetchHealthLatestDataForMeasure,
+	fetchServerCurrentData,
+	fetchServerHistoricData,
+	fetchWeatherForecast
+} from '$lib/queries.js';
+import {
 	API_URL,
 	APP_MODE,
 	getAppMode
@@ -135,170 +145,108 @@ const checkSensorDataRecency = function (sensorData, minuteModulo) {
 };
 
 // Ecosystems-related actions
-export const fetchEcosystemNycthemeralCycleData = async function (ecosystemUID) {
+export const syncEcosystemNycthemeralCycleData = async function (ecosystemUID) {
 	const dataKey = getKey(ecosystemUID);
 	const storedData = getFreshStateData(gaiaState.ecosystemsNycthemeralCycle, dataKey);
 	if (storedData !== null) {
 		return storedData;
 	}
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/light`)
-		.then((response) => {
-			const data = response.data;
-			delete data['ecosystem_uid'];
-			gaiaState.ecosystemsNycthemeralCycle[dataKey] = data;
-			return data;
-		})
-		.catch(() => {
-			return {};
-		});
+	const data = await fetchEcosystemNycthemeralCycleData(ecosystemUID);
+	gaiaState.ecosystemsNycthemeralCycle[dataKey] = data;
+	return data;
 };
 
-export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
+export const syncEcosystemActuatorsState = async function (ecosystemUID) {
 	const dataKey = getKey(ecosystemUID);
 	const storedData = getFreshStateData(gaiaState.ecosystemsActuatorsState, dataKey);
 	if (storedData !== null) {
 		return storedData;
 	}
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_state`)
-		.then((response) => {
-			const data = response.data;
-			const states = data['actuators_state'].reduce((a, v) => ({ ...a, [v['type']]: v }), {});
-			const result = {};
-			for (const actuatorType of actuatorTypes) {
-				result[actuatorType] = states[actuatorType];
-			}
-			gaiaState.ecosystemsActuatorsState[dataKey] = result;
-			return result;
-		})
-		.catch(() => {
-			return {};
-		});
+	const data = await fetchEcosystemActuatorsState(ecosystemUID);
+	gaiaState.ecosystemsActuatorsState[dataKey] = data;
+	return data;
 };
 
-export const fetchSensorCurrentData = async function (ecosystemUID, sensorUID, measure) {
-	const dataKey = getKey(sensorUID, measure);
+export const syncSensorCurrentData = async function (ecosystemUID, sensorUID, measure) {
+	const dataKey = sensorUID !== 'priming' ? getKey(ecosystemUID, sensorUID, measure): 'priming';
 	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsDataCurrent, dataKey);
 	if (storedData !== null && checkSensorDataRecency(storedData, 1)) {
 		return storedData;
 	}
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/sensor/data/current`, {
-			params: { ecosystems: 'recent' }
-		})
-		.then((response) => {
-			const accumulator = {};
-			for (const ecosystem of response['data']) {
-				for (const sensorRecord of ecosystem['values']) {
-					const storageKey = getKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
-					accumulator[storageKey] = {
-						timestamp: new Date(sensorRecord['timestamp']),
-						value: sensorRecord['value']
-					};
-				}
-			}
-			// Special case when 'priming' the store
-			if (sensorUID === 'priming') {
-				accumulator[dataKey] = {
-					timestamp: new Date(),
-					value: true
-				};
-			}
-			gaiaState.ecosystemsSensorsDataCurrent = accumulator;
-			return accumulator[dataKey];
-		})
-		.catch(() => {
-			return {};
-		});
+	const data = await fetchSensorsCurrentData();
+	if (isEmpty(data)) {
+		return {};
+	}
+	const accumulator = {};
+	for (const ecosystem of data) {
+		for (const sensorRecord of ecosystem['values']) {
+			const storageKey = getKey(sensorRecord['ecosystem_uid'], sensorRecord['sensor_uid'], sensorRecord['measure']);
+			accumulator[storageKey] = {
+				timestamp: new Date(sensorRecord['timestamp']),
+				value: sensorRecord['value']
+			};
+		}
+	}
+	// Special case when 'priming' the store
+	if (dataKey === 'priming') {
+		accumulator[dataKey] = {
+			timestamp: new Date(),
+			value: true
+		};
+	}
+	gaiaState.ecosystemsSensorsDataCurrent = accumulator;
+	return accumulator[dataKey];
 };
 
-export const fetchSensorHistoricData = async function (
+export const syncSensorHistoricData = async function (
 	ecosystemUID,
 	sensorUID,
 	measure,
-	windowLength = undefined
+	sensorLevel = 'environment'
 ) {
-	const dataKey = getKey(sensorUID, measure);
+	const dataKey = getKey(ecosystemUID, sensorUID, measure);
 	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsDataHistoric, dataKey);
 	if (storedData !== null && checkSensorDataRecency(storedData, 10)) {
 		return storedData;
 	}
-
-	return axios
-		.get(
-			`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensorUID}/data/${measure}/historic`,
-			{
-				params: { window_length: windowLength }
-			}
-		)
-		.then((response) => {
-			const data = {
-				timestamp: new Date(response['data']['span'][1]),
-				span: response['data']['span'],
-				values: response['data']['values']
-			};
-			gaiaState.ecosystemsSensorsDataHistoric[dataKey] = data;
-			return data;
-		})
-		.catch(() => {
-			return {};
-		});
+	// sensorLevel in ['environment', 'plants', 'ecosystem']
+	let windowLength;
+	if (['environment', 'plants'].includes(sensorLevel)) {
+		windowLength = 7;
+	} else if (sensorLevel === 'ecosystem') {
+		windowLength = 31;
+	} else {
+		throw Error;
+	}
+	const data = await fetchSensorHistoricData(ecosystemUID, sensorUID, measure, windowLength);
+	gaiaState.ecosystemsSensorsDataHistoric[dataKey] = data;
+	return data;
 };
 
-export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level = null) {
+export const syncEcosystemSensorsSkeleton = async function (ecosystemUID, level = null) {
 	const dataKey = getKey(ecosystemUID, level);
 	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsSkeleton, dataKey);
 	if (storedData !== null) {
 		return storedData;
 	}
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/skeleton`, {
-			params: { level: level }
-		})
-		.then((response) => {
-			const data = response['data']['sensors_skeleton'];
-			gaiaState.ecosystemsSensorsSkeleton[dataKey] = data;
-			return data;
-		})
-		.catch(() => {
-			return {};
-		});
+	const data = await fetchEcosystemSensorsSkeleton(ecosystemUID, level);
+	gaiaState.ecosystemsSensorsSkeleton[dataKey] = data;
+	return data;
 };
 
-export const fetchHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
+export const syncHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
 	const dataKey = getKey(ecosystemUID, measure);
 	const storedData = gaiaState.healthData[dataKey];
 	if (storedData !== undefined) {
 		return storedData;
 	}
-	const values = await Promise.all(
-		sensors.map((sensor) =>
-			axios
-				.get(
-					`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensor['uid']}/data/${measure}/historic`,
-					{ params: { window_length: 1 } }
-				)
-				.then((response) => {
-					if (response['data']['values'].length === 0) {
-						return null;
-					}
-					return response['data']['values'][0][1];
-				})
-		)
-	);
-	const rv = values.filter((value) => value !== null);
-	if (rv.length === 0) {
-		return null;
-	}
-	const average = (array) => array.reduce((a, b) => a + b) / array.length;
-	const result = average(rv).toFixed(4);
-	gaiaState.healthData[dataKey] = result;
-	return result;
+	const data = await fetchHealthLatestDataForMeasure(ecosystemUID, measure, sensors);
+	gaiaState.healthData[dataKey] = data;
+	return data;
 };
 
 // Weather-related actions
-export const fetchWeatherForecast = async function (include = ['currently', 'hourly', 'daily']) {
+export const syncWeatherForecast = async function (include = ['currently', 'hourly', 'daily']) {
 	let exclude = ['currently', 'hourly', 'daily'];
 
 	// TODO: check for data recency
@@ -316,86 +264,39 @@ export const fetchWeatherForecast = async function (include = ['currently', 'hou
 		return; // Useless call, already have all the data
 	}
 
-	let params = new URLSearchParams();
-	if (exclude.length > 0) {
-		for (const param of exclude) {
-			params.append('exclude', param);
-		}
+	const data = await fetchWeatherForecast(exclude);
+	if (data['currently']) {
+		servicesState.weatherCurrently = data['currently'];
 	}
-
-	return axios
-		.get(`${API_URL}/app/services/weather/forecast`, {
-			params: params
-		})
-		.then((response) => {
-			if (response['data']['currently']) {
-				servicesState.weatherCurrently = response['data']['currently'];
-			}
-			if (response['data']['hourly']) {
-				servicesState.weatherHourly = response['data']['hourly'];
-			}
-			if (response['data']['daily']) {
-				servicesState.weatherDaily = response['data']['daily'];
-			}
-		})
-		.catch(() => {
-			if (!exclude.includes('currently')) {
-				servicesState.weatherCurrently = undefined;
-			}
-			if (!exclude.includes('hourly')) {
-				servicesState.weatherHourly = [];
-			}
-			if (!exclude.includes('daily')) {
-				servicesState.weatherDaily = [];
-			}
-		});
+	if (data['hourly']) {
+		servicesState.weatherHourly = data['hourly'];
+	}
+	if (data['daily']) {
+		servicesState.weatherDaily = data['daily'];
+	}
 };
 
 // Server-related actions
-export const fetchServerCurrentData = async function (serverUid) {
-	const dataKey = getKey(serverUid);
+export const syncServerCurrentData = async function (serverUID) {
+	const dataKey = getKey(serverUID);
 	const storedData = getFreshStateData(infraState.serversCurrentData, dataKey);
 	if (storedData !== null) {
 		return storedData;
 	}
-
-	return axios
-		.get(`${API_URL}/system/${serverUid}/data/current`, {
-			withCredentials: true
-		})
-		.then((response) => {
-			const data = response['data']['values'];
-			infraState.serversCurrentData[dataKey] = data;
-			return data;
-		})
-		.catch(() => {
-			const data = [];
-			infraState.serversCurrentData[dataKey] = data;
-			return data;
-		});
+	const data = await fetchServerCurrentData(serverUID);
+	infraState.serversCurrentData[dataKey] = data;
+	return data;
 };
 
-export const fetchServerHistoricData = async function (serverUid) {
-	const dataKey = getKey(serverUid);
+export const syncServerHistoricData = async function (serverUID) {
+	const dataKey = getKey(serverUID);
 	const storedData = getFreshStateData(infraState.serversHistoricData, dataKey);
 	if (storedData !== null) {
 		return storedData;
 	}
-
-	return axios
-		.get(`${API_URL}/system/${serverUid}/data/historic`, {
-			withCredentials: true
-		})
-		.then((response) => {
-			const data = response['data']['values'];
-			infraState.serversHistoricData[dataKey] = data;
-			return data;
-		})
-		.catch(() => {
-			const data = [];
-			infraState.serversHistoricData[dataKey] = data;
-			return data;
-		});
+	const data = await fetchServerHistoricData(serverUID);
+	infraState.serversHistoricData[dataKey] = data;
+	return data;
 };
 
 export const updateService = async function (serviceName, status) {

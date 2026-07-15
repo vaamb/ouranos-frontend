@@ -8,7 +8,7 @@
 	import Switch from '$lib/components/Switch.svelte';
 
 	import {
-		fetchEcosystemActuatorsState,
+		syncEcosystemActuatorsState,
 		updateActuatorMode
 	} from '$lib/actions.svelte.js';
 	import {
@@ -142,7 +142,7 @@
 
 	onMount(async () => {
 		await Promise.all([
-			fetchEcosystemActuatorsState(ecosystemUID),
+			syncEcosystemActuatorsState(ecosystemUID),
 			...actuatorTypes.map(async (actuatorType) => {
 				actuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(
 					ecosystemUID,

@@ -203,14 +203,18 @@ socketio.on('actuators_data', (data) => {
 
 socketio.on('current_sensors_data', (data) => {
 	for (const sensorRecord of data) {
-		const storageKey = getKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
+		const storageKey = getKey(
+			sensorRecord['ecosystem_uid'],
+			sensorRecord['sensor_uid'],
+			sensorRecord['measure']
+		);
 		gaiaState.ecosystemsSensorsDataCurrent[storageKey] = {
 			timestamp: new Date(sensorRecord['timestamp']),
 			value: sensorRecord['value']
 		};
 	}
 	// Remove stale data
-	const now = Date.now()
+	const now = Date.now();
 	for (const storageKey of Object.keys(gaiaState.ecosystemsSensorsDataCurrent)) {
 		if (gaiaState.ecosystemsSensorsDataCurrent[storageKey]['timestamp'] < now - 1000 * 60 * 5) {
 			delete gaiaState.ecosystemsSensorsDataCurrent[storageKey];
@@ -222,7 +226,11 @@ socketio.on('historic_sensors_data_update', (data) => {
 	const maxValues = 6 * 24 * 7; // one record every 10 mins for a week
 	const updatedData = {};
 	for (const sensorRecord of data) {
-		const storageKey = getKey(sensorRecord['sensor_uid'], sensorRecord['measure']);
+		const storageKey = getKey(
+			sensorRecord['ecosystem_uid'],
+			sensorRecord['sensor_uid'],
+			sensorRecord['measure']
+		);
 		const currentData = getFreshStateData(gaiaState.ecosystemsSensorsDataHistoric, storageKey);
 		if (currentData === null || !currentData['values']) {
 			// No historic data, will wait for some to be loaded from api before appending new data

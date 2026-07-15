@@ -32,13 +32,13 @@
 		strHoursToDate
 	} from '$lib/utils/functions.js';
 	import {
-		fetchEcosystemActuatorsState,
-		fetchSensorCurrentData,
-		fetchEcosystemSensorsSkeleton,
-		fetchEcosystemNycthemeralCycleData,
-		fetchHealthLatestDataForMeasure,
-		fetchServerCurrentData,
-		fetchWeatherForecast
+		syncEcosystemActuatorsState,
+		syncSensorCurrentData,
+		syncEcosystemSensorsSkeleton,
+		syncEcosystemNycthemeralCycleData,
+		syncHealthLatestDataForMeasure,
+		syncServerCurrentData,
+		syncWeatherForecast
 	} from '$lib/actions.svelte.js';
 	import { fetchCalendarEvents, fetchCameraPicturesInfo, fetchSuntimes } from '$lib/queries.js';
 
@@ -92,19 +92,20 @@
 	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {
 		return Promise.all(
 			sensors.map((sensor) =>
-				fetchSensorCurrentData(ecosystemUID, sensor['uid'], measure.replace(' ', '_'))
+				syncSensorCurrentData(ecosystemUID, sensor['uid'], measure.replace(' ', '_'))
 			)
 		);
 	};
 
 	const computeAverageSensorsCurrentDataForMeasure = function (
 		ecosystemsSensorsDataCurrent,
-		measure,
-		sensors
+		ecosystemUID,
+		sensors,
+		measure
 	) {
 		let rv = [];
 		for (const sensor of sensors) {
-			const data = ecosystemsSensorsDataCurrent[getKey(sensor.uid, measure)];
+			const data = ecosystemsSensorsDataCurrent[getKey(ecosystemUID, sensor.uid, measure)];
 			if (data) {
 				rv.push(data.value);
 			}
@@ -148,7 +149,7 @@
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
 
-		await fetchSensorCurrentData(undefined, 'priming', undefined).then(() => {
+		await syncSensorCurrentData(undefined, 'priming', undefined).then(() => {
 			sensorsPrimed = true;
 		});
 
@@ -157,11 +158,11 @@
 				canManage(uid, 'recent_picture') || canManage(uid, 'pictures')
 					? fetchCameraPicturesInfo(uid)
 					: {},
-				canManage(uid, 'ecosystem_data') ? fetchEcosystemSensorsSkeleton(uid, 'ecosystem') : {},
-				canManage(uid, 'environment_data') ? fetchEcosystemSensorsSkeleton(uid, 'environment') : {},
-				canManage(uid, 'plants_data') ? fetchEcosystemSensorsSkeleton(uid, 'plants') : {},
-				canManage(uid, 'actuators') ? fetchEcosystemActuatorsState(uid) : {},
-				fetchEcosystemNycthemeralCycleData(uid) // Always needed
+				canManage(uid, 'ecosystem_data') ? syncEcosystemSensorsSkeleton(uid, 'ecosystem') : {},
+				canManage(uid, 'environment_data') ? syncEcosystemSensorsSkeleton(uid, 'environment') : {},
+				canManage(uid, 'plants_data') ? syncEcosystemSensorsSkeleton(uid, 'plants') : {},
+				canManage(uid, 'actuators') ? syncEcosystemActuatorsState(uid) : {},
+				syncEcosystemNycthemeralCycleData(uid) // Always needed
 			]);
 			ecosystemsCameraPicturesInfo[uid] = cameraPicturesInfo;
 			ecosystemsReady[uid] = true;
@@ -184,11 +185,11 @@
 			});
 
 		if (appState.currentUser.can(permissions.ADMIN)) {
-			await Promise.all(infraState.serversIds.map(({ uid }) => fetchServerCurrentData(uid)));
+			await Promise.all(infraState.serversIds.map(({ uid }) => syncServerCurrentData(uid)));
 		}
 
 		if (serviceEnabled(servicesState.services, 'weather')) {
-			await fetchWeatherForecast();
+			await syncWeatherForecast();
 		}
 
 		if (serviceEnabled(servicesState.services, 'suntimes')) {
@@ -406,7 +407,7 @@
 							href="/ecosystem/{slugify(ecosystem['name'])}/sensors/ecosystem"
 						>
 							{#each ecosystemSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone['measure']}`)}
-								{#await fetchHealthLatestDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
+								{#await syncHealthLatestDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
 									<p class="faint">
 										Collecting data for {sensorsBone['measure'].replace('_', ' ')} ...
 									</p>
@@ -439,8 +440,9 @@
 								{:then _}
 									{@const averageData = computeAverageSensorsCurrentDataForMeasure(
 										gaiaState.ecosystemsSensorsDataCurrent,
-										sensorsBone['measure'],
-										sensorsBone['sensors']
+										uid,
+										sensorsBone['sensors'],
+										sensorsBone['measure']
 									)}
 									{#if averageData !== null}
 										<p>
@@ -469,8 +471,9 @@
 								{:then _}
 									{@const averageData = computeAverageSensorsCurrentDataForMeasure(
 										gaiaState.ecosystemsSensorsDataCurrent,
-										sensorsBone['measure'],
-										sensorsBone['sensors']
+										uid,
+										sensorsBone['sensors'],
+										sensorsBone['measure']
 									)}
 									{#if averageData !== null}
 										<p>

@@ -12,7 +12,7 @@
 
 	import {
 		crudRequest,
-		fetchEcosystemNycthemeralCycleData
+		syncEcosystemNycthemeralCycleData
 	} from '$lib/actions.svelte.js';
 	import {
 		fetchEcosystemEnvironmentParameters,
@@ -109,7 +109,7 @@
 	);
 
 	onMount(async () => {
-		await fetchEcosystemNycthemeralCycleData(ecosystemUID);
+		await syncEcosystemNycthemeralCycleData(ecosystemUID);
 		environmentParameters = await fetchEcosystemEnvironmentParameters(ecosystemUID);
 		weatherEvents = await fetchEcosystemWeatherEvents(ecosystemUID);
 		hardwareObjects = await fetchEcosystemHardware(ecosystemUID);

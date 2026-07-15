@@ -12,8 +12,8 @@
 	import Row from '$lib/components/layout/Row.svelte';
 
 	import {
-		fetchEcosystemSensorsSkeleton,
-		fetchSensorHistoricData,
+		syncEcosystemSensorsSkeleton,
+		syncSensorHistoricData,
 		probePath
 	} from '$lib/actions.svelte.js';
 	import {
@@ -32,12 +32,12 @@
 	let images = $state({});
 
 	onMount(async () => {
-		await fetchEcosystemSensorsSkeleton(ecosystemUID, 'ecosystem');
+		await syncEcosystemSensorsSkeleton(ecosystemUID, 'ecosystem');
 		const skeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, 'ecosystem')] ?? [];
 		await Promise.all(
 			skeleton.flatMap((bone) =>
 				bone['sensors'].map((sensor) =>
-					fetchSensorHistoricData(ecosystemUID, sensor['uid'], bone['measure'], 31)
+					syncSensorHistoricData(ecosystemUID, sensor['uid'], bone['measure'], 'ecosystem')
 				)
 			)
 		);

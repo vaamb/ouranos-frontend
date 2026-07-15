@@ -12,7 +12,8 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { crudRequest, fetchWikiPictures } from '$lib/actions.svelte.js';
+	import { crudRequest } from '$lib/actions.svelte.js';
+	import { fetchWikiPictures } from '$lib/queries.js';
 	import { appState } from '$lib/store.svelte.ts';
 	import { permissions, STATIC_URL } from '$lib/utils/consts.js';
 	import { capitalize, splitTags } from '$lib/utils/functions.js';

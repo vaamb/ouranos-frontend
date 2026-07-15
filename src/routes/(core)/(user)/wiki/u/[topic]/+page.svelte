@@ -4,7 +4,8 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { crudRequest, fetchWikiArticles } from '$lib/actions.svelte.js';
+	import { crudRequest } from '$lib/actions.svelte.js';
+	import { fetchWikiArticles } from '$lib/queries.js';
 	import { capitalize } from '$lib/utils/functions.js';
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 

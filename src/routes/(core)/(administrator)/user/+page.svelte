@@ -1,5 +1,6 @@
 <script>
-	import { crudRequest, fetchUsers } from '$lib/actions.svelte.js';
+	import { crudRequest } from '$lib/actions.svelte.js';
+	import { fetchUsers } from '$lib/queries.js';
 	import { capitalize, formatDateTime, isEmailValid } from '$lib/utils/functions.js';
 
 	import Form from '$lib/components/Form.svelte';

@@ -6,7 +6,7 @@ import {
 	fetchServices,
 	fetchWarnings,
 	fetchWikiTopics
-} from '$lib/actions.svelte.js';
+} from '$lib/queries.js';
 import { createUser } from '$lib/utils/factories.js';
 
 export async function load({ cookies, parent, request }) {

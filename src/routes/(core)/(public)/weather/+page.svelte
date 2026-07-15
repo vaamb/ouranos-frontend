@@ -10,7 +10,8 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
-	import { fetchSuntimes, fetchWeatherForecast } from '$lib/actions.svelte.js';
+	import { fetchWeatherForecast } from '$lib/actions.svelte.js';
+	import { fetchSuntimes } from '$lib/queries.js';
 	import { servicesState } from '$lib/store.svelte.ts';
 	import {
 		capitalize,

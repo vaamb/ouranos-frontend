@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 
-import { fetchUserDescription } from '$lib/actions.svelte.js';
+import { fetchUserDescription } from '$lib/queries.js';
 import { createUser } from '$lib/utils/factories.js';
 import { permissions } from '$lib/utils/consts.js';
 

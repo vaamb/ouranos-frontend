@@ -2,7 +2,8 @@
 	import Calendar from '$lib/components/Calendar.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 
-	import { crudRequest, fetchCalendarEvents } from '$lib/actions.svelte.js';
+	import { crudRequest } from '$lib/actions.svelte.js';
+	import { fetchCalendarEvents } from '$lib/queries.js';
 	import { appState } from '$lib/store.svelte.ts';
 
 	const now = new Date();

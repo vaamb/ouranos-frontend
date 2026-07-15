@@ -2,7 +2,8 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import SlideButton from '$lib/components/SlideButton.svelte';
 
-	import { fetchServices, updateService } from '$lib/actions.svelte.js';
+	import { updateService } from '$lib/actions.svelte.js';
+	import { fetchServices } from '$lib/queries.js';
 	import { appState, servicesState } from '$lib/store.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 	import { capitalize } from '$lib/utils/functions.js';

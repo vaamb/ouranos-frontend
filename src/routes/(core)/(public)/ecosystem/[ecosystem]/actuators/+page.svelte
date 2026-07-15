@@ -8,10 +8,12 @@
 	import Switch from '$lib/components/Switch.svelte';
 
 	import {
-		fetchEcosystemActuatorRecords,
 		fetchEcosystemActuatorsState,
 		updateActuatorMode
 	} from '$lib/actions.svelte.js';
+	import {
+		fetchEcosystemActuatorRecords
+	} from '$lib/queries.js';
 	import { gaiaState } from '$lib/store.svelte.ts';
 
 	import { socketio } from '$lib/socketio.svelte.js';

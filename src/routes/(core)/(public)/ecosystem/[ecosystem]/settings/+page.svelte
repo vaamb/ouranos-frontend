@@ -11,6 +11,16 @@
 	import Table from '$lib/components/Table.svelte';
 
 	import {
+		crudRequest,
+		fetchEcosystemNycthemeralCycleData
+	} from '$lib/actions.svelte.js';
+	import {
+		fetchEcosystemEnvironmentParameters,
+		fetchEcosystemHardware,
+		fetchEcosystemWeatherEvents
+	} from '$lib/queries.js';
+
+	import {
 		appState,
 		gaiaState,
 		getKey
@@ -28,13 +38,7 @@
 		computeLightingHours,
 		formatDateTime
 	} from '$lib/utils/functions.js';
-	import {
-		crudRequest,
-		fetchEcosystemEnvironmentParameters,
-		fetchEcosystemHardware,
-		fetchEcosystemNycthemeralCycleData,
-		fetchEcosystemWeatherEvents
-	} from '$lib/actions.svelte.js';
+
 	import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
 	let { data } = $props();

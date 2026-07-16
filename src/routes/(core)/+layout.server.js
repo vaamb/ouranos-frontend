@@ -13,8 +13,13 @@ export async function load({ cookies, parent, request }) {
 	const data = await parent();
 	let currentUser = createUser(data.userData);
 
-	const clientSessionCookie = 'session=' + cookies.get('session');
-	const clientUserAgent = request.headers.get('user-agent');
+	// Authenticated users have a session token available (User data comes from this token)
+	const authHeaders = currentUser.isAuthenticated
+		? {
+				'Cookie': 'session=' + cookies.get('session'),
+				'User-Agent': request.headers.get('user-agent')
+			}
+		: undefined;
 
 	const [ecosystems, ecosystemsManagement, engines, services, servers, warnings, wikiTopics] =
 		await Promise.all([
@@ -22,8 +27,8 @@ export async function load({ cookies, parent, request }) {
 			fetchEcosystemsManagement(),
 			fetchEngines(),
 			fetchServices(),
-			currentUser.isAuthenticated ? fetchServers(clientSessionCookie, clientUserAgent) : {},
-			currentUser.isAuthenticated ? fetchWarnings(clientSessionCookie, clientUserAgent) : [],
+			currentUser.isAuthenticated ? fetchServers({ headers: authHeaders }) : {},
+			currentUser.isAuthenticated ? fetchWarnings({ headers: authHeaders }) : [],
 			fetchWikiTopics()
 		]);
 

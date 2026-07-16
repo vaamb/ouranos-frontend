@@ -43,13 +43,11 @@ export const fetchServerInfo = async function () {
 };
 
 // Auth-related actions
-export const fetchCurrentUserData = async function (clientSessionCookie, clientUserAgent) {
+export const fetchCurrentUserData = async function (options = {}) {
+	assertAuthInfo(options);
 	return client
 		.get(`/auth/current_user`, {
-			headers: {
-				Cookie: clientSessionCookie,
-				'User-Agent': clientUserAgent
-			},
+			headers: options.headers,
 			withCredentials: true
 		})
 		.then((response) => {
@@ -371,13 +369,11 @@ export const fetchSuntimes = async function () {
 };
 
 // Server-related actions
-export const fetchServers = async function (clientSessionCookie, clientUserAgent) {
+export const fetchServers = async function (options = {}) {
+	assertAuthInfo(options);
 	return client
 		.get(`/system`, {
-			headers: {
-				Cookie: clientSessionCookie,
-				'User-Agent': clientUserAgent
-			},
+			headers: options.headers,
 			withCredentials: true
 		})
 		.then((response) => {
@@ -430,13 +426,11 @@ export const fetchServices = async function () {
 		});
 };
 
-export const fetchWarnings = async function (clientSessionCookie, clientUserAgent) {
+export const fetchWarnings = async function (options = {}) {
+	assertAuthInfo(options);
 	return client
 		.get(`/gaia/warning`, {
-			headers: {
-				Cookie: clientSessionCookie,
-				'User-Agent': clientUserAgent
-			},
+			headers: options.headers,
 			withCredentials: true
 		})
 		.then((response) => {
@@ -515,17 +509,11 @@ export const fetchWikiPictures = async function (topic_name, article_name) {
 };
 
 // User-related actions
-export const fetchUserDescription = async function (
-	clientSessionCookie,
-	clientUserAgent,
-	username
-) {
+export const fetchUserDescription = async function (username, options = {}) {
+	assertAuthInfo(options);
 	return client
 		.get(`/user/u/${username}`, {
-			headers: {
-				Cookie: clientSessionCookie,
-				'User-Agent': clientUserAgent
-			},
+			headers: options.headers,
 			withCredentials: true
 		})
 		.then((response) => {

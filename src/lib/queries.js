@@ -16,6 +16,12 @@ const client = axios.create({
 	baseURL: browser ? API_URL : LOCAL_API_URL
 });
 
+const assertAuthInfo = function (options) {
+	if (!browser && !options.headers?.Cookie) {
+		throw new Error('Missing auth headers');
+	}
+};
+
 // Server-related actions
 export const fetchServerInfo = async function () {
 	return await client

@@ -1,3 +1,5 @@
+import { browser } from '$app/environment';
+
 import axios from 'axios';
 
 import {
@@ -10,10 +12,14 @@ import {
 	SERVER_STATUS
 } from '$lib/utils/consts.js';
 
+const client = axios.create({
+	baseURL: browser ? API_URL : LOCAL_API_URL
+});
+
 // Server-related actions
 export const fetchServerInfo = async function () {
-	return await axios
-		.get(`${LOCAL_API_URL}/app/version`)
+	return await client
+		.get(`/app/version`)
 		.then((response) => {
 			if (response.status === 200) {
 				return {
@@ -32,8 +38,8 @@ export const fetchServerInfo = async function () {
 
 // Auth-related actions
 export const fetchCurrentUserData = async function (clientSessionCookie, clientUserAgent) {
-	return axios
-		.get(`${LOCAL_API_URL}/auth/current_user`, {
+	return client
+		.get(`/auth/current_user`, {
 			headers: {
 				Cookie: clientSessionCookie,
 				'User-Agent': clientUserAgent
@@ -54,8 +60,8 @@ export const fetchCurrentUserData = async function (clientSessionCookie, clientU
 
 // Engines-related actions
 export const fetchEngines = async function () {
-	return axios
-		.get(`${LOCAL_API_URL}/gaia/engine`, {
+	return client
+		.get(`/gaia/engine`, {
 			params: { engines_id: 'recent' }
 		})
 		.then((response) => {
@@ -90,8 +96,8 @@ export const fetchEngines = async function () {
 
 // Ecosystems-related actions
 export const fetchEcosystems = async function () {
-	return axios
-		.get(`${LOCAL_API_URL}/gaia/ecosystem`, {
+	return client
+		.get(`/gaia/ecosystem`, {
 			params: { ecosystems_id: 'recent' }
 		})
 		.then((response) => {
@@ -127,8 +133,8 @@ export const fetchEcosystems = async function () {
 };
 
 export const fetchEcosystemsManagement = async function () {
-	return axios
-		.get(`${LOCAL_API_URL}/gaia/ecosystem/management`, {
+	return client
+		.get(`/gaia/ecosystem/management`, {
 			params: { ecosystems: 'recent' }
 		})
 		.then((response) => {
@@ -140,8 +146,8 @@ export const fetchEcosystemsManagement = async function () {
 };
 
 export const fetchEcosystemNycthemeralCycleData = async function (ecosystemUID) {
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/light`)
+	return client
+		.get(`/gaia/ecosystem/u/${ecosystemUID}/light`)
 		.then((response) => {
 			const data = response.data;
 			delete data['ecosystem_uid'];
@@ -153,8 +159,8 @@ export const fetchEcosystemNycthemeralCycleData = async function (ecosystemUID) 
 };
 
 export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID) {
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/environment_parameter`)
+	return client
+		.get(`/gaia/ecosystem/u/${ecosystemUID}/environment_parameter`)
 		.then((response) => {
 			return response['data']['environment_parameters'];
 		})
@@ -164,8 +170,8 @@ export const fetchEcosystemEnvironmentParameters = async function (ecosystemUID)
 };
 
 export const fetchEcosystemWeatherEvents = async function (ecosystemUID) {
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/weather_event`)
+	return client
+		.get(`/gaia/ecosystem/u/${ecosystemUID}/weather_event`)
 		.then((response) => {
 			return response['data']['weather_events'];
 		})
@@ -175,8 +181,8 @@ export const fetchEcosystemWeatherEvents = async function (ecosystemUID) {
 };
 
 export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuators_state`)
+	return client
+		.get(`/gaia/ecosystem/u/${ecosystemUID}/actuators_state`)
 		.then((response) => {
 			const data = response.data;
 			const states = data['actuators_state'].reduce((a, v) => ({ ...a, [v['type']]: v }), {});
@@ -192,8 +198,8 @@ export const fetchEcosystemActuatorsState = async function (ecosystemUID) {
 };
 
 export const fetchEcosystemActuatorRecords = async function (ecosystemUID, actuatorType) {
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/actuator_records/u/${actuatorType}`)
+	return client
+		.get(`/gaia/ecosystem/u/${ecosystemUID}/actuator_records/u/${actuatorType}`)
 		.then((response) => {
 			return {
 				timestamp: new Date(response['data']['span'][1]),
@@ -207,8 +213,8 @@ export const fetchEcosystemActuatorRecords = async function (ecosystemUID, actua
 };
 
 export const fetchEcosystemHardware = async function (ecosystemUID) {
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/hardware`, {
+	return client
+		.get(`/gaia/ecosystem/u/${ecosystemUID}/hardware`, {
 			params: { in_config: true }
 		})
 		.then((response) => {
@@ -220,8 +226,8 @@ export const fetchEcosystemHardware = async function (ecosystemUID) {
 };
 
 export const fetchSensorsCurrentData = async function () {
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/sensor/data/current`, {
+	return client
+		.get(`/gaia/ecosystem/sensor/data/current`, {
 			params: { ecosystems: 'recent' }
 		})
 		.then((response) => {
@@ -238,13 +244,10 @@ export const fetchSensorHistoricData = async function (
 	measure,
 	windowLength = undefined
 ) {
-	return axios
-		.get(
-			`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensorUID}/data/${measure}/historic`,
-			{
-				params: { window_length: windowLength }
-			}
-		)
+	return client
+		.get(`/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensorUID}/data/${measure}/historic`, {
+			params: { window_length: windowLength }
+		})
 		.then((response) => {
 			return {
 				timestamp: new Date(response['data']['span'][1]),
@@ -258,8 +261,8 @@ export const fetchSensorHistoricData = async function (
 };
 
 export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level = null) {
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/skeleton`, {
+	return client
+		.get(`/gaia/ecosystem/u/${ecosystemUID}/sensor/skeleton`, {
 			params: { level: level }
 		})
 		.then((response) => {
@@ -273,9 +276,9 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 export const fetchHealthLatestDataForMeasure = async function (ecosystemUID, measure, sensors) {
 	const values = await Promise.all(
 		sensors.map((sensor) =>
-			axios
+			client
 				.get(
-					`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensor['uid']}/data/${measure}/historic`,
+					`/gaia/ecosystem/u/${ecosystemUID}/sensor/u/${sensor['uid']}/data/${measure}/historic`,
 					{ params: { window_length: 1 } }
 				)
 				.then((response) => {
@@ -295,8 +298,8 @@ export const fetchHealthLatestDataForMeasure = async function (ecosystemUID, mea
 };
 
 export const fetchCameraPicturesInfo = async function (ecosystemUID) {
-	return axios
-		.get(`${API_URL}/gaia/ecosystem/u/${ecosystemUID}/image_info`)
+	return client
+		.get(`/gaia/ecosystem/u/${ecosystemUID}/image_info`)
 		.then((response) => {
 			const cameraPicturesInfo = response['data'];
 			cameraPicturesInfo.forEach((info) => {
@@ -320,8 +323,8 @@ export const fetchWeatherForecast = async function (exclude = []) {
 		}
 	}
 
-	return axios
-		.get(`${API_URL}/app/services/weather/forecast`, {
+	return client
+		.get(`/app/services/weather/forecast`, {
 			params: params
 		})
 		.then((response) => {
@@ -329,7 +332,7 @@ export const fetchWeatherForecast = async function (exclude = []) {
 				currently: response['data']['currently'],
 				hourly: response['data']['hourly'],
 				daily: response['data']['daily']
-			}
+			};
 		})
 		.catch(() => {
 			return {
@@ -341,8 +344,8 @@ export const fetchWeatherForecast = async function (exclude = []) {
 };
 
 export const fetchSuntimes = async function () {
-	return axios
-		.get(`${API_URL}/app/services/weather/sun_times`)
+	return client
+		.get(`/app/services/weather/sun_times`)
 		.then((response) => {
 			let data = response['data'];
 			data.forEach((element) => {
@@ -357,14 +360,14 @@ export const fetchSuntimes = async function () {
 			return data;
 		})
 		.catch(() => {
-			return []
+			return [];
 		});
 };
 
 // Server-related actions
 export const fetchServers = async function (clientSessionCookie, clientUserAgent) {
-	return axios
-		.get(`${LOCAL_API_URL}/system`, {
+	return client
+		.get(`/system`, {
 			headers: {
 				Cookie: clientSessionCookie,
 				'User-Agent': clientUserAgent
@@ -385,8 +388,8 @@ export const fetchServers = async function (clientSessionCookie, clientUserAgent
 };
 
 export const fetchServerCurrentData = async function (serverUid) {
-	return axios
-		.get(`${API_URL}/system/${serverUid}/data/current`, {
+	return client
+		.get(`/system/${serverUid}/data/current`, {
 			withCredentials: true
 		})
 		.then((response) => {
@@ -398,8 +401,8 @@ export const fetchServerCurrentData = async function (serverUid) {
 };
 
 export const fetchServerHistoricData = async function (serverUid) {
-	return axios
-		.get(`${API_URL}/system/${serverUid}/data/historic`, {
+	return client
+		.get(`/system/${serverUid}/data/historic`, {
 			withCredentials: true
 		})
 		.then((response) => {
@@ -410,10 +413,9 @@ export const fetchServerHistoricData = async function (serverUid) {
 		});
 };
 
-export const fetchServices = async function (local = true) {
-	const URL = local ? LOCAL_API_URL : API_URL;
-	return axios
-		.get(`${URL}/app/services`)
+export const fetchServices = async function () {
+	return client
+		.get(`/app/services`)
 		.then((response) => {
 			return response.data;
 		})
@@ -423,8 +425,8 @@ export const fetchServices = async function (local = true) {
 };
 
 export const fetchWarnings = async function (clientSessionCookie, clientUserAgent) {
-	return axios
-		.get(`${LOCAL_API_URL}/gaia/warning`, {
+	return client
+		.get(`/gaia/warning`, {
 			headers: {
 				Cookie: clientSessionCookie,
 				'User-Agent': clientUserAgent
@@ -448,8 +450,8 @@ export const fetchWarnings = async function (clientSessionCookie, clientUserAgen
 
 // Calendar-related actions
 export const fetchCalendarEvents = async function (startTime = undefined, endTime = undefined) {
-	return axios
-		.get(`${API_URL}/app/services/calendar`, {
+	return client
+		.get(`/app/services/calendar`, {
 			params: {
 				start_time: startTime,
 				end_time: endTime,
@@ -474,8 +476,8 @@ export const fetchCalendarEvents = async function (startTime = undefined, endTim
 
 // Wiki-related actions
 export const fetchWikiTopics = async function () {
-	return axios
-		.get(`${LOCAL_API_URL}/app/services/wiki/topics`)
+	return client
+		.get(`/app/services/wiki/topics`)
 		.then((response) => {
 			return response.data;
 		})
@@ -485,8 +487,8 @@ export const fetchWikiTopics = async function () {
 };
 
 export const fetchWikiArticles = async function (topic_name) {
-	return axios
-		.get(`${API_URL}/app/services/wiki/topics/u/${topic_name}/articles`)
+	return client
+		.get(`/app/services/wiki/topics/u/${topic_name}/articles`)
 		.then((response) => {
 			return response.data;
 		})
@@ -496,8 +498,8 @@ export const fetchWikiArticles = async function (topic_name) {
 };
 
 export const fetchWikiPictures = async function (topic_name, article_name) {
-	return axios
-		.get(`${API_URL}/app/services/wiki/topics/u/${topic_name}/u/${article_name}/pictures`)
+	return client
+		.get(`/app/services/wiki/topics/u/${topic_name}/u/${article_name}/pictures`)
 		.then((response) => {
 			return response.data;
 		})
@@ -512,8 +514,8 @@ export const fetchUserDescription = async function (
 	clientUserAgent,
 	username
 ) {
-	return axios
-		.get(`${LOCAL_API_URL}/user/u/${username}`, {
+	return client
+		.get(`/user/u/${username}`, {
 			headers: {
 				Cookie: clientSessionCookie,
 				'User-Agent': clientUserAgent
@@ -529,8 +531,8 @@ export const fetchUserDescription = async function (
 };
 
 export const fetchUsers = async function (page) {
-	return axios
-		.get(`${API_URL}/user`, {
+	return client
+		.get(`/user`, {
 			params: {
 				page: page
 			},

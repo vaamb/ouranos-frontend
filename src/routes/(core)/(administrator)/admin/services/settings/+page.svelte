@@ -48,7 +48,7 @@
 									}
 								}
 								if (anyUpdated) {
-									fetchServices(false).then((data) => {
+									fetchServices().then((data) => {
 										servicesState.services = data;
 										updatedServices = [...servicesState.services];
 									});

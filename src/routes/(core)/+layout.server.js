@@ -10,8 +10,8 @@ import {
 import { createUser } from '$lib/utils/factories.js';
 
 export async function load({ cookies, parent, request }) {
-	const data = await parent();
-	let currentUser = createUser(data.userData);
+	const { userData } = await parent();
+	let currentUser = createUser(userData);
 
 	// Authenticated users have a session token available (User data comes from this token)
 	const authHeaders = currentUser.isAuthenticated

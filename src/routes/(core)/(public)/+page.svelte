@@ -39,11 +39,13 @@
 	let { data } = $props()
 
 	// Store update
-	gaiaState.ecosystemsActuatorsState = data.ecosystemsActuatorsState
-	gaiaState.ecosystemsSensorsSkeleton = data.ecosystemsSensorsSkeleton
-	gaiaState.ecosystemsNycthemeralCycle = data.ecosystemsNycthemeralCycleData
-	infraState.serversCurrentData = data.serversCurrentData;
-	servicesState.weatherCurrently = data.currentWeatherForecast;
+	$effect(() => {
+		gaiaState.ecosystemsActuatorsState = data.ecosystemsActuatorsState
+		gaiaState.ecosystemsSensorsSkeleton = data.ecosystemsSensorsSkeleton
+		gaiaState.ecosystemsNycthemeralCycle = data.ecosystemsNycthemeralCycleData
+		infraState.serversCurrentData = data.serversCurrentData;
+		servicesState.weatherCurrently = data.currentWeatherForecast;
+	});
 
 	// Now
 	let now = $state(new Date());
@@ -109,15 +111,17 @@
 		return ecosystemIsConnected(uid) && ecosystemIsRunning(uid);
 	};
 
-	for (const ecosystem of data.currentSensorsData) {
-		for (const sensorRecord of ecosystem['values']) {
-			const storageKey = getKey(sensorRecord['ecosystem_uid'], sensorRecord['sensor_uid'], sensorRecord['measure']);
-			gaiaState.ecosystemsSensorsDataCurrent[storageKey] = {
-				timestamp: new Date(sensorRecord['timestamp']),
-				value: sensorRecord['value']
-			};
+	$effect(() => {
+		for (const ecosystem of data.currentSensorsData) {
+			for (const sensorRecord of ecosystem['values']) {
+				const storageKey = getKey(sensorRecord['ecosystem_uid'], sensorRecord['sensor_uid'], sensorRecord['measure']);
+				gaiaState.ecosystemsSensorsDataCurrent[storageKey] = {
+					timestamp: new Date(sensorRecord['timestamp']),
+					value: sensorRecord['value']
+				};
+			}
 		}
-	}
+	});
 
 	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {
 		return Promise.all(

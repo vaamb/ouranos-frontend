@@ -389,9 +389,11 @@ export const fetchServers = async function (options = {}) {
 		});
 };
 
-export const fetchServerCurrentData = async function (serverUid) {
+export const fetchServerCurrentData = async function (serverUID, options = {}) {
+	assertAuthInfo(options);
 	return client
-		.get(`/system/${serverUid}/data/current`, {
+		.get(`/system/${serverUID}/data/current`, {
+			headers: options.headers,
 			withCredentials: true
 		})
 		.then((response) => {
@@ -402,9 +404,11 @@ export const fetchServerCurrentData = async function (serverUid) {
 		});
 };
 
-export const fetchServerHistoricData = async function (serverUid) {
+export const fetchServerHistoricData = async function (serverUID, options = {}) {
+	assertAuthInfo(options);
 	return client
-		.get(`/system/${serverUid}/data/historic`, {
+		.get(`/system/${serverUID}/data/historic`, {
+			headers: options.headers,
 			withCredentials: true
 		})
 		.then((response) => {
@@ -449,7 +453,12 @@ export const fetchWarnings = async function (options = {}) {
 };
 
 // Calendar-related actions
-export const fetchCalendarEvents = async function (startTime = undefined, endTime = undefined) {
+export const fetchCalendarEvents = async function (
+	startTime = undefined,
+	endTime = undefined,
+	options = {}
+) {
+	assertAuthInfo(options);
 	return client
 		.get(`/app/services/calendar`, {
 			params: {
@@ -457,6 +466,7 @@ export const fetchCalendarEvents = async function (startTime = undefined, endTim
 				end_time: endTime,
 				visibility: 'private'
 			},
+			headers: options.headers,
 			withCredentials: true
 		})
 		.then((response) => {
@@ -524,12 +534,14 @@ export const fetchUserDescription = async function (username, options = {}) {
 		});
 };
 
-export const fetchUsers = async function (page) {
+export const fetchUsers = async function (page, options = {}) {
+	assertAuthInfo(options);
 	return client
 		.get(`/user`, {
 			params: {
 				page: page
 			},
+			headers: options.headers,
 			withCredentials: true
 		})
 		.then((response) => {

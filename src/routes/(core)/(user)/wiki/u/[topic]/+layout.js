@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 
-import { fetchWikiArticles } from '$lib/actions.svelte.js';
+import { fetchWikiArticles } from '$lib/queries.js';
 
 export async function load({ params, parent }) {
 	const data = await parent();

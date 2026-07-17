@@ -10,7 +10,8 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
-	import { fetchSuntimes, fetchWeatherForecast } from '$lib/actions.svelte.js';
+	import { syncWeatherForecast } from '$lib/actions.svelte.js';
+	import { fetchSuntimes } from '$lib/queries.js';
 	import { servicesState } from '$lib/store.svelte.ts';
 	import {
 		capitalize,
@@ -92,7 +93,7 @@
 
 	onMount(async () => {
 		if (serviceEnabled(servicesState.services, 'weather')) {
-			await fetchWeatherForecast();
+			await syncWeatherForecast();
 		}
 
 		if (serviceEnabled(servicesState.services, 'suntimes')) {

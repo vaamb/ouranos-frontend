@@ -10,9 +10,9 @@
 	import Row from '$lib/components/layout/Row.svelte';
 
 	import {
-		fetchSensorCurrentData,
-		fetchSensorHistoricData,
-		fetchEcosystemSensorsSkeleton
+		syncSensorCurrentData,
+		syncSensorHistoricData,
+		syncEcosystemSensorsSkeleton
 	} from '$lib/actions.svelte.js';
 	import {
 		gaiaState,
@@ -42,8 +42,8 @@
 	let maxValues = $derived(graphs[sensorsLevel].max_values);
 
 	const fetchSensorData = async function (ecosystemUID, sensorUid, measure) {
-		const current = await fetchSensorCurrentData(ecosystemUID, sensorUid, measure);
-		const historic = await fetchSensorHistoricData(ecosystemUID, sensorUid, measure);
+		const current = await syncSensorCurrentData(ecosystemUID, sensorUid, measure);
+		const historic = await syncSensorHistoricData(ecosystemUID, sensorUid, measure, sensorsLevel);
 		return {
 			current: current,
 			historic: historic
@@ -83,8 +83,8 @@
 	};
 
 	onMount(async () => {
-		await fetchSensorCurrentData(undefined, 'priming', undefined);
-		await fetchEcosystemSensorsSkeleton(ecosystemUID, sensorsLevel);
+		await syncSensorCurrentData(undefined, 'priming', undefined);
+		await syncEcosystemSensorsSkeleton(ecosystemUID, sensorsLevel);
 		const skeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, sensorsLevel)] ?? [];
 		await Promise.all(
 			skeleton.flatMap((bone) =>

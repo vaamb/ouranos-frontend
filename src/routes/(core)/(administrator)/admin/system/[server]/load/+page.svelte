@@ -8,7 +8,7 @@
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Row from '$lib/components/layout/Row.svelte';
 
-	import { fetchServerCurrentData, fetchServerHistoricData } from '$lib/actions.svelte.js';
+	import { syncServerCurrentData, syncServerHistoricData } from '$lib/actions.svelte.js';
 	import {
 		getKey,
 		infraState
@@ -20,8 +20,8 @@
 	let serverInfo = $derived(infraState.servers[serverName]);
 
 	const fetchServerData = async function (serverName) {
-		await fetchServerCurrentData(serverName);
-		await fetchServerHistoricData(serverName);
+		await syncServerCurrentData(serverName);
+		await syncServerHistoricData(serverName);
 	};
 
 	const dataKeys = ['CPU_used', 'CPU_temp', 'RAM_process', 'RAM_used', 'DISK_used'];

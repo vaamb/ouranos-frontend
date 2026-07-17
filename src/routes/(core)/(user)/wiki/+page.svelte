@@ -5,7 +5,8 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
 
-	import { crudRequest, fetchWikiTopics } from '$lib/actions.svelte.js';
+	import { crudRequest } from '$lib/actions.svelte.js';
+	import { fetchWikiTopics } from '$lib/queries.js';
 	import { servicesState } from '$lib/store.svelte.ts';
 	import { capitalize, joinTags, splitTags } from '$lib/utils/functions.js';
 

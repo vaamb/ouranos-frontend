@@ -458,7 +458,7 @@ export const fetchCalendarEvents = async function (
 	endTime = undefined,
 	options = {}
 ) {
-	assertAuthInfo(options);
+	//assertAuthInfo(options);
 	return client
 		.get(`/app/services/calendar`, {
 			params: {

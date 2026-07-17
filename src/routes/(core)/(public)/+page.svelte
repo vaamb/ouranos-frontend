@@ -32,16 +32,20 @@
 		strHoursToDate
 	} from '$lib/utils/functions.js';
 	import {
-		syncEcosystemActuatorsState,
 		syncSensorCurrentData,
-		syncEcosystemSensorsSkeleton,
-		syncEcosystemNycthemeralCycleData,
 		syncHealthLatestDataForMeasure,
-		syncServerCurrentData,
-		syncWeatherForecast
 	} from '$lib/actions.svelte.js';
-	import { fetchCalendarEvents, fetchCameraPicturesInfo, fetchSuntimes } from '$lib/queries.js';
 
+	let { data } = $props()
+
+	// Store update
+	gaiaState.ecosystemsActuatorsState = data.ecosystemsActuatorsState
+	gaiaState.ecosystemsSensorsSkeleton = data.ecosystemsSensorsSkeleton
+	gaiaState.ecosystemsNycthemeralCycle = data.ecosystemsNycthemeralCycleData
+	infraState.serversCurrentData = data.serversCurrentData;
+	servicesState.weatherCurrently = data.currentWeatherForecast;
+
+	// Now
 	let now = $state(new Date());
 	const updateNow = function () {
 		now = new Date();
@@ -72,7 +76,7 @@
 	});
 
 	// Calendar
-	let calendarEvents = $state([]);
+	let calendarEvents = $state(data.calendarEvents);
 	let sortedCalendarEvents = $derived.by(() => {
 		const sortedEvents = {
 			happening: [],
@@ -89,6 +93,32 @@
 	});
 
 	// Ecosystems
+	const canManage = function (uid, management) {
+		return gaiaState.ecosystemsManagement?.[uid]?.[management] === true;
+	};
+
+	const ecosystemIsConnected = function (uid) {
+		return isConnected(gaiaState.ecosystemsState[uid]);
+	};
+
+	const ecosystemIsRunning = function (uid) {
+		return gaiaState.ecosystemsState[uid]['status'];
+	};
+
+	const ecosystemIsOperational = function (uid) {
+		return ecosystemIsConnected(uid) && ecosystemIsRunning(uid);
+	};
+
+	for (const ecosystem of data.currentSensorsData) {
+		for (const sensorRecord of ecosystem['values']) {
+			const storageKey = getKey(sensorRecord['ecosystem_uid'], sensorRecord['sensor_uid'], sensorRecord['measure']);
+			gaiaState.ecosystemsSensorsDataCurrent[storageKey] = {
+				timestamp: new Date(sensorRecord['timestamp']),
+				value: sensorRecord['value']
+			};
+		}
+	}
+
 	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {
 		return Promise.all(
 			sensors.map((sensor) =>
@@ -117,88 +147,19 @@
 		return average(rv).toFixed(2);
 	};
 
-	const canManage = function (uid, management) {
-		return gaiaState.ecosystemsManagement?.[uid]?.[management] === true;
-	};
-
-	const ecosystemIsConnected = function (uid) {
-		return isConnected(gaiaState.ecosystemsState[uid]);
-	};
-
-	const ecosystemIsRunning = function (uid) {
-		return gaiaState.ecosystemsState[uid]['status'];
-	};
-
-	const ecosystemIsOperational = function (uid) {
-		return ecosystemIsConnected(uid) && ecosystemIsRunning(uid);
-	};
-
-	let sensorsPrimed = $state(false);
-	let ecosystemsReady = $state({});
 	// Camera pictures info is not stored in gaiaState as it changes frequently (new picture every ~1 min)
-	let ecosystemsCameraPicturesInfo = $state({});
+	let ecosystemsCameraPicturesInfo = $state(data.ecosystemsCameraPicturesInfo);
 
 	const recentPicture = function (timestamp) {
 		return now - new Date(timestamp) < 5 * 60 * 1000;
 	};
 
 	// Other
-	let suntimes = $state([]);
+	let suntimes = $state(data.suntimes);
 
 	// On mount
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
-
-		await syncSensorCurrentData(undefined, 'priming', undefined).then(() => {
-			sensorsPrimed = true;
-		});
-
-		const fetchEcosystemData = async function (uid) {
-			const [cameraPicturesInfo] = await Promise.all([
-				canManage(uid, 'recent_picture') || canManage(uid, 'pictures')
-					? fetchCameraPicturesInfo(uid)
-					: {},
-				canManage(uid, 'ecosystem_data') ? syncEcosystemSensorsSkeleton(uid, 'ecosystem') : {},
-				canManage(uid, 'environment_data') ? syncEcosystemSensorsSkeleton(uid, 'environment') : {},
-				canManage(uid, 'plants_data') ? syncEcosystemSensorsSkeleton(uid, 'plants') : {},
-				canManage(uid, 'actuators') ? syncEcosystemActuatorsState(uid) : {},
-				syncEcosystemNycthemeralCycleData(uid) // Always needed
-			]);
-			ecosystemsCameraPicturesInfo[uid] = cameraPicturesInfo;
-			ecosystemsReady[uid] = true;
-		};
-
-		// Load data for ecosystems that are live (connected and running)
-		await Promise.all(
-			gaiaState.ecosystemsIds
-				.map((ecosystemIds) => ecosystemIds['uid'])
-				.filter((uid) => ecosystemIsOperational(uid))
-				.map((uid) => fetchEcosystemData(uid))
-		);
-
-		// Mark other ecosystems as ready
-		gaiaState.ecosystemsIds
-			.map((ecosystemIds) => ecosystemIds['uid'])
-			.filter((uid) => !ecosystemIsOperational(uid))
-			.forEach((uid) => {
-				ecosystemsReady[uid] = true;
-			});
-
-		if (appState.currentUser.can(permissions.ADMIN)) {
-			await Promise.all(infraState.serversIds.map(({ uid }) => syncServerCurrentData(uid)));
-		}
-
-		if (serviceEnabled(servicesState.services, 'weather')) {
-			await syncWeatherForecast();
-		}
-
-		if (serviceEnabled(servicesState.services, 'suntimes')) {
-			suntimes = await fetchSuntimes();
-		}
-
-		if (serviceEnabled(servicesState.services, 'calendar')) {
-			calendarEvents = await fetchCalendarEvents();
-		}
 	});
 
 	onDestroy(async () => {
@@ -333,212 +294,210 @@
 	<h2>Ecosystems overview</h2>
 	{#each gaiaState.ecosystemsIds as { uid } (uid)}
 		{@const ecosystem = gaiaState.ecosystems[uid]}
-		{#if ecosystemsReady[uid] === true}
-			{@const ecosystemState = gaiaState.ecosystemsState[uid]}
-			<Box
-				title={ecosystem['name']}
-				align="center"
-				status={computeEcosystemStatusClass(ecosystemState)}
-				direction="row"
-			>
-				{#if ecosystemIsOperational(uid)}
-					{@const light = canManage(uid, 'light')}
-					{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[uid]}
-					{@const actuatorsState = gaiaState.ecosystemsActuatorsState[uid]}
-					{@const ecosystemSensorsSkeleton =
-						gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')]}
-					{@const environmentSensorsSkeleton =
-						gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')]}
-					{@const plantsSensorsSkeleton =
-						gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')]}
-					{@const cameraPicturesInfo = ecosystemsCameraPicturesInfo[uid]}
-					{#if !isEmpty(nycthemeralCycle)}
-						<BoxItem
-							title="Nycthemeral cycle"
-							href="/ecosystem/{slugify(ecosystem['name'])}/settings"
-						>
-							{@const formatTime = (timeStr) => {
-								return strHoursToDate(timeStr).toLocaleTimeString([], {
-									timeStyle: 'short',
-									hour12: false
-								});
-							}}
-							<p>Method: {nycthemeralCycle['span']}</p>
-							{#if nycthemeralCycle['span'] === 'target'}
-								<p>Target: {nycthemeralCycle['target']}</p>
-							{/if}
-							<p>
-								Span: {formatTime(nycthemeralCycle['day'])} -
-								{formatTime(nycthemeralCycle['night'])}
+		{@const ecosystemState = gaiaState.ecosystemsState[uid]}
+		<Box
+			title={ecosystem['name']}
+			align="center"
+			status={computeEcosystemStatusClass(ecosystemState)}
+			direction="row"
+		>
+			{#if ecosystemIsOperational(uid)}
+				{@const light = canManage(uid, 'light')}
+				{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[uid]}
+				{@const actuatorsState = gaiaState.ecosystemsActuatorsState[uid]}
+				{@const ecosystemSensorsSkeleton =
+					gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')]}
+				{@const environmentSensorsSkeleton =
+					gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')]}
+				{@const plantsSensorsSkeleton =
+					gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')]}
+				{@const cameraPicturesInfo = ecosystemsCameraPicturesInfo[uid]}
+				{#if !isEmpty(nycthemeralCycle)}
+					<BoxItem
+						title="Nycthemeral cycle"
+						href="/ecosystem/{slugify(ecosystem['name'])}/settings"
+					>
+						{@const formatTime = (timeStr) => {
+							return strHoursToDate(timeStr).toLocaleTimeString([], {
+								timeStyle: 'short',
+								hour12: false
+							});
+						}}
+						<p>Method: {nycthemeralCycle['span']}</p>
+						{#if nycthemeralCycle['span'] === 'target'}
+							<p>Target: {nycthemeralCycle['target']}</p>
+						{/if}
+						<p>
+							Span: {formatTime(nycthemeralCycle['day'])} -
+							{formatTime(nycthemeralCycle['night'])}
+						</p>
+						{#if light}
+							<p style="font-size: 1rem; font-weight: bold; padding: 2px 0; margin-top: 0.6rem">
+								Lighting
 							</p>
-							{#if light}
-								<p style="font-size: 1rem; font-weight: bold; padding: 2px 0; margin-top: 0.6rem">
-									Lighting
-								</p>
-								<p>Method: {nycthemeralCycle['lighting']}</p>
-								{#each computeLightingHours(nycthemeralCycle, 'short') as lightingHours, index (`${uid}-${index}`)}
-									<p>{lightingHours}</p>
-								{:else}
-									<p>No lighting needed</p>
-								{/each}
-							{/if}
-						</BoxItem>
-					{/if}
-					{#if !isEmpty(actuatorsState)}
-						<BoxItem title="Actuators" href="/ecosystem/{slugify(ecosystem['name'])}/actuators">
-							{#each actuatorTypes as actuatorType (`${uid}-${actuatorType}`)}
-								{@const actuator = actuatorsState[actuatorType]}
-								{#if actuator && actuator['active']}
-									<p>
-										{capitalize(actuatorType)}:
-										<Fa
-											icon={faSyncAlt}
-											class={actuator['status'] ? 'on' : 'off'}
-											spin={actuator['mode'] === 'automatic'}
-										/>
-									</p>
-								{/if}
-							{/each}
-						</BoxItem>
-					{/if}
-					{#if !isEmpty(ecosystemSensorsSkeleton)}
-						<BoxItem
-							title="Ecosystem health"
-							href="/ecosystem/{slugify(ecosystem['name'])}/sensors/ecosystem"
-						>
-							{#each ecosystemSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone['measure']}`)}
-								{#await syncHealthLatestDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
-									<p class="faint">
-										Collecting data for {sensorsBone['measure'].replace('_', ' ')} ...
-									</p>
-								{:then averageHealthData}
-									{#if averageHealthData !== null}
-										<p>
-											{capitalize(sensorsBone['measure']).replace('_', ' ')}:
-											{averageHealthData}
-											{sensorsBone['units'][0]}
-										</p>
-									{:else}
-										<p>
-											No recent data for {sensorsBone['measure'].replace('_', ' ')}
-										</p>
-									{/if}
-								{/await}
-							{/each}
-						</BoxItem>
-					{/if}
-					{#if !isEmpty(environmentSensorsSkeleton) && sensorsPrimed}
-						<BoxItem
-							title="Environment"
-							href="/ecosystem/{slugify(ecosystem['name'])}/sensors/environment"
-						>
-							{#each environmentSensorsSkeleton as sensorsBone (`${uid}-environment-${sensorsBone['measure']}`)}
-								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
-									<p class="faint">
-										Collecting data for {sensorsBone['measure'].replace('_', ' ')} ...
-									</p>
-								{:then _}
-									{@const averageData = computeAverageSensorsCurrentDataForMeasure(
-										gaiaState.ecosystemsSensorsDataCurrent,
-										uid,
-										sensorsBone['sensors'],
-										sensorsBone['measure']
-									)}
-									{#if averageData !== null}
-										<p>
-											{capitalize(sensorsBone['measure']).replace('_', ' ')}:
-											{averageData}
-											{sensorsBone['units'][0]}
-										</p>
-									{:else}
-										<p>
-											No recent data for {sensorsBone['measure'].replace('_', ' ')}
-										</p>
-									{/if}
-								{/await}
+							<p>Method: {nycthemeralCycle['lighting']}</p>
+							{#each computeLightingHours(nycthemeralCycle, 'short') as lightingHours, index (`${uid}-${index}`)}
+								<p>{lightingHours}</p>
 							{:else}
-								<p>No sensor data available</p>
+								<p>No lighting needed</p>
 							{/each}
-						</BoxItem>
-					{/if}
-					{#if !isEmpty(plantsSensorsSkeleton) && sensorsPrimed}
-						<BoxItem title="Plants" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/plants">
-							{#each plantsSensorsSkeleton as sensorsBone (`${uid}-plants-${sensorsBone['measure']}`)}
-								{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
-									<p class="faint">
-										Collecting data for {sensorsBone['measure'].replace('_', ' ')} ...
-									</p>
-								{:then _}
-									{@const averageData = computeAverageSensorsCurrentDataForMeasure(
-										gaiaState.ecosystemsSensorsDataCurrent,
-										uid,
-										sensorsBone['sensors'],
-										sensorsBone['measure']
-									)}
-									{#if averageData !== null}
-										<p>
-											{capitalize(sensorsBone['measure']).replace('_', ' ')}:
-											{averageData}
-											{sensorsBone['units'][0]}
-										</p>
-									{:else}
-										<p>
-											No recent data for {sensorsBone['measure'].replace('_', ' ')}
-										</p>
-									{/if}
-								{/await}
-							{:else}
-								<p>No sensor data available</p>
-							{/each}
-						</BoxItem>
-					{/if}
-					{#if !isEmpty(cameraPicturesInfo)}
-						<BoxItem title="Camera" href="/ecosystem/{slugify(ecosystem['name'])}/camera">
-							{#each Object.values(cameraPicturesInfo) as cameraInfo (`${uid}-${cameraInfo['camera_name']}`)}
-								{@const hasRecentPicture = recentPicture(cameraInfo['timestamp'])}
-								<p>
-									{cameraInfo['camera_name']}
-									<Fa
-										icon={faCircle}
-										class={hasRecentPicture ? 'on' : 'off'}
-										title={hasRecentPicture
-											? 'Recent picture available'
-											: 'No recent picture available'}
-									/>
-								</p>
-							{/each}
-						</BoxItem>
-					{/if}
-				{:else if ecosystemIsConnected(uid)}
-					<BoxItem>
-						<p>The ecosystem is not currently running</p>
-						{#if appState.currentUser.can(permissions.OPERATE)}
-							<p>
-								<a href="/ecosystem/{slugify(ecosystem['name'])}/settings">
-									Click here to configure it and start it
-								</a>
-							</p>
 						{/if}
 					</BoxItem>
-				{:else if ecosystemIsRunning(uid)}
-					<BoxItem>
-						<p>The ecosystem is not currently connected</p>
-						<p>
-							Last connection to the server on
-							{formatDateTime(ecosystemState['last_seen'])}
-						</p>
-					</BoxItem>
-				{:else}
-					<BoxItem>
-						<p>The ecosystem is not currently running and is not connected</p>
-						<p>
-							Last connection to the server on
-							{formatDateTime(ecosystemState['last_seen'])}
-						</p>
+				{/if}
+				{#if !isEmpty(actuatorsState)}
+					<BoxItem title="Actuators" href="/ecosystem/{slugify(ecosystem['name'])}/actuators">
+						{#each actuatorTypes as actuatorType (`${uid}-${actuatorType}`)}
+							{@const actuator = actuatorsState[actuatorType]}
+							{#if actuator && actuator['active']}
+								<p>
+									{capitalize(actuatorType)}:
+									<Fa
+										icon={faSyncAlt}
+										class={actuator['status'] ? 'on' : 'off'}
+										spin={actuator['mode'] === 'automatic'}
+									/>
+								</p>
+							{/if}
+						{/each}
 					</BoxItem>
 				{/if}
-			</Box>
-		{/if}
+				{#if !isEmpty(ecosystemSensorsSkeleton)}
+					<BoxItem
+						title="Ecosystem health"
+						href="/ecosystem/{slugify(ecosystem['name'])}/sensors/ecosystem"
+					>
+						{#each ecosystemSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone['measure']}`)}
+							{#await syncHealthLatestDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
+								<p class="faint">
+									Collecting data for {sensorsBone['measure'].replace('_', ' ')} ...
+								</p>
+							{:then averageHealthData}
+								{#if averageHealthData !== null}
+									<p>
+										{capitalize(sensorsBone['measure']).replace('_', ' ')}:
+										{averageHealthData}
+										{sensorsBone['units'][0]}
+									</p>
+								{:else}
+									<p>
+										No recent data for {sensorsBone['measure'].replace('_', ' ')}
+									</p>
+								{/if}
+							{/await}
+						{/each}
+					</BoxItem>
+				{/if}
+				{#if !isEmpty(environmentSensorsSkeleton)}
+					<BoxItem
+						title="Environment"
+						href="/ecosystem/{slugify(ecosystem['name'])}/sensors/environment"
+					>
+						{#each environmentSensorsSkeleton as sensorsBone (`${uid}-environment-${sensorsBone['measure']}`)}
+							{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
+								<p class="faint">
+									Collecting data for {sensorsBone['measure'].replace('_', ' ')} ...
+								</p>
+							{:then _}
+								{@const averageData = computeAverageSensorsCurrentDataForMeasure(
+									gaiaState.ecosystemsSensorsDataCurrent,
+									uid,
+									sensorsBone['sensors'],
+									sensorsBone['measure']
+								)}
+								{#if averageData !== null}
+									<p>
+										{capitalize(sensorsBone['measure']).replace('_', ' ')}:
+										{averageData}
+										{sensorsBone['units'][0]}
+									</p>
+								{:else}
+									<p>
+										No recent data for {sensorsBone['measure'].replace('_', ' ')}
+									</p>
+								{/if}
+							{/await}
+						{:else}
+							<p>No sensor data available</p>
+						{/each}
+					</BoxItem>
+				{/if}
+				{#if !isEmpty(plantsSensorsSkeleton)}
+					<BoxItem title="Plants" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/plants">
+						{#each plantsSensorsSkeleton as sensorsBone (`${uid}-plants-${sensorsBone['measure']}`)}
+							{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
+								<p class="faint">
+									Collecting data for {sensorsBone['measure'].replace('_', ' ')} ...
+								</p>
+							{:then _}
+								{@const averageData = computeAverageSensorsCurrentDataForMeasure(
+									gaiaState.ecosystemsSensorsDataCurrent,
+									uid,
+									sensorsBone['sensors'],
+									sensorsBone['measure']
+								)}
+								{#if averageData !== null}
+									<p>
+										{capitalize(sensorsBone['measure']).replace('_', ' ')}:
+										{averageData}
+										{sensorsBone['units'][0]}
+									</p>
+								{:else}
+									<p>
+										No recent data for {sensorsBone['measure'].replace('_', ' ')}
+									</p>
+								{/if}
+							{/await}
+						{:else}
+							<p>No sensor data available</p>
+						{/each}
+					</BoxItem>
+				{/if}
+				{#if !isEmpty(cameraPicturesInfo)}
+					<BoxItem title="Camera" href="/ecosystem/{slugify(ecosystem['name'])}/camera">
+						{#each Object.values(cameraPicturesInfo) as cameraInfo (`${uid}-${cameraInfo['camera_name']}`)}
+							{@const hasRecentPicture = recentPicture(cameraInfo['timestamp'])}
+							<p>
+								{cameraInfo['camera_name']}
+								<Fa
+									icon={faCircle}
+									class={hasRecentPicture ? 'on' : 'off'}
+									title={hasRecentPicture
+										? 'Recent picture available'
+										: 'No recent picture available'}
+								/>
+							</p>
+						{/each}
+					</BoxItem>
+				{/if}
+			{:else if ecosystemIsConnected(uid)}
+				<BoxItem>
+					<p>The ecosystem is not currently running</p>
+					{#if appState.currentUser.can(permissions.OPERATE)}
+						<p>
+							<a href="/ecosystem/{slugify(ecosystem['name'])}/settings">
+								Click here to configure it and start it
+							</a>
+						</p>
+					{/if}
+				</BoxItem>
+			{:else if ecosystemIsRunning(uid)}
+				<BoxItem>
+					<p>The ecosystem is not currently connected</p>
+					<p>
+						Last connection to the server on
+						{formatDateTime(ecosystemState['last_seen'])}
+					</p>
+				</BoxItem>
+			{:else}
+				<BoxItem>
+					<p>The ecosystem is not currently running and is not connected</p>
+					<p>
+						Last connection to the server on
+						{formatDateTime(ecosystemState['last_seen'])}
+					</p>
+				</BoxItem>
+			{/if}
+		</Box>
 	{/each}
 {/if}
 

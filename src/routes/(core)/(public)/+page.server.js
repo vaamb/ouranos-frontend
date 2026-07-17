@@ -3,19 +3,20 @@ import {
 	fetchCameraPicturesInfo,
 	fetchEcosystemActuatorsState,
 	fetchEcosystemNycthemeralCycleData,
-	fetchEcosystemSensorsSkeleton, fetchSensorsCurrentData,
+	fetchEcosystemSensorsSkeleton,
+	fetchSensorsCurrentData,
 	fetchServerCurrentData,
 	fetchSuntimes,
 	fetchWeatherForecast
 } from '$lib/queries.js';
 import { permissions } from '$lib/utils/consts.js';
 import { createUser } from '$lib/utils/factories.js';
-import { capitalize, dynamicSort, serviceEnabled } from '$lib/utils/functions.js';
+import { capitalize, dynamicSort, isConnected, serviceEnabled } from '$lib/utils/functions.js';
 import { getKey } from '$lib/store.svelte.ts';
 
 export async function load({ cookies, parent, request }) {
-	const { ecosystems, ecosystemsManagement, servers, services, userData } = await parent();
-
+	const { ecosystems, ecosystemsManagement, ecosystemsState, servers, services, userData } =
+		await parent();
 	let currentUser = createUser(userData);
 
 	const authHeaders = currentUser.isAuthenticated
@@ -26,10 +27,6 @@ export async function load({ cookies, parent, request }) {
 		: undefined;
 
 	// Ecosystems
-	const canManage = function (uid, management) {
-		return ecosystemsManagement?.[uid]?.[management] === true;
-	};
-
 	const ecosystemsIDs = Object.values(ecosystems).map((obj) => ({
 		uid: obj['uid'],
 		name: obj['name']
@@ -40,30 +37,52 @@ export async function load({ cookies, parent, request }) {
 	const ecosystemsSensorsSkeleton = {};
 	const ecosystemsActuatorsState = {};
 
+	const canManage = function (uid, management) {
+		return ecosystemsManagement?.[uid]?.[management] === true;
+	};
+
+	const fetchEcosystemData = async function (uid) {
+		const [
+			nycthemeralCycle,
+			cameraPicturesInfo,
+			ecosystemSensorsSkeleton,
+			environmentSensorsSkeleton,
+			plantsSensorsSkeleton,
+			actuatorsState
+		] = await Promise.all([
+			fetchEcosystemNycthemeralCycleData(uid),
+			canManage(uid, 'recent_picture') ? fetchCameraPicturesInfo(uid) : {},
+			canManage(uid, 'ecosystem_data') ? fetchEcosystemSensorsSkeleton(uid, 'ecosystem') : {},
+			canManage(uid, 'environment_data') ? fetchEcosystemSensorsSkeleton(uid, 'environment') : {},
+			canManage(uid, 'plants_data') ? fetchEcosystemSensorsSkeleton(uid, 'plants') : {},
+			canManage(uid, 'actuators') ? fetchEcosystemActuatorsState(uid) : {}
+		]);
+		ecosystemsCameraPicturesInfo[getKey(uid)] = cameraPicturesInfo;
+		ecosystemsNycthemeralCycle[getKey(uid)] = nycthemeralCycle;
+		ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')] = ecosystemSensorsSkeleton;
+		ecosystemsSensorsSkeleton[getKey(uid, 'environment')] = environmentSensorsSkeleton;
+		ecosystemsSensorsSkeleton[getKey(uid, 'plants')] = plantsSensorsSkeleton;
+		ecosystemsActuatorsState[getKey(uid)] = actuatorsState;
+	};
+
+		const ecosystemIsConnected = function (uid) {
+			return isConnected(ecosystemsState[uid]);
+		};
+
+		const ecosystemIsRunning = function (uid) {
+			return ecosystemsState[uid]['status'];
+		};
+
+		const ecosystemIsOperational = function (uid) {
+			return ecosystemIsConnected(uid) && ecosystemIsRunning(uid);
+		};
+
+	// Only fetch data for operational ecosystems
 	const ecosystemsPromises = Promise.all(
-		ecosystemsIDs.map(async ({ uid }) => {
-			const [
-				nycthemeralCycle,
-				cameraPicturesInfo,
-				ecosystemSensorsSkeleton,
-				environmentSensorsSkeleton,
-				plantsSensorsSkeleton,
-				actuatorsState
-			] = await Promise.all([
-				fetchEcosystemNycthemeralCycleData(uid),
-				canManage(uid, 'recent_picture') ? fetchCameraPicturesInfo(uid) : {},
-				canManage(uid, 'ecosystem_data') ? fetchEcosystemSensorsSkeleton(uid, 'ecosystem') : {},
-				canManage(uid, 'environment_data') ? fetchEcosystemSensorsSkeleton(uid, 'environment') : {},
-				canManage(uid, 'plants_data') ? fetchEcosystemSensorsSkeleton(uid, 'plants') : {},
-				canManage(uid, 'actuators') ? fetchEcosystemActuatorsState(uid) : {}
-			]);
-			ecosystemsCameraPicturesInfo[getKey(uid)] = cameraPicturesInfo;
-			ecosystemsNycthemeralCycle[getKey(uid)] = nycthemeralCycle;
-			ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')] = ecosystemSensorsSkeleton;
-			ecosystemsSensorsSkeleton[getKey(uid, 'environment')] = environmentSensorsSkeleton;
-			ecosystemsSensorsSkeleton[getKey(uid, 'plants')] = plantsSensorsSkeleton;
-			ecosystemsActuatorsState[getKey(uid)] = actuatorsState;
-		})
+		ecosystemsIDs
+			.map((ecosystemIDs) => ecosystemIDs['uid'])
+			.filter((uid) => ecosystemIsOperational(uid))
+			.map((uid) => fetchEcosystemData(uid))
 	);
 
 	const currentSensorsDataPromise = fetchSensorsCurrentData();

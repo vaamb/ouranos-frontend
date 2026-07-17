@@ -31,18 +31,19 @@
 		slugify,
 		strHoursToDate
 	} from '$lib/utils/functions.js';
-	import { syncSensorCurrentData, syncHealthLatestDataForMeasure } from '$lib/actions.svelte.js';
+	import {
+		syncSensorCurrentData,
+		syncHealthLatestDataForMeasure,
+	} from '$lib/actions.svelte.js';
 
-	let { data } = $props();
+	let { data } = $props()
 
 	// Store update
-	$effect(() => {
-		gaiaState.ecosystemsActuatorsState = data.ecosystemsActuatorsState;
-		gaiaState.ecosystemsSensorsSkeleton = data.ecosystemsSensorsSkeleton;
-		gaiaState.ecosystemsNycthemeralCycle = data.ecosystemsNycthemeralCycleData;
-		infraState.serversCurrentData = data.serversCurrentData;
-		servicesState.weatherCurrently = data.currentWeatherForecast;
-	});
+	gaiaState.ecosystemsActuatorsState = data.ecosystemsActuatorsState
+	gaiaState.ecosystemsSensorsSkeleton = data.ecosystemsSensorsSkeleton
+	gaiaState.ecosystemsNycthemeralCycle = data.ecosystemsNycthemeralCycleData
+	infraState.serversCurrentData = data.serversCurrentData;
+	servicesState.weatherCurrently = data.currentWeatherForecast;
 
 	// Now
 	let now = $state(new Date());
@@ -108,21 +109,15 @@
 		return ecosystemIsConnected(uid) && ecosystemIsRunning(uid);
 	};
 
-	$effect(() => {
-		for (const ecosystem of data.currentSensorsData) {
-			for (const sensorRecord of ecosystem['values']) {
-				const storageKey = getKey(
-					sensorRecord['ecosystem_uid'],
-					sensorRecord['sensor_uid'],
-					sensorRecord['measure']
-				);
-				gaiaState.ecosystemsSensorsDataCurrent[storageKey] = {
-					timestamp: new Date(sensorRecord['timestamp']),
-					value: sensorRecord['value']
-				};
-			}
+	for (const ecosystem of data.currentSensorsData) {
+		for (const sensorRecord of ecosystem['values']) {
+			const storageKey = getKey(sensorRecord['ecosystem_uid'], sensorRecord['sensor_uid'], sensorRecord['measure']);
+			gaiaState.ecosystemsSensorsDataCurrent[storageKey] = {
+				timestamp: new Date(sensorRecord['timestamp']),
+				value: sensorRecord['value']
+			};
 		}
-	});
+	}
 
 	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {
 		return Promise.all(
@@ -314,7 +309,8 @@
 					gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')]}
 				{@const environmentSensorsSkeleton =
 					gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')]}
-				{@const plantsSensorsSkeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')]}
+				{@const plantsSensorsSkeleton =
+					gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')]}
 				{@const cameraPicturesInfo = ecosystemsCameraPicturesInfo[uid]}
 				{#if !isEmpty(nycthemeralCycle)}
 					<BoxItem

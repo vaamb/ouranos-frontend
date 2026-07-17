@@ -65,17 +65,17 @@ export async function load({ cookies, parent, request }) {
 		ecosystemsActuatorsState[getKey(uid)] = actuatorsState;
 	};
 
-		const ecosystemIsConnected = function (uid) {
-			return isConnected(ecosystemsState[uid]);
-		};
+	const ecosystemIsConnected = function (uid) {
+		return isConnected(ecosystemsState[uid]);
+	};
 
-		const ecosystemIsRunning = function (uid) {
-			return ecosystemsState[uid]['status'];
-		};
+	const ecosystemIsRunning = function (uid) {
+		return ecosystemsState[uid]['status'];
+	};
 
-		const ecosystemIsOperational = function (uid) {
-			return ecosystemIsConnected(uid) && ecosystemIsRunning(uid);
-		};
+	const ecosystemIsOperational = function (uid) {
+		return ecosystemIsConnected(uid) && ecosystemIsRunning(uid);
+	};
 
 	// Only fetch data for operational ecosystems
 	const ecosystemsPromises = Promise.all(

@@ -14,10 +14,7 @@
 		syncSensorHistoricData,
 		syncEcosystemSensorsSkeleton
 	} from '$lib/actions.svelte.js';
-	import {
-		gaiaState,
-		getKey
-	} from '$lib/store.svelte.ts';
+	import { gaiaState, getKey } from '$lib/store.svelte.ts';
 	import { capitalize } from '$lib/utils/functions.js';
 	import { graphs } from '$lib/utils/styling.js';
 
@@ -88,7 +85,9 @@
 		const skeleton = gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, sensorsLevel)] ?? [];
 		await Promise.all(
 			skeleton.flatMap((bone) =>
-				bone['sensors'].map((sensor) => fetchSensorData(ecosystemUID, sensor['uid'], bone['measure']))
+				bone['sensors'].map((sensor) =>
+					fetchSensorData(ecosystemUID, sensor['uid'], bone['measure'])
+				)
 			)
 		);
 	});

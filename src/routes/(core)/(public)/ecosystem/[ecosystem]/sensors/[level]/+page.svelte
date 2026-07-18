@@ -97,22 +97,24 @@
 <HeaderLine title={pageTitle} />
 {#if gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, sensorsLevel)]}
 	{#each gaiaState.ecosystemsSensorsSkeleton[getKey(ecosystemUID, sensorsLevel)] as sensorsBone (sensorsBone['measure'])}
+		{@const measure = sensorsBone['measure']}
 		<h2>{capitalize(sensorsBone['measure'].replace('_', ' '))}</h2>
-		{#each sensorsBone['sensors'] as sensor (sensorsBone['measure'] + '-' + sensor['uid'])}
+		{#each sensorsBone['sensors'] as sensor (measure + '-' + sensor['uid'])}
+			{@const sensorUID = sensor['uid']}
 			<Row>
 				{@const currentSensorsData =
-					gaiaState.ecosystemsSensorsDataCurrent[getKey(sensor['uid'], sensorsBone['measure'])]}
+					gaiaState.ecosystemsSensorsDataCurrent[getKey(ecosystemUID, sensorUID, measure)]}
 				{@const historicSensorsData =
-					gaiaState.ecosystemsSensorsDataHistoric[getKey(sensor['uid'], sensorsBone['measure'])]}
+					gaiaState.ecosystemsSensorsDataHistoric[getKey(ecosystemUID, sensorUID, measure)]}
 				{#if currentSensorsData || historicSensorsData}
-					<Box title={sensor['name']} direction="row" icon={icons[sensorsBone['measure']]}>
+					<Box title={sensor['name']} direction="row" icon={icons[measure]}>
 						{#if currentSensorsData}
 							<BoxItem maxWidth="300px">
 								<Gauge
 									value={currentSensorsData['value'].toFixed(2)}
 									unit={sensor['unit']}
-									minValue={minValues[sensorsBone['measure']]}
-									maxValue={maxValues[sensorsBone['measure']]}
+									minValue={minValues[measure]}
+									maxValue={maxValues[measure]}
 								/>
 							</BoxItem>
 						{/if}
@@ -120,13 +122,13 @@
 							{#if historicSensorsData && historicSensorsData['values'].length > 5}
 								{@const formattedHistoricSensorsData = formatHistoricData(
 									historicSensorsData,
-									sensorsBone['measure']
+									measure
 								)}
 								<Graph
 									datasets={formattedHistoricSensorsData['datasets']}
 									labels={formattedHistoricSensorsData['labels']}
-									suggestedMin={minValues[sensorsBone['measure']]}
-									suggestedMax={maxValues[sensorsBone['measure']]}
+									suggestedMin={minValues[measure]}
+									suggestedMax={maxValues[measure]}
 									height="200px"
 								/>
 							{:else}

@@ -12,16 +12,21 @@
 		logOutSocketio
 	} from '$lib/socketio.svelte.js';
 	import { appState } from '$lib/store.svelte.ts';
-	import { APP_MODE, SERVER_STATUS } from '$lib/utils/consts.js';
+	import { APP_MODE, REST_CONTRACT, SERVER_STATUS } from '$lib/utils/consts.js';
 	import { createUser } from '$lib/utils/factories.js';
+	import { isContractCompatible } from '$lib/utils/functions.js';
 
 	let { data, children } = $props();
-	const { appMode, serverStatus, userData } = data;
+	const { appMode, restContract, serverStatus, userData } = data;
 
 	appState.currentUser = createUser(userData);
 
 	if (serverStatus === SERVER_STATUS.connected) {
 		appState.pingServerLastSeen = new Date();
+	}
+
+	if (!isContractCompatible(REST_CONTRACT, restContract)) {
+		appState.contractsMismatch['rest'] = true;
 	}
 
 	onMount(async () => {

@@ -9,6 +9,7 @@ from ouranos.core.config import ConfigDict, get_base_dir
 from ouranos.sdk import Functionality
 
 from ouranos_frontend.config import Config
+from ouranos_frontend import consts
 
 
 class Frontend(Functionality):
@@ -58,6 +59,8 @@ class Frontend(Functionality):
             f.write(f'PUBLIC_APP_MODE = "{app_mode}"\n')
             f.write(f'PUBLIC_BACKEND_URL = "{backend_url}"\n')
             f.write(f'PUBLIC_LOCAL_API_URL = "{api_url_local}"\n')
+            f.write(f'PUBLIC_REST_CONTRACT = "{consts.REST_CONTRACT}"\n')
+            f.write(f'PUBLIC_SOCKETIO_CONTRACT = "{consts.SOCKETIO_CONTRACT}"\n')
 
     async def startup(self) -> None:
         self._patch_dotenv()

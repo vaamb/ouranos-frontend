@@ -42,6 +42,21 @@ export const fetchServerInfo = async function () {
 		});
 };
 
+export const fetchServerContractsVersion = async function() {
+	return await client
+		.get(`/app/contracts`)
+		.then((response) => {
+			return response['data'];
+		})
+		.catch(() => {
+			return {
+				gaia: 0,
+				rest: 0,
+				socketio: 0
+			};
+		});
+}
+
 // Auth-related actions
 export const fetchCurrentUserData = async function (options = {}) {
 	assertAuthInfo(options);

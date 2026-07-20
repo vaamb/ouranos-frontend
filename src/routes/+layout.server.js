@@ -1,4 +1,4 @@
-import { fetchCurrentUserData, fetchServerInfo } from '$lib/queries.js';
+import { fetchCurrentUserData, fetchServerContractsVersion, fetchServerInfo } from '$lib/queries.js';
 import { getAppMode } from '$lib/utils/consts.js';
 import { createUser } from '$lib/utils/factories.js';
 
@@ -7,8 +7,11 @@ export async function load({ cookies, request }) {
 		appMode: getAppMode()
 	};
 	const { appVersion, serverStatus } = await fetchServerInfo();
+	const { rest } = await fetchServerContractsVersion()
+
 	rv.appVersion = appVersion;
 	rv.serverStatus = serverStatus;
+	rv.restContract = rest
 
 	const sessionCookie = cookies.get('session');
 	if (sessionCookie !== undefined) {

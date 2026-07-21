@@ -11,14 +11,15 @@ import {
 	fetchServerHistoricData,
 	fetchWeatherForecast
 } from '$lib/queries.js';
-import {
-	API_URL,
-	APP_MODE,
-	getAppMode
-} from '$lib/utils/consts.js';
+import { API_URL, APP_MODE, getAppMode } from '$lib/utils/consts.js';
 import { createFlashMessage, createUser } from '$lib/utils/factories.js';
 import { isEmpty } from '$lib/utils/functions.js';
-import { logInSocketio, logOutSocketio } from '$lib/socketio.svelte.js';
+import {
+	connectSocketio,
+	disconnectSocketio,
+	startUserHeartbeat,
+	stopUserHeartbeat
+} from '$lib/socketio.svelte.js';
 import {
 	appState,
 	gaiaState,
@@ -84,7 +85,10 @@ export const logIn = async function (username, password, remember = false) {
 				const user = createUser(response.data.user, sessionToken);
 				appState.currentUser = user;
 				appState.flashMessages.push(createFlashMessage('You are now logged in ' + user.username));
-				logInSocketio(sessionToken);
+				// Update socketio identity on the server-side
+				disconnectSocketio();
+				connectSocketio();
+				startUserHeartbeat();
 				return {
 					success: true,
 					msg: null
@@ -120,9 +124,12 @@ export const logOut = function () {
 		})
 		.then((response) => {
 			if (response.status === 200) {
-				const user = appState.currentUser;
 				appState.currentUser = createUser();
-				logOutSocketio(user.sessionToken);
+				// Last user heartbeat before we update its identity
+				stopUserHeartbeat();
+				// Update socketio identity on the server-side
+				disconnectSocketio();
+				connectSocketio();
 			}
 		})
 		.catch((error) => {
@@ -167,7 +174,7 @@ export const syncEcosystemActuatorsState = async function (ecosystemUID) {
 };
 
 export const syncSensorCurrentData = async function (ecosystemUID, sensorUID, measure) {
-	const dataKey = sensorUID !== 'priming' ? getKey(ecosystemUID, sensorUID, measure): 'priming';
+	const dataKey = sensorUID !== 'priming' ? getKey(ecosystemUID, sensorUID, measure) : 'priming';
 	const storedData = getFreshStateData(gaiaState.ecosystemsSensorsDataCurrent, dataKey);
 	if (storedData !== null && checkSensorDataRecency(storedData, 1)) {
 		return storedData;
@@ -179,7 +186,11 @@ export const syncSensorCurrentData = async function (ecosystemUID, sensorUID, me
 	const accumulator = {};
 	for (const ecosystem of data) {
 		for (const sensorRecord of ecosystem['values']) {
-			const storageKey = getKey(sensorRecord['ecosystem_uid'], sensorRecord['sensor_uid'], sensorRecord['measure']);
+			const storageKey = getKey(
+				sensorRecord['ecosystem_uid'],
+				sensorRecord['sensor_uid'],
+				sensorRecord['measure']
+			);
 			accumulator[storageKey] = {
 				timestamp: new Date(sensorRecord['timestamp']),
 				value: sensorRecord['value']

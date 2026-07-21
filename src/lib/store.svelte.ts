@@ -22,7 +22,7 @@ import type {
 } from '$lib/types.ts';
 
 import { createUser } from '$lib/utils/factories.js';
-import { CONNECTION_STATUS, SERVER_STATUS } from '$lib/utils/consts.js';
+import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 
 class AppState {
@@ -32,6 +32,10 @@ class AppState {
 	pingServerStatus = $state<number>(CONNECTION_STATUS.CONNECTED);
 	pingServerLastSeen = $state<Date>(new Date(0));
 	pingServerLatency = $state<number | null>(null);
+
+	get anyContractMismatch() {
+		return this.contractsMismatch['rest'] || this.contractsMismatch['socketio'];
+	}
 }
 
 export const appState = new AppState();

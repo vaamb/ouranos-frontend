@@ -1,4 +1,4 @@
-export function createUser(userObject = {}, sessionToken = null) {
+export function createUser(userObject = {}) {
 	const username = userObject['username'] || null;
 	const isAuthenticated = userObject['isAuthenticated'] || userObject['is_authenticated'] || false;
 	const lastSeen = userObject['lastSeen'] || userObject['last_seen'] || null;
@@ -13,7 +13,6 @@ export function createUser(userObject = {}, sessionToken = null) {
 		isConfirmed: userObject['isConfirmed'] || userObject['is_confirmed'] || false,
 		lastSeen: lastSeen ? new Date(lastSeen) : null,
 		avatar: userObject['avatar'] || 'seedling', // TODO: for later
-		sessionToken: userObject['sessionToken'] || sessionToken,
 		can: function (perm) {
 			if (perm === undefined) {
 				return false;
@@ -31,8 +30,7 @@ export function createUser(userObject = {}, sessionToken = null) {
 				isAnonymous: this.isAnonymous,
 				isConfirmed: this.isConfirmed,
 				lastSeen: this.lastSeen,
-				avatar: this.avatar,
-				sessionToken: this.sessionToken
+				avatar: this.avatar
 			};
 		}
 	};

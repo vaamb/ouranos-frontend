@@ -47,7 +47,7 @@
 	let { pageType, ecosystemOrEngineUID } = $derived(computePageType(page.url.pathname));
 </script>
 
-<div class="bottom-bar">
+<div class="bottom-bar" style="--bottom-banner-space: {appState.anyContractMismatch ? '50px' : '0px'}">
 	{#if appState.pingServerStatus === CONNECTION_STATUS.DISCONNECTED}
 		<div class="disconnected center-content">Disconnected from the server</div>
 	{:else if appState.pingServerStatus === CONNECTION_STATUS.RECONNECTED}
@@ -67,7 +67,7 @@
 <style>
 	.bottom-bar {
 		position: fixed;
-		bottom: 0;
+		bottom: var(--bottom-banner-space);
 		right: 0;
 		font-size: 1rem;
 		font-weight: bold;
@@ -78,8 +78,8 @@
 
 	.disconnected {
 		/* the `display: flex` is handled by center-content */
-		background: var(--red);
-		color: hsl(9, 85%, 20%);
+		background: var(--orange);
+		color: hsl(27, 85%, 20%);
 	}
 
 	.reconnecting {

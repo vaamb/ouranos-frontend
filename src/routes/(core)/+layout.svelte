@@ -2,6 +2,7 @@
 	import { onDestroy, onMount, tick } from 'svelte';
 
 	import BottomBar from '$lib/components/BottomBar.svelte';
+  import ContractBanner from '$lib/components/ContractBanner.svelte';
 	import Menu from '$lib/components/menu/Menu.svelte';
 	import { generateListOfMenuItems } from '$lib/components/menu/functions.js';
 	import Modal from '$lib/components/Modal.svelte';
@@ -135,7 +136,8 @@
 			{@render children?.()}
 		</main>
 	</div>
-	<BottomBar menuWidth={menuMinimized ? 0 : menuWidth} />
+	<BottomBar />
+	<ContractBanner />
 </div>
 
 <style>

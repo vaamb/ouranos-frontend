@@ -154,7 +154,7 @@
 
 <style>
 	main {
-		padding: 10px 20px  calc(20px + var(--bottom-banner-height-mobile, 0px)) 20px;
+		padding: 10px 20px calc(20px + var(--bottom-banner-height-mobile, 0px)) 20px;
 	}
 
 	.content-wrapper {
@@ -167,7 +167,7 @@
 		main {
 			padding-top: 56px; /* Top bar (45) + border (1) + base padding (10) */
 			padding-right: 45px;
-			padding-bottom:  calc(20px + var(--bottom-banner-height, 0px));
+			padding-bottom: calc(20px + var(--bottom-banner-height, 0px));
 		}
 
 		.content-wrapper {

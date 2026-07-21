@@ -6,7 +6,7 @@
 
 ---
 
-## Unreleased
+## 0.11.0 — 2026-07-21
 
 ### Added
 - Client-facing contract versioning: the REST and Socket.IO contract versions are checked

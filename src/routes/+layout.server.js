@@ -6,12 +6,14 @@ export async function load({ cookies, request }) {
 	const rv = {
 		appMode: getAppMode()
 	};
-	const { appVersion, serverStatus } = await fetchServerInfo();
-	const { rest } = await fetchServerContractsVersion()
 
+	const [{ appVersion, serverStatus }, { rest: restContract }] = await Promise.all([
+		fetchServerInfo(),
+		fetchServerContractsVersion()
+	]);
 	rv.appVersion = appVersion;
 	rv.serverStatus = serverStatus;
-	rv.restContract = rest
+	rv.restContract = restContract;
 
 	const sessionCookie = cookies.get('session');
 	if (sessionCookie !== undefined) {

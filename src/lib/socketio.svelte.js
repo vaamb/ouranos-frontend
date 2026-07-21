@@ -1,6 +1,6 @@
 import { Manager } from 'socket.io-client';
 
-import { APP_MODE, BACKEND_URL, getAppMode, SERVER_STATUS, SOCKETIO_CONTRACT } from '$lib/utils/consts.js';
+import { APP_MODE, BACKEND_URL, getAppMode, SOCKETIO_CONTRACT } from '$lib/utils/consts.js';
 import {
 	appState,
 	gaiaState,
@@ -49,6 +49,9 @@ socketio.on('connect_error', (error) => {
 	if (error['data']['reason'] === 'incompatible_socketio_contract') {
 		// server rejected the handshake because SocketIO contract versions are incompatible
 		appState.contractsMismatch['socketio'] = true;
+		console.error(
+			`Incompatible SocketIO contract: frontend expects ${SOCKETIO_CONTRACT}, server provides ${error['data']['server_contract']}`
+		);
 		socketio.disconnect();
 	}
 });

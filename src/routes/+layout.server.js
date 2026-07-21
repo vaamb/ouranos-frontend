@@ -20,7 +20,7 @@ export async function load({ cookies, request }) {
 				'User-Agent': clientUserAgent
 			}
 		});
-		rv.userData = createUser(currentUserData, sessionCookie).flatten();
+		rv.userData = createUser(currentUserData).flatten();
 	} else {
 		rv.userData = createUser().flatten();
 	}

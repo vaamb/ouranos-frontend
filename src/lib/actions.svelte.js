@@ -81,8 +81,7 @@ export const logIn = async function (username, password, remember = false) {
 		})
 		.then((response) => {
 			if (response.status === 200) {
-				const sessionToken = response.data.session_token;
-				const user = createUser(response.data.user, sessionToken);
+				const user = createUser(response.data.user);
 				appState.currentUser = user;
 				appState.flashMessages.push(createFlashMessage('You are now logged in ' + user.username));
 				// Update socketio identity on the server-side

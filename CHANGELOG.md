@@ -9,9 +9,35 @@
 ## Unreleased
 
 ### Added
+- Client-facing contract versioning: the REST and Socket.IO contract versions are checked
+  at plugin registration and at connection, and a `ContractBanner` warns the user when the
+  frontend and the server disagree (#304)
+- Tooltips on the ecosystem and camera status circles on the home page (#284)
 - Comments on pages with SSR disabled (#271)
 
 ### Changed
+- Home page data loaded server-side through SvelteKit's `load`, saving a couple of
+  round trips between the browser and the server (#300)
+- `fetch{...}` functions split into pure `fetch{...}` (`queries.js`) and store-updating
+  `sync{...}` (`actions.svelte.js`); credentials are passed through an `options` object
+  so the pure fetchers can also be used server-side (#299)
+- Gaia and server API calls parallelized on the home, environment and plants sensors,
+  actuators, and ecosystem sensors pages (#280, #290, #291, #292)
+- `getFreshStateData()` distinguishes unavailable data from empty data by returning
+  `null`, and its call sites were updated accordingly (#281, #286)
+- `ecosystemsState` updated ecosystem by ecosystem during the "ecosystems_heartbeat"
+  event rather than (partially) overwritten (#293, #295)
+- Only the values that actually change are updated during the "current_sensors_data"
+  event (#290)
+- Unnecessary API calls avoided on the home page: `canManage()` helper introduced, and
+  `fetchCameraPicturesInfo()` gated on "recent_picture" when available (#278, #287)
+- `getStatusClass()` and `computeEcosystemStatusClass()` return an "enum" (#279)
+- Home page: data fetching messages improved, `HeaderLine` fixed, ecosystem name no
+  longer repeated for unstarted or disconnected ecosystems, global `now` used in the
+  page functions (#282, #285, #288)
+- `fetchCalendarEvents()` also works without auth headers, returning public events for
+  anonymous users (#301)
+- `(open)` route group renamed to `(public)` (#289)
 - Svelte 5 upgrade complete: all remaining stores replaced with `$state` runes (#268)
 - Engines overview page treated as a "default" page type (#272)
 - "Server info" box renamed to "Server status"; latency section always rendered (#262)
@@ -22,10 +48,22 @@
 - `Maintenance` and `Unreachable` pages centered (#269)
 
 ### Fixed
+- `navigating` usages adapted to its change of behaviour (`navigating.to` /
+  `navigating.from` rather than `navigating` itself) (#303)
+- `ecosystemsSensorsData{Current,Historic}` data key in the sensors page (#302)
+- Potential date issue in `fetchWarnings()` for unseen and unsolved warnings (#298)
 - Service-dependent pages now guarded against unauthorized access (#260)
 
+### Security
+- Socket.IO authentication moved to connect time and the session token is no longer sent
+  over it; joined rooms are tracked so they can be rejoined when a user logs in or out (#305)
+- Session token no longer leaked in the SSR payload (#306)
+
 ### Development
-- `ESLint` bumped to 9.39.4 (#267)
+- TypeScript adopted across the project and applied to the store, with types for `User`,
+  `FlashMessage`, `AppState`, `GaiaState`, and the gaia, server, service, weather and
+  wiki data structures (#294, #297)
+- `ESLint` bumped to 9.39.4 (#267) and updated to work with TypeScript (#294)
 
 ---
 

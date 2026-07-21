@@ -1,15 +1,13 @@
 <script>
-	import {
-		appState
-	} from '$lib/store.svelte.js';
+	import { appState } from '$lib/store.svelte.js';
 </script>
 
 {#if appState.anyContractMismatch}
-  <div class="bottom-banner">
-    <div class="center-content" style="text-align: center">
-      Frontend is out of date — everything might not work as expected
-    </div>
-  </div>
+	<div class="bottom-banner">
+		<div class="center-content" style="text-align: center">
+			Frontend and backend are incompatible — everything might not work as expected
+		</div>
+	</div>
 {/if}
 
 <style>
@@ -22,14 +20,14 @@
 		height: var(--bottom-banner-height-mobile, 50px);
 		width: 100%;
 		z-index: 10;
-    background: var(--red);
-    color:  hsl(9, 85%, 20%);
+		background: var(--red);
+		color: hsl(9, 85%, 20%);
 	}
 
-  @media only screen and (min-width: 992px) {
+	@media only screen and (min-width: 992px) {
 		.bottom-banner {
 			width: inherit;
-      height: var(--bottom-banner-height, 37px);
+			height: var(--bottom-banner-height, 37px);
 		}
 	}
 </style>

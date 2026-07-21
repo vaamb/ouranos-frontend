@@ -27,9 +27,11 @@
 
 	if (!isContractCompatible(REST_CONTRACT, restContract)) {
 		appState.contractsMismatch['rest'] = true;
-		console.error(
-			`Incompatible REST contract: frontend expects ${REST_CONTRACT}, server provides ${restContract}`
-		);
+		if (serverStatus === SERVER_STATUS.connected) {
+			console.error(
+				`Incompatible REST contract: frontend expects ${REST_CONTRACT}, server provides ${restContract}`
+			);
+		}
 	}
 
 	onMount(async () => {

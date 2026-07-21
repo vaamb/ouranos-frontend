@@ -52,7 +52,7 @@ socketio.on('disconnect', () => {
 });
 
 socketio.on('connect_error', (error) => {
-	if (error['data']['reason'] === 'incompatible_socketio_contract') {
+	if (error['data']?.['reason'] === 'incompatible_socketio_contract') {
 		// server rejected the handshake because SocketIO contract versions are incompatible
 		appState.contractsMismatch['socketio'] = true;
 		console.error(

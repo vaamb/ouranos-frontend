@@ -8,8 +8,8 @@
 	import {
 		connectSocketio,
 		disconnectSocketio,
-		logInSocketio,
-		logOutSocketio
+		startUserHeartbeat,
+		stopUserHeartbeat
 	} from '$lib/socketio.svelte.js';
 	import { appState } from '$lib/store.svelte.ts';
 	import { APP_MODE, REST_CONTRACT, SERVER_STATUS } from '$lib/utils/consts.js';
@@ -34,18 +34,20 @@
 
 	onMount(async () => {
 		if (serverStatus === SERVER_STATUS.connected) {
+			if (appState.currentUser.isAuthenticated) {
+				await refreshSessionCookie();
+			}
 			connectSocketio();
 			if (appState.currentUser.isAuthenticated) {
-				logInSocketio(appState.currentUser.sessionToken);
-				await refreshSessionCookie();
+				startUserHeartbeat();
 			}
 		}
 
 		return () => {
-			disconnectSocketio();
 			if (appState.currentUser.isAuthenticated) {
-				logOutSocketio(appState.currentUser.sessionToken);
+				stopUserHeartbeat();
 			}
+			disconnectSocketio();
 		};
 	});
 </script>

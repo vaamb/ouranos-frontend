@@ -27,6 +27,8 @@ export const disconnectSocketio = function () {
 	socketio.disconnect();
 };
 
+let joinedRooms = new Set();
+
 // Ping-related events
 let latencyArray = [];
 let pingTime = null;
@@ -38,7 +40,11 @@ const pingServer = function () {
 };
 
 socketio.on('connect', () => {
+	clearInterval(pingLoop); // Just in case
 	pingLoop = setInterval(pingServer, 10000);
+	for (const room of joinedRooms) {
+		joinRoom(room)
+	}
 });
 
 socketio.on('disconnect', () => {
@@ -71,49 +77,29 @@ socketio.on('pong', () => {
 // User-related events
 let userHeartbeatLoop = null;
 
-const userHeartbeat = function (userToken) {
-	return function () {
-		socketio.emit('user_heartbeat', userToken);
-	};
+const userHeartbeat = function () {
+	socketio.emit('user_heartbeat');
 };
 
-export const logInSocketio = function (userToken) {
-	socketio.emit('login', userToken);
-	userHeartbeat(userToken)();
-	userHeartbeatLoop = setInterval(userHeartbeat(userToken), 30000);
+export const startUserHeartbeat = function () {
+	userHeartbeat(); // Send a first heartbeat
+	clearInterval(userHeartbeatLoop); // Just in case
+	userHeartbeatLoop = setInterval(userHeartbeat, 30000);
 };
 
-socketio.on('login_ack', (data) => {
-	if (data['result'] === 'failure') {
-		clearInterval(userHeartbeatLoop);
-		const appMode = getAppMode();
-		if (appMode === APP_MODE.development) {
-			console.log(data);
-		} else {
-			console.log(
-				'There was an issue registering your socketio session. Please contact the administrator.'
-			);
-		}
-	}
-});
-
-export const logOutSocketio = function (userToken) {
-	socketio.emit('logout', userToken);
-	userHeartbeat(userToken)();
+export const stopUserHeartbeat = function () {
+	userHeartbeat(); // Send a last heartbeat
 	clearInterval(userHeartbeatLoop);
 };
 
-socketio.on('logout_ack', (data) => {
-	// For later use
-});
-
 socketio.on('user_heartbeat_ack', () => {
-	appState.currentUser.last_seen = new Date();
+	appState.currentUser['last_seen'] = new Date();
 });
 
 // Rooms
 export const joinRoom = function (roomName) {
 	socketio.emit('join_room', roomName);
+	joinedRooms.add(roomName);
 };
 
 socketio.on('join_room_ack', (data) => {
@@ -131,6 +117,7 @@ socketio.on('join_room_ack', (data) => {
 
 export const leaveRoom = function (roomName) {
 	socketio.emit('leave_room', roomName);
+	joinedRooms.delete(roomName);
 };
 
 socketio.on('leave_room_ack', (data) => {

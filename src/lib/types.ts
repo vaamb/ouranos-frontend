@@ -10,7 +10,6 @@ export interface User {
 	isConfirmed: boolean;
 	lastSeen: Date | null;
 	avatar: string;
-	sessionToken: string | null;
 	can: (perm: number) => boolean;
 	flatten: () => Omit<User, 'can' | 'flatten'>;
 }

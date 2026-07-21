@@ -25,9 +25,11 @@
 		appState.pingServerLastSeen = new Date();
 	}
 
-	if (!isContractCompatible(REST_CONTRACT, restContract)) {
-		appState.contractsMismatch['rest'] = true;
-		if (serverStatus === SERVER_STATUS.connected) {
+	if (serverStatus === SERVER_STATUS.connected) {
+		appState.pingServerLastSeen = new Date();
+
+		if (!isContractCompatible(REST_CONTRACT, restContract)) {
+			appState.contractsMismatch['rest'] = true;
 			console.error(
 				`Incompatible REST contract: frontend expects ${REST_CONTRACT}, server provides ${restContract}`
 			);

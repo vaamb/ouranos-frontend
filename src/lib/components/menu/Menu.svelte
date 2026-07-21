@@ -63,7 +63,7 @@
 
 	$effect(() => {
 		// Close menu when changing page if screen is smaller than 992px
-		if (navigating) {
+		if (navigating.to) {
 			if (outerWidth < 992) {
 				showMenu = false;
 				//toggledMenuItemIndex = null;

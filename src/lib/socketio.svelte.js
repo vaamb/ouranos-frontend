@@ -27,6 +27,8 @@ export const disconnectSocketio = function () {
 	socketio.disconnect();
 };
 
+let joinedRooms = new Set();
+
 // Ping-related events
 let latencyArray = [];
 let pingTime = null;
@@ -40,6 +42,9 @@ const pingServer = function () {
 socketio.on('connect', () => {
 	clearInterval(pingLoop); // Just in case
 	pingLoop = setInterval(pingServer, 10000);
+	for (const room of joinedRooms) {
+		joinRoom(room)
+	}
 });
 
 socketio.on('disconnect', () => {
@@ -83,6 +88,7 @@ socketio.on('user_heartbeat_ack', () => {
 // Rooms
 export const joinRoom = function (roomName) {
 	socketio.emit('join_room', roomName);
+	joinedRooms.add(roomName);
 };
 
 socketio.on('join_room_ack', (data) => {
@@ -100,6 +106,7 @@ socketio.on('join_room_ack', (data) => {
 
 export const leaveRoom = function (roomName) {
 	socketio.emit('leave_room', roomName);
+	joinedRooms.delete(roomName);
 };
 
 socketio.on('leave_room_ack', (data) => {

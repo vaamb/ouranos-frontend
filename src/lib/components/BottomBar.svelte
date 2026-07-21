@@ -47,7 +47,7 @@
 	let { pageType, ecosystemOrEngineUID } = $derived(computePageType(page.url.pathname));
 </script>
 
-<div class="bottom-bar" style="--bottom-banner-space: {appState.anyContractMismatch ? '50px' : '0px'}">
+<div class="bottom-bar">
 	{#if appState.pingServerStatus === CONNECTION_STATUS.DISCONNECTED}
 		<div class="disconnected center-content">Disconnected from the server</div>
 	{:else if appState.pingServerStatus === CONNECTION_STATUS.RECONNECTED}
@@ -67,7 +67,7 @@
 <style>
 	.bottom-bar {
 		position: fixed;
-		bottom: var(--bottom-banner-space);
+		bottom: var(--bottom-banner-height-mobile, 0px);
 		right: 0;
 		font-size: 1rem;
 		font-weight: bold;
@@ -91,6 +91,7 @@
 	@media only screen and (min-width: 992px) {
 		.bottom-bar {
 			width: inherit;
+			bottom: var(--bottom-banner-height, 0px);
 		}
 	}
 </style>

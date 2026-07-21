@@ -2,7 +2,7 @@
 	import { onDestroy, onMount, tick } from 'svelte';
 
 	import BottomBar from '$lib/components/BottomBar.svelte';
-  import ContractBanner from '$lib/components/ContractBanner.svelte';
+	import ContractBanner from '$lib/components/ContractBanner.svelte';
 	import Menu from '$lib/components/menu/Menu.svelte';
 	import { generateListOfMenuItems } from '$lib/components/menu/functions.js';
 	import Modal from '$lib/components/Modal.svelte';
@@ -10,12 +10,7 @@
 
 	import { CONNECTION_STATUS, CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
 
-	import {
-		appState,
-		gaiaState,
-		infraState,
-		servicesState
-	} from '$lib/store.svelte.ts';
+	import { appState, gaiaState, infraState, servicesState } from '$lib/store.svelte.ts';
 	import { APP_MODE } from '$lib/utils/consts.js';
 
 	// Fill stores with pre-fetched data
@@ -78,7 +73,11 @@
 		};
 
 		// Ping server
-		const newServerStatus = getStatus(appState.pingServerLastSeen, appState.pingServerStatus, CONNECTION_TIMEOUT);
+		const newServerStatus = getStatus(
+			appState.pingServerLastSeen,
+			appState.pingServerStatus,
+			CONNECTION_TIMEOUT
+		);
 		if (appState.pingServerStatus !== newServerStatus) {
 			appState.pingServerStatus = newServerStatus;
 		}
@@ -124,8 +123,21 @@
 	{appState.flashMessages[0]['message']}
 </Modal>
 
-<Menu items={menuItems} width={menuWidth} miniWidth={menuMinimizedWidth} bind:minimized={menuMinimized} />
-<div class="content-wrapper" style="--margin-width:{menuWidth}" class:full-page={menuMinimized}>
+<Menu
+	items={menuItems}
+	width={menuWidth}
+	miniWidth={menuMinimizedWidth}
+	bind:minimized={menuMinimized}
+/>
+<div
+	class="content-wrapper"
+	style="
+	  --margin-width: {menuWidth};
+	  --bottom-banner-height-mobile: {appState.anyContractMismatch ? '50px' : '0px'};
+		--bottom-banner-height: {appState.anyContractMismatch ? '37px' : '0px'};
+	"
+	class:full-page={menuMinimized}
+>
 	<TopBar
 		development={data.appMode === APP_MODE.development}
 		miniWidth={menuMinimizedWidth}
@@ -142,7 +154,7 @@
 
 <style>
 	main {
-		padding: 10px 20px 20px 20px;
+		padding: 10px 20px  calc(20px + var(--bottom-banner-height-mobile, 0px)) 20px;
 	}
 
 	.content-wrapper {
@@ -155,6 +167,7 @@
 		main {
 			padding-top: 56px; /* Top bar (45) + border (1) + base padding (10) */
 			padding-right: 45px;
+			padding-bottom:  calc(20px + var(--bottom-banner-height, 0px));
 		}
 
 		.content-wrapper {

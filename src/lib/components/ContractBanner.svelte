@@ -19,7 +19,7 @@
 		right: 0;
 		font-size: 1rem;
 		font-weight: bold;
-		height: 50px;
+		height: var(--bottom-banner-height-mobile, 50px);
 		width: 100%;
 		z-index: 10;
     background: var(--red);
@@ -29,6 +29,7 @@
   @media only screen and (min-width: 992px) {
 		.bottom-banner {
 			width: inherit;
+      height: var(--bottom-banner-height, 37px);
 		}
 	}
 </style>

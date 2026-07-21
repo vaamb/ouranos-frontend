@@ -1,9 +1,18 @@
-import { PUBLIC_APP_MODE, PUBLIC_BACKEND_URL, PUBLIC_LOCAL_API_URL } from '$env/static/public';
+import {
+	PUBLIC_APP_MODE,
+	PUBLIC_BACKEND_URL,
+	PUBLIC_LOCAL_API_URL,
+	PUBLIC_REST_CONTRACT,
+	PUBLIC_SOCKETIO_CONTRACT
+} from '$env/static/public';
 
 export const BACKEND_URL = PUBLIC_BACKEND_URL;
 export const API_URL = BACKEND_URL + '/api';
 export const STATIC_URL = BACKEND_URL + '/static'
 export const LOCAL_API_URL = PUBLIC_LOCAL_API_URL;
+
+export const REST_CONTRACT = Number(PUBLIC_REST_CONTRACT);
+export const SOCKETIO_CONTRACT = Number(PUBLIC_SOCKETIO_CONTRACT);
 
 export const SERVER_STATUS = {
 	unreachable: -1,

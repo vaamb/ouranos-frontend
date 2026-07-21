@@ -67,7 +67,7 @@
 <style>
 	.bottom-bar {
 		position: fixed;
-		bottom: 0;
+		bottom: var(--bottom-banner-height-mobile, 0px);
 		right: 0;
 		font-size: 1rem;
 		font-weight: bold;
@@ -78,8 +78,8 @@
 
 	.disconnected {
 		/* the `display: flex` is handled by center-content */
-		background: var(--red);
-		color: hsl(9, 85%, 20%);
+		background: var(--orange);
+		color: hsl(27, 85%, 20%);
 	}
 
 	.reconnecting {
@@ -91,6 +91,7 @@
 	@media only screen and (min-width: 992px) {
 		.bottom-bar {
 			width: inherit;
+			bottom: var(--bottom-banner-height, 0px);
 		}
 	}
 </style>

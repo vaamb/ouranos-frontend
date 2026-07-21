@@ -261,3 +261,7 @@ export const checkJWT = function (token, claims = {}) {
 		}
 	}
 };
+
+export const isContractCompatible = function(frontendContract, serverContract) {
+    return Number.isInteger(frontendContract) && serverContract >= frontendContract;
+}

@@ -6,6 +6,7 @@ import click
 from ouranos.core.utils import parse_str_value
 from ouranos.sdk import Plugin
 
+from ouranos_frontend import consts
 from ouranos_frontend.main import Frontend
 
 
@@ -82,6 +83,10 @@ class FrontendPlugin(Plugin):
 
 plugin = FrontendPlugin(
     functionality=Frontend,
+    contract_versions={
+        "rest": consts.REST_CONTRACT,
+        "socketio": consts.SOCKETIO_CONTRACT,
+    },
     description="""Launch Ouranos' Frontend
 
     The Frontend is a web app that allows the user to interact with Ouranos 

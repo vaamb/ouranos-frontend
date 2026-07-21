@@ -353,7 +353,7 @@
 
 		.menu {
 			left: 0;
-			height: 100%;
+			bottom: 0;
 			width: calc(var(--menu-width) * 1px);
 
 			transition: left 700ms ease-in-out;

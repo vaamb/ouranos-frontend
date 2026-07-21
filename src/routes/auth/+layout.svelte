@@ -1,4 +1,6 @@
 <script>
+	import ContractBanner from '$lib/components/ContractBanner.svelte';
+
 	let { children } = $props();
 </script>
 
@@ -6,6 +8,7 @@
 	<div style="max-width: 80%">
 		{@render children?.()}
 	</div>
+	<ContractBanner />
 </div>
 
 <style>

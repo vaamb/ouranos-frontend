@@ -1,6 +1,6 @@
 import { Manager } from 'socket.io-client';
 
-import { APP_MODE, BACKEND_URL, getAppMode } from '$lib/utils/consts.js';
+import { APP_MODE, BACKEND_URL, getAppMode, SOCKETIO_CONTRACT } from '$lib/utils/consts.js';
 import {
 	appState,
 	gaiaState,
@@ -17,7 +17,7 @@ const manager = new Manager(BACKEND_URL, {
 	transports: ['websocket', 'polling']
 });
 
-export const socketio = manager.socket('/');
+export const socketio = manager.socket('/', { auth: { socketio_contract: SOCKETIO_CONTRACT } });
 
 export const connectSocketio = function () {
 	socketio.connect();
@@ -49,6 +49,17 @@ socketio.on('connect', () => {
 
 socketio.on('disconnect', () => {
 	clearInterval(pingLoop);
+});
+
+socketio.on('connect_error', (error) => {
+	if (error['data']?.['reason'] === 'incompatible_socketio_contract') {
+		// server rejected the handshake because SocketIO contract versions are incompatible
+		appState.contractsMismatch['socketio'] = true;
+		console.error(
+			`Incompatible SocketIO contract: frontend expects ${SOCKETIO_CONTRACT}, server provides ${error['data']['server_contract']}`
+		);
+		socketio.disconnect();
+	}
 });
 
 socketio.on('pong', () => {

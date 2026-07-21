@@ -26,11 +26,16 @@ import { CONNECTION_STATUS } from '$lib/utils/consts.js';
 import { capitalize, dynamicSort } from '$lib/utils/functions.js';
 
 class AppState {
+	contractsMismatch = $state<Record<string, boolean>>({ rest: false, socketio: false })
 	currentUser = $state<User>(createUser());
 	flashMessages = $state<Array<FlashMessage>>([]);
 	pingServerStatus = $state<number>(CONNECTION_STATUS.CONNECTED);
 	pingServerLastSeen = $state<Date>(new Date(0));
 	pingServerLatency = $state<number | null>(null);
+
+	get anyContractMismatch() {
+		return this.contractsMismatch['rest'] || this.contractsMismatch['socketio'];
+	}
 }
 
 export const appState = new AppState();

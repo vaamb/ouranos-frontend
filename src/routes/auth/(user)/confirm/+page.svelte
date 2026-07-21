@@ -48,7 +48,7 @@
 
 	// Update token on self page navigation
 	$effect(() => {
-		if (navigating) {
+		if (navigating.from && navigating.to) {
 			// Coming from a page with a token, to a page without -> the token was invalid, clear it
 			if (
 				navigating.from.url.searchParams.get('token') &&

@@ -507,6 +507,6 @@
 	}
 
 	p.faint {
-		font-style: italic;
+		color: var(--gray-50);
 	}
 </style>

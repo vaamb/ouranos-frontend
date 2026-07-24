@@ -1,4 +1,3 @@
-import humanizeDuration from 'humanize-duration';
 import jwt_decode from 'jwt-decode';
 
 import { CONNECTION_STATUS, ecosystemOperationStatus } from '$lib/utils/consts.js';
@@ -114,17 +113,32 @@ export const deserializeDatetime = function (value) {
 	return new Date(value);
 };
 
+// Same unit sizes as humanize-duration's defaults (year = 365.25 d, month = year / 12)
+const durationUnits = [
+	['year', 31557600000],
+	['month', 2629800000],
+	['week', 604800000],
+	['day', 86400000],
+	['hour', 3600000],
+	['minute', 60000],
+	['second', 1000]
+];
+
 export const computeServerUptime = function (serverStartTime, now) {
-	if (serverStartTime) {
-		return humanizeDuration(now - serverStartTime, {
-			largest: 2,
-			units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
-			maxDecimalPoints: 0,
-			delimiter: ' and '
-		});
-	} else {
+	if (!serverStartTime) {
 		return 'Not connected';
 	}
+	let remaining = Math.max(now - serverStartTime, 0);
+	const parts = [];
+	for (const [name, unitMs] of durationUnits) {
+		const value = Math.floor(remaining / unitMs);
+		if (value > 0) {
+			remaining -= value * unitMs;
+			parts.push(`${value} ${name}${value === 1 ? '' : 's'}`);
+		}
+	}
+	// Show at most the 2 largest non-zero units
+	return parts.length > 0 ? parts.slice(0, 2).join(' and ') : '0 seconds';
 };
 
 export const isConnected = function (state) {

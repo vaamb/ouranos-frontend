@@ -6,6 +6,14 @@
 
 ---
 
+## Unreleased
+
+### Changed
+- Dropped the `humanize-duration` dependency in favour of a small inline helper in
+  `computeServerUptime()`, trimming the home page bundle
+
+---
+
 ## 0.11.0 — 2026-07-21
 
 ### Added

@@ -73,6 +73,38 @@
 	color-scheme: light;
 }
 
+:root[data-theme='dark'] {
+	--bg: #0c1322;
+	--surface: #141d30;
+	--surface-2: #1a2438;
+	--border: #253048;
+	--border-strong: #2f3c58;
+
+	--text: #e9edf4;
+	--text-dim: #9aa6b8b0;
+	--text-dim-solid: #9aa6b8;
+	--text-faint: #647084;
+
+	--grow: #ea51a4;
+	--grow-soft: #ea51a422;
+	--leaf: #46b877;
+	--amber: #e8a33d;
+	--critical-red: #e5615b;
+
+	--sky-night-deep: #0a1120;
+	--sky-night: #131b30;
+	--sky-twilight: #3a2b52;
+	--sky-golden: #c98a3a;
+	--sky-day-edge: #3f5f86;
+	--sky-day-peak: #57799f;
+
+	--band-edge: #26324a;
+	--night-shade: #8aa0d012;
+
+	--shadow: 0 1px 2px #00000030, 0 10px 30px -14px #00000060;
+	color-scheme: dark;
+}
+
 * {
 	margin: 0;
 	padding: 0;

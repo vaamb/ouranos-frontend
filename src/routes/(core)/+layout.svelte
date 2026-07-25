@@ -35,7 +35,7 @@
 	// Menu-related parameters
 	const menuWidth = 210;
 	const menuMinimizedWidth = 45 + 20;
-	let menuMinimized = $state(false);
+	let menuMinimized = $state(true);
 
 	let menuItems = $derived(
 		generateListOfMenuItems(

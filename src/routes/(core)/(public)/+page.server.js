@@ -52,9 +52,9 @@ export async function load({ cookies, parent, request }) {
 		] = await Promise.all([
 			fetchEcosystemNycthemeralCycleData(uid),
 			canManage(uid, 'recent_picture') ? fetchCameraPicturesInfo(uid) : {},
-			canManage(uid, 'ecosystem_data') ? fetchEcosystemSensorsSkeleton(uid, 'ecosystem') : {},
-			canManage(uid, 'environment_data') ? fetchEcosystemSensorsSkeleton(uid, 'environment') : {},
-			canManage(uid, 'plants_data') ? fetchEcosystemSensorsSkeleton(uid, 'plants') : {},
+			canManage(uid, 'ecosystem_data') ? fetchEcosystemSensorsSkeleton(uid, 'ecosystem') : [],
+			canManage(uid, 'environment_data') ? fetchEcosystemSensorsSkeleton(uid, 'environment') : [],
+			canManage(uid, 'plants_data') ? fetchEcosystemSensorsSkeleton(uid, 'plants') : [],
 			canManage(uid, 'actuators') ? fetchEcosystemActuatorsState(uid) : {}
 		]);
 		ecosystemsCameraPicturesInfo[getKey(uid)] = cameraPicturesInfo;

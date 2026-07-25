@@ -288,7 +288,7 @@ export const fetchEcosystemSensorsSkeleton = async function (ecosystemUID, level
 			return response['data']['sensors_skeleton'];
 		})
 		.catch(() => {
-			return {};
+			return [];
 		});
 };
 

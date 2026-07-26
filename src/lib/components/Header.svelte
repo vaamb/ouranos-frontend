@@ -1,12 +1,13 @@
 <script>
 	import { resolve } from '$app/paths';
 
-	import Fa from 'svelte-fa';
 	import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+
+	import HeaderItem from '$lib/components/header/HeaderItem.svelte';
 
 	import { logOut } from '$lib/actions.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
-	import { appState, gaiaState } from '$lib/store.svelte.js';
+	import { appState, gaiaState } from '$lib/store.svelte.ts';
 
 	let { children } = $props();
 
@@ -27,28 +28,36 @@
 
 	const warningsCount = $derived(gaiaState.warnings.length);
 
+	const hasCtx = $derived(appState.headerItems.length > 0 || !!children);
+
 	let theme = $state('light');
 	$effect(() => {
 		document.documentElement.dataset.theme = theme;
 	});
 </script>
 
-<header class="topbar">
-	<a class="brand" href={resolve("/")}>Ouranos<small>Gaia&nbsp;control</small></a>
+<header class="topbar" class:has-ctx={hasCtx}>
+	<a class="brand" href={resolve('/')}>
+		Ouranos<small>Gaia&nbsp;control</small>
+	</a>
 
-	<!-- Contextual middle - page-specific, injected by the host page -->
-	{#if children}
-		<div class="ctx">
-			{@render children()}
-		</div>
-	{/if}
+	<!-- Contextual middle, published by the current page via `useHeaderItems()` -->
+	<div class="ctx">
+		{#each appState.headerItems as item (item['id'])}
+			<HeaderItem {...item} />
+		{/each}
+		{@render children?.()}
+	</div>
 
 	<div class="core">
 		{#if user.isAuthenticated && warningsCount > 0}
-			<a class="warnbtn" href={resolve("/warnings")} aria-label="{warningsCount} warnings">
-				<Fa icon={faTriangleExclamation} />
-				<span class="num">{warningsCount}</span>
-			</a>
+			<HeaderItem
+				icon={faTriangleExclamation}
+				value={warningsCount}
+				href={resolve('/warnings')}
+				tone="warn"
+				description="{warningsCount} active warnings"
+			/>
 		{/if}
 
 		<div class="seg" role="group" aria-label="Interface follows the greenhouse day/night cycle">
@@ -62,7 +71,7 @@
 
 		<div class="userbox">
 			{#if user.isAnonymous}
-				<a class="login" href={resolve("/auth/login")}>Log&nbsp;in</a>
+				<a class="login" href={resolve('/auth/login')}>Log&nbsp;in</a>
 			{:else}
 				<div class="acct-wrap">
 					<button type="button" class="acct" aria-haspopup="menu" aria-expanded="false">
@@ -92,12 +101,13 @@
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
-		gap: 16px;
+		gap: 6px;
 		flex-wrap: wrap;
 		margin-bottom: clamp(20px, 3vw, 34px);
 	}
 
 	.brand {
+		margin-right: auto;
 		font-family: 'Garamond', Georgia, serif;
 		font-size: 27px;
 		font-weight: 600;
@@ -108,6 +118,12 @@
 		color: var(--text);
 		text-decoration: none;
 	}
+
+	.topbar.has-ctx .brand {
+		padding-right: 14px;
+    border-right: 1px solid var(--border);
+  }
+
 	.brand small {
 		font-family: 'Raleway', sans-serif;
 		font-size: 10.5px;
@@ -118,49 +134,20 @@
 	}
 
 	.ctx {
-		display: flex;
+		display: none;
 		align-items: center;
 		gap: 6px;
 		flex-wrap: wrap;
-		margin-left: 14px;
-		padding-left: 14px;
-		border-left: 1px solid var(--border);
+	}
+
+	.topbar.has-ctx .ctx {
+		display: flex;
 	}
 
 	.core {
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		margin-left: auto;
-	}
-
-	.num {
-		font-family: 'Open Sans', system-ui, sans-serif;
-		font-variant-numeric: tabular-nums;
-	}
-
-	/* Warnings */
-	.warnbtn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 6px 10px;
-		border-radius: var(--radius);
-		border: 1px solid var(--border);
-		background: var(--surface);
-		box-shadow: var(--shadow);
-		color: var(--red);
-		text-decoration: none;
-		font-family: 'Raleway', sans-serif;
-		font-weight: 700;
-		font-size: 13px;
-	}
-	.warnbtn:hover {
-		border-color: var(--red);
-	}
-	.warnbtn:focus-visible {
-		outline: 2px solid var(--red);
-		outline-offset: 2px;
 	}
 
 	/* Day/night toggle */

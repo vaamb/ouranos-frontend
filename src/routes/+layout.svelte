@@ -12,6 +12,7 @@
 		stopUserHeartbeat
 	} from '$lib/socketio.svelte.js';
 	import { appState } from '$lib/store.svelte.ts';
+	import { useTheme } from '$lib/theme.svelte.ts';
 	import { APP_MODE, REST_CONTRACT, SERVER_STATUS } from '$lib/utils/consts.js';
 	import { createUser } from '$lib/utils/factories.js';
 	import { isContractCompatible } from '$lib/utils/functions.js';
@@ -20,6 +21,10 @@
 	const { appMode, restContract, serverStatus, userData } = data;
 
 	appState.currentUser = createUser(userData);
+
+	// Applied here rather than in `Header`, so the routes that render no header
+	// (the whole `auth` tree) are themed too.
+	useTheme();
 
 	if (serverStatus === SERVER_STATUS.connected) {
 		appState.pingServerLastSeen = new Date();

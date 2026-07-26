@@ -16,6 +16,27 @@
 		<noscript><link rel="stylesheet" href="%sveltekit.assets%/fonts/Open_Sans/registry.css" /></noscript>
     <link rel="preload" href="%sveltekit.assets%/fonts/Garamond/registry.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 		<noscript><link rel="stylesheet" href="%sveltekit.assets%/fonts/Garamond/registry.css" /></noscript>
+		<!--Restore the saved theme before the first paint, so a night session does
+		    not flash a white page on every load. `auto` cannot know the site's sun
+		    times this early, so it reuses the last theme the app resolved and falls
+		    back to the operating system on a first visit; `useTheme()` corrects it
+		    as soon as the sun times arrive. Keys are shared with theme.svelte.ts.-->
+		<script>
+			(function () {
+				try {
+					var mode = localStorage.getItem('ouranos-theme-mode') || 'auto';
+					var theme = mode;
+					if (mode === 'auto') {
+						theme =
+							localStorage.getItem('ouranos-theme') ||
+							(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+					}
+					document.documentElement.dataset.theme = theme;
+				} catch (e) {
+					/* No storage, no restore — the app applies a theme on boot anyway. */
+				}
+			})();
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="tap">

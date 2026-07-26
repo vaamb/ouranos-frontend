@@ -8,6 +8,7 @@
 	import { logOut } from '$lib/actions.svelte.js';
 	import { permissions } from '$lib/utils/consts.js';
 	import { appState, gaiaState } from '$lib/store.svelte.ts';
+	import { THEME_LABELS, THEME_MODES, themeState } from '$lib/theme.svelte.ts';
 
 	let { children } = $props();
 
@@ -30,9 +31,16 @@
 
 	const hasCtx = $derived(appState.headerItems.length > 0 || !!children);
 
-	let theme = $state('light');
-	$effect(() => {
-		document.documentElement.dataset.theme = theme;
+	// The theme itself is applied by `useTheme()` in the root layout; this is only
+	// the control for it.
+	const themeHint = $derived.by(() => {
+		if (themeState.mode !== 'auto') {
+			return null;
+		}
+		const current = themeState.resolved === 'dark' ? 'night' : 'day';
+		return themeState.sunKnown
+			? `Follows the local sun — currently ${current}`
+			: `Waiting for sun times — currently ${current}`;
 	});
 </script>
 
@@ -60,13 +68,17 @@
 			/>
 		{/if}
 
-		<div class="seg" role="group" aria-label="Interface follows the greenhouse day/night cycle">
-			<button type="button" aria-pressed={theme === 'light'} onclick={() => (theme = 'light')}>
-				Day
-			</button>
-			<button type="button" aria-pressed={theme === 'dark'} onclick={() => (theme = 'dark')}>
-				Night
-			</button>
+		<div class="seg" role="group" aria-label="Interface theme">
+			{#each THEME_MODES as mode (mode)}
+				<button
+					type="button"
+					aria-pressed={themeState.mode === mode}
+					title={mode === 'auto' ? themeHint : null}
+					onclick={() => themeState.set(mode)}
+				>
+					{THEME_LABELS[mode]}
+				</button>
+			{/each}
 		</div>
 
 		<div class="userbox">

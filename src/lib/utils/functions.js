@@ -232,9 +232,9 @@ export const computeLightingHours = function (ecosystemLight, timeStyle = 'mediu
 
 export const serviceEnabled = function (services, serviceName) {
 	const service = services.find((object) => {
-		return object.name === serviceName;
+		return object['name'] === serviceName;
 	});
-	return service['status'] ? service['status'] : false;
+	return service ? !!service['status'] : false;
 };
 
 export const setCookie = function (name, value, expDays = 90) {

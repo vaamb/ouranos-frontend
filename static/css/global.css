@@ -56,6 +56,9 @@
 	--leaf: #2f9a5e; /* live / healthy */
 	--amber: #cf861f; /* sun / caution */
 	--critical-red: #cf3b3b;
+	--good-green: #1c8350;
+	--transition-orange: #c2610f;
+	--transition-yellow: #b5860b;
 
 	/* Sky (nycthemeral) band stop colours. */
 	--sky-night-deep: #20304e;
@@ -89,6 +92,9 @@
 	--grow-soft: #ea51a422;
 	--leaf: #46b877;
 	--amber: #e8a33d;
+	--good-green: #3fac6e;
+	--transition-orange: #e8863f;
+	--transition-yellow: #dbb43c;
 	--critical-red: #e5615b;
 
 	--sky-night-deep: #0a1120;

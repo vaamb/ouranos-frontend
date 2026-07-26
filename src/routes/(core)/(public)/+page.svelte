@@ -16,6 +16,7 @@
 		computeEcosystemStatusClass,
 		computeServerUptime,
 		formatDate,
+		getLevelColor,
 		isEmpty,
 		serviceEnabled
 	} from '$lib/utils/functions.js';
@@ -71,19 +72,6 @@
 		}
 		return items;
 	});
-
-	// Warning and calendar
-	const getLevelColor = function (level) {
-		if (level === 'High') {
-			return '--transition-yellow';
-		} else if (level === 'Severe') {
-			return '--transition-orange';
-		} else if (level === 'Critical') {
-			return '--critical-red';
-		} else {
-			return '--good-green';
-		}
-	};
 
 	// Warnings
 	let sortedWarnings = $derived.by(() => {

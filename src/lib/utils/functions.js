@@ -168,6 +168,18 @@ export const computeEcosystemStatusClass = function (ecosystemState) {
 	}
 };
 
+const levelColors = {
+	low: '--text-dim-solid',
+	moderate: '--good-green',
+	high: '--transition-yellow',
+	severe: '--transition-orange',
+	critical: '--critical-red'
+};
+
+export const getLevelColor = function (level) {
+	return levelColors[level] || levelColors['low'];
+};
+
 export const getValidationColorClass = function (validationCode) {
 	if (validationCode !== null) {
 		return getStatusClass(validationCode);

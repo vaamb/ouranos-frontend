@@ -1,7 +1,7 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 
-	import { isEmpty } from '$lib/utils/functions.js';
+	import { formatTimeShort, isEmpty } from '$lib/utils/functions.js';
 
 	// `sunTimes` is a single day's entry from `fetchSuntimes()` (usually
 	// `suntimes[0]`), whose fields are already `Date` objects. `location` is the
@@ -33,13 +33,6 @@
 		}
 		const seconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
 		return (seconds / 86400) * 100;
-	};
-
-	const formatTimeShort = function (date) {
-		if (!date || isNaN(date)) {
-			return '--:--';
-		}
-		return date.toLocaleTimeString([], { timeStyle: 'short', hour12: false });
 	};
 
 	let dawn = $derived(toPercent(sunTimes['civil_dawn']));

@@ -53,6 +53,8 @@
 	]}
 	data={articles}
 	editable={true}
+	createLabel="Add an article"
+	emptyText="No articles in this topic yet."
 	oncrud={(payload) => {
 		crudAction = payload['action'];
 		crudIndex = payload['rowIndex'];

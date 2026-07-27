@@ -113,7 +113,7 @@
 		columns={[
 			{ label: 'Name', key: 'name' },
 			{ label: 'UID', key: 'uid' },
-			{ label: 'Status', key: 'status', isStatus: true },
+			{ label: 'Status', key: 'status', isStatus: true, statusLabels: ['Running', 'Stopped'] },
 			{ label: 'Last Seen', key: 'last_seen', serializer: formatDateTime },
 			{
 				label: 'Link',
@@ -125,6 +125,8 @@
 		data={fullEcosystems}
 		editable={true}
 		crudOptions={['create', 'delete']}
+		createLabel="Add an ecosystem"
+		emptyText="No ecosystem on this engine yet."
 		oncrud={(payload) => {
 			const rowIndex = payload['rowIndex'];
 			setCrudData(

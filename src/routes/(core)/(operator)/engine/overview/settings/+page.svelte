@@ -21,7 +21,12 @@
 	columns={[
 		{ label: 'UID', key: 'uid' },
 		{ label: 'SID', key: 'sid' },
-		{ label: 'Connected', key: 'connected', isStatus: true },
+		{
+			label: 'Connected',
+			key: 'connected',
+			isStatus: true,
+			statusLabels: ['Connected', 'Disconnected']
+		},
 		{ label: 'Last Seen', key: 'last_seen', serializer: formatDateTime },
 		{ label: 'Link', key: 'uid', isLink: true, serializer: (value) => `/engine/${value}/settings` }
 	]}

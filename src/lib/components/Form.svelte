@@ -1,13 +1,12 @@
 <script>
-	import Fa from 'svelte-fa';
-	import { faCircle } from '@fortawesome/free-solid-svg-icons';
-
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 
 	import { isEmpty, isObject } from '$lib/utils/functions.js';
 
 	let {
 		data,
+		confirmLabel = 'Confirm',
+		danger = false,
 		onconfirm = (payload) => {},
 		oncancel = () => {}
 	} = $props();
@@ -17,6 +16,8 @@
 	//   selectFrom: [{ label: "The input", value: "the_value" }]
 	//   validate: undefined | function(value) { return value === "validated" },
 	//   required: true
+	//   hint: "Rendered under the input"
+	//   group: "Runs"  // consecutive rows sharing it are laid out together
 	//   all remaining input parameters
 	// }]
 
@@ -52,9 +53,12 @@
 			const originalValue = row['value'] !== undefined ? serializer(row['value']) : ''
 			rv[row['key']] = {
 				type: row['type'] !== undefined ? row['type'] : 'text',
+				label: row['label'] || row['key'],
 				originalValue: originalValue,
 				value: originalValue,
 				files: undefined,
+				// A field is only shown as wrong once it has been left wrong
+				touched: false,
 				validate: row['validate'] !== undefined ? row['validate'] : defaultValidator,
 				deserializer: deserializer
 			};
@@ -62,23 +66,36 @@
 		return rv;
 	};
 
-	let formDataValues = $state(getValues(data));
-
-	const canSubmit = function (data) {
-		for (const obj of Object.values(data)) {
-			const validate = obj['validate'];
-			if (obj['type'] === 'file') {
-				if (!validate(obj['files'])) {
-					return false;
-				}
-			} else if (!validate(obj['value'])) {
-				return false;
+	// Consecutive rows sharing a 'group' are rendered together under its legend
+	const groupRows = function (data) {
+		const rv = [];
+		for (const row of data) {
+			const previous = rv[rv.length - 1];
+			if (row['group'] && previous && previous['group'] === row['group']) {
+				previous['rows'].push(row);
+			} else {
+				rv.push({ group: row['group'], rows: [row] });
 			}
 		}
-		return true;
+		return rv;
 	};
 
-	let disabledSubmit = $derived(!canSubmit(formDataValues));
+	let formDataValues = $state(getValues(data));
+	let groupedData = $derived(groupRows(data));
+
+	const isValid = function (obj) {
+		const validate = obj['validate'];
+		if (obj['type'] === 'file') {
+			return validate(obj['files']);
+		}
+		return validate(obj['value']);
+	};
+
+	let missingFields = $derived(
+		Object.values(formDataValues)
+			.filter((obj) => !isValid(obj))
+			.map((obj) => obj['label'])
+	);
 
 	const confirm = function () {
 		const payload = {};
@@ -99,104 +116,232 @@
 	};
 </script>
 
-<table style="display: table">
-	<tbody>
-		{#each data as row}
-			{@const { label, key, value, serializer, deserializer, selectFrom, validate, required, ...inputAttrs } = row}
-			<tr>
-				<td class="label-td">
-					<label for={key}>{label || key}</label>
-				</td>
-				<td>
-					{#if isEmpty(selectFrom)}
-						{#if row['type'] !== 'file'}
-							<input
-								id={key}
-								bind:value={formDataValues[key]['value']}
-								{...inputAttrs}
-							/>
-						{:else}
-							<input
-								id={key}
-								bind:files={formDataValues[key]['files']}
-								{...inputAttrs}
-								type="file"
-							/>
-						{/if}
+{#snippet field(row)}
+	{@const { label, key, value, serializer, deserializer, selectFrom, validate, required, hint, group, ...inputAttrs } = row}
+	{@const invalid = formDataValues[key]['touched'] && !isValid(formDataValues[key])}
+	<div class="field">
+		<label class="label" for={key}>
+			{label || key}
+			{#if !isRequired(required)}
+				<em class="optional">Optional</em>
+			{/if}
+		</label>
+		{#if isEmpty(selectFrom)}
+			{#if row['type'] === 'file'}
+				<input
+					id={key}
+					bind:files={formDataValues[key]['files']}
+					onblur={() => (formDataValues[key]['touched'] = true)}
+					aria-invalid={invalid}
+					{...inputAttrs}
+					type="file"
+				/>
+			{:else if row['type'] === 'textarea'}
+				<textarea
+					id={key}
+					bind:value={formDataValues[key]['value']}
+					onblur={() => (formDataValues[key]['touched'] = true)}
+					aria-invalid={invalid}
+					{...inputAttrs}
+				></textarea>
+			{:else}
+				<input
+					id={key}
+					bind:value={formDataValues[key]['value']}
+					onblur={() => (formDataValues[key]['touched'] = true)}
+					aria-invalid={invalid}
+					{...inputAttrs}
+				/>
+			{/if}
+		{:else}
+			<select
+				id={key}
+				bind:value={formDataValues[key]['value']}
+				onblur={() => (formDataValues[key]['touched'] = true)}
+				aria-invalid={invalid}
+				{...inputAttrs}
+			>
+				{#if !value}
+					<option disabled value="">Select one</option>
+				{/if}
+				{#each selectFrom as choice (choice)}
+					{#if isObject(choice)}
+						<option value={choice['value']}>
+							{choice['label'] || choice['value']}
+						</option>
 					{:else}
-						<select
-							id={key}
-							bind:value={formDataValues[key]['value']}
-							{...inputAttrs}
-						>
-							{#if !value}
-								<option disabled value="">Select one</option>
-							{/if}
-							{#each selectFrom as choice}
-								{#if isObject(choice)}
-									<option value={choice['value']}>
-										{choice['label'] || choice['value']}
-									</option>
-								{:else}
-									<option value={choice}>
-										{choice}
-									</option>
-								{/if}
-							{/each}
-						</select>
+						<option value={choice}>
+							{choice}
+						</option>
 					{/if}
-				</td>
-				<td>
-					{#if isRequired(required)}
-						{@const valid = row['type'] === 'file'
-							? formDataValues[row['key']]['validate'](formDataValues[row['key']]['files'])
-							: formDataValues[row['key']]['validate'](formDataValues[row['key']]['value'])
-						}
-						&nbsp;
-						<Fa
-							icon={faCircle}
-							class={valid ? 'on' : 'off'}
-						/>
-					{/if}
-				</td>
-			</tr>
-		{/each}
-	</tbody>
-</table>
-<ConfirmButtons disabled={disabledSubmit} onconfirm={confirm} oncancel={oncancel} />
+				{/each}
+			</select>
+		{/if}
+		{#if hint}
+			<p class="hint">{hint}</p>
+		{/if}
+	</div>
+{/snippet}
+
+<div class="fields">
+	{#each groupedData as block (block['rows'][0]['key'])}
+		{#if block['group']}
+			<div class="group">
+				<span class="legend">{block['group']}</span>
+				{#each block['rows'] as row (`group-${row['key']}`)}
+					{@render field(row)}
+				{/each}
+			</div>
+		{:else}
+			{@render field(block['rows'][0])}
+		{/if}
+	{/each}
+</div>
+
+<ConfirmButtons
+	disabled={missingFields.length > 0}
+	hint={missingFields.length ? `Still needed: ${missingFields.join(', ')}.` : undefined}
+	{confirmLabel}
+	{danger}
+	onconfirm={confirm}
+	{oncancel}
+/>
 
 <style>
-	label {
-		font-size: 1.15rem;
+	/* minmax(0, …) everywhere: a date input's intrinsic width would otherwise
+	   grow the column and push the whole form past the edge of the sheet. */
+	.fields {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 13px;
 	}
 
-	input {
-		height: 1.35rem;
-		width: 240px;
-		font-family: inherit;
+	.field {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 5px;
+		min-width: 0;
 	}
 
-	select {
-		height: 1.5rem;
-		width: 242px;
-		font-family: inherit;
+	.label {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		font-size: 0.6rem;
+		font-weight: 800;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--text-dim-solid);
 	}
 
-	option {
-		height: 1.5rem;
-		font-family: inherit;
+	.optional {
+		font-size: 0.56rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		font-style: normal;
+		color: var(--text-faint);
 	}
 
-	input:disabled {
-		background-color: var(--gray-90);
-		border: var(--gray-50) 1px solid;
+	input,
+	select,
+	textarea {
+		font-family: 'Open Sans', sans-serif;
+		font-size: 0.82rem;
+		font-variant-numeric: tabular-nums;
+		box-sizing: border-box;
+		width: 100%;
+		padding: 8px 10px;
+		color: var(--text);
+		background: var(--surface-2);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
 	}
 
-	tr {
-		height: 28px;
+	textarea {
+		resize: vertical;
+		min-height: 54px;
+		line-height: 1.5;
 	}
 
-	.label-td {
-		padding-right: 10px;
+	input:hover,
+	select:hover,
+	textarea:hover {
+		border-color: var(--border-strong);
+	}
+
+	input:focus,
+	select:focus,
+	textarea:focus {
+		background: var(--surface);
+		border-color: var(--grow);
+		outline: none;
+		box-shadow: 0 0 0 3px var(--grow-soft);
+	}
+
+	input[aria-invalid='true'],
+	select[aria-invalid='true'],
+	textarea[aria-invalid='true'] {
+		border-color: var(--critical-red);
+	}
+
+	input:disabled,
+	select:disabled,
+	textarea:disabled {
+		background: var(--bg);
+		color: var(--text-faint);
+		border-style: dashed;
+		cursor: default;
+	}
+
+	input[type='file'] {
+		padding: 6px 8px;
+		color: var(--text-dim-solid);
+	}
+
+	input[type='file']::file-selector-button {
+		font-family: 'Raleway', sans-serif;
+		font-size: 0.62rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		margin-right: 10px;
+		padding: 5px 10px;
+		color: var(--text-dim-solid);
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		cursor: pointer;
+	}
+
+	/* Grouped rows: one legend, side by side while there is room */
+	.group {
+		display: grid;
+		gap: 10px;
+		/* 170px is what a datetime field needs to stay readable: below that the
+		   group folds to one column rather than clipping its own values. */
+		grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+		min-width: 0;
+		padding: 11px 12px 12px;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+	}
+
+	.group .legend {
+		grid-column: 1 / -1;
+		font-size: 0.6rem;
+		font-weight: 800;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--text-dim-solid);
+	}
+
+	.group .label {
+		color: var(--text-faint);
+	}
+
+	.hint {
+		font-size: 0.72rem;
+		line-height: 1.35;
+		color: var(--text-faint);
 	}
 </style>

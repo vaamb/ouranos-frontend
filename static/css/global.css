@@ -72,6 +72,8 @@
 	--night-shade: #24314c14; /* translucent "lights-off / dark period" band fill */
 
 	--shadow: 0 1px 2px #16202e0a, 0 8px 24px -12px #16202e1f;
+	--sheet-shadow: 0 2px 6px #16202e14, 0 26px 60px -26px #16202e70;
+	--scrim: #16202e5c; /* dialog backdrop */
 	--radius: 4px;
 	color-scheme: light;
 }
@@ -108,6 +110,8 @@
 	--night-shade: #8aa0d012;
 
 	--shadow: 0 1px 2px #00000030, 0 10px 30px -14px #00000060;
+	--sheet-shadow: 0 2px 6px #00000040, 0 26px 60px -26px #000000a0;
+	--scrim: #04070d99;
 	color-scheme: dark;
 }
 

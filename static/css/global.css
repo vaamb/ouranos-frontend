@@ -37,6 +37,78 @@
 	--graph-red: #f0341f;
 	--graph-yellow: #e9c429;
 	--blue-accent: #2196f3;
+
+	/* --- UI redesign palette (light ground) — staged for the home/ecosystem
+	   redesign; components migrate onto these tokens over time. --- */
+	--bg: #e9eef3;
+	--surface: #ffffff;
+	--surface-2: #f3f6f9;
+	--border: #d7dfe8;
+	--border-strong: #c4cedb;
+
+	--text: #16202e;
+	--text-dim: #55637590;
+	--text-dim-solid: #556375;
+	--text-faint: #8b96a5;
+
+	--grow: #c11d80; /* the one semantic accent: "light is on" — never decorative */
+	--grow-soft: #c11d8018;
+	--leaf: #2f9a5e; /* live / healthy */
+	--amber: #cf861f; /* sun / caution */
+	--critical-red: #cf3b3b;
+	--good-green: #1c8350;
+	--transition-orange: #c2610f;
+	--transition-yellow: #b5860b;
+
+	/* Sky (nycthemeral) band stop colours. */
+	--sky-night-deep: #20304e;
+	--sky-night: #24314c;
+	--sky-twilight: #5b4a74; /* civil dawn / dusk */
+	--sky-golden: #d98a3a; /* sunrise / sunset */
+	--sky-day-edge: #b9d2e8;
+	--sky-day-peak: #d3e6f4;
+
+	--band-edge: #cdd7e2;
+	--night-shade: #24314c14; /* translucent "lights-off / dark period" band fill */
+
+	--shadow: 0 1px 2px #16202e0a, 0 8px 24px -12px #16202e1f;
+	--radius: 4px;
+	color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+	--bg: #0c1322;
+	--surface: #141d30;
+	--surface-2: #1a2438;
+	--border: #253048;
+	--border-strong: #2f3c58;
+
+	--text: #e9edf4;
+	--text-dim: #9aa6b8b0;
+	--text-dim-solid: #9aa6b8;
+	--text-faint: #647084;
+
+	--grow: #ea51a4;
+	--grow-soft: #ea51a422;
+	--leaf: #46b877;
+	--amber: #e8a33d;
+	--good-green: #3fac6e;
+	--transition-orange: #e8863f;
+	--transition-yellow: #dbb43c;
+	--critical-red: #e5615b;
+
+	--sky-night-deep: #0a1120;
+	--sky-night: #131b30;
+	--sky-twilight: #3a2b52;
+	--sky-golden: #c98a3a;
+	--sky-day-edge: #3f5f86;
+	--sky-day-peak: #57799f;
+
+	--band-edge: #26324a;
+	--night-shade: #8aa0d012;
+
+	--shadow: 0 1px 2px #00000030, 0 10px 30px -14px #00000060;
+	color-scheme: dark;
 }
 
 * {

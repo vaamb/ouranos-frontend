@@ -96,7 +96,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each data as row, rowIndex (rowIndex)}
+				{#each data as row, rowIndex}
 					{@const rail = stateColumn ? stateTone(stateColumn, row) : null}
 					<tr style={rail ? `--rail: var(${rail})` : null}>
 						{#each columns as column (`row-${rowIndex}-${column['label']}`)}

@@ -157,14 +157,14 @@ export interface Server {
 	DISK_total: number;
 }
 
-export type ServerTimedValue = [
-	timestamp: Date,
-	CPU_used: number,
-	CPU_temp: number | undefined,
-	RAM_process: number,
-	RAM_used: number,
-	DISK_used: number
-];
+export interface ServerData {
+	timestamp: Date;
+	CPU_used: number;
+	CPU_temp: number | null;
+	RAM_process: number;
+	RAM_used: number;
+	DISK_used: number;
+}
 
 // Services state
 export interface Service {

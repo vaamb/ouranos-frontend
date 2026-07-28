@@ -1,5 +1,8 @@
 <script>
-	let { title, sideBloc } = $props();
+	// `sideBloc` is a quiet note continuing the title ("· 28 July 2026").
+	// `action` is the page's own control (a button, a link) and sits at the far
+	// right instead, without the separating dot — an act is not an aside.
+	let { title, sideBloc, action } = $props();
 </script>
 
 <svelte:head>
@@ -11,6 +14,11 @@
 	{#if sideBloc}
 		<div class="side-bloc">
 			{@render sideBloc()}
+		</div>
+	{/if}
+	{#if action}
+		<div class="action">
+			{@render action()}
 		</div>
 	{/if}
 </div>
@@ -39,5 +47,9 @@
 	.side-bloc::before {
 		content: '·';
 		margin-right: 0.45rem;
+	}
+
+	.action {
+		margin-left: auto;
 	}
 </style>

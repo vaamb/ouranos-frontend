@@ -169,7 +169,7 @@ socketio.on('current_server_data', (data) => {
 	const dataKey = getKey(serverUid);
 	if (infraState.servers[dataKey]) {
 		infraState.servers[dataKey]['last_seen'] = new Date();
-		infraState.serversCurrentData[dataKey] = data;
+		infraState.serversCurrentData[dataKey] = { ...data, timestamp: new Date(data['timestamp']) };
 	}
 });
 

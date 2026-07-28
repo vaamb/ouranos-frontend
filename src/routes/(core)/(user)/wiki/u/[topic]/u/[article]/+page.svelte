@@ -1,16 +1,15 @@
 <script>
 	import { onMount } from 'svelte';
 
-	import Fa from 'svelte-fa';
-	import { faPenNib } from '@fortawesome/free-solid-svg-icons';
-
 	import axios from 'axios';
 	import { marked } from 'marked';
 
 	import Form from '$lib/components/Form.svelte';
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
+	import SectionHead from '$lib/components/SectionHead.svelte';
 	import Table from '$lib/components/Table.svelte';
+	import TextEditor from '$lib/components/TextEditor.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
 	import { fetchWikiPictures } from '$lib/queries.js';
@@ -21,9 +20,12 @@
 	let { data } = $props();
 
 	const article = $derived(data['article']);
+	const topic = $derived(data['topic']);
 
 	let pictures = $state(undefined);
-	let content = $state();
+	let content = $state(undefined);
+
+	const canEdit = $derived(appState.currentUser.can(permissions.OPERATE));
 
 	// Inject picture URL during parsing
 	const regexPicture = /!picture:[a-zA-Z0-9_.]*!/;
@@ -66,15 +68,38 @@
 	};
 	marked.use({ renderer });
 
-	// Update text
-	let updatingContent = $state(null);
-	let parsedUpdatingContent = $derived.by(() => {
-		if (updatingContent) return marked(updatingContent);
-	});
+	// The renderer resolves `!picture:slug!` codes against `pictures`, so nothing
+	// is parsed before both have arrived.
+	const ready = $derived(content !== undefined && pictures !== undefined);
+	const renderedContent = $derived(ready ? marked(content) : '');
+
+	let editing = $state(false);
+	let draft = $state('');
+	const renderedDraft = $derived(pictures !== undefined ? marked(draft) : '');
 
 	// Image upload
 	let showImageUploadModal = $state(false);
-	let showImagesAvailable = $state(false);
+	let showPictures = $state(false);
+
+	const refreshPictures = async function () {
+		pictures = await fetchWikiPictures(article['topic_slug'], article['slug']);
+	};
+
+	const openEditor = function () {
+		draft = content ?? '';
+		editing = true;
+	};
+
+	const saveArticle = function () {
+		crudRequest(
+			`app/services/wiki/topics/u/${article['topic_slug']}/u/${article['slug']}`,
+			'update',
+			{ content: draft }
+		).then(() => {
+			content = draft;
+			editing = false;
+		});
+	};
 
 	// Mount
 	const fetchWikiArticleContent = async function (articleObject) {
@@ -86,107 +111,88 @@
 	};
 
 	onMount(async () => {
-		pictures = await fetchWikiPictures(article['topic_slug'], article['slug']);
+		await refreshPictures();
 		content = await fetchWikiArticleContent(article);
 	});
 </script>
 
-{#snippet update()}
-	{#if appState.currentUser.can(permissions.OPERATE)}
-		<button
-			class="reset-button"
-			style="margin-left: 20px; cursor: pointer"
-			onclick={() => {
-				updatingContent = content;
-			}}
-		>
-			<Fa icon={faPenNib} />
-		</button>
-	{/if}
+{#snippet inTopic()}
+	<a class="back" href="/wiki/u/{topic['slug']}">{capitalize(topic['name'])}</a>
 {/snippet}
 
-<HeaderLine title={capitalize(article.name)} sideBloc={update} />
+{#snippet edit()}
+	<button class="edit" type="button" onclick={openEditor}>Edit article</button>
+{/snippet}
 
-<div class="text">
-	{#if content && pictures !== undefined}
-		{@html marked(content)}
+<TitleBar
+	title={capitalize(article['name'])}
+	sideBloc={inTopic}
+	action={canEdit && ready && !editing ? edit : undefined}
+/>
+
+{#if article['description']}
+	<p class="dek">{capitalize(article['description'])}</p>
+{/if}
+
+{#if editing}
+	<TextEditor
+		bind:value={draft}
+		rendered={renderedDraft}
+		onsave={saveArticle}
+		oncancel={() => (editing = false)}
+	>
+		{#snippet tools()}
+			<button type="button" onclick={() => (showImageUploadModal = true)}>Upload an image</button>
+			<button type="button" onclick={() => (showPictures = !showPictures)}>
+				{showPictures ? 'Hide images' : `Images (${pictures ? pictures.length : 0})`}
+			</button>
+		{/snippet}
+	</TextEditor>
+
+	{#if showPictures}
+		<SectionHead title="Images" aside="Paste a code to place one" />
+		<Table
+			tableID="pictures"
+			columns={[
+				{ label: 'Name', key: 'name' },
+				{ label: 'Description', key: 'description' },
+				{ label: 'Code', key: 'slug', serializer: (value) => `!picture:${value}!` },
+				{
+					label: 'Link',
+					key: 'path',
+					isLink: true,
+					serializer: (value) => `${STATIC_URL}/${value}`
+				}
+			]}
+			data={pictures ? pictures : []}
+			emptyText="No image uploaded to this article yet."
+		/>
 	{/if}
-</div>
-
-<Modal
-	showModal={updatingContent !== null}
-	onclose={() => {
-		updatingContent = null;
-	}}
->
-	{#snippet title()}{"Text editor"}{/snippet}
-	{#snippet children(closeModal)}
-		<div class="modal-content">
-			<div class="editor">
-				<textarea
-					class="text-box"
-					bind:value={updatingContent}
-					style="margin-right: auto; resize: none"
-				></textarea>
-				<div class="text-box rendered">
-					{@html parsedUpdatingContent}
+{:else}
+	<article class="paper">
+		{#if ready}
+			{#if content}
+				<div class="prose">
+					{@html renderedContent}
 				</div>
-			</div>
-			<div class="center-content" style="margin-top: 20px">
-				<button
-					class="text-button"
-					onclick={() => {
-						crudRequest(
-							`app/services/wiki/topics/u/${article['topic_slug']}/u/${article['slug']}`,
-							'update',
-							{ content: updatingContent }
-						);
-						content = updatingContent;
-						closeModal();
-					}}
-				>
-					Save
-				</button>
-				<button
-					class="text-button"
-					onclick={() => {
-						showImageUploadModal = true;
-					}}
-				>
-					Upload image
-				</button>
-				<button
-					class="text-button"
-					onclick={() => {
-						showImagesAvailable = !showImagesAvailable;
-					}}
-				>
-					Images available
-				</button>
-			</div>
-			{#if pictures && showImagesAvailable}
-				<div style="margin-top: 20px">
-					<Table
-						tableID="pictures"
-						columns={[
-							{ label: 'Name', key: 'name' },
-							{ label: 'Description', key: 'description' },
-							{ label: 'Code', key: 'slug', serializer: (value) => `!picture:${value}!` },
-							{
-								label: 'Link',
-								key: 'path',
-								isLink: true,
-								serializer: (value) => `${STATIC_URL}/${value}`
-							}
-						]}
-						data={pictures}
-						emptyText="No pictures in this article yet."
-					/>
-				</div>
+			{:else}
+				<p class="empty">
+					This article has no text yet.{#if canEdit}&nbsp;Write it with “Edit article”.{/if}
+				</p>
 			{/if}
-		</div>
-	{/snippet}
-</Modal>
+		{:else}
+			<p class="empty">Loading the article…</p>
+		{/if}
+	</article>
+
+	{#if article['tags'] && article['tags'].length}
+		<p class="tags">
+			{#each article['tags'] as tag (tag)}
+				<span class="tag">{tag}</span>
+			{/each}
+		</p>
+	{/if}
+{/if}
 
 <Modal
 	showModal={showImageUploadModal === true}
@@ -194,6 +200,8 @@
 		showImageUploadModal = false;
 	}}
 >
+	{#snippet kicker()}{capitalize(article['name'])}{/snippet}
+	{#snippet title()}{'Upload an image'}{/snippet}
 	{#snippet children(closeModal)}
 		<Form
 			data={[
@@ -203,7 +211,8 @@
 					label: 'Image',
 					key: 'content',
 					type: 'file',
-					hint: 'Images'
+					accept: 'image/*',
+					hint: 'A picture file'
 				},
 				{
 					label: 'Tags',
@@ -213,6 +222,7 @@
 					deserializer: splitTags
 				}
 			]}
+			confirmLabel="Upload"
 			onconfirm={(payload) => {
 				let formData = new FormData();
 				formData.append('name', payload['name']);
@@ -223,17 +233,12 @@
 				for (const tag of payload['tags']) {
 					formData.append('tags', tag);
 				}
-				formData.append('file', payload.content[0]);
+				formData.append('file', payload['content'][0]);
 				crudRequest(
 					`app/services/wiki/topics/u/${article['topic_slug']}/u/${article['slug']}/u/upload_file`,
 					'create',
 					formData
-				).then(
-					fetchWikiPictures(article['topic_slug'], article['slug'])
-					.then((response) => {
-						pictures = response.data;
-					})
-				);
+				).then(() => refreshPictures());
 				closeModal();
 			}}
 			oncancel={() => closeModal()}
@@ -242,62 +247,88 @@
 </Modal>
 
 <style>
-	.rendered :global(ul) {
-		padding-left: 40px;
-		margin-bottom: 0.75rem;
+	.back {
+		color: inherit;
 	}
 
-	.rendered :global(ol) {
-		padding-left: 40px;
-		margin-bottom: 0.75rem;
+	.back:hover {
+		color: var(--text);
+		text-decoration: underline;
 	}
 
-	.rendered :global(img) {
-		float: left;
-		object-fit: cover;
-		margin: 7px;
+	.edit {
+		font-family: 'Raleway', sans-serif;
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		padding: 8px 14px;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--surface);
+		color: var(--text-dim-solid);
+		cursor: pointer;
+		transition:
+			color 120ms ease,
+			border-color 120ms ease;
 	}
 
-	.text-box {
-		width: 100%;
-		min-height: 30vh;
-		padding: 5px;
+	.edit:hover {
+		border-color: var(--border-strong);
+		color: var(--text);
 	}
 
-	.rendered {
-		border: thin solid var(--main-50-shadow);
-		overflow: auto;
+	.dek {
+		max-width: 70ch;
+		margin: -0.9rem 0 1.4rem;
+		font-size: 0.86rem;
+		color: var(--text-dim-solid);
 	}
 
-	.modal-content {
-		max-height: calc(
-			80vh - (40px + 3.2px + 24px + 7px + 20px)
-		); /*Modal padding (40) + border (3.2) + h1 (24 + 7) + content padding (20)*/
+	/* The article is one sheet of the same material as every other card — and it
+	   is the width of its own text, not of the page: a card stretched to 1120px
+	   around a 70ch measure is 400px of nothing. */
+	.paper {
+		max-width: 42rem;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow);
+		padding: clamp(18px, 3.5vw, 40px);
+		margin-bottom: 1.2rem;
+	}
+
+	.paper .prose {
+		margin: 0 auto;
+	}
+
+	/* The floated pictures must not run out of the sheet. */
+	.paper::after {
+		content: '';
+		display: block;
+		clear: both;
+	}
+
+	.empty {
+		font-size: 0.82rem;
+		color: var(--text-faint);
+	}
+
+	.tags {
 		display: flex;
-		flex-direction: column;
-		column-gap: 1em;
-		row-gap: 1em;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin-bottom: 1.5rem;
 	}
 
-	@media only screen and (max-width: 992px) {
-		.editor {
-			width: 80vw;
-			display: flex;
-			flex-direction: column;
-			row-gap: 1em;
-		}
-	}
-
-	@media only screen and (min-width: 992px) {
-		.editor {
-			width: 1100px;
-			display: flex;
-		}
-
-		.text-box {
-			width: calc((1100px - 3em) / 2);
-			height: 70vh;
-			max-height: 400px;
-		}
+	.tag {
+		font-size: 0.64rem;
+		font-weight: 700;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+		padding: 3px 8px;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		color: var(--text-faint);
 	}
 </style>

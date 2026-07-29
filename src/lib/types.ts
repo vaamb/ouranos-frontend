@@ -20,6 +20,18 @@ export interface FlashMessage {
 	timeOut: number | undefined;
 }
 
+export interface HeaderItem {
+	id: string;
+	value: string | number;
+	label?: string;
+	unit?: string;
+	dot?: boolean;
+	icon?: unknown; // a Font Awesome icon definition
+	href?: string;
+	tone?: 'default' | 'good' | 'warn' | 'grow';
+	description?: string;
+}
+
 // Gaia state
 export interface Ecosystem {
 	uid: string;

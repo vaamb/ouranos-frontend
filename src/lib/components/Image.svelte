@@ -52,7 +52,10 @@
 <Modal
 	showModal={enlargePicture}
 	onclose={() => {enlargePicture = false}}
+	bleed
+	width="min(900px, calc(100vw - 28px))"
 >
+	{#snippet kicker()}{caption || 'Picture'}{/snippet}
 	{#snippet title()}{alt}{/snippet}
 	<img
 		src={source}
@@ -98,12 +101,11 @@
 		margin: auto;
 	}
 
+	/* The sheet bleeds, so the frame runs edge to edge under the caption */
 	.large-image {
-		height: calc(95vh - 95px);  /* Modal padding: 2x20 + Title: 24+7 + Content padding: 2x10 + padding and border */
-		max-width: min(1200px, 80vw);
+		display: block;
+		width: 100%;
+		max-height: calc(86vh - 70px); /* the sheet's max height, less its head */
 		object-fit: contain;
-		margin: auto;
-		padding: 1px;
-		border: thin var(--derived-50) solid;
 	}
 </style>

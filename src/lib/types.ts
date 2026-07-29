@@ -173,6 +173,22 @@ export interface Service {
 	status: boolean;
 }
 
+// Every field but `datestamp` is a `Date` once `fetchSuntimes()` has converted
+// it. All of the twilight points are nullable, near the poles a given day may
+// simply not have them.
+export interface SunTimes {
+	datestamp: Date;
+	astronomical_dawn: Date | null;
+	nautical_dawn: Date | null;
+	civil_dawn: Date | null;
+	sunrise: Date | null;
+	solar_noon: Date | null;
+	sunset: Date | null;
+	civil_dusk: Date | null;
+	nautical_dusk: Date | null;
+	astronomical_dusk: Date | null;
+}
+
 export interface WeatherCurrent {
 	timestamp: Date;
 	temperature: number;

@@ -14,6 +14,7 @@ import type {
 	Server,
 	ServerTimedValue,
 	Service,
+	SunTimes,
 	User,
 	Warning,
 	WeatherCurrent,
@@ -89,6 +90,7 @@ export const infraState = new InfraState();
 
 class ServicesState {
 	services = $state<Array<Service>>([]);
+	suntimes = $state<Array<SunTimes>>([]);
 	weatherCurrently = $state<WeatherCurrent | undefined>(undefined);
 	weatherDaily = $state<Array<WeatherDay>>([]);
 	weatherHourly = $state<Array<WeatherHour>>([]);

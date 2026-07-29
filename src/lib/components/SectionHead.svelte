@@ -1,6 +1,6 @@
 <script>
-	// The redesign's section header: a Garamond title, a hairline rule filling the
-	// remaining width, and optional trailing content.
+	// A section header: a Garamond title, a hairline rule filling the remaining width,
+	// and optional trailing content.
 	//
 	// `aside` is the common case (a short, quiet note such as "measured 14:32").
 	// `action` takes over the same slot when the trailing content needs real

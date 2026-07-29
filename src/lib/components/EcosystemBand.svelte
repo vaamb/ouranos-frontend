@@ -38,7 +38,7 @@
 	let nightPct = $derived(toPercent(nycthemeralCycle['night']));
 	let nowPct = $derived(toPercent(now));
 
-	// Day/night gradient anchored on the chamber's own day and night boundaries,
+	// Day/night gradient anchored on the greenhouse's own day and night boundaries,
 	// with small golden wedges at each edge. No astronomical twilight here — a
 	// nycthemeral cycle only carries the two boundaries.
 	let gradient = $derived.by(() => {

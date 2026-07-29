@@ -51,7 +51,7 @@
 		return operational && !!(light && light['active'] && light['status']);
 	});
 
-	// Inside the chamber's own day window? (defaults to daytime when the cycle is
+	// Inside the greenhouse's own day window? (defaults to daytime when the cycle is
 	// unknown, so a card never reads "dark" merely for lack of data).
 	let isDay = $derived.by(() => {
 		if (isEmpty(cycle)) {
@@ -64,7 +64,7 @@
 	// eyebrow says "Lights off" only when there ARE lights, not when there are none.
 	let hasLight = $derived(!!actuatorsState?.['light']?.['active']);
 
-	// Eyebrow = the chamber's live state: Day/Night from the nycthemeral cycle, plus
+	// Eyebrow = the greenhouse's live state: Day/Night from the nycthemeral cycle, plus
 	// Lights on/off when the ecosystem has grow-lights.
 	let eyebrowParts = $derived.by(() => {
 		const parts = [];
@@ -85,8 +85,8 @@
 	});
 
 	// The top importance-ranked sensors to surface. The set is pluggable, so we
-	// read the skeletons in order (air first, then substrate) and take the first
-	// few rather than hardcoding any measure.
+	// read the skeletons in order (environment first, then plants' substrate) and take
+	// the first few rather than hardcoding any measure.
 	let environmentSensors = $derived(gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')] || []);
 	let plantsSensors = $derived(gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')] || []);
 	let healthSensors = $derived(gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')] || []);
@@ -114,7 +114,7 @@
 	);
 
 	// Fetch the latest current value for every sensor of a measure, then average
-	// them for the readout. Mirrors the sensors page's data path.
+	// them for the readout.
 	const fetchMeasure = async function (measure, measureSensors) {
 		return Promise.all(
 			measureSensors.map((sensor) =>

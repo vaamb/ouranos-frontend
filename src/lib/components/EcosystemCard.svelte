@@ -316,11 +316,11 @@
 	}
 
 	.status.running {
-		background: color-mix(in srgb, var(--leaf) 15%, transparent);
-		color: var(--leaf);
+		background: color-mix(in srgb, var(--good-green) 15%, transparent);
+		color: var(--good-green);
 	}
 	.status.running .dot {
-		background: var(--leaf);
+		background: var(--good-green);
 	}
 
 	.status.stopped {
@@ -457,8 +457,8 @@
 	}
 
 	.cap .dot.on {
-		background: var(--leaf);
-		box-shadow: 0 0 0 3px color-mix(in srgb, var(--leaf) 20%, transparent);
+		background: var(--good-green);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--good-green) 20%, transparent);
 	}
 
 	.cap .dot.stale {

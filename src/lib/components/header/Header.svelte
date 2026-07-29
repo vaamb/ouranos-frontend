@@ -341,6 +341,6 @@
 		margin: 6px 4px;
 	}
 	.menu .danger {
-		color: var(--red);
+		color: var(--critical-red);
 	}
 </style>

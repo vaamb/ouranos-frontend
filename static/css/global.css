@@ -117,10 +117,12 @@
 }
 
 body {
-	background-color: var(--main-95);
-	font-family: 'Raleway', Verdana, sans-serif;
-	color: var(--derived-43);
-	overflow-y: scroll;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-y: scroll;
 }
 
 h1 {
@@ -129,10 +131,13 @@ h1 {
 }
 
 h2 {
-	font-size: 1.3rem;
-	font-weight: 400;
+	font-family: 'Garamond', Georgia, serif;
+	font-size: 1.375rem;
+	font-weight: 500;
 	margin-bottom: 0.4em;
 	margin-top: 1.2em;
+	line-height: 1.1;
+	color: var(--text);
 }
 
 .header-line + h2 {

@@ -1,47 +1,32 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 
-	import Fa from 'svelte-fa';
-	import {
-		faCircle,
-		faCircleExclamation,
-		faMoon,
-		faSun,
-		faSyncAlt
-	} from '@fortawesome/free-solid-svg-icons';
-
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
-	import Row from '$lib/components/layout/Row.svelte';
-	import Box from '$lib/components/layout/Box.svelte';
-	import BoxItem from '$lib/components/layout/BoxItem.svelte';
+	import EcosystemCard from '$lib/components/EcosystemCard.svelte';
+	import SectionHead from '$lib/components/SectionHead.svelte';
+	import SkyBand from '$lib/components/SkyBand.svelte';
+	import SmallCard from '$lib/components/SmallCard.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 	import WeatherIcon from '$lib/components/WeatherIcon.svelte';
 
 	import { appState, gaiaState, getKey, infraState, servicesState } from '$lib/store.svelte.ts';
-	import { actuatorTypes, permissions } from '$lib/utils/consts.js';
+	import { permissions } from '$lib/utils/consts.js';
+	import { useHeaderItems } from '$lib/components/header/header.svelte.ts';
 	import {
 		capitalize,
 		computeEcosystemStatusClass,
-		computeLightingHours,
 		computeServerUptime,
 		formatDate,
-		formatDateTime,
-		isConnected,
+		getLevelColor,
 		isEmpty,
-		serviceEnabled,
-		slugify,
-		strHoursToDate
+		serviceEnabled
 	} from '$lib/utils/functions.js';
-	import {
-		syncSensorCurrentData,
-		syncHealthLatestDataForMeasure,
-	} from '$lib/actions.svelte.js';
 
-	let { data } = $props()
+	let { data } = $props();
 
 	// Store update
-	gaiaState.ecosystemsActuatorsState = data.ecosystemsActuatorsState
-	gaiaState.ecosystemsSensorsSkeleton = data.ecosystemsSensorsSkeleton
-	gaiaState.ecosystemsNycthemeralCycle = data.ecosystemsNycthemeralCycleData
+	gaiaState.ecosystemsActuatorsState = data.ecosystemsActuatorsState;
+	gaiaState.ecosystemsSensorsSkeleton = data.ecosystemsSensorsSkeleton;
+	gaiaState.ecosystemsNycthemeralCycle = data.ecosystemsNycthemeralCycleData;
 	infraState.serversCurrentData = data.serversCurrentData;
 	servicesState.weatherCurrently = data.currentWeatherForecast;
 
@@ -52,18 +37,41 @@
 	};
 	let updateNowInterval = null;
 
-	// Warning and calendar
-	const getLevelColor = function (level) {
-		if (level === 'High') {
-			return '--yellow';
-		} else if (level === 'Severe') {
-			return '--orange';
-		} else if (level === 'Critical') {
-			return '--red';
-		} else {
-			return '--green';
+	useHeaderItems(() => {
+		const latency = appState.pingServerLatency;
+		const total = gaiaState.ecosystemsIds.length;
+		const live = gaiaState.ecosystemsIds.filter(
+			({ uid }) => computeEcosystemStatusClass(gaiaState.ecosystemsState[uid]) === 'on'
+		).length;
+
+		const items = [
+			latency === null
+				? {
+						id: 'server',
+						label: 'Server',
+						value: '—',
+						description: 'Server latency, still measuring'
+					}
+				: {
+						id: 'server',
+						label: 'Server',
+						value: latency,
+						unit: 'ms',
+						dot: true,
+						description: `Server latency ${latency} milliseconds`
+					}
+		];
+		if (total > 0) {
+			items.push({
+				id: 'ecosystems',
+				label: 'Ecosystems',
+				value: `${live}/${total} up`,
+				tone: live > 0 ? 'good' : 'default',
+				description: `${live} of ${total} ecosystems running`
+			});
 		}
-	};
+		return items;
+	});
 
 	// Warnings
 	let sortedWarnings = $derived.by(() => {
@@ -92,26 +100,15 @@
 		return sortedEvents;
 	});
 
-	// Ecosystems
-	const canManage = function (uid, management) {
-		return gaiaState.ecosystemsManagement?.[uid]?.[management] === true;
-	};
-
-	const ecosystemIsConnected = function (uid) {
-		return isConnected(gaiaState.ecosystemsState[uid]);
-	};
-
-	const ecosystemIsRunning = function (uid) {
-		return gaiaState.ecosystemsState[uid]['status'];
-	};
-
-	const ecosystemIsOperational = function (uid) {
-		return ecosystemIsConnected(uid) && ecosystemIsRunning(uid);
-	};
-
+	// Seed the current-sensor-data store from the server load so the ecosystem
+	// cards can read it (and refresh individual measures on their own).
 	for (const ecosystem of data.currentSensorsData) {
 		for (const sensorRecord of ecosystem['values']) {
-			const storageKey = getKey(sensorRecord['ecosystem_uid'], sensorRecord['sensor_uid'], sensorRecord['measure']);
+			const storageKey = getKey(
+				sensorRecord['ecosystem_uid'],
+				sensorRecord['sensor_uid'],
+				sensorRecord['measure']
+			);
 			gaiaState.ecosystemsSensorsDataCurrent[storageKey] = {
 				timestamp: new Date(sensorRecord['timestamp']),
 				value: sensorRecord['value']
@@ -119,40 +116,8 @@
 		}
 	}
 
-	const fetchSensorsCurrentDataForMeasure = async function (ecosystemUID, measure, sensors) {
-		return Promise.all(
-			sensors.map((sensor) =>
-				syncSensorCurrentData(ecosystemUID, sensor['uid'], measure.replace(' ', '_'))
-			)
-		);
-	};
-
-	const computeAverageSensorsCurrentDataForMeasure = function (
-		ecosystemsSensorsDataCurrent,
-		ecosystemUID,
-		sensors,
-		measure
-	) {
-		let rv = [];
-		for (const sensor of sensors) {
-			const data = ecosystemsSensorsDataCurrent[getKey(ecosystemUID, sensor.uid, measure)];
-			if (data) {
-				rv.push(data.value);
-			}
-		}
-		if (rv.length === 0) {
-			return null;
-		}
-		const average = (array) => array.reduce((a, b) => a + b) / array.length;
-		return average(rv).toFixed(2);
-	};
-
 	// Camera pictures info is not stored in gaiaState as it changes frequently (new picture every ~1 min)
 	let ecosystemsCameraPicturesInfo = $state(data.ecosystemsCameraPicturesInfo);
-
-	const recentPicture = function (timestamp) {
-		return now - new Date(timestamp) < 5 * 60 * 1000;
-	};
 
 	// Other
 	let suntimes = $state(data.suntimes);
@@ -167,346 +132,199 @@
 	});
 </script>
 
-<HeaderLine title="Home" />
+{#snippet today()}
+	{formatDate(now)}
+{/snippet}
 
-<h2>Global overview</h2>
-<Row>
+<TitleBar title="Home" sideBloc={today} />
+
+{#if serviceEnabled(servicesState.services, 'suntimes') && !isEmpty(suntimes)}
+	<SkyBand sunTimes={suntimes[0]} />
+{/if}
+
+{#if gaiaState.ecosystemsIds.length > 0}
+	<SectionHead title="Ecosystems overview" />
+	<section class="ecosystems-grid">
+		{#each gaiaState.ecosystemsIds as { uid } (uid)}
+			<EcosystemCard {uid} {now} cameraPicturesInfo={ecosystemsCameraPicturesInfo[uid]} />
+		{/each}
+	</section>
+{/if}
+
+<SectionHead title="Global overview" />
+
+<section class="context">
 	{#if serviceEnabled(servicesState.services, 'calendar')}
-		<Box title="Calendar - {formatDate(now)}" align="center" href="/calendar">
-			<BoxItem title="Happening now">
-				{#each sortedCalendarEvents['happening'] as event}
-					{@const color = getLevelColor(event['level'])}
-					<p style="text-align: left">
-						<Fa icon={faCircleExclamation} style="color: var({color});" />
-						Until {event['end_time'].toLocaleDateString('en-GB')}: {event['title']}
-					</p>
-				{:else}
-					<p style="text-align: left">There is no event happening currently.</p>
-				{/each}
-			</BoxItem>
-			<BoxItem title="Planned">
-				{#each sortedCalendarEvents['future'] as event}
-					{@const color = getLevelColor(event['level'])}
-					<p style="text-align: left">
-						<Fa icon={faCircleExclamation} style="color: var({color});" />
-						Starting on {event['start_time'].toLocaleDateString('en-GB')}: {event['title']}
-					</p>
-				{:else}
-					<p style="text-align: left">There is no event planned.</p>
-				{/each}
-			</BoxItem>
-		</Box>
-	{/if}
-	{#if serviceEnabled(servicesState.services, 'weather') && !isEmpty(servicesState.weatherCurrently)}
-		<Box title="Current weather" align="center" href="/weather">
-			<WeatherIcon icon={servicesState.weatherCurrently['icon']} />
-			<BoxItem title={capitalize(servicesState.weatherCurrently['summary'])}>
-				<p>Temperature: {servicesState.weatherCurrently['temperature'].toFixed(1)} °C</p>
-				<p>Humidity: {servicesState.weatherCurrently['humidity'].toFixed(1)} %</p>
-				{#if !isEmpty(servicesState.weatherHourly)}
-					<p>
-						Precipitation: {(
-							servicesState.weatherHourly[0]['precipitation_probability'] * 100
-						).toFixed(1)} %
-					</p>
-				{/if}
-				<p>Wind: {servicesState.weatherCurrently['wind_speed'].toFixed(1)} km/h</p>
-				<p>Cloud cover: {servicesState.weatherCurrently['cloud_cover'].toFixed(1)} %</p>
-				{#if !isEmpty(suntimes)}
-					<div>
-						<Fa icon={faSun} />&nbsp{suntimes[0]['sunrise'].toLocaleTimeString([], {
-							timeStyle: 'short',
-							hour12: false
-						})}
-						&nbsp; - &nbsp;
-						<Fa icon={faMoon} />&nbsp{suntimes[0]['sunset'].toLocaleTimeString([], {
-							timeStyle: 'short',
-							hour12: false
-						})}
-					</div>
-				{/if}
-			</BoxItem>
-		</Box>
-	{/if}
-	<Box title="Server status" align="center">
-		<BoxItem title="Average latency">
-			{#if appState.pingServerLatency === null}
-				<p class="faint">Computing ...</p>
-			{:else}
-				<p>{appState.pingServerLatency} ms</p>
+		<SmallCard title="Calendar" href="/calendar" linkText="All events →">
+			{#each sortedCalendarEvents['happening'] as event (event['title'])}
+				{@const color = getLevelColor(event['level'])}
+				<div class="mod-line">
+					<span class="lv" style="background: var({color})"></span>
+					<span
+						><b>{event['title']}</b> — until {event['end_time'].toLocaleDateString('en-GB')}</span
+					>
+				</div>
+			{/each}
+			{#each sortedCalendarEvents['future'] as event (event['title'])}
+				{@const color = getLevelColor(event['level'])}
+				<div class="mod-line">
+					<span class="lv" style="background: var({color})"></span>
+					<span>{event['title']} — from {event['start_time'].toLocaleDateString('en-GB')}</span>
+				</div>
+			{/each}
+			{#if sortedCalendarEvents['happening'].length === 0 && sortedCalendarEvents['future'].length === 0}
+				<div class="muted">Nothing scheduled.</div>
 			{/if}
-		</BoxItem>
-		{#if appState.currentUser.can(permissions.ADMIN)}
-			{#each infraState.serversIds as serverIds}
+		</SmallCard>
+	{/if}
+
+	{#if serviceEnabled(servicesState.services, 'weather') && !isEmpty(servicesState.weatherCurrently)}
+		<SmallCard title="Weather" href="/weather" linkText="Forecast →">
+			<div class="weather">
+				<WeatherIcon
+					icon={servicesState.weatherCurrently['icon']}
+					size="40px"
+					height="48px"
+					background="transparent"
+					color="var(--amber)"
+				/>
+				<div>
+					<div class="weather-temp">
+						{servicesState.weatherCurrently['temperature'].toFixed(1)}<span class="deg">°C</span>
+					</div>
+					<div class="mini-data">
+						{capitalize(servicesState.weatherCurrently['summary'])}<br />
+						Humidity {servicesState.weatherCurrently['humidity'].toFixed(0)}% · Cloud {servicesState.weatherCurrently[
+							'cloud_cover'
+						].toFixed(0)}%<br />
+						Wind {servicesState.weatherCurrently['wind_speed'].toFixed(1)} km/h
+						{#if !isEmpty(servicesState.weatherHourly)}
+							· Precip {(servicesState.weatherHourly[0]['precipitation_probability'] * 100).toFixed(
+								0
+							)}%
+						{/if}
+					</div>
+				</div>
+			</div>
+		</SmallCard>
+	{/if}
+
+	{#if appState.currentUser.can(permissions.ADMIN) && infraState.serversIds.length > 0}
+		<SmallCard title="Servers status">
+			{#each infraState.serversIds as serverIds (serverIds)}
 				{@const serverUid = serverIds['uid']}
 				{@const server = infraState.servers[serverUid]}
 				{#if !isEmpty(infraState.serversCurrentData[serverUid])}
 					{@const serverCurrentData = infraState.serversCurrentData[serverUid]}
-					<BoxItem title={serverIds['name']}>
-						<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">Uptime</p>
-						<p>
-							{computeServerUptime(server['start_time'], now)}
-						</p>
-
-						<p style="font-size: 0.95rem; font-weight: bold; padding: 2px 0">System usage</p>
-						<p>Average CPU load: {serverCurrentData.CPU_used} %</p>
-						{#if serverCurrentData.CPU_temp}
-							<p>CPU temperature: {serverCurrentData.CPU_temp} °C</p>
+					<div class="server-name">{serverIds['name']}</div>
+					<div class="mini-data">
+						Uptime: {computeServerUptime(server['start_time'], now)} <br />
+						CPU load: {serverCurrentData['CPU_used']}%
+						{#if serverCurrentData['CPU_temp']}
+							· CPU temp: {serverCurrentData['CPU_temp']}°C
 						{/if}
-						<p>
-							RAM used:
-							{serverCurrentData.RAM_used} GB / {server.RAM_total} GB
-						</p>
-						<p>
-							Disk used:
-							{serverCurrentData.DISK_used} GB / {server.DISK_total} GB
-						</p>
-					</BoxItem>
+						<br />
+						RAM: {serverCurrentData['RAM_used']?.toFixed(1)}/{server['RAM_total'].toFixed(1)} GB · Disk:
+						{serverCurrentData['DISK_used']?.toFixed(1)}/{server['DISK_total'].toFixed(1)} GB
+					</div>
 				{/if}
 			{/each}
-		{/if}
-	</Box>
+		</SmallCard>
+	{/if}
+
 	{#if appState.currentUser.isAuthenticated}
-		<Box title="Ecosystem warnings overview" align="center" href="/warnings">
+		<SmallCard title="Warnings">
 			{#if gaiaState.warnings.length > 0}
-				{#each Object.keys(sortedWarnings) as name}
-					{@const ecosystemWarnings = sortedWarnings[name]}
-					{#if ecosystemWarnings}
-						<BoxItem title={name}>
-							{#each ecosystemWarnings as warning}
-								{@const color = getLevelColor(warning['level'])}
-								<p style="text-align: left">
-									<Fa icon={faCircleExclamation} style="color: var({color});" />
-									On {formatDateTime(warning['created_on'])}: {warning['title']}
-								</p>
-							{/each}
-						</BoxItem>
-					{/if}
+				{#each Object.keys(sortedWarnings) as name (name)}
+					{#each sortedWarnings[name] as warning (warning)}
+						{@const color = getLevelColor(warning['level'])}
+						<div class="mod-line">
+							<span class="lv" style="background: var({color})"></span>
+							<span><b>{name}</b> — {warning['title']}</span>
+						</div>
+					{/each}
 				{/each}
 			{:else}
-				<BoxItem title="No warning" />
+				<div class="muted">No active warnings.</div>
 			{/if}
-		</Box>
+		</SmallCard>
 	{/if}
-</Row>
-
-{#if gaiaState.ecosystemsIds.length > 0}
-	<h2>Ecosystems overview</h2>
-	{#each gaiaState.ecosystemsIds as { uid } (uid)}
-		{@const ecosystem = gaiaState.ecosystems[uid]}
-		{@const ecosystemState = gaiaState.ecosystemsState[uid]}
-		<Box
-			title={ecosystem['name']}
-			align="center"
-			status={computeEcosystemStatusClass(ecosystemState)}
-			direction="row"
-		>
-			{#if ecosystemIsOperational(uid)}
-				{@const light = canManage(uid, 'light')}
-				{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[uid]}
-				{@const actuatorsState = gaiaState.ecosystemsActuatorsState[uid]}
-				{@const ecosystemSensorsSkeleton =
-					gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'ecosystem')]}
-				{@const environmentSensorsSkeleton =
-					gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'environment')]}
-				{@const plantsSensorsSkeleton =
-					gaiaState.ecosystemsSensorsSkeleton[getKey(uid, 'plants')]}
-				{@const cameraPicturesInfo = ecosystemsCameraPicturesInfo[uid]}
-				{#if !isEmpty(nycthemeralCycle)}
-					<BoxItem
-						title="Nycthemeral cycle"
-						href="/ecosystem/{slugify(ecosystem['name'])}/settings"
-					>
-						{@const formatTime = (timeStr) => {
-							return strHoursToDate(timeStr).toLocaleTimeString([], {
-								timeStyle: 'short',
-								hour12: false
-							});
-						}}
-						<p>Method: {nycthemeralCycle['span']}</p>
-						{#if nycthemeralCycle['span'] === 'target'}
-							<p>Target: {nycthemeralCycle['target']}</p>
-						{/if}
-						<p>
-							Span: {formatTime(nycthemeralCycle['day'])} -
-							{formatTime(nycthemeralCycle['night'])}
-						</p>
-						{#if light}
-							<p style="font-size: 1rem; font-weight: bold; padding: 2px 0; margin-top: 0.6rem">
-								Lighting
-							</p>
-							<p>Method: {nycthemeralCycle['lighting']}</p>
-							{#each computeLightingHours(nycthemeralCycle, 'short') as lightingHours, index (`${uid}-${index}`)}
-								<p>{lightingHours}</p>
-							{:else}
-								<p>No lighting needed</p>
-							{/each}
-						{/if}
-					</BoxItem>
-				{/if}
-				{#if !isEmpty(actuatorsState)}
-					<BoxItem title="Actuators" href="/ecosystem/{slugify(ecosystem['name'])}/actuators">
-						{#each actuatorTypes as actuatorType (`${uid}-${actuatorType}`)}
-							{@const actuator = actuatorsState[actuatorType]}
-							{#if actuator && actuator['active']}
-								<p>
-									{capitalize(actuatorType)}:
-									<Fa
-										icon={faSyncAlt}
-										class={actuator['status'] ? 'on' : 'off'}
-										spin={actuator['mode'] === 'automatic'}
-									/>
-								</p>
-							{/if}
-						{/each}
-					</BoxItem>
-				{/if}
-				{#if !isEmpty(ecosystemSensorsSkeleton)}
-					<BoxItem
-						title="Ecosystem health"
-						href="/ecosystem/{slugify(ecosystem['name'])}/sensors/ecosystem"
-					>
-						{#each ecosystemSensorsSkeleton as sensorsBone (`${uid}-ecosystem-${sensorsBone['measure']}`)}
-							{#await syncHealthLatestDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
-								<p class="faint">
-									Collecting data for {sensorsBone['measure'].replace('_', ' ')} ...
-								</p>
-							{:then averageHealthData}
-								{#if averageHealthData !== null}
-									<p>
-										{capitalize(sensorsBone['measure']).replace('_', ' ')}:
-										{averageHealthData}
-										{sensorsBone['units'][0]}
-									</p>
-								{:else}
-									<p>
-										No recent data for {sensorsBone['measure'].replace('_', ' ')}
-									</p>
-								{/if}
-							{/await}
-						{/each}
-					</BoxItem>
-				{/if}
-				{#if !isEmpty(environmentSensorsSkeleton)}
-					<BoxItem
-						title="Environment"
-						href="/ecosystem/{slugify(ecosystem['name'])}/sensors/environment"
-					>
-						{#each environmentSensorsSkeleton as sensorsBone (`${uid}-environment-${sensorsBone['measure']}`)}
-							{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
-								<p class="faint">
-									Collecting data for {sensorsBone['measure'].replace('_', ' ')} ...
-								</p>
-							{:then _}
-								{@const averageData = computeAverageSensorsCurrentDataForMeasure(
-									gaiaState.ecosystemsSensorsDataCurrent,
-									uid,
-									sensorsBone['sensors'],
-									sensorsBone['measure']
-								)}
-								{#if averageData !== null}
-									<p>
-										{capitalize(sensorsBone['measure']).replace('_', ' ')}:
-										{averageData}
-										{sensorsBone['units'][0]}
-									</p>
-								{:else}
-									<p>
-										No recent data for {sensorsBone['measure'].replace('_', ' ')}
-									</p>
-								{/if}
-							{/await}
-						{:else}
-							<p>No sensor data available</p>
-						{/each}
-					</BoxItem>
-				{/if}
-				{#if !isEmpty(plantsSensorsSkeleton)}
-					<BoxItem title="Plants" href="/ecosystem/{slugify(ecosystem['name'])}/sensors/plants">
-						{#each plantsSensorsSkeleton as sensorsBone (`${uid}-plants-${sensorsBone['measure']}`)}
-							{#await fetchSensorsCurrentDataForMeasure(uid, sensorsBone['measure'], sensorsBone['sensors'])}
-								<p class="faint">
-									Collecting data for {sensorsBone['measure'].replace('_', ' ')} ...
-								</p>
-							{:then _}
-								{@const averageData = computeAverageSensorsCurrentDataForMeasure(
-									gaiaState.ecosystemsSensorsDataCurrent,
-									uid,
-									sensorsBone['sensors'],
-									sensorsBone['measure']
-								)}
-								{#if averageData !== null}
-									<p>
-										{capitalize(sensorsBone['measure']).replace('_', ' ')}:
-										{averageData}
-										{sensorsBone['units'][0]}
-									</p>
-								{:else}
-									<p>
-										No recent data for {sensorsBone['measure'].replace('_', ' ')}
-									</p>
-								{/if}
-							{/await}
-						{:else}
-							<p>No sensor data available</p>
-						{/each}
-					</BoxItem>
-				{/if}
-				{#if !isEmpty(cameraPicturesInfo)}
-					<BoxItem title="Camera" href="/ecosystem/{slugify(ecosystem['name'])}/camera">
-						{#each Object.values(cameraPicturesInfo) as cameraInfo (`${uid}-${cameraInfo['camera_name']}`)}
-							{@const hasRecentPicture = recentPicture(cameraInfo['timestamp'])}
-							<p>
-								{cameraInfo['camera_name']}
-								<Fa
-									icon={faCircle}
-									class={hasRecentPicture ? 'on' : 'off'}
-									title={hasRecentPicture
-										? 'Recent picture available'
-										: 'No recent picture available'}
-								/>
-							</p>
-						{/each}
-					</BoxItem>
-				{/if}
-			{:else if ecosystemIsConnected(uid)}
-				<BoxItem>
-					<p>The ecosystem is not currently running</p>
-					{#if appState.currentUser.can(permissions.OPERATE)}
-						<p>
-							<a href="/ecosystem/{slugify(ecosystem['name'])}/settings">
-								Click here to configure it and start it
-							</a>
-						</p>
-					{/if}
-				</BoxItem>
-			{:else if ecosystemIsRunning(uid)}
-				<BoxItem>
-					<p>The ecosystem is not currently connected</p>
-					<p>
-						Last connection to the server on
-						{formatDateTime(ecosystemState['last_seen'])}
-					</p>
-				</BoxItem>
-			{:else}
-				<BoxItem>
-					<p>The ecosystem is not currently running and is not connected</p>
-					<p>
-						Last connection to the server on
-						{formatDateTime(ecosystemState['last_seen'])}
-					</p>
-				</BoxItem>
-			{/if}
-		</Box>
-	{/each}
-{/if}
+</section>
 
 <style>
-	p {
-		margin-bottom: 0;
+	.ecosystems-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 16px;
+		margin-bottom: clamp(28px, 4vw, 44px);
 	}
 
-	p.faint {
-		color: var(--gray-50);
+	/* "Global overview" band — small cards sharing SmallCard's shell */
+	.context {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 16px;
+	}
+
+	.mod-line {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		font-size: 0.85rem;
+		color: var(--text);
+	}
+
+	.mod-line b {
+		font-weight: 700;
+	}
+
+	.mod-line .lv {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		flex: none;
+		transform: translateY(1px);
+	}
+
+	.muted {
+		color: var(--text-dim-solid);
+		font-size: 0.85rem;
+	}
+
+	/* Weather */
+	.weather {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.weather-temp {
+		font-family: 'Open Sans', sans-serif;
+		font-variant-numeric: tabular-nums;
+		font-size: 1.875rem;
+		font-weight: 700;
+		line-height: 1;
+		color: var(--text);
+	}
+
+	.weather-temp .deg {
+		font-size: 1rem;
+		color: var(--text-dim-solid);
+		margin-left: 1px;
+	}
+
+	.mini-data {
+		font-size: 0.75rem;
+		color: var(--text-dim-solid);
+		line-height: 1.6;
+	}
+
+	.server-name {
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--text-dim-solid);
+		margin-bottom: 2px;
 	}
 </style>

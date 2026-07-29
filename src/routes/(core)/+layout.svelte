@@ -1,17 +1,16 @@
 <script>
 	import { onDestroy, onMount, tick } from 'svelte';
 
+	import Header from '$lib/components/header/Header.svelte';
 	import BottomBar from '$lib/components/BottomBar.svelte';
 	import ContractBanner from '$lib/components/ContractBanner.svelte';
 	import Menu from '$lib/components/menu/Menu.svelte';
 	import { generateListOfMenuItems } from '$lib/components/menu/functions.js';
 	import Modal from '$lib/components/Modal.svelte';
-	import TopBar from '$lib/components/TopBar.svelte';
 
 	import { CONNECTION_STATUS, CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
 
 	import { appState, gaiaState, infraState, servicesState } from '$lib/store.svelte.ts';
-	import { APP_MODE } from '$lib/utils/consts.js';
 
 	// Fill stores with pre-fetched data
 	let { data, children } = $props();
@@ -35,7 +34,7 @@
 	// Menu-related parameters
 	const menuWidth = 210;
 	const menuMinimizedWidth = 45 + 20;
-	let menuMinimized = $state(false);
+	let menuMinimized = $state(true);
 
 	let menuItems = $derived(
 		generateListOfMenuItems(
@@ -129,25 +128,10 @@
 	miniWidth={menuMinimizedWidth}
 	bind:minimized={menuMinimized}
 />
-<div
-	class="content-wrapper"
-	style="
-	  --margin-width: {menuWidth};
-	  --bottom-banner-height-mobile: {appState.anyContractMismatch ? '50px' : '0px'};
-		--bottom-banner-height: {appState.anyContractMismatch ? '37px' : '0px'};
-	"
-	class:full-page={menuMinimized}
->
-	<TopBar
-		development={data.appMode === APP_MODE.development}
-		miniWidth={menuMinimizedWidth}
-		fullPage={menuMinimized}
-	/>
-	<div class="transition-wrapper">
-		<main>
-			{@render children?.()}
-		</main>
-	</div>
+
+<div class="wrap">
+	<Header />
+	{@render children?.()}
 	<BottomBar />
 	<ContractBanner />
 </div>
@@ -157,37 +141,9 @@
 		padding: 10px 20px calc(20px + var(--bottom-banner-height-mobile, 0px)) 20px;
 	}
 
-	.content-wrapper {
-		margin-top: 65px;
-		min-height: calc(100vh - 141px); /* 141px = Nav bar (65) + Top bar (45) + border (1) + padding (10+20) */
-	}
-
-	/* Large devices (laptops/desktops, 992px and up) */
-	@media only screen and (min-width: 992px) {
-		main {
-			padding-top: 56px; /* Top bar (45) + border (1) + base padding (10) */
-			padding-right: 45px;
-			padding-bottom: calc(20px + var(--bottom-banner-height, 0px));
-		}
-
-		.content-wrapper {
-			margin-top: 0;
-			min-height: calc(100vh - 76px); /* 76px = Top bar (45) + border (1) + padding (10+20) */
-			margin-left: auto;
-			width: calc(100% - var(--margin-width) * 1px);
-
-			transition: width 700ms ease-in-out;
-		}
-
-		.transition-wrapper {
-			width: inherit;
-			position: absolute;
-			right: 0;
-		}
-
-		.full-page {
-			width: 100%;
-			margin-left: 25px;
-		}
+	.wrap {
+		max-width: 1120px;
+		margin: 0 auto;
+		padding: clamp(16px, 3vw, 34px) clamp(14px, 3vw, 30px) 60px;
 	}
 </style>

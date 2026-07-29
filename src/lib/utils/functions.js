@@ -83,6 +83,13 @@ export const months = [
 	'December'
 ];
 
+export const formatTimeShort = function (date) {
+	if (!date || isNaN(date)) {
+		return '--:--';
+	}
+	return date.toLocaleTimeString([], { timeStyle: 'short', hour12: false });
+};
+
 export const formatDate = function (date) {
 	if (isDateObject(date)) {
 		const day = days[date.getDay()];

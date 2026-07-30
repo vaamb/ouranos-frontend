@@ -322,7 +322,11 @@
 
 <!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
      the snippet is withheld entirely rather than rendered empty. -->
-<TitleBar title="{level.title} in {ecosystemName}" sideBloc={skeleton.length ? counts : null} />
+<TitleBar
+	title={level.title}
+	docTitle="{level.title} in {ecosystemName}"
+	sideBloc={skeleton.length ? counts : null}
+/>
 
 {#if skeleton.length}
 	<!-- The window is stated once, here, rather than repeated beside every

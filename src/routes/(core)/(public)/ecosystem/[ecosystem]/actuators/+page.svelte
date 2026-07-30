@@ -144,7 +144,11 @@
 	{/if}
 {/snippet}
 
-<TitleBar title="Actuators in {ecosystemName}" sideBloc={fitted} />
+<TitleBar
+	title="Actuators"
+	docTitle="Actuators in {ecosystemName}"
+	sideBloc={fitted}
+/>
 
 {#if fittedActuators.length}
 	<p class="legend">

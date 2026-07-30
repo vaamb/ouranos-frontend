@@ -288,7 +288,11 @@
 
 <!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
      the snippet is withheld entirely rather than rendered empty. -->
-<TitleBar title="Health of {ecosystemName}" sideBloc={series.length ? counts : null} />
+<TitleBar
+	title="Health"
+	docTitle="Health of {ecosystemName}"
+	sideBloc={series.length ? counts : null}
+/>
 
 {#if skeleton.length}
 	<p class="blurb">

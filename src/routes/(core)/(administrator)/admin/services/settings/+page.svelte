@@ -11,6 +11,10 @@
 
 	let updatedServices = $state([...servicesState.services]);
 
+	let enabledServices = $derived(
+		servicesState.services.filter((service) => service['status']).length
+	);
+
 	const saveServices = function () {
 		let anyUpdated = false;
 		for (const serviceIndex in servicesState.services) {
@@ -31,7 +35,13 @@
 	};
 </script>
 
-<TitleBar title="Service settings" />
+<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
+     the snippet is withheld entirely rather than rendered empty. -->
+{#snippet enabled()}
+	{enabledServices} of {servicesState.services.length} enabled
+{/snippet}
+
+<TitleBar title="Service settings" sideBloc={servicesState.services.length ? enabled : null} />
 
 {#snippet serviceToggle(row)}
 	<SlideButton

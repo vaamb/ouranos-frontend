@@ -12,9 +12,19 @@
 			connected: gaiaState.enginesState[engine['uid']]['connected'],
 		}));
 	});
+
+	let connectedEngines = $derived(fullEngines.filter((engine) => engine['connected']).length);
 </script>
 
-<TitleBar title="Ecosystem engines overview" />
+<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
+     the snippet is withheld entirely rather than rendered empty. -->
+{#snippet census()}
+	{fullEngines.length}
+	{fullEngines.length === 1 ? 'engine' : 'engines'}
+	· {connectedEngines ? `${connectedEngines} connected` : 'none connected'}
+{/snippet}
+
+<TitleBar title="Ecosystem engines overview" sideBloc={fullEngines.length ? census : null} />
 
 <Table
 	tableID="linkedEnvironmentsTable"

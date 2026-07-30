@@ -25,7 +25,14 @@
 	};
 </script>
 
-<TitleBar title="Topics index" />
+<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
+     the snippet is withheld entirely rather than rendered empty. -->
+{#snippet count()}
+	{servicesState.wikiTopics.length}
+	{servicesState.wikiTopics.length === 1 ? 'topic' : 'topics'}
+{/snippet}
+
+<TitleBar title="Topics index" sideBloc={servicesState.wikiTopics.length ? count : null} />
 
 <Table
 	tableID="wikiTopicsTable"

@@ -9,7 +9,7 @@
 	import { fetchCameraPicturesInfo } from '$lib/queries.js';
 	import { joinRoom, leaveRoom, socketio } from '$lib/socketio.svelte.js';
 	import { STATIC_URL } from '$lib/utils/consts.js';
-	import { capitalize, dynamicSort } from '$lib/utils/functions.js';
+	import { capitalize, dynamicSort, formatTimeShort } from '$lib/utils/functions.js';
 
 	let { data } = $props();
 
@@ -25,6 +25,15 @@
 				name: capitalize(obj['camera_name'].replace('_', ' '))
 			}))
 	);
+
+	// How live the stream is, taken from the freshest picture on the page. The
+	// timestamps are kept as dates beside the captions, which are already strings.
+	let lastPicture = $derived.by(() => {
+		const timestamps = Object.values(cameraData)
+			.map((info) => info['timestamp'])
+			.filter((timestamp) => timestamp && !isNaN(timestamp));
+		return timestamps.length ? new Date(Math.max(...timestamps)) : null;
+	});
 
 	const getSource = function (path) {
 		return `${STATIC_URL}/${path}?timestamp=${new Date().getTime()}`;
@@ -42,6 +51,7 @@
 			cameraData[cameraUID]['camera_name'] = cameraPicturesInfo[cameraUID]['camera_name'];
 			cameraData[cameraUID]['source'] = getSource(cameraPicturesInfo[cameraUID]['path']);
 			cameraData[cameraUID]['caption'] = getCaption(cameraPicturesInfo[cameraUID]['timestamp']);
+			cameraData[cameraUID]['timestamp'] = new Date(cameraPicturesInfo[cameraUID]['timestamp']);
 		});
 
 		joinRoom('camera_stream');
@@ -51,8 +61,9 @@
 				for (const updatedInfo of data['updated_pictures']) {
 					const cameraUID = updatedInfo['camera_uid'];
 					if (cameraUID in cameraData) {
-            cameraData[cameraUID]['source'] = getSource(updatedInfo['path']);
-            cameraData[cameraUID]['caption'] = getCaption(updatedInfo['timestamp']);
+						cameraData[cameraUID]['source'] = getSource(updatedInfo['path']);
+						cameraData[cameraUID]['caption'] = getCaption(updatedInfo['timestamp']);
+						cameraData[cameraUID]['timestamp'] = new Date(updatedInfo['timestamp']);
 					}
 				}
 			}
@@ -65,7 +76,15 @@
 	});
 </script>
 
-<TitleBar title="Camera stream from {ecosystemName}" />
+<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
+     the snippet is withheld entirely rather than rendered empty. -->
+{#snippet stream()}
+	{cameraIDs.length}
+	{cameraIDs.length === 1 ? 'camera' : 'cameras'}
+	{#if lastPicture}· last picture {formatTimeShort(lastPicture)}{/if}
+{/snippet}
+
+<TitleBar title="Camera stream from {ecosystemName}" sideBloc={cameraIDs.length ? stream : null} />
 
 {#each cameraIDs as cameraID}
 	{@const pictureInfo = cameraData[cameraID['uid']]}

@@ -20,7 +20,13 @@
 	};
 </script>
 
-<TitleBar title="Ecosystem warnings" />
+<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
+     the snippet is withheld entirely rather than rendered empty. -->
+{#snippet active()}
+	{gaiaState.warnings.length} active
+{/snippet}
+
+<TitleBar title="Ecosystem warnings" sideBloc={gaiaState.warnings.length ? active : null} />
 
 {#if gaiaState.warnings.length > 0}
 	<Table

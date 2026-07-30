@@ -37,7 +37,14 @@
 	};
 </script>
 
-<TitleBar title="{capitalize(topicName)} articles index" />
+<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
+     the snippet is withheld entirely rather than rendered empty. -->
+{#snippet count()}
+	{articles.length}
+	{articles.length === 1 ? 'article' : 'articles'}
+{/snippet}
+
+<TitleBar title="{capitalize(topicName)} articles index" sideBloc={articles.length ? count : null} />
 <Table
 	tableID="wikiArticlesTable"
 	columns={[

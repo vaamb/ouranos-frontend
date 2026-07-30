@@ -56,8 +56,11 @@
 	--leaf: #2f9a5e; /* live / healthy */
 	--amber: #cf861f; /* sun / caution */
 	--critical-red: #cf3b3b;
+	--critical-red-dark: #450c0c; /* text on a solid --critical-red background */
 	--good-green: #1c8350;
+	--good-green-dark: #0d261a; /* text on a solid --good-green background */
 	--transition-orange: #c2610f;
+	--transition-orange-dark: #3d2714; /* text on a solid --transition-orange background */
 	--transition-yellow: #b5860b;
 
 	/* Sky (nycthemeral) band stop colours. */
@@ -95,9 +98,12 @@
 	--leaf: #46b877;
 	--amber: #e8a33d;
 	--good-green: #3fac6e;
+	--good-green-dark: #0d261a; /* text on a solid --good-green background */
 	--transition-orange: #e8863f;
+	--transition-orange-dark: #3d2714; /* text on a solid --transition-orange background */
 	--transition-yellow: #dbb43c;
 	--critical-red: #e5615b;
+	--critical-red-dark: #450c0c; /* text on a solid --critical-red background */
 
 	--sky-night-deep: #0a1120;
 	--sky-night: #131b30;

@@ -2,11 +2,14 @@
 	// `sideBloc` is a quiet note continuing the title ("· 28 July 2026").
 	// `action` is the page's own control (a button, a link) and sits at the far
 	// right instead, without the separating dot — an act is not an aside.
-	let { title, sideBloc, action } = $props();
+	// `docTitle` is the browser tab's title when it has to say more than the
+	// heading does: the nav line's scope chip names the ecosystem on screen, but
+	// a tab reading "Actuators" for every chamber is not a tab you can find.
+	let { title, sideBloc, action, docTitle } = $props();
 </script>
 
 <svelte:head>
-	<title>{title} - GAIA</title>
+	<title>{docTitle || title} - GAIA</title>
 </svelte:head>
 
 <div class="header-line">

@@ -345,7 +345,11 @@
 
 <!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
      the snippet is withheld entirely rather than rendered empty. -->
-<TitleBar title="Load on {serverName}" sideBloc={serverInfo?.['start_time'] ? uptime : null} />
+<TitleBar
+	title="Server load"
+	docTitle="Load on {serverName}"
+	sideBloc={serverInfo?.['start_time'] ? uptime : null}
+/>
 
 {#if reported.length}
 	<!-- The window is stated once, here, rather than repeated beside every section

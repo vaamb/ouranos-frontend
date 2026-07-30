@@ -101,17 +101,7 @@
 </article>
 
 <style>
-	/* The same sheet as the wiki reader (`wiki/u/[topic]/u/[article]`): both pages
-	   are one piece of long-form text and must be the same object. The sheet is the
-	   width of its own text — and here it is exactly that: `--measure` (70ch) is
-	   560px in EB Garamond, so the card's content box is 35rem and the prose fills
-	   it edge to edge. The wiki's card is wider than its own measure because its
-	   articles carry pictures and tables; an essay carries nothing but the essay,
-	   and a card left standing 90px clear of its text on either side reads as a
-	   mistake. There is no `box-sizing: border-box` here — `max-width` is the
-	   content box, the padding sits outside it. */
 	.paper {
-		max-width: 35rem;
 		background: var(--surface);
 		border: 1px solid var(--border);
 		border-radius: var(--radius);
@@ -121,6 +111,7 @@
 	}
 
 	.paper .prose {
+		max-width: inherit;
 		margin: 0 auto;
 	}
 </style>

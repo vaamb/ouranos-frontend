@@ -222,16 +222,13 @@ a {
 }
 
 /* --- Long-form article text ---------------------------------------------
-   The redesign's replacement for `.text`, which it has now fully retired. It
-   lives here rather than in a component because it dresses `{@html}` output,
-   which scoped styles never reach: the wiki reader and `TextEditor`'s preview
-   must be the same typography, or the preview stops being one. Garamond is the
-   prose font (DESIGN.md §3).
+  It lives here rather than in a component because it dresses `{@html}` output,
+  which scoped styles never reach: the wiki reader and `TextEditor`'s preview
+  must be the same typography, or the preview stops being one.
 
-   `--measure` is the line length, and it is the one thing a caller may change:
-   70ch is 560px in EB Garamond — 71 characters a line, where the old `.text`
-   ran about 97 at 800px. Widen it per page, never here, or the wiki reader and
-   the editor preview drift apart. */
+  `--measure` is the line length, and it is the one thing a caller may change.
+  Widen it per page, never here, or the wiki reader and the editor preview drift
+  apart. */
 .prose {
 	font-family: 'EB Garamond', Garamond, Georgia, serif;
 	font-size: 1.1rem;

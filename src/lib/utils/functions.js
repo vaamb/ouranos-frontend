@@ -180,14 +180,6 @@ export const getLevelColor = function (level) {
 	return levelColors[level] || levelColors['low'];
 };
 
-export const getValidationColorClass = function (validationCode) {
-	if (validationCode !== null) {
-		return getStatusClass(validationCode);
-	} else {
-		return 'hidden';
-	}
-};
-
 export const strHoursToDate = function (strHour) {
 	const now = new Date();
 	const hour = strHour.split(':');

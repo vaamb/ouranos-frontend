@@ -1,134 +1,119 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { navigating, page } from '$app/state';
+	import { resolve } from '$app/paths';
 
 	import axios from 'axios';
-	import jwt_decode from 'jwt-decode';
-	import Fa from 'svelte-fa';
-	import { faCircle } from '@fortawesome/free-solid-svg-icons';
+
+	import AuthSheet from '$lib/components/AuthSheet.svelte';
+	import Form from '$lib/components/Form.svelte';
+	import TokenGate from '$lib/components/TokenGate.svelte';
 
 	import { appState } from '$lib/store.svelte.ts';
 	import { API_URL } from '$lib/utils/consts.js';
 	import { createFlashMessage, createUser } from '$lib/utils/factories.js';
-	import {
-		checkJWT,
-		getValidationColorClass,
-		isEmailValid,
-		isEmpty,
-		isPasswordValid,
-		isUsernameValid
-	} from '$lib/utils/functions.js';
+	import { isEmailValid, isPasswordValid, isUsernameValid } from '$lib/utils/functions.js';
 
-	// Token validation
-	let token = $state(page.url.searchParams.get('token'));
-	//svelte-ignore state_referenced_locally
-	let newToken = $state(token);
-
-	let tokenIsValid = $derived.by(() => {
-		try {
-			checkJWT(token, { sub: 'registration' });
-			return true;
-		} catch (error) {
-			return false;
-		}
-	});
-
-	let newTokenError = $derived.by(() => {
-		try {
-			checkJWT(newToken, { sub: 'registration' });
-			return null;
-		} catch (error) {
-			return error.message;
-		}
-	});
-	let newTokenIsValid = $derived(!newToken ? null : newTokenError === null);
-
-	const submitToken = function () {
-		if (newTokenIsValid !== true) {
-			// If invalid or expired token, clear it (should not be possible)
-			newToken = null;
-			token = null;
-		} else {
-			// Else, store the reset token and use it
-			token = newToken;
-			requestAnimationFrame(() => {
-				username = tokenData.username;
-				firstname = tokenData.firstname;
-				lastname = tokenData.lastname;
-				role = tokenData.role || 'User';
-				email = tokenData.email;
-				telegramId = tokenData.telegramId;
-				goto(`/auth/register?token=${token}`);
-			});
-		}
-	};
-
-	// Token data extraction
-	let tokenData = $derived.by(() => {
-		try {
-			checkJWT(token, { sub: 'registration' });
-			const tokenData = jwt_decode(token);
-			return {
-				username: tokenData['username'],
-				firstname: tokenData['firstname'],
-				lastname: tokenData['lastname'],
-				role: tokenData['role'],
-				email: tokenData['email'],
-				telegramId: undefined
-			};
-		} catch (error) {
-			return {};
-		}
-	});
-
-	// Prefill user data with pre-assigned user info
-	//svelte-ignore state_referenced_locally
-	let username = $state(tokenData.username);
-	//svelte-ignore state_referenced_locally
-	let firstname = $state(tokenData.firstname);
-	//svelte-ignore state_referenced_locally
-	let lastname = $state(tokenData.lastname);
-	//svelte-ignore non_reactive_update, state_referenced_locally
-	let role = tokenData.role || 'User';
-	//svelte-ignore state_referenced_locally
-	let email = $state(tokenData.email);
-	//svelte-ignore state_referenced_locally
-	let telegramId = $state(tokenData.telegramId);
-
-	let password1 = $state(null);
-	let password2 = $state(null);
-
-	// Data validation
 	let serverError = $state(null);
 
-	let validUsername = $derived(!username ? null : isUsernameValid(username));
-	let validEmail = $derived(!email ? null : isEmailValid(email));
-	let validPassword = $derived(!password1 ? null : isPasswordValid(password1));
-	let samePassword = $derived(!password1 || !password2 ? null : password1 === password2);
+	// The invitation carries whichever fields the administrator filled in, and
+	// only those: the backend strips every claim it was not given, then
+	// overrides username, email and role with the token's own values. So the
+	// rule is one line: if the token holds it, the token is the source of
+	// truth, and the field is not yours to fill.
+	const fromToken = function (tokenData, key) {
+		return tokenData[key] !== undefined;
+	};
 
-	let canSubmit = $derived(validUsername && validEmail && validPassword && samePassword);
+	const buildFormData = function (tokenData) {
+		return [
+			{
+				label: 'Username',
+				key: 'username',
+				value: tokenData['username'],
+				disabled: fromToken(tokenData, 'username'),
+				note: fromToken(tokenData, 'username') ? 'Set by your invitation' : undefined,
+				autocomplete: 'username',
+				hint: fromToken(tokenData, 'username')
+					? undefined
+					: '3 to 32 characters. Letters, digits, and . _ ! only. No spaces.',
+				validate: (value) => isUsernameValid(value || '')
+			},
+			{
+				label: 'First name',
+				key: 'firstname',
+				value: tokenData['firstname'],
+				disabled: fromToken(tokenData, 'firstname'),
+				note: fromToken(tokenData, 'firstname') ? 'Set by your invitation' : undefined,
+				autocomplete: 'given-name',
+				required: false
+			},
+			{
+				label: 'Last name',
+				key: 'lastname',
+				value: tokenData['lastname'],
+				disabled: fromToken(tokenData, 'lastname'),
+				note: fromToken(tokenData, 'lastname') ? 'Set by your invitation' : undefined,
+				autocomplete: 'family-name',
+				required: false
+			},
+			{
+				label: 'E-mail',
+				key: 'email',
+				type: 'email',
+				value: tokenData['email'],
+				disabled: fromToken(tokenData, 'email'),
+				note: fromToken(tokenData, 'email') ? 'Set by your invitation' : undefined,
+				autocomplete: 'email',
+				validate: (value) => isEmailValid(value || '')
+			},
+			{
+				// Absent from the token means the default role, never a role you pick
+				label: 'Role',
+				key: 'role',
+				value: tokenData['role'] || 'User',
+				disabled: true,
+				note: fromToken(tokenData, 'role') ? 'Set by your invitation' : 'The default role'
+			},
+			{
+				label: 'Password',
+				key: 'password',
+				type: 'password',
+				autocomplete: 'new-password',
+				hint: '8 to 32 characters, with at least one lower case letter, one capital, one digit and one of - + _ ! $ & ? . ,',
+				validate: (value) => isPasswordValid(value || '')
+			},
+			{
+				label: 'Repeat password',
+				key: 'passwordRepeat',
+				type: 'password',
+				autocomplete: 'new-password',
+				validate: (value, values) => !!value && value === values['password']
+			}
+		];
+	};
 
-	const validateRegistration = function () {
+	const register = function (token, tokenData, payload) {
 		axios(`${API_URL}/auth/register?invitation_token=${token}&send_email=true`, {
 			method: 'post',
 			withCredentials: true,
 			data: {
-				// Overwrite the non-overridable pre-assigned user info (it won't be accepted otherwise)
-				username: tokenData.username ? tokenData.username : username,
-				email: tokenData.email ? tokenData.email : email,
-				// Use the remaining user info as such
-				firstname: firstname,
-				lastname: lastname,
-				// telegram_id: telegramId,
-				password: password1
+				// A field the token holds is disabled, so it never reaches the
+				// payload — read it back off the token.
+				username: tokenData['username'] ?? payload['username'],
+				email: tokenData['email'] ?? payload['email'],
+				firstname: tokenData['firstname'] ?? payload['firstname'],
+				lastname: tokenData['lastname'] ?? payload['lastname'],
+				password: payload['password']
 			}
 		})
 			.then((response) => {
 				serverError = null;
 				const user = createUser(response.data.user);
 				appState.currentUser = user;
-				appState.flashMessages.push(createFlashMessage('Hello ' + user['username'] + ', welcome to Ouranos'));
-				goto(`/`);
+				appState.flashMessages.push(
+					createFlashMessage('Hello ' + user['username'] + ', welcome to Ouranos')
+				);
+				goto(resolve('/'));
 			})
 			.catch((error) => {
 				if (error.response) {
@@ -141,154 +126,48 @@
 				}
 			});
 	};
-
-	// Update token on self page navigation
-	$effect(() => {
-		if (navigating.from && navigating.to) {
-			// Coming from a page with a token, to a page without -> the token was invalid, clear it
-			if (
-				navigating.from.url.searchParams.get('token') &&
-				!navigating.to.url.searchParams.get('token')
-			) {
-				token = null;
-				newToken = null;
-			}
-		}
-	});
 </script>
 
-{#if token === null}
-	<h1>Enter your registration token</h1>
-	<form onsubmit={submitToken}>
-		<div class="input-group">
-			{#if newToken !== null && newTokenError !== null}
-				<div class="error">{newTokenError}</div>
+<TokenGate
+	sub="registration"
+	path="/auth/register"
+	heading="Enter your invitation"
+	hint="Paste the token from the invitation you were sent."
+	deadEnd="The token in this link is expired or does not open a registration. Paste the one you were sent, or ask an administrator for a new invitation."
+>
+	{#snippet children(token, tokenData)}
+		<AuthSheet intent={serverError ? '--critical-red' : '--good-green'}>
+			{#snippet kicker()}Invitation accepted{/snippet}
+			{#snippet title()}Create your account{/snippet}
+
+			{#if serverError}
+				<p class="server-error">{serverError}</p>
 			{/if}
-			<input id="token" type="text" bind:value={newToken} />
-			<Fa icon={faCircle} class={getValidationColorClass(newTokenIsValid)} />
-		</div>
-		<div class="input-group">
-			<input
-				id="submit-token"
-				type="submit"
-				class="submit-button"
-				value="Validate"
-				style="height: 2rem"
-				disabled={!newTokenIsValid}
+
+			<Form
+				data={buildFormData(tokenData)}
+				confirmLabel="Create account"
+				showCancel={false}
+				onconfirm={(payload) => register(token, tokenData, payload)}
 			/>
-		</div>
-	</form>
-{:else if tokenIsValid}
-	<h1>Register</h1>
-	<form onsubmit={validateRegistration}>
-		{#if serverError}
-			<div class="input-group">
-				<div class="error">{serverError}</div>
-			</div>
-		{/if}
-		<div class="input-group">
-			<label for="username">Username</label> <br />
-			<input
-				id="username"
-				size="32"
-				type="text"
-				bind:value={username}
-				disabled={tokenData.username !== undefined}
-			/>
-			<Fa icon={faCircle} class={getValidationColorClass(validUsername)} />
-			<p style="max-width: 250px; margin: 0; font-size: smaller">
-				Should be between 3 and 32 characters long, cannot contain spaces
-				and special characters other than ._!
-			</p>
-		</div>
-		<div class="input-group">
-			<label for="firstname">Firstname</label> <br />
-			<input id="firstname" size="32" type="text" bind:value={firstname} />
-		</div>
-		<div class="input-group">
-			<label for="lastname">Lastname</label> <br />
-			<input id="lastname" size="32" type="text" bind:value={lastname} />
-		</div>
-		<div class="input-group">
-			<label for="role">Role</label> <br />
-			<input id="role" size="32" type="text" value={role} disabled />
-			<Fa icon={faCircle} class={getValidationColorClass(!isEmpty(role))} />
-		</div>
-		<div class="input-group">
-			<label for="email">E-mail</label> <br />
-			<input
-				id="email"
-				size="32"
-				type="email"
-				bind:value={email}
-				disabled={tokenData.email !== undefined}
-			/>
-			<Fa icon={faCircle} class={getValidationColorClass(validEmail)} />
-		</div>
-		<!--
-		<div class="input-group">
-			<label for="telegram-id">Telegram ID</label> <br />
-			<input id="telegram-id" size="32" type="text" bind:value={telegramId} />
-		</div>
-		-->
-		<div class="input-group">
-			<label for="password1">Password</label> <br />
-			<input id="password1" size="32" type="password" bind:value={password1} />
-			<Fa icon={faCircle} class={getValidationColorClass(validPassword)} />
-			<p style="max-width: 250px; margin: 0; font-size: smaller">
-				Should be between 8 and 32 characters long, contain at least one lower case letter, one
-				capital letter, one number and one special character amongst -+_!$&?.,
-			</p>
-		</div>
-		<div class="input-group">
-			<label for="password2">Repeat your password</label> <br />
-			<input id="password2" size="32" type="password" bind:value={password2} />
-			<Fa icon={faCircle} class={getValidationColorClass(samePassword)} />
-		</div>
-		<div class="input-group">
-			<input
-				id="submit-invitation"
-				type="submit"
-				class="submit-button"
-				value="Validate"
-				style="height: 2rem"
-				disabled={!canSubmit}
-			/>
-		</div>
-	</form>
-{:else}
-	<p>Get a valid token and enter it <a href="/auth/register">here</a></p>
-{/if}
+
+			{#snippet footer()}
+				Already registered? <a href={resolve('/auth/login')}>Sign in</a>.
+			{/snippet}
+		</AuthSheet>
+	{/snippet}
+</TokenGate>
 
 <style>
-	h1 {
-		font-size: 1.8rem;
-		font-weight: 500;
-		margin-bottom: 7px;
-	}
-
-	label {
-		font-size: 1.15rem;
-	}
-
-	input {
-		height: 1.3rem;
-		font-size: 0.95rem;
-	}
-
-	.submit-button:disabled {
-		background-color: var(--derived-40);
-		color: var(--derived-60);
-		cursor: not-allowed;
-	}
-
-	#token {
-		width: 100%;
-	}
-
-	@media only screen and (min-width: 992px) {
-		#token {
-			width: 575px;
-		}
+	.server-error {
+		margin: 0 0 13px;
+		padding: 9px 11px;
+		font-size: 0.78rem;
+		line-height: 1.4;
+		color: var(--critical-red);
+		background: var(--surface-2);
+		border: 1px solid var(--border);
+		border-left: 3px solid var(--critical-red);
+		border-radius: var(--radius);
 	}
 </style>

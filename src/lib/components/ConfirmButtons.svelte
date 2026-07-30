@@ -5,6 +5,9 @@
 		cancelLabel = 'Cancel',
 		danger = false,
 		hint = undefined,
+		// A form that is the whole page has nowhere to cancel to
+		showCancel = true,
+		submit = false,
 		onconfirm = () => {},
 		oncancel = () => {}
 	} = $props();
@@ -12,8 +15,16 @@
 
 <div class="actions">
 	<p class="hint">{hint || ''}</p>
-	<button class="button" type="button" onclick={oncancel}>{cancelLabel}</button>
-	<button class="button confirm" class:danger type="button" onclick={onconfirm} {disabled}>
+	{#if showCancel}
+		<button class="button" type="button" onclick={oncancel}>{cancelLabel}</button>
+	{/if}
+	<button
+		class="button confirm"
+		class:danger
+		type={submit ? 'submit' : 'button'}
+		onclick={submit ? undefined : onconfirm}
+		{disabled}
+	>
 		{confirmLabel}
 	</button>
 </div>

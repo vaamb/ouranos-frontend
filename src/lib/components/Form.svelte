@@ -7,6 +7,8 @@
 		data,
 		confirmLabel = 'Confirm',
 		danger = false,
+		showCancel = true,
+		onchange = undefined, // Reports the live values, for a caller that reacts as you type
 		onconfirm = (payload) => {},
 		oncancel = () => {}
 	} = $props();
@@ -14,9 +16,11 @@
 	//   label: "The input", key: "the_input", value: "the value"
 	//   serializer: undefined | function(value), deserializer: undefined | function(value),
 	//   selectFrom: [{ label: "The input", value: "the_value" }]
-	//   validate: undefined | function(value) { return value === "validated" },
+	//   validate: undefined | function(value, values) { return value === values["other"] },
 	//   required: true
 	//   hint: "Rendered under the input"
+	//   hintTone: "--critical-red"  // a hint that reports on the value, not on the field
+	//   note: "From invitation"  // chip beside the label, says why the field is as it is
 	//   group: "Runs"  // consecutive rows sharing it are laid out together
 	//   all remaining input parameters
 	// }]
@@ -50,9 +54,12 @@
 					: (value) => {
 							return value;
 						};
-			const originalValue = row['value'] !== undefined ? serializer(row['value']) : ''
+			const type = row['type'] !== undefined ? row['type'] : 'text';
+			// A checkbox is never "missing", so it defaults to false rather than ''
+			const emptyValue = type === 'checkbox' ? false : '';
+			const originalValue = row['value'] !== undefined ? serializer(row['value']) : emptyValue
 			rv[row['key']] = {
-				type: row['type'] !== undefined ? row['type'] : 'text',
+				type: type,
 				label: row['label'] || row['key'],
 				originalValue: originalValue,
 				value: originalValue,
@@ -83,17 +90,32 @@
 	let formDataValues = $state(getValues(data));
 	let groupedData = $derived(groupRows(data));
 
-	const isValid = function (obj) {
+	// The live value of every field, so that a validator can check its own value
+	// against another one (eg. a password and its repeat).
+	let values = $derived(
+		Object.fromEntries(
+			Object.entries(formDataValues).map(([key, obj]) => [
+				key,
+				obj['type'] === 'file' ? obj['files'] : obj['value']
+			])
+		)
+	);
+
+	$effect(() => {
+		onchange?.(values);
+	});
+
+	const isValid = function (obj, values) {
 		const validate = obj['validate'];
 		if (obj['type'] === 'file') {
-			return validate(obj['files']);
+			return validate(obj['files'], values);
 		}
-		return validate(obj['value']);
+		return validate(obj['value'], values);
 	};
 
 	let missingFields = $derived(
 		Object.values(formDataValues)
-			.filter((obj) => !isValid(obj))
+			.filter((obj) => !isValid(obj, values))
 			.map((obj) => obj['label'])
 	);
 
@@ -117,97 +139,130 @@
 </script>
 
 {#snippet field(row)}
-	{@const { label, key, value, serializer, deserializer, selectFrom, validate, required, hint, group, ...inputAttrs } = row}
-	{@const invalid = formDataValues[key]['touched'] && !isValid(formDataValues[key])}
-	<div class="field">
-		<label class="label" for={key}>
-			{label || key}
-			{#if !isRequired(required)}
-				<em class="optional">Optional</em>
-			{/if}
-		</label>
-		{#if isEmpty(selectFrom)}
-			{#if row['type'] === 'file'}
-				<input
-					id={key}
-					bind:files={formDataValues[key]['files']}
-					onblur={() => (formDataValues[key]['touched'] = true)}
-					aria-invalid={invalid}
-					{...inputAttrs}
-					type="file"
-				/>
-			{:else if row['type'] === 'textarea'}
-				<textarea
-					id={key}
-					bind:value={formDataValues[key]['value']}
-					onblur={() => (formDataValues[key]['touched'] = true)}
-					aria-invalid={invalid}
-					{...inputAttrs}
-				></textarea>
-			{:else}
-				<input
-					id={key}
-					bind:value={formDataValues[key]['value']}
-					onblur={() => (formDataValues[key]['touched'] = true)}
-					aria-invalid={invalid}
-					{...inputAttrs}
-				/>
-			{/if}
-		{:else}
-			<select
+	{@const { label, key, value, serializer, deserializer, selectFrom, validate, required, hint, hintTone, note, group, ...inputAttrs } = row}
+	{@const invalid = formDataValues[key]['touched'] && !isValid(formDataValues[key], values)}
+	<div class="field" class:inline={row['type'] === 'checkbox'}>
+		{#if row['type'] === 'checkbox'}
+			<!-- A checkbox reads as its own sentence, so it keeps its label beside it
+			     rather than under a kicker. -->
+			<input
 				id={key}
-				bind:value={formDataValues[key]['value']}
-				onblur={() => (formDataValues[key]['touched'] = true)}
-				aria-invalid={invalid}
+				type="checkbox"
+				bind:checked={formDataValues[key]['value']}
 				{...inputAttrs}
-			>
-				{#if !value}
-					<option disabled value="">Select one</option>
+			/>
+			<label class="check" for={key}>{label || key}</label>
+		{:else}
+			<label class="label" for={key}>
+				{label || key}
+				{#if note}
+					<em class="note">{note}</em>
+				{:else if !isRequired(required)}
+					<em class="optional">Optional</em>
 				{/if}
-				{#each selectFrom as choice (choice)}
-					{#if isObject(choice)}
-						<option value={choice['value']}>
-							{choice['label'] || choice['value']}
-						</option>
-					{:else}
-						<option value={choice}>
-							{choice}
-						</option>
+			</label>
+			{#if isEmpty(selectFrom)}
+				{#if row['type'] === 'file'}
+					<input
+						id={key}
+						bind:files={formDataValues[key]['files']}
+						onblur={() => (formDataValues[key]['touched'] = true)}
+						aria-invalid={invalid}
+						{...inputAttrs}
+						type="file"
+					/>
+				{:else if row['type'] === 'textarea'}
+					<textarea
+						id={key}
+						bind:value={formDataValues[key]['value']}
+						onblur={() => (formDataValues[key]['touched'] = true)}
+						aria-invalid={invalid}
+						{...inputAttrs}
+					></textarea>
+				{:else}
+					<input
+						id={key}
+						bind:value={formDataValues[key]['value']}
+						onblur={() => (formDataValues[key]['touched'] = true)}
+						aria-invalid={invalid}
+						{...inputAttrs}
+					/>
+				{/if}
+			{:else}
+				<select
+					id={key}
+					bind:value={formDataValues[key]['value']}
+					onblur={() => (formDataValues[key]['touched'] = true)}
+					aria-invalid={invalid}
+					{...inputAttrs}
+				>
+					{#if !value}
+						<option disabled value="">Select one</option>
 					{/if}
-				{/each}
-			</select>
+					{#each selectFrom as choice (choice)}
+						{#if isObject(choice)}
+							<option value={choice['value']}>
+								{choice['label'] || choice['value']}
+							</option>
+						{:else}
+							<option value={choice}>
+								{choice}
+							</option>
+						{/if}
+					{/each}
+				</select>
+			{/if}
 		{/if}
 		{#if hint}
-			<p class="hint">{hint}</p>
+			<p class="hint" style={hintTone ? `--hint-tone: var(${hintTone})` : undefined}>{hint}</p>
 		{/if}
 	</div>
 {/snippet}
 
-<div class="fields">
-	{#each groupedData as block (block['rows'][0]['key'])}
-		{#if block['group']}
-			<div class="group">
-				<span class="legend">{block['group']}</span>
-				{#each block['rows'] as row (`group-${row['key']}`)}
-					{@render field(row)}
-				{/each}
-			</div>
-		{:else}
-			{@render field(block['rows'][0])}
-		{/if}
-	{/each}
-</div>
+<!-- A real <form>, so that Enter submits and password managers recognise it.
+     Validation is ours, hence `novalidate`: the native bubbles would contradict
+     the touched state and the "Still needed" hint. -->
+<form
+	novalidate
+	onsubmit={(event) => {
+		event.preventDefault();
+		if (missingFields.length === 0) {
+			confirm();
+		}
+	}}
+>
+	<div class="fields">
+		{#each groupedData as block (block['rows'][0]['key'])}
+			{#if block['group']}
+				<div class="group">
+					<span class="legend">{block['group']}</span>
+					{#each block['rows'] as row (`group-${row['key']}`)}
+						{@render field(row)}
+					{/each}
+				</div>
+			{:else}
+				{@render field(block['rows'][0])}
+			{/if}
+		{/each}
+	</div>
 
-<ConfirmButtons
-	disabled={missingFields.length > 0}
-	hint={missingFields.length ? `Still needed: ${missingFields.join(', ')}.` : undefined}
-	{confirmLabel}
-	{danger}
-	onconfirm={confirm}
-	{oncancel}
-/>
+	<ConfirmButtons
+		disabled={missingFields.length > 0}
+		hint={missingFields.length ? `Still needed: ${missingFields.join(', ')}.` : undefined}
+		{confirmLabel}
+		{danger}
+		{showCancel}
+		submit
+		onconfirm={confirm}
+		{oncancel}
+	/>
+</form>
 
 <style>
+	form {
+		margin: 0;
+	}
+
 	/* minmax(0, …) everywhere: a date input's intrinsic width would otherwise
 	   grow the column and push the whole form past the edge of the sheet. */
 	.fields {
@@ -234,12 +289,43 @@
 		color: var(--text-dim-solid);
 	}
 
-	.optional {
+	.optional,
+	.note {
 		font-size: 0.56rem;
 		font-weight: 700;
 		letter-spacing: 0.1em;
 		font-style: normal;
 		color: var(--text-faint);
+	}
+
+	/* Says *why* a field is not yours to fill, so that a disabled input is not
+	   left explaining itself in colour alone. */
+	.note {
+		text-transform: none;
+		letter-spacing: 0.04em;
+		font-size: 0.6rem;
+	}
+
+	/* A checkbox is a sentence, not a labelled value: label beside, no kicker. */
+	.field.inline {
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: center;
+		gap: 9px;
+	}
+
+	.field.inline input {
+		width: 15px;
+		height: 15px;
+		padding: 0;
+		margin: 0;
+		accent-color: var(--grow);
+	}
+
+	.check {
+		font-family: 'Raleway', sans-serif;
+		font-size: 0.78rem;
+		color: var(--text-dim-solid);
+		cursor: pointer;
 	}
 
 	input,
@@ -339,9 +425,11 @@
 		color: var(--text-faint);
 	}
 
+	/* A hint explains the field and stays quiet; a toned one reports on the value
+	   that was entered, so it takes the ramp token the caller gives it. */
 	.hint {
 		font-size: 0.72rem;
 		line-height: 1.35;
-		color: var(--text-faint);
+		color: var(--hint-tone, var(--text-faint));
 	}
 </style>

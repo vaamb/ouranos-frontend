@@ -350,6 +350,8 @@
 		]}
 		data={environmentParameters}
 		editable={true}
+		createLabel="Add a parameter"
+		emptyText="No environment parameters set."
 		oncrud={(payload) => {
 			setCrudData('climate_parameter', payload['action'], payload['rowIndex']);
 		}}
@@ -473,6 +475,8 @@
 		]}
 		data={weatherEvents}
 		editable={true}
+		createLabel="Add a weather event"
+		emptyText="No weather events set."
 		oncrud={(payload) => {
 			setCrudData('weather_event', payload['action'], payload['rowIndex']);
 		}}
@@ -608,6 +612,8 @@
 		]}
 		data={hardwareObjects}
 		editable={true}
+		createLabel="Add hardware"
+		emptyText="No hardware registered yet."
 		oncrud={(payload) => {
 			setCrudData('hardware', payload['action'], payload['rowIndex']);
 		}}

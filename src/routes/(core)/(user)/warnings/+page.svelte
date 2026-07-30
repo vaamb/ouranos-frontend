@@ -26,7 +26,7 @@
 	<Table
 		tableID="warnings"
 		columns={[
-			{ label: 'Level', key: 'level', serializer: (value) => capitalize(value) },
+			{ label: 'Level', key: 'level', isLevel: true, serializer: (value) => capitalize(value) },
 			{ label: 'Ecosystem', key: 'created_by' },
 			{ label: 'Title', key: 'title' },
 			{ label: 'Description', key: 'description' },
@@ -35,6 +35,7 @@
 		data={gaiaState.warnings}
 		editable={true}
 		crudOptions={['delete']}
+		emptyText="No active warnings."
 		oncrud={(payload) => {
 			setCrudData(payload['rowIndex']);
 		}}

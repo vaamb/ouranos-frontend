@@ -48,6 +48,8 @@
 		data={users}
 		editable={true}
 		crudOptions={['create', 'delete']}
+		createLabel="Add a user"
+		emptyText="No users yet."
 		oncrud={(payload) => {
 			crudAction = payload['action'];
 			crudIndex = payload['rowIndex'];

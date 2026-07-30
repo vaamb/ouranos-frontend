@@ -37,6 +37,8 @@
 	]}
 	data={servicesState.wikiTopics}
 	editable={true}
+	createLabel="Add a topic"
+	emptyText="No topics yet."
 	oncrud={(payload) => {
 		crudAction = payload['action'];
 		crudIndex = payload['rowIndex'];

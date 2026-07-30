@@ -180,6 +180,7 @@
 							}
 						]}
 						data={pictures}
+						emptyText="No pictures in this article yet."
 					/>
 				</div>
 			{/if}

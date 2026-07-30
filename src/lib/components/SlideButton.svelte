@@ -28,46 +28,67 @@
 
 <style>
 	.slider {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
+		--track-off: var(--border-strong);
+		--track-on: var(--good-green);
+		--knob: #ffffff;
+	}
+
+	/* a white knob would glare on the dark surfaces */
+	:global(:root[data-theme='dark']) .slider {
+		--knob: #d7e0ee;
 	}
 
 	.slider button {
-		width: 3em;
-		height: 1.6em;
 		position: relative;
-		margin: 0 0 0 0.5em;
-		background: var(--gray-80);
+		width: 38px;
+		height: 20px;
+		flex: none;
+		padding: 0;
 		border: none;
-		border-radius: 1.5em;
-	}
-
-	.slider button:disabled {
-		background-color: var(--gray-70);
+		border-radius: 10px;
+		background: var(--track-off);
+		cursor: pointer;
+		transition: background-color 160ms ease;
 	}
 
 	.slider button::before {
 		content: '';
 		position: absolute;
-		width: 1.3em;
-		height: 1.3em;
-		background: #fff;
-		top: 0.13em;
-		right: 1.5em;
-		transition: transform 0.3s;
-		border-radius: 100%;
+		top: 3px;
+		left: 3px;
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		background: var(--knob);
+		box-shadow: 0 1px 2px #16202e40;
+		transition: transform 160ms ease;
 	}
 
 	.slider button[aria-checked='true'] {
-		background-color: var(--blue-accent);
-	}
-
-	.slider button[aria-checked='true']:disabled {
-		background-color: hsl(207, 30%, 68%);
+		background: var(--track-on);
 	}
 
 	.slider button[aria-checked='true']::before {
-		transform: translateX(1.3em);
-		transition: transform 0.3s;
+		transform: translateX(18px);
+	}
+
+	.slider button:hover:not(:disabled) {
+		background: color-mix(in srgb, var(--track-off) 82%, var(--text));
+	}
+
+	.slider button[aria-checked='true']:hover:not(:disabled) {
+		background: color-mix(in srgb, var(--track-on) 88%, var(--text));
+	}
+
+	.slider button:focus-visible {
+		outline: 2px solid var(--grow);
+		outline-offset: 2px;
+	}
+
+	.slider button:disabled {
+		cursor: default;
+		opacity: 0.5;
 	}
 </style>

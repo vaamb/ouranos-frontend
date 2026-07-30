@@ -1,160 +1,63 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { navigating, page } from '$app/state';
+	import { resolve } from '$app/paths';
 
-	import Fa from 'svelte-fa';
-	import { faCircle } from '@fortawesome/free-solid-svg-icons';
+	import AuthSheet from '$lib/components/AuthSheet.svelte';
+	import Form from '$lib/components/Form.svelte';
+	import TokenGate from '$lib/components/TokenGate.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
-	import { checkJWT, getValidationColorClass, isPasswordValid } from '$lib/utils/functions.js';
+	import { isPasswordValid } from '$lib/utils/functions.js';
 
-	// Token validation
-	let token = $state(page.url.searchParams.get('token'));
-	//svelte-ignore state_referenced_locally
-	let newToken = $state(token);
-
-	let tokenIsValid = $derived.by(() => {
-		try {
-			checkJWT(token, { sub: 'reset_password' });
-			return true;
-		} catch (error) {
-			return false;
+	const formData = [
+		{
+			label: 'New password',
+			key: 'password',
+			type: 'password',
+			autocomplete: 'new-password',
+			hint: '8 to 32 characters, with at least one lower case letter, one capital, one digit and one of - + _ ! $ & ? . ,',
+			validate: (value) => isPasswordValid(value || '')
+		},
+		{
+			label: 'Repeat new password',
+			key: 'passwordRepeat',
+			type: 'password',
+			autocomplete: 'new-password',
+			validate: (value, values) => !!value && value === values['password']
 		}
-	});
+	];
 
-	let newTokenError = $derived.by(() => {
-		try {
-			checkJWT(newToken, { sub: 'reset_password' });
-			return null;
-		} catch (error) {
-			return error.message;
-		}
-	});
-	let newTokenIsValid = $derived(!newToken ? null : newTokenError === null);
-
-	const submitToken = function () {
-		if (newTokenIsValid !== true) {
-			// If invalid or expired token, clear it (should not be possible)
-			newToken = null;
-			token = null;
-		} else {
-			// Else, store the reset token and use it
-			token = newToken;
-			requestAnimationFrame(() => {
-				goto(`/auth/reset_password?token=${token}`);
-			});
-		}
+	const setPassword = function (token, payload) {
+		crudRequest(`auth/reset_password?token=${token}`, 'create', {
+			password: payload['password']
+		}).then(() => {
+			goto(resolve('/auth/login'));
+		});
 	};
-
-	// Password validation
-	let password1 = $state(null);
-	let password2 = $state(null);
-
-	let validPassword = $derived(!password1 ? null : isPasswordValid(password1));
-	let samePassword = $derived(!password1 || !password2 ? null : password1 === password2);
-
-	const submitPassword = function () {
-		if (!(validPassword && samePassword)) {
-			password1 = null;
-			password2 = null;
-		} else {
-			crudRequest(`auth/reset_password?token=${token}`, 'create', { password: password1 });
-		}
-	};
-
-	// Update token on self page navigation
-	$effect(() => {
-		if (navigating.from && navigating.to) {
-			// Coming from a page with a token, to a page without -> the token was invalid, clear it
-			if (
-				navigating.from.url.searchParams.get('token') &&
-				!navigating.to.url.searchParams.get('token')
-			) {
-				token = null;
-				newToken = null;
-			}
-		}
-	});
 </script>
 
-{#if token === null}
-	<h1>Enter your reset token</h1>
-	<form onsubmit={submitToken}>
-		<div class="input-group">
-			{#if newToken !== null && newTokenError !== null}
-				<div class="error">{newTokenError}</div>
-			{/if}
-			<input id="token" type="text" bind:value={newToken} />
-			<Fa icon={faCircle} class={getValidationColorClass(newTokenIsValid)} />
-		</div>
-		<div class="input-group">
-			<input
-				id="submit-token"
-				type="submit"
-				class="submit-button"
-				value="Validate"
-				style="height: 2rem"
-				disabled={!newTokenIsValid}
+<TokenGate
+	sub="reset_password"
+	path="/auth/reset_password"
+	heading="Reset your password"
+	hint="Paste the token from the password reset e-mail you were sent."
+	deadEnd="The token in this link is expired or does not reset a password. Paste the one you were sent, or ask an administrator for a new reset link."
+>
+	{#snippet children(token)}
+		<AuthSheet intent="--good-green">
+			{#snippet kicker()}Token accepted{/snippet}
+			{#snippet title()}Choose a new password{/snippet}
+
+			<Form
+				data={formData}
+				confirmLabel="Set new password"
+				showCancel={false}
+				onconfirm={(payload) => setPassword(token, payload)}
 			/>
-		</div>
-	</form>
-{:else if tokenIsValid}
-	<h1>Reset your password</h1>
-	<form onsubmit={submitPassword}>
-		<div class="input-group">
-			<label for="password1">Password</label> <br />
-			<input id="password1" size="32" type="password" bind:value={password1} />
-			<Fa icon={faCircle} class={getValidationColorClass(validPassword)} />
-			<p style="max-width: 250px; margin: 0; font-size: smaller">
-				Should be between 8 and 20 characters long, contain at least one lower case letter, one
-				capital letter, one number and one special character amongst -+_!$&?.,
-			</p>
-		</div>
-		<div class="input-group">
-			<label for="password2">Repeat your password</label> <br />
-			<input id="password2" size="32" type="password" bind:value={password2} />
-			<Fa icon={faCircle} class={getValidationColorClass(samePassword)} />
-		</div>
-		<div class="input-group">
-			<input
-				id="submit-password"
-				type="submit"
-				class="submit-button"
-				value="Confirm"
-				style="height: 2rem"
-				disabled={!(validPassword && samePassword)}
-			/>
-		</div>
-	</form>
-{:else}
-	<p>Get a valid token and enter it <a href="/auth/reset_password">here</a></p>
-{/if}
 
-<style>
-	h1 {
-		font-size: 1.8rem;
-		font-weight: 500;
-		margin-bottom: 7px;
-	}
-
-	input {
-		height: 1.3rem;
-		font-size: 0.95rem;
-	}
-
-	.submit-button:disabled {
-		background-color: var(--derived-40);
-		color: var(--derived-60);
-		cursor: not-allowed;
-	}
-
-	#token {
-		width: 100%;
-	}
-
-	@media only screen and (min-width: 992px) {
-		#token {
-			width: 575px;
-		}
-	}
-</style>
+			{#snippet footer()}
+				Remembered it after all? <a href={resolve('/auth/login')}>Sign in</a>.
+			{/snippet}
+		</AuthSheet>
+	{/snippet}
+</TokenGate>

@@ -4,16 +4,7 @@
 	let { children } = $props();
 </script>
 
-<div class="main center-content">
-	<div style="max-width: 80%">
-		{@render children?.()}
-	</div>
-	<ContractBanner />
-</div>
-
-<style>
-	.main {
-		height: 100vh;
-		width: 100vw;
-	}
-</style>
+<!-- The page shell is `AuthSheet`, so that each page owns its own kicker, title
+     and rail; the layout only carries what is common to the whole tree. -->
+{@render children?.()}
+<ContractBanner />

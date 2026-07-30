@@ -1,94 +1,63 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { navigating } from '$app/state';
+
+	import AuthSheet from '$lib/components/AuthSheet.svelte';
+	import Form from '$lib/components/Form.svelte';
 
 	import { logIn } from '$lib/actions.svelte.js';
 
 	// Need to store the previous page as it is set to null when using `logIn`
 	const previousPage = navigating.from ? navigating.from.url.pathname : '/';
 
-	let errors = $state({});
-	const resetErrors = function () {
-		errors.username = null;
-		errors.password = null;
-		errors.server = null;
-	};
-	resetErrors();
+	let serverError = $state(null);
 
-	let username = $state();
-	let password = $state();
-	let remember = $state();
+	const formData = [
+		{ label: 'Username', key: 'username', autocomplete: 'username' },
+		{ label: 'Password', key: 'password', type: 'password', autocomplete: 'current-password' },
+		{ label: 'Keep me signed in', key: 'remember', type: 'checkbox', required: false }
+	];
 
-	const validate = async function () {
-		resetErrors();
-		if (!username) {
-			errors.username = 'Username required';
-		}
-		if (!password) {
-			errors.password = 'Password required';
-		}
-		if (!errors.username && !errors.password) {
-			const logResponse = await logIn(username, password, remember);
-			if (logResponse.success) {
-				goto(previousPage);
-			} else {
-				errors.server = logResponse.msg;
-			}
+	const signIn = async function (payload) {
+		const logResponse = await logIn(
+			payload['username'],
+			payload['password'],
+			payload['remember'] ?? false
+		);
+		if (logResponse.success) {
+			goto(previousPage);
+		} else {
+			serverError = logResponse.msg;
 		}
 	};
 </script>
 
-<h1>Sign In</h1>
-<form onsubmit={validate}>
-	<input id="csrf_token" type="hidden" value="text" />
-	{#if errors.server}
-		<div class="input-group">
-			<div class="error">{errors.server}</div>
-		</div>
-	{/if}
-	<div class="input-group">
-		<label for="username">Username</label> <br />
-		<input id="username" size="32" type="text" bind:value={username} />
-		{#if errors.username}
-			<br />
-			<div class="error">{errors.username}</div>
-		{/if}
-	</div>
-	<div class="input-group">
-		<label for="password">Password</label> <br />
-		<input id="password" size="32" type="password" bind:value={password} />
-		{#if errors.password}
-			<br />
-			<div class="error">{errors.password}</div>
-		{/if}
-	</div>
-	<div class="input-group">
-		<input id="remember" type="checkbox" bind:checked={remember} /> &nbsp;
-		<label for="remember">Remember me</label>
-	</div>
-	<div class="input-group">
-		<input id="submit" type="submit" class="submit-button" value="Sign in" style="height: 2rem" />
-	</div>
-</form>
+<AuthSheet intent={serverError ? '--critical-red' : undefined}>
+	{#snippet kicker()}Sign in{/snippet}
+	{#snippet title()}Welcome back{/snippet}
 
-<p>
-	New User?
-	<a href="/auth/invitation"> Click here to register! </a>
-</p>
+	{#if serverError}
+		<p class="server-error">{serverError}</p>
+	{/if}
+
+	<Form data={formData} confirmLabel="Sign in" showCancel={false} onconfirm={signIn} />
+
+	{#snippet footer()}
+		Been invited? <a href={resolve('/auth/register')}>Register with your token</a>.
+	{/snippet}
+</AuthSheet>
 
 <style>
-	h1 {
-		font-size: 1.8rem;
-		font-weight: 500;
-		margin-bottom: 7px;
-	}
-
-	label {
-		font-size: 1.15rem;
-	}
-
-	input {
-		height: 1.3rem;
-		font-size: 0.95rem;
+	.server-error {
+		margin: 0 0 13px;
+		padding: 9px 11px;
+		font-size: 0.78rem;
+		line-height: 1.4;
+		color: var(--critical-red);
+		background: var(--surface-2);
+		border: 1px solid var(--border);
+		border-left: 3px solid var(--critical-red);
+		border-radius: var(--radius);
 	}
 </style>

@@ -1,133 +1,50 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { navigating, page } from '$app/state';
+	import { resolve } from '$app/paths';
 
-	import Fa from 'svelte-fa';
-	import { faCircle } from '@fortawesome/free-solid-svg-icons';
+	import AuthSheet from '$lib/components/AuthSheet.svelte';
+	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
+	import TokenGate from '$lib/components/TokenGate.svelte';
 
-	import { crudRequest } from "$lib/actions.svelte.js";
-	import { checkJWT, getValidationColorClass } from '$lib/utils/functions.js';
+	import { crudRequest } from '$lib/actions.svelte.js';
 
-	// Token validation
-	let token = $state(page.url.searchParams.get('token'));
-	//svelte-ignore state_referenced_locally
-	let newToken = $state(token);
-
-	let tokenIsValid = $derived.by(() => {
-		try {
-			checkJWT(token, { sub: 'confirmation' });
-			return true;
-		} catch (error) {
-			return false;
-		}
-	});
-
-	let newTokenError = $derived.by(() => {
-		try {
-			checkJWT(newToken, { sub: 'confirmation' });
-			return null;
-		} catch (error) {
-			return error.message;
-		}
-	});
-	let newTokenIsValid = $derived(!newToken ? null : newTokenError === null);
-
-	const submitToken = function () {
-		if (newTokenIsValid !== true) {
-			// If invalid or expired token, clear it (should not be possible)
-			newToken = null;
-			token = null;
-		} else {
-			// Else, store the reset token and use it
-			token = newToken;
-			requestAnimationFrame(() => {
-				goto(`/auth/confirm?token=${token}`);
-			});
-		}
+	const confirmAccount = function (token) {
+		crudRequest(`auth/confirm_account?token=${token}`, 'create').then(() => {
+			goto(resolve('/'));
+		});
 	};
-
-	// Update token on self page navigation
-	$effect(() => {
-		if (navigating.from && navigating.to) {
-			// Coming from a page with a token, to a page without -> the token was invalid, clear it
-			if (
-				navigating.from.url.searchParams.get('token') &&
-				!navigating.to.url.searchParams.get('token')
-			) {
-				token = null;
-				newToken = null;
-			}
-		}
-	});
 </script>
 
-{#if token === null}
-	<h1>Enter your confirmation token</h1>
-	<form onsubmit={submitToken}>
-		<div class="input-group">
-			{#if newToken !== null && newTokenError !== null}
-				<div class="error">{newTokenError}</div>
-			{/if}
-			<input id="token" type="text" bind:value={newToken} />
-			<Fa icon={faCircle} class={getValidationColorClass(newTokenIsValid)} />
-		</div>
-		<div class="input-group">
-			<input
-				id="submit-token"
-				type="submit"
-				class="submit-button"
-				value="Validate"
-				style="height: 2rem"
-				disabled={!newTokenIsValid}
+<TokenGate
+	sub="confirmation"
+	path="/auth/confirm"
+	heading="Confirm your account"
+	hint="Paste the token from the confirmation e-mail you were sent."
+	deadEnd="The token in this link is expired or does not confirm an account. Paste the one you were sent, or ask for a new confirmation e-mail."
+>
+	{#snippet children(token)}
+		<AuthSheet intent="--good-green">
+			{#snippet kicker()}Token accepted{/snippet}
+			{#snippet title()}Confirm your account{/snippet}
+
+			<p class="lede">
+				This is the last step. Confirming activates your account and takes you to Ouranos.
+			</p>
+
+			<ConfirmButtons
+				confirmLabel="Confirm account"
+				showCancel={false}
+				onconfirm={() => confirmAccount(token)}
 			/>
-		</div>
-	</form>
-{:else if tokenIsValid}
-	<h1>Confirm your account</h1>
-	<form onsubmit={() => {
-		crudRequest(`auth/confirm_account?token=${token}`, 'create').then(() => {
-			goto(`/auth/confirm?token=${token}`);
-		});
-	}}>
-		<div class="input-group">
-			<input
-				id="submit-confirm-account"
-				type="submit"
-				class="submit-button"
-				value="Confirm"
-				style="height: 2rem"
-			/>
-		</div>
-	</form>
-{:else}
-	<p>Get a valid token and enter it <a href="/auth/confirm">here</a></p>
-{/if}
+		</AuthSheet>
+	{/snippet}
+</TokenGate>
 
 <style>
-	h1 {
-		font-size: 1.8rem;
-		font-weight: 500;
-		margin-bottom: 7px;
-	}
-
-	input {
-		height: 1.3rem;
-		font-size: 0.95rem;
-	}
-
-	.submit-button:disabled {
-		background-color: var(--derived-40);
-		color: var(--derived-60);
-		cursor: not-allowed;
-	}
-
-	#token {
-		width: 100%;
-	}
-
-	@media only screen and (min-width: 992px) {
-		#token {
-			width: 575px;
-		}
+	.lede {
+		margin: 0;
+		font-size: 0.85rem;
+		line-height: 1.55;
+		color: var(--text-dim-solid);
 	}
 </style>

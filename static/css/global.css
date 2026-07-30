@@ -442,10 +442,6 @@ a {
 	background-color: #f3f3f3;
 }
 
-.input-group + .input-group {
-	margin-top: 0.66em;
-}
-
 @media only screen and (min-width: 992px) {
 	.table-narrow {
 		max-width: 550px;

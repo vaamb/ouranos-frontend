@@ -46,6 +46,33 @@
 	// Chart.js draws nothing useful from a handful of points; the card says why.
 	const MIN_POINTS = 5;
 
+	// A sensor only records while its ecosystem is running, so a week's series
+	// routinely holds hour- or day-long holes. Chart.js joins whatever points it
+	// is handed, and a straight line ramping across two unrecorded days is a claim
+	// the data does not make. So the line is broken wherever the interval jumps
+	// far past the sensor's own sampling cadence. The cadence is measured rather
+	// than assumed, because the logging period is configurable — but it is only
+	// ever trusted within bounds: never break a gap shorter than an hour,
+	// and never carry a line across more than six.
+	const GAP_FACTOR = 4;
+	const MIN_GAP_MS = 60 * 60 * 1000;
+	const MAX_GAP_MS = 6 * 60 * 60 * 1000;
+
+	const gapThreshold = function (values) {
+		if (values.length < 3) {
+			return MAX_GAP_MS;
+		}
+		const intervals = [];
+		for (let index = 1; index < values.length; index++) {
+			intervals.push(
+				new Date(values[index][0]).getTime() - new Date(values[index - 1][0]).getTime()
+			);
+		}
+		intervals.sort((a, b) => a - b);
+		const median = intervals[Math.floor(intervals.length / 2)];
+		return Math.min(MAX_GAP_MS, Math.max(MIN_GAP_MS, median * GAP_FACTOR));
+	};
+
 	// Chart.js resolves no CSS variables, so the chart's chrome has to be read off
 	// the document as literals and re-read on every theme flip, one frame later.
 	let chartColors = $state({ line: '#16202e', grid: '#d7dfe8', tick: '#8b96a5' });
@@ -136,7 +163,10 @@
 					current: gaiaState.ecosystemsSensorsDataCurrent[key],
 					historic: historic,
 					values: values,
-					stats: summarize(values)
+					stats: summarize(values),
+					// Each sensor keeps its own cadence, so each series gets its own
+					// tolerance for what counts as a hole.
+					gap: gapThreshold(values)
 				};
 			});
 		});
@@ -169,9 +199,18 @@
 	const formatHistoricData = function (entry) {
 		const labels = [new Date(entry.historic['span'][0])];
 		const values = [null];
+		let previous = null;
 		for (const record of entry.values) {
+			const stamp = new Date(record[0]).getTime();
+			// A null point one millisecond after the last reading lifts the pen
+			// without moving the line's own start or end.
+			if (previous !== null && stamp - previous > entry.gap) {
+				labels.push(new Date(previous + 1));
+				values.push(null);
+			}
 			labels.push(record[0]);
 			values.push(record[1]);
+			previous = stamp;
 		}
 		labels.push(new Date(entry.historic['span'][1]));
 		values.push(null);
@@ -348,8 +387,8 @@
 					</div>
 				{:else}
 					<p class="thin">
-						Not enough records yet to draw a line. This sensor's chart appears once it has
-						reported a few more times.
+						Not enough records yet to draw a line. This sensor's chart appears once it has reported
+						a few more times.
 					</p>
 				{/if}
 			</figure>
@@ -359,8 +398,8 @@
 	<div class="nothing">
 		<h2>No {level.title.toLowerCase()} sensor in {ecosystemName}</h2>
 		<p>
-			Nothing here is being measured. Fit a sensor to this ecosystem and its readings appear on
-			this page.
+			Nothing here is being measured. Fit a sensor to this ecosystem and its readings appear on this
+			page.
 		</p>
 	</div>
 {/if}

@@ -129,7 +129,13 @@
 	bind:minimized={menuMinimized}
 />
 
-<div class="wrap">
+<div
+	class="wrap"
+	style="
+		--bottom-banner-height-mobile: {appState.anyContractMismatch ? '50px' : '0px'};
+		--bottom-banner-height: {appState.anyContractMismatch ? '37px' : '0px'};
+	"
+>
 	<Header />
 	{@render children?.()}
 	<StatusBanner />
@@ -137,13 +143,9 @@
 </div>
 
 <style>
-	main {
-		padding: 10px 20px calc(20px + var(--bottom-banner-height-mobile, 0px)) 20px;
-	}
-
 	.wrap {
 		max-width: 1120px;
 		margin: 0 auto;
-		padding: clamp(16px, 3vw, 34px) clamp(14px, 3vw, 30px) 60px;
+		padding: clamp(16px, 3vw, 34px) calc(clamp(14px, 3vw, 30px) + var(--bottom-banner-height-mobile, 0px)) 60px;
 	}
 </style>

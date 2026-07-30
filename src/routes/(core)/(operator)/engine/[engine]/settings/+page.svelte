@@ -1,10 +1,8 @@
 <script>
 	import { page } from '$app/state';
 
-	import Fa from 'svelte-fa';
-	import { faCircle } from '@fortawesome/free-solid-svg-icons';
-
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
+	import DataSheet from '$lib/components/DataSheet.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
@@ -50,45 +48,23 @@
 
 <HeaderLine title="{engineUID} engine" />
 <h2>Base info</h2>
-<div style="overflow-x: auto">
-	<table class="table-base table-alternate-colors table-narrow">
-		<tbody>
-			<tr>
-				<td>UID</td>
-				<td>
-					{engineUID} &nbsp;
-					<Fa icon={faCircle} class={getStatusClass(engineState['connected'])} />
-				</td>
-			</tr>
-			<tr>
-				<td>SID</td>
-				<td>{engine['sid']}</td>
-			</tr>
-			<tr>
-				<td>Registration date</td>
-				<td>{formatDateTime(engine['registration_date'])}</td>
-			</tr>
-			<tr>
-				<td>Last seen</td>
-				<td>{formatDateTime(engineState['last_seen'])}</td>
-			</tr>
-		</tbody>
-		<tbody>
-			<tr>
-				<td colspan="2" style="text-align: center; vertical-align: middle">
-					<button
-						class="text-button"
-						onclick={() => {
-							setCrudData('base_info', undefined, undefined, undefined);
-						}}
-					>
-						Update {engineUID}' base info
-					</button>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-</div>
+<DataSheet
+	rows={[
+		{ label: 'UID', value: engineUID },
+		{
+			label: 'Status',
+			value: engineState['connected'] ? 'Connected' : 'Disconnected',
+			statusClass: getStatusClass(engineState['connected'])
+		},
+		{ label: 'SID', value: engine['sid'] },
+		{ label: 'Registration date', value: formatDateTime(engine['registration_date']) },
+		{ label: 'Last seen', value: formatDateTime(engineState['last_seen']) }
+	]}
+	actionLabel="Edit base info"
+	onaction={() => {
+		setCrudData('base_info', undefined, undefined, undefined);
+	}}
+/>
 <Modal
 	showModal={crudAction === 'base_info'}
 	onclose={resetCrudData}

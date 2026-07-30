@@ -1,9 +1,8 @@
 <script>
 	import { onMount } from 'svelte';
 
-	import Fa from 'svelte-fa';
-
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
+	import DataSheet from '$lib/components/DataSheet.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
@@ -27,6 +26,7 @@
 	} from '$lib/store.svelte.ts';
 	import {
 		climateParameters,
+		ecosystemOperationStatus,
 		hardwareLevels,
 		hardwareTypes,
 		permissions,
@@ -39,8 +39,6 @@
 		formatDateTime
 	} from '$lib/utils/functions.js';
 
-	import { faCircle } from '@fortawesome/free-solid-svg-icons';
-
 	let { data } = $props();
 
 	let ecosystemName = $derived(data['ecosystemName']);
@@ -48,13 +46,29 @@
 
 	let ecosystem = $derived({ ...gaiaState.ecosystems[ecosystemUID] });
 	let ecosystemState = $derived(gaiaState.ecosystemsState[ecosystemUID]);
+	let ecosystemStatusClass = $derived(computeEcosystemStatusClass(ecosystemState));
 
 	const valueOrNone = function (value) {
 		return value === null ? 'None' : value;
 	};
 
+	const statusWord = function (statusClass) {
+		if (statusClass === ecosystemOperationStatus.disconnected) {
+			return 'Disconnected';
+		}
+		return statusClass === ecosystemOperationStatus.on ? 'Running' : 'Stopped';
+	};
+
 	// Management crud-related function
-	let ecosystemManagement = $derived({ ...gaiaState.ecosystemsManagement[ecosystemUID] });
+	// The switches edit this local draft and 'Save managements' sends it. It has
+	// to be `$state` and not a `$derived` copy: `bind:checked` needs a reactive
+	// object to write into, and a plain spread is not one.
+	let ecosystemManagement = $state({ ...gaiaState.ecosystemsManagement[data['ecosystemUID']] });
+
+	// Re-seed the draft when the ecosystem changes or the server sends new values.
+	$effect(() => {
+		ecosystemManagement = { ...gaiaState.ecosystemsManagement[ecosystemUID] };
+	});
 
 	const managementChoices = [
 		'sensors',
@@ -118,47 +132,23 @@
 
 <HeaderLine title="{ecosystemName} settings" />
 <h2>Base info</h2>
-<div style="overflow-x: auto">
-	<table class="table-base table-alternate-colors table-narrow" style="padding-bottom: 35px;">
-		<tbody>
-			<tr>
-				<td>Name</td>
-				<td>
-					{ecosystem['name']} &nbsp;
-					<Fa icon={faCircle} class={computeEcosystemStatusClass(gaiaState.ecosystemsState[ecosystemUID])} />
-				</td>
-			</tr>
-			<tr>
-				<td>UID</td>
-				<td>{ecosystem['uid']}</td>
-			</tr>
-			<tr>
-				<td>Registration date</td>
-				<td>{formatDateTime(ecosystem['registration_date'])}</td>
-			</tr>
-			<tr>
-				<td>Last seen</td>
-				<td>{formatDateTime(ecosystemState['last_seen'])}</td>
-			</tr>
-		</tbody>
-		{#if appState.currentUser.can(permissions.OPERATE)}
-			<tbody>
-				<tr>
-					<td colspan="2" style="text-align: center; vertical-align: middle">
-						<button
-							class="text-button"
-							onclick={() => {
-								setCrudData('base_info', undefined, undefined);
-							}}
-						>
-							Modify the base info
-						</button>
-					</td>
-				</tr>
-			</tbody>
-		{/if}
-	</table>
-</div>
+<DataSheet
+	rows={[
+		{ label: 'Name', value: ecosystem['name'] },
+		{ label: 'UID', value: ecosystem['uid'] },
+		{
+			label: 'Status',
+			value: statusWord(ecosystemStatusClass),
+			statusClass: ecosystemStatusClass
+		},
+		{ label: 'Registration date', value: formatDateTime(ecosystem['registration_date']) },
+		{ label: 'Last seen', value: formatDateTime(ecosystemState['last_seen']) }
+	]}
+	actionLabel="Edit base info"
+	onaction={() => {
+		setCrudData('base_info', undefined, undefined);
+	}}
+/>
 <Modal
 	showModal={crudTable === 'base_info'}
 	onclose={resetCrudData}
@@ -182,58 +172,23 @@
 {#if gaiaState.ecosystemsNycthemeralCycle[getKey(ecosystemUID)]}
 	{@const nycthemeralCycle = gaiaState.ecosystemsNycthemeralCycle[getKey(ecosystemUID)]}
 	<h2>Nycthemeral cycle info</h2>
-	<div style="overflow-x: auto">
-		<table class="table-base table-alternate-colors table-narrow" style="padding-bottom: 35px;">
-			<tbody>
-				<tr>
-					<td>Span method</td>
-					<td>{capitalize(nycthemeralCycle['span'])}</td>
-				</tr>
-				<tr>
-					<td>Span target</td>
-					<td
-						>{nycthemeralCycle['target'] ? capitalize(nycthemeralCycle['target']) : 'No target'}</td
-					>
-				</tr>
-				<tr>
-					<td>Day start</td>
-					<td>{nycthemeralCycle['day']}</td>
-				</tr>
-				<tr>
-					<td>Night start</td>
-					<td>{nycthemeralCycle['night']}</td>
-				</tr>
-				<tr>
-					<td>Lighting method</td>
-					<td>{capitalize(nycthemeralCycle['lighting'])}</td>
-				</tr>
-				<tr>
-					<td>Lighting hours</td>
-					<td>
-						{#each computeLightingHours(nycthemeralCycle) as lightingHours}
-							<p style="margin-bottom: 0">{lightingHours}</p>
-						{/each}
-					</td>
-				</tr>
-			</tbody>
-			{#if appState.currentUser.can(permissions.OPERATE)}
-				<tbody>
-					<tr>
-						<td colspan="2" style="text-align: center; vertical-align: middle">
-							<button
-								class="text-button"
-								onclick={() => {
-									setCrudData('nycthemeral_info', undefined, undefined);
-								}}
-							>
-								Modify the nycthemeral info
-							</button>
-						</td>
-					</tr>
-				</tbody>
-			{/if}
-		</table>
-	</div>
+	<DataSheet
+		rows={[
+			{ label: 'Span method', value: capitalize(nycthemeralCycle['span']) },
+			{
+				label: 'Span target',
+				value: nycthemeralCycle['target'] ? capitalize(nycthemeralCycle['target']) : 'No target'
+			},
+			{ label: 'Day start', value: nycthemeralCycle['day'] },
+			{ label: 'Night start', value: nycthemeralCycle['night'] },
+			{ label: 'Lighting method', value: capitalize(nycthemeralCycle['lighting']) },
+			{ label: 'Lighting hours', value: computeLightingHours(nycthemeralCycle) }
+		]}
+		actionLabel="Edit nycthemeral cycle"
+		onaction={() => {
+			setCrudData('nycthemeral_info', undefined, undefined);
+		}}
+	/>
 	<Modal
 		showModal={crudTable === 'nycthemeral_info'}
 		onclose={resetCrudData}
@@ -285,41 +240,25 @@
 {/if}
 
 <h2>Managements</h2>
-<div style="overflow-x: auto">
-	<table class="table-base table-alternate-colors table-narrow">
-		<tbody>
-			{#each managementChoices as management}
-				<tr>
-					<td>
-						{capitalize(management)}
-					</td>
-					<td>
-						<SlideButton
-							bind:checked={ecosystemManagement[management]}
-							disabled={!appState.currentUser.can(permissions.OPERATE)}
-						/>
-					</td>
-				</tr>
-			{/each}
-		</tbody>
-		{#if appState.currentUser.can(permissions.OPERATE)}
-			<tbody>
-				<tr>
-					<td colspan="2" style="text-align: center; vertical-align: middle">
-						<button
-							class="text-button"
-							onclick={() => {
-								setCrudData('management', undefined, undefined);
-							}}
-						>
-							Update {ecosystemName}' management
-						</button>
-					</td>
-				</tr>
-			</tbody>
-		{/if}
-	</table>
-</div>
+{#snippet managementToggle(row)}
+	<SlideButton
+		id={row['key']}
+		bind:checked={ecosystemManagement[row['key']]}
+		disabled={!appState.currentUser.can(permissions.OPERATE)}
+	/>
+{/snippet}
+<DataSheet
+	rows={managementChoices.map((management) => ({
+		label: capitalize(management),
+		key: management,
+		labelId: `${management}Button`,
+		content: managementToggle
+	}))}
+	actionLabel="Save managements"
+	onaction={() => {
+		setCrudData('management', undefined, undefined);
+	}}
+/>
 <Modal
 	showModal={crudTable === 'management'}
 	onclose={resetCrudData}

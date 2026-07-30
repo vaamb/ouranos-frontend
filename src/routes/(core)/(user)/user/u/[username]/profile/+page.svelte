@@ -1,8 +1,13 @@
 <script>
-	import Fa from 'svelte-fa';
-	import { faCircle } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faEnvelopeCircleCheck,
+		faKey,
+		faPenToSquare,
+		faTrashCan
+	} from '@fortawesome/free-solid-svg-icons';
 
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
+	import DataSheet from '$lib/components/DataSheet.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
@@ -27,10 +32,6 @@
 		return new Date() - new Date(userDescription['last_seen']) < 1000 * 60 * 2;
 	};
 
-	const emptyIfNull = function (maybeStr) {
-		return maybeStr ? maybeStr : '';
-	};
-
 	// Modal-related variables and functions
 	let crudAction = $state(undefined);
 
@@ -41,95 +42,64 @@
 	const resetCrudAction = function () {
 		crudAction = undefined;
 	};
+
+	// The account acts, in the order they are likely to be needed. Sending mails
+	// is only offered when the mail service is up, and only one of the two mails
+	// makes sense at a time.
+	let profileActions = $derived.by(() => {
+		const actions = [
+			{
+				label: 'Update profile',
+				icon: faPenToSquare,
+				onaction: () => setCrudAction('update')
+			}
+		];
+		if (serviceEnabled(servicesState.services, 'email')) {
+			if (!userDescription['confirmed_at']) {
+				actions.push({
+					label: 'Confirm account',
+					icon: faEnvelopeCircleCheck,
+					onaction: () => setCrudAction('confirm')
+				});
+			} else {
+				actions.push({
+					label: 'Change password',
+					icon: faKey,
+					onaction: () => setCrudAction('reset_password')
+				});
+			}
+		}
+		actions.push({
+			label: 'Delete account',
+			icon: faTrashCan,
+			danger: true,
+			onaction: () => setCrudAction('delete')
+		});
+		return actions;
+	});
 </script>
 
 <HeaderLine title="{userDescription['username']}'s profile" />
-<table class="table-base table-narrow">
-	<tbody>
-		<tr>
-			<td>Username</td>
-			<td>
-				{userDescription['username']} &nbsp;
-				<Fa icon={faCircle} class={getStatusClass(seenLastly(userDescription))} />
-			</td>
-		</tr>
-		<tr>
-			<td>Firstname</td>
-			<td>{emptyIfNull(userDescription['firstname'])}</td>
-		</tr>
-		<tr>
-			<td>Lastname</td>
-			<td>{emptyIfNull(userDescription['lastname'])}</td>
-		</tr>
-		<tr>
-			<td>Role</td>
-			<td>{capitalize(userDescription['role_name'])}</td>
-		</tr>
-		<tr>
-			<td>E-mail</td>
-			<td>{userDescription['email']}</td>
-		</tr>
-		<tr>
-			<td>Registration date</td>
-			<td>{formatDateTime(new Date(userDescription['created_at']))}</td>
-		</tr>
-	</tbody>
-	<tbody>
-		<tr>
-			<td colspan="2" style="text-align: center; vertical-align: middle">
-				<button
-					class="text-button"
-					onclick={() => {
-						setCrudAction('update');
-					}}
-				>
-					Update profile
-				</button>
-			</td>
-		</tr>
-		{#if serviceEnabled(servicesState.services, 'email')}
-			{#if !userDescription['confirmed_at']}
-				<tr>
-					<td colspan="2" style="text-align: center; vertical-align: middle">
-						<button
-							class="text-button"
-							onclick={() => {
-								setCrudAction('confirm');
-							}}
-						>
-							Confirm account
-						</button>
-					</td>
-				</tr>
-			{:else}
-				<tr>
-					<td colspan="2" style="text-align: center; vertical-align: middle">
-						<button
-							class="text-button"
-							onclick={() => {
-								setCrudAction('reset_password');
-							}}
-						>
-							Change password
-						</button>
-					</td>
-				</tr>
-			{/if}
-		{/if}
-		<tr>
-			<td colspan="2" style="text-align: center; vertical-align: middle">
-				<button
-					class="text-button"
-					onclick={() => {
-						setCrudAction('delete');
-					}}
-				>
-					Delete account
-				</button>
-			</td>
-		</tr>
-	</tbody>
-</table>
+<DataSheet
+	rows={[
+		{ label: 'Username', value: userDescription['username'] },
+		{
+			label: 'Status',
+			value: seenLastly(userDescription) ? 'Online' : 'Offline',
+			statusClass: getStatusClass(seenLastly(userDescription))
+		},
+		{ label: 'Firstname', value: userDescription['firstname'] },
+		{ label: 'Lastname', value: userDescription['lastname'] },
+		{ label: 'Role', value: capitalize(userDescription['role_name']) },
+		{ label: 'E-mail', value: userDescription['email'] },
+		{
+			label: 'Registration date',
+			value: formatDateTime(new Date(userDescription['created_at']))
+		}
+	]}
+	actions={profileActions}
+	actionPermission={null}
+/>
 <Modal
 	showModal={crudAction === 'update'}
 	onclose={resetCrudAction}

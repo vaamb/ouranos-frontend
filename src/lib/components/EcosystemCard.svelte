@@ -214,7 +214,7 @@
 					<a class="cap" href="{resolve(`/ecosystem/${slug}/sensors/plants`)}">Plants</a>
 				{/if}
 				{#if healthSensors.length > 0}
-					<a class="cap" href="{resolve(`/ecosystem/${slug}/sensors/ecosystem`)}">Health</a>
+					<a class="cap" href="{resolve(`/ecosystem/${slug}/sensors/health`)}">Health</a>
 				{/if}
 				{#if !isEmpty(actuatorsState)}
 					<a class="cap" href="{resolve(`/ecosystem/${slug}/actuators`)}">Actuators</a>

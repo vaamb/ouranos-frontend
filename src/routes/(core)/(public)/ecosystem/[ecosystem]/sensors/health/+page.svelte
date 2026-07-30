@@ -23,7 +23,7 @@
 	let ecosystemName = $derived(data['ecosystemName']);
 	let ecosystemUID = $derived(data['ecosystemUID']);
 
-	// The page is `/health`, but `ecosystem` is the *hardware level* the backend
+	// The page is `/health`, but `health` is the *hardware level* the backend
 	// files these sensors under, and it is also what selects the 31-day window in
 	// `syncSensorHistoricData`. It is a wire value, not a label.
 	const LEVEL = 'ecosystem';

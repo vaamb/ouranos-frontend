@@ -320,8 +320,6 @@
 	{#if freshest}· measured {formatTimeShort(freshest)}{/if}
 {/snippet}
 
-<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
-     the snippet is withheld entirely rather than rendered empty. -->
 <TitleBar
 	title={level.title}
 	docTitle="{level.title} in {ecosystemName}"

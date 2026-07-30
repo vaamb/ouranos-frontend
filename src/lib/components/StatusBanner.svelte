@@ -47,7 +47,7 @@
 	let { pageType, ecosystemOrEngineUID } = $derived(computePageType(page.url.pathname));
 </script>
 
-<div class="bottom-bar" role="status">
+<div class="status-banner" role="status">
 	{#if appState.pingServerStatus === CONNECTION_STATUS.DISCONNECTED}
 		<div class="disconnected center-content">Disconnected from the server</div>
 	{:else if appState.pingServerStatus === CONNECTION_STATUS.RECONNECTED}
@@ -65,7 +65,7 @@
 </div>
 
 <style>
-	.bottom-bar {
+	.status-banner {
 		position: fixed;
 		bottom: var(--bottom-banner-height-mobile, 0px);
 		right: 0;
@@ -89,8 +89,7 @@
 	}
 
 	@media only screen and (min-width: 992px) {
-		.bottom-bar {
-			width: inherit;
+		.status-banner {
 			bottom: var(--bottom-banner-height, 0px);
 		}
 	}

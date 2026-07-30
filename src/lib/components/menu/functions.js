@@ -66,9 +66,9 @@ export const generateListOfMenuItems = function (
 			management: ['actuators']
 		},
 		{
-			name: 'Ecosystem health',
+			name: 'Health',
 			icon: faHeartbeat,
-			path: 'sensors/ecosystem',
+			path: 'sensors/health',
 			management: ['health', 'ecosystem_data']
 		},
 		{

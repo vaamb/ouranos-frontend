@@ -6,6 +6,10 @@
 	//
 	// `sensor` is only worth passing when a measure has more than one sensor; a
 	// single-sensor measure reads better as just its own name.
+	//
+	// `precision` overrides the rounding for measures the default rule is wrong
+	// about: a vegetation index lives in [-1, 1], so one decimal rounds most of
+	// it away.
 	let {
 		label,
 		sensor = null,
@@ -13,7 +17,8 @@
 		unit = '',
 		delta = null,
 		deltaWindow = '24 h',
-		note = null
+		note = null,
+		precision = null
 	} = $props();
 
 	// Degrees and percentages sit tight against the figure the way they are
@@ -23,6 +28,9 @@
 	// One decimal is the useful resolution for a climate reading, but a value in
 	// the hundreds or thousands (lux, ppm) only gets noisier for it.
 	const format = function (number) {
+		if (precision !== null) {
+			return number.toFixed(precision);
+		}
 		return Math.abs(number) >= 100 ? number.toFixed(0) : number.toFixed(1);
 	};
 

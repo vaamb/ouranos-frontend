@@ -1,9 +1,9 @@
 <script>
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import Form from '$lib/components/Form.svelte';
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
 	import { fetchWikiTopics } from '$lib/queries.js';
@@ -25,7 +25,14 @@
 	};
 </script>
 
-<HeaderLine title="Topics index" />
+<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
+     the snippet is withheld entirely rather than rendered empty. -->
+{#snippet count()}
+	{servicesState.wikiTopics.length}
+	{servicesState.wikiTopics.length === 1 ? 'topic' : 'topics'}
+{/snippet}
+
+<TitleBar title="Topics index" sideBloc={servicesState.wikiTopics.length ? count : null} />
 
 <Table
 	tableID="wikiTopicsTable"

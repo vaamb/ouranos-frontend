@@ -1,7 +1,7 @@
 <script>
 	import DataSheet from '$lib/components/DataSheet.svelte';
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import SlideButton from '$lib/components/SlideButton.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { updateService } from '$lib/actions.svelte.js';
 	import { fetchServices } from '$lib/queries.js';
@@ -10,6 +10,10 @@
 	import { capitalize } from '$lib/utils/functions.js';
 
 	let updatedServices = $state([...servicesState.services]);
+
+	let enabledServices = $derived(
+		servicesState.services.filter((service) => service['status']).length
+	);
 
 	const saveServices = function () {
 		let anyUpdated = false;
@@ -31,7 +35,13 @@
 	};
 </script>
 
-<HeaderLine title="Service settings" />
+<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
+     the snippet is withheld entirely rather than rendered empty. -->
+{#snippet enabled()}
+	{enabledServices} of {servicesState.services.length} enabled
+{/snippet}
+
+<TitleBar title="Service settings" sideBloc={servicesState.services.length ? enabled : null} />
 
 {#snippet serviceToggle(row)}
 	<SlideButton

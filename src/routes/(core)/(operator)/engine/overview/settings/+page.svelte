@@ -1,6 +1,6 @@
 <script>
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Table from '$lib/components/Table.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { gaiaState } from '$lib/store.svelte.js';
 	import { formatDateTime } from '$lib/utils/functions.js';
@@ -12,9 +12,19 @@
 			connected: gaiaState.enginesState[engine['uid']]['connected'],
 		}));
 	});
+
+	let connectedEngines = $derived(fullEngines.filter((engine) => engine['connected']).length);
 </script>
 
-<HeaderLine title="Ecosystem engines overview" />
+<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
+     the snippet is withheld entirely rather than rendered empty. -->
+{#snippet census()}
+	{fullEngines.length}
+	{fullEngines.length === 1 ? 'engine' : 'engines'}
+	· {connectedEngines ? `${connectedEngines} connected` : 'none connected'}
+{/snippet}
+
+<TitleBar title="Ecosystem engines overview" sideBloc={fullEngines.length ? census : null} />
 
 <Table
 	tableID="linkedEnvironmentsTable"

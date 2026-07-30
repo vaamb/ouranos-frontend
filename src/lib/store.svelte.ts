@@ -12,7 +12,7 @@ import type {
 	FlashMessage,
 	HeaderItem,
 	Server,
-	ServerTimedValue,
+	ServerData,
 	Service,
 	SunTimes,
 	User,
@@ -76,8 +76,8 @@ export const gaiaState = new GaiaState();
 
 class InfraState {
 	servers = $state<Record<string, Server>>({});
-	serversCurrentData = $state<Record<string, ServerTimedValue>>({});
-	serversHistoricData = $state<Record<string, Array<ServerTimedValue>>>({});
+	serversCurrentData = $state<Record<string, ServerData | Record<string, never>>>({});
+	serversHistoricData = $state<Record<string, Array<ServerData>>>({});
 
 	get serversIds() {
 		return Object.values(this.servers)

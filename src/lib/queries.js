@@ -404,6 +404,15 @@ export const fetchServers = async function (options = {}) {
 		});
 };
 
+const asServerRecord = function (row, order) {
+	const record = {};
+	order.forEach((name, index) => {
+		record[name] = row[index];
+	});
+	record['timestamp'] = new Date(record['timestamp']);
+	return record;
+};
+
 export const fetchServerCurrentData = async function (serverUID, options = {}) {
 	assertAuthInfo(options);
 	return client
@@ -412,10 +421,22 @@ export const fetchServerCurrentData = async function (serverUID, options = {}) {
 			withCredentials: true
 		})
 		.then((response) => {
-			return response['data']['values'];
+			const rows = response['data']['values'];
+			if (!rows || rows.length === 0) {
+				return {};
+			}
+			const order = response['data']['order'];
+			// The cache query behind `/data/current` returns every row still within
+			// the cache's TTL, and orders none of them, so the most recent one has
+			// to be picked rather than taken off the end.
+			return rows
+				.map((row) => asServerRecord(row, order))
+				.reduce((latest, record) =>
+					record['timestamp'] > latest['timestamp'] ? record : latest
+				);
 		})
 		.catch(() => {
-			return [];
+			return {};
 		});
 };
 
@@ -427,7 +448,8 @@ export const fetchServerHistoricData = async function (serverUID, options = {}) 
 			withCredentials: true
 		})
 		.then((response) => {
-			return response['data']['values'];
+			const order = response['data']['order'];
+			return response['data']['values'].map((row) => asServerRecord(row, order));
 		})
 		.catch(() => {
 			return [];

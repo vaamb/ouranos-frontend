@@ -262,6 +262,154 @@ a {
 	text-decoration: underline;
 }
 
+/* --- Long-form article text ---------------------------------------------
+   The redesign's replacement for `.text` (which stays for the pages not yet
+   ported, and has no dark variant). It lives here rather than in a component
+   because it dresses `{@html}` output, which scoped styles never reach: the
+   wiki reader and `TextEditor`'s preview must be the same typography, or the
+   preview stops being one. Garamond is the prose font (DESIGN.md §3). */
+.prose {
+	font-family: 'EB Garamond', Garamond, Georgia, serif;
+	font-size: 1.1rem;
+	line-height: 1.6;
+	color: var(--text);
+	max-width: 70ch;
+	text-align: justify;
+	text-justify: inter-word;
+	hyphens: auto;
+}
+
+.prose > *:first-child {
+	margin-top: 0;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+	font-family: 'EB Garamond', Garamond, Georgia, serif;
+	color: var(--text);
+	text-align: left;
+	line-height: 1.15;
+	hyphens: none;
+}
+
+.prose h1 {
+	font-size: 1.65rem;
+	font-weight: 600;
+	margin: 1.4em 0 0.5em;
+}
+
+.prose h2 {
+	font-size: 1.375rem;
+	font-weight: 600;
+	margin: 1.4em 0 0.45em;
+}
+
+.prose h3 {
+	font-size: 1.15rem;
+	font-weight: 600;
+	margin: 1.3em 0 0.4em;
+}
+
+.prose p {
+	margin: 0 0 1em;
+}
+
+.prose ul,
+.prose ol {
+	padding-left: 1.5em;
+	margin: 0 0 1em;
+}
+
+.prose li {
+	margin-bottom: 0.25em;
+}
+
+.prose a {
+	color: var(--grow);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+/* Kept floating: articles are written against it, and their `&width=…` codes
+   assume text runs beside the picture. */
+.prose img {
+	float: left;
+	max-width: 100%;
+	height: auto;
+	object-fit: cover;
+	margin: 4px 16px 10px 0;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+}
+
+.prose blockquote {
+	margin: 0 0 1em;
+	padding-left: 14px;
+	border-left: 3px solid var(--border-strong);
+	color: var(--text-dim-solid);
+	font-style: italic;
+}
+
+.prose code {
+	font-family: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+	font-size: 0.8em;
+	padding: 1px 5px;
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	border-radius: 3px;
+}
+
+.prose pre {
+	margin: 0 0 1em;
+	padding: 12px 14px;
+	overflow-x: auto;
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	text-align: left;
+}
+
+.prose pre code {
+	padding: 0;
+	background: none;
+	border: 0;
+}
+
+.prose hr {
+	border: 0;
+	border-top: 1px solid var(--border);
+	margin: 1.6em 0;
+}
+
+.prose table {
+	width: 100%;
+	margin: 0 0 1em;
+	border-collapse: collapse;
+	font-family: 'Open Sans', sans-serif;
+	font-variant-numeric: tabular-nums;
+	font-size: 0.82rem;
+	text-align: left;
+}
+
+.prose th,
+.prose td {
+	padding: 8px 12px;
+	border-top: 1px solid var(--border);
+}
+
+.prose th {
+	font-family: 'Raleway', sans-serif;
+	font-size: 0.64rem;
+	font-weight: 700;
+	letter-spacing: 0.13em;
+	text-transform: uppercase;
+	color: var(--text-dim-solid);
+	border-top: 0;
+	border-bottom: 1px solid var(--border-strong);
+}
+
 .table-base {
 	display: table;
 	/* table-layout: fixed; */

@@ -97,6 +97,7 @@
 							<div class="role">{role}</div>
 						</div>
 						<a href={resolve(`/user/u/${user.username}/profile`)} role="menuitem">Profile</a>
+						<a href={resolve('/user/settings')} role="menuitem">Settings</a>
 						<div class="sep"></div>
 						<button type="button" class="mi danger" role="menuitem" onclick={logOut}>
 							Log out
@@ -115,7 +116,7 @@
 		justify-content: flex-start;
 		gap: 6px;
 		flex-wrap: wrap;
-		margin-bottom: clamp(20px, 3vw, 34px);
+		margin-bottom: clamp(12px, 2vw, 18px);
 	}
 
 	.brand {
@@ -133,8 +134,8 @@
 
 	.topbar.has-ctx .brand {
 		padding-right: 14px;
-    border-right: 1px solid var(--border);
-  }
+		border-right: 1px solid var(--border);
+	}
 
 	.brand small {
 		font-family: 'Raleway', sans-serif;

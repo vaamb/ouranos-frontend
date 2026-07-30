@@ -4,8 +4,8 @@
 	import Header from '$lib/components/header/Header.svelte';
 	import StatusBanner from '$lib/components/StatusBanner.svelte';
 	import ContractBanner from '$lib/components/ContractBanner.svelte';
-	import Menu from '$lib/components/menu/Menu.svelte';
-	import { generateListOfMenuItems } from '$lib/components/menu/functions.js';
+	import NavLine from '$lib/components/nav/NavLine.svelte';
+	import { generateNavigation } from '$lib/components/nav/functions.js';
 	import Modal from '$lib/components/Modal.svelte';
 
 	import { CONNECTION_STATUS, CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
@@ -31,17 +31,14 @@
 	servicesState.services = data.services;
 	servicesState.wikiTopics = data.wikiTopics;
 
-	// Menu-related parameters
-	const menuWidth = 210;
-	const menuMinimizedWidth = 45 + 20;
-	let menuMinimized = $state(true);
-
-	let menuItems = $derived(
-		generateListOfMenuItems(
+	let navigation = $derived(
+		generateNavigation(
 			appState.currentUser,
 			gaiaState.ecosystemsIds,
 			gaiaState.ecosystemsManagement,
+			gaiaState.ecosystemsState,
 			gaiaState.enginesIds,
+			gaiaState.enginesState,
 			servicesState.services,
 			infraState.serversIds,
 			servicesState.wikiTopics
@@ -122,13 +119,6 @@
 	{appState.flashMessages[0]['message']}
 </Modal>
 
-<Menu
-	items={menuItems}
-	width={menuWidth}
-	miniWidth={menuMinimizedWidth}
-	bind:minimized={menuMinimized}
-/>
-
 <div
 	class="wrap"
 	style="
@@ -137,6 +127,7 @@
 	"
 >
 	<Header />
+	<NavLine siteViews={navigation['siteViews']} groups={navigation['groups']} />
 	{@render children?.()}
 	<StatusBanner />
 	<ContractBanner />
@@ -146,6 +137,7 @@
 	.wrap {
 		max-width: 1120px;
 		margin: 0 auto;
-		padding: clamp(16px, 3vw, 34px) calc(clamp(14px, 3vw, 30px) + var(--bottom-banner-height-mobile, 0px)) 60px;
+		padding: clamp(16px, 3vw, 34px)
+			calc(clamp(14px, 3vw, 30px) + var(--bottom-banner-height-mobile, 0px)) 60px;
 	}
 </style>

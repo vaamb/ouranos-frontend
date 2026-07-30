@@ -52,6 +52,10 @@
 		margin-right: 0.45rem;
 	}
 
+	.side-bloc:empty {
+		display: none;
+	}
+
 	.action {
 		margin-left: auto;
 	}

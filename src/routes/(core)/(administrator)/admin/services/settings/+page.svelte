@@ -35,8 +35,6 @@
 	};
 </script>
 
-<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
-     the snippet is withheld entirely rather than rendered empty. -->
 {#snippet enabled()}
 	{enabledServices} of {servicesState.services.length} enabled
 {/snippet}

@@ -343,8 +343,6 @@
 	up {computeServerUptime(serverInfo['start_time'], now)}
 {/snippet}
 
-<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
-     the snippet is withheld entirely rather than rendered empty. -->
 <TitleBar
 	title="Server load"
 	docTitle="Load on {serverName}"

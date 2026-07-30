@@ -286,8 +286,6 @@
 	{series.length === 1 ? 'index' : 'indices'}
 {/snippet}
 
-<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
-     the snippet is withheld entirely rather than rendered empty. -->
 <TitleBar
 	title="Health"
 	docTitle="Health of {ecosystemName}"

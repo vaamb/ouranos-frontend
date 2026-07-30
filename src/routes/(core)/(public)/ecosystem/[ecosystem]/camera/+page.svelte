@@ -76,8 +76,6 @@
 	});
 </script>
 
-<!-- `TitleBar` draws its own separator dot as soon as it is handed a snippet, so
-     the snippet is withheld entirely rather than rendered empty. -->
 {#snippet stream()}
 	{cameraIDs.length}
 	{cameraIDs.length === 1 ? 'camera' : 'cameras'}

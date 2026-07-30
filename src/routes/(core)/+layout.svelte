@@ -2,7 +2,7 @@
 	import { onDestroy, onMount, tick } from 'svelte';
 
 	import Header from '$lib/components/header/Header.svelte';
-	import BottomBar from '$lib/components/BottomBar.svelte';
+	import StatusBanner from '$lib/components/StatusBanner.svelte';
 	import ContractBanner from '$lib/components/ContractBanner.svelte';
 	import Menu from '$lib/components/menu/Menu.svelte';
 	import { generateListOfMenuItems } from '$lib/components/menu/functions.js';
@@ -132,7 +132,7 @@
 <div class="wrap">
 	<Header />
 	{@render children?.()}
-	<BottomBar />
+	<StatusBanner />
 	<ContractBanner />
 </div>
 

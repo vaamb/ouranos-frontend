@@ -1,8 +1,8 @@
 <script>
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
 	import { gaiaState } from '$lib/store.svelte.ts';
@@ -20,7 +20,7 @@
 	};
 </script>
 
-<HeaderLine title="Ecosystem warnings" />
+<TitleBar title="Ecosystem warnings" />
 
 {#if gaiaState.warnings.length > 0}
 	<Table

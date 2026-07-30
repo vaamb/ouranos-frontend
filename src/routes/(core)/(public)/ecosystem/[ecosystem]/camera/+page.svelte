@@ -3,8 +3,8 @@
 
 	import Box from '$lib/components/layout/Box.svelte';
 	import BoxItem from '$lib/components/layout/BoxItem.svelte';
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Image from '$lib/components/Image.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { fetchCameraPicturesInfo } from '$lib/queries.js';
 	import { joinRoom, leaveRoom, socketio } from '$lib/socketio.svelte.js';
@@ -65,7 +65,7 @@
 	});
 </script>
 
-<HeaderLine title="Camera stream from {ecosystemName}" />
+<TitleBar title="Camera stream from {ecosystemName}" />
 
 {#each cameraIDs as cameraID}
 	{@const pictureInfo = cameraData[cameraID['uid']]}

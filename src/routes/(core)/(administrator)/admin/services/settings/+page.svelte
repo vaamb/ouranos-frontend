@@ -1,7 +1,7 @@
 <script>
 	import DataSheet from '$lib/components/DataSheet.svelte';
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import SlideButton from '$lib/components/SlideButton.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { updateService } from '$lib/actions.svelte.js';
 	import { fetchServices } from '$lib/queries.js';
@@ -31,7 +31,7 @@
 	};
 </script>
 
-<HeaderLine title="Service settings" />
+<TitleBar title="Service settings" />
 
 {#snippet serviceToggle(row)}
 	<SlideButton

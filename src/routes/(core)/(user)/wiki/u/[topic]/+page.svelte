@@ -1,8 +1,8 @@
 <script>
 	import Form from '$lib/components/Form.svelte';
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
 	import { fetchWikiArticles } from '$lib/queries.js';
@@ -37,7 +37,7 @@
 	};
 </script>
 
-<HeaderLine title="{capitalize(topicName)} articles index" />
+<TitleBar title="{capitalize(topicName)} articles index" />
 <Table
 	tableID="wikiArticlesTable"
 	columns={[

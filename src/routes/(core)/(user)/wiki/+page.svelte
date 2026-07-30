@@ -1,9 +1,9 @@
 <script>
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import Form from '$lib/components/Form.svelte';
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
 	import { fetchWikiTopics } from '$lib/queries.js';
@@ -25,7 +25,7 @@
 	};
 </script>
 
-<HeaderLine title="Topics index" />
+<TitleBar title="Topics index" />
 
 <Table
 	tableID="wikiTopicsTable"

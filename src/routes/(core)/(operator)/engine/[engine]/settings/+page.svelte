@@ -4,9 +4,9 @@
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import DataSheet from '$lib/components/DataSheet.svelte';
 	import Form from '$lib/components/Form.svelte';
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import Table from '$lib/components/Table.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { gaiaState } from '$lib/store.svelte.js';
 	import { formatDateTime, getStatusClass, isEmpty, slugify } from '$lib/utils/functions.js';
@@ -46,7 +46,7 @@
 	let ecosystemArray = $derived(crudIndex !== undefined ? fullEcosystems[crudIndex] : []);
 </script>
 
-<HeaderLine title="{engineUID} engine" />
+<TitleBar title="{engineUID} engine" />
 <h2>Base info</h2>
 <DataSheet
 	rows={[

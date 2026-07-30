@@ -1,6 +1,6 @@
 <script>
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Table from '$lib/components/Table.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { gaiaState } from '$lib/store.svelte.js';
 	import { formatDateTime } from '$lib/utils/functions.js';
@@ -14,7 +14,7 @@
 	});
 </script>
 
-<HeaderLine title="Ecosystem engines overview" />
+<TitleBar title="Ecosystem engines overview" />
 
 <Table
 	tableID="linkedEnvironmentsTable"

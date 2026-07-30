@@ -9,8 +9,8 @@
 	import ConfirmButtons from '$lib/components/ConfirmButtons.svelte';
 	import DataSheet from '$lib/components/DataSheet.svelte';
 	import Form from '$lib/components/Form.svelte';
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
 	import Modal from '$lib/components/Modal.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { crudRequest } from '$lib/actions.svelte.js';
 	import { servicesState } from '$lib/store.svelte.ts';
@@ -79,7 +79,7 @@
 	});
 </script>
 
-<HeaderLine title="{userDescription['username']}'s profile" />
+<TitleBar title="{userDescription['username']}'s profile" />
 <DataSheet
 	rows={[
 		{ label: 'Username', value: userDescription['username'] },

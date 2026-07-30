@@ -1,132 +1,91 @@
 <script>
 	import { onDestroy, onMount } from 'svelte';
 
-	import Box from '$lib/components/layout/Box.svelte';
-	import BoxItem from '$lib/components/layout/BoxItem.svelte';
-	import Graph from '$lib/components/Graph.svelte';
-	import HeaderLine from '$lib/components/HeaderLine.svelte';
-	import Switch from '$lib/components/Switch.svelte';
+	import Fa from 'svelte-fa';
+	import {
+		faDroplet,
+		faDropletSlash,
+		faFan,
+		faFire,
+		faLightbulb,
+		faSnowflake
+	} from '@fortawesome/free-solid-svg-icons';
 
+	import ActuatorHistory from '$lib/components/ActuatorHistory.svelte';
+	import Switch from '$lib/components/Switch.svelte';
+	import TitleBar from '$lib/components/TitleBar.svelte';
+
+	import { useHeaderItems } from '$lib/components/header/header.svelte.ts';
 	import {
 		syncEcosystemActuatorsState,
+		syncEcosystemNycthemeralCycleData,
 		updateActuatorMode
 	} from '$lib/actions.svelte.js';
-	import {
-		fetchEcosystemActuatorRecords
-	} from '$lib/queries.js';
-	import { gaiaState } from '$lib/store.svelte.ts';
+	import { fetchEcosystemActuatorRecords } from '$lib/queries.js';
+	import { gaiaState, getKey } from '$lib/store.svelte.ts';
 
 	import { socketio } from '$lib/socketio.svelte.js';
 	import { actuatorTypes } from '$lib/utils/consts.js';
 	import { capitalize } from '$lib/utils/functions.js';
-	import { colors } from '$lib/utils/styling.js';
 
 	let { data } = $props();
 
 	let ecosystemName = $derived(data['ecosystemName']);
 	let ecosystemUID = $derived(data['ecosystemUID']);
 
-	let endPoint = $state(Date.now());
-	let startPoint = $derived(new Date(endPoint - 1000 * 60 * 60 * 24 * 7));
+	const icons = {
+		light: faLightbulb,
+		heater: faFire,
+		cooler: faSnowflake,
+		humidifier: faDroplet,
+		dehumidifier: faDropletSlash,
+		fan: faFan
+	};
 
+	// The lane shows whole days, so a five-minute clock is plenty to keep the
+	// "now" edge and the "since" readout honest.
+	let now = $state(Date.now());
 	let actuatorsRecords = $state({});
-	let formatActuatorsRecords = function (actuatorRecords, actuatorState, startPoint, endPoint) {
-		let formattedRecords = [];
-		if (actuatorRecords['values'].length === 0) {
-			// If there are no records, add start and end points only
-			formattedRecords.push(
-				[startPoint, actuatorState[1], actuatorState[2], actuatorState[3], actuatorState[4]],
-				[endPoint, actuatorState[1], actuatorState[2], actuatorState[3], actuatorState[4]]
-			);
-		} else {
-			// If there are records, first add start point ...
-			let previousRecord = actuatorRecords['values'][0];
-			formattedRecords.push([
-				new Date(startPoint),
-				previousRecord[1],
-				previousRecord[2],
-				previousRecord[3],
-				previousRecord[4]
-			]);
-			// ... then, we need to create "pre" data points and fill them with data from the
-			// previous record and a date a few microseconds before the current record ...
-			for (const record of actuatorRecords['values']) {
-				const recordDate = new Date(record[0]);
-				const previousRecordDate = new Date(recordDate - 10);
-				formattedRecords.push(
-					[
-						previousRecordDate,
-						previousRecord[1],
-						previousRecord[2],
-						previousRecord[3],
-						previousRecord[4]
-					],
-					[recordDate, record[1], record[2], record[3], record[4]]
-				);
-				previousRecord = record;
-			}
-			// ... and finally, add end point
-			formattedRecords.push([
-				new Date(endPoint),
-				previousRecord[1],
-				previousRecord[2],
-				previousRecord[3],
-				previousRecord[4]
-			]);
-		}
-		return formattedRecords;
+
+	let actuatorsState = $derived(gaiaState.ecosystemsActuatorsState[getKey(ecosystemUID)] || {});
+	let nycthemeralCycle = $derived(gaiaState.ecosystemsNycthemeralCycle[getKey(ecosystemUID)] || {});
+
+	// An actuator belongs on the page when it is fitted now, or when it was fitted
+	// at some point during the records' span. Absent hardware is simply not
+	// rendered — never rendered greyed out. (`record[1]` is `active`: a record is
+	// written every cycle, so mere presence proves nothing.)
+	const hasBeenActive = function (actuatorType) {
+		const records = actuatorsRecords[actuatorType];
+		return Boolean(records?.['values']?.some((record) => record[1]));
 	};
 
-	const hasBeenActive = function (actuatorsRecords) {
-		const active = (element) => element[1];
-		return actuatorsRecords['values'].some(active);
-	};
+	let fittedActuators = $derived(
+		actuatorTypes.filter((actuatorType) => {
+			const state = actuatorsState[actuatorType];
+			return Boolean(state) && (state['active'] || hasBeenActive(actuatorType));
+		})
+	);
 
-	const convertModeToBool = function (mode) {
-		return mode === 'automatic';
-	};
+	let missingActuators = $derived(
+		actuatorTypes.filter((actuatorType) => !fittedActuators.includes(actuatorType))
+	);
 
-	const formatRecordsForGraphs = function (records) {
-		// Pre-populate data with the first bound (so they all start at the same time)
-		const labels = [];
-		const modes = [];
-		const statuses = [];
-		for (const record of records) {
-			labels.push(record[0]);
-			modes.push(convertModeToBool(record[2]));
-			statuses.push(record[3]);
-		}
-		return {
-			labels: labels,
-			datasets: [
-				{
-					label: 'status',
-					data: statuses,
-					borderColor: colors.yellow,
-					backgroundColor: colors.yellow + '60', // Add alpha
-					borderWidth: 0.75,
-					fill: true
-				},
-				{
-					label: 'mode',
-					data: modes,
-					borderColor: colors.blue,
-					backgroundColor: colors.blue + '40', // Add alpha
-					borderWidth: 0.75,
-					fill: true
-				}
-			]
-		};
-	};
+	let runningCount = $derived(
+		fittedActuators.filter((actuatorType) => actuatorsState[actuatorType]['status']).length
+	);
 
 	const updateActuatorsData = function (actuatorsData) {
 		for (const actuatorData of actuatorsData) {
 			if (actuatorData['ecosystem_uid'] !== ecosystemUID) {
 				continue;
 			}
-			endPoint = Date.now();
+			if (!actuatorsRecords[actuatorData['type']]?.['values']) {
+				// The initial fetch failed or has not landed yet: nothing to append to.
+				continue;
+			}
+			now = Date.now();
 			actuatorsRecords[actuatorData['type']]['values'].push([
-				new Date(endPoint - 100).toISOString(),
+				new Date(now - 100).toISOString(),
 				actuatorData['active'],
 				actuatorData['mode'],
 				actuatorData['status'],
@@ -137,12 +96,30 @@
 
 	let timeUpdate = null;
 	const updateTime = function () {
-		endPoint = Date.now();
+		now = Date.now();
 	};
+
+	// The page's chip in the header's contextual zone: what is drawing power here,
+	// right now.
+	useHeaderItems(() => {
+		if (!fittedActuators.length) {
+			return [];
+		}
+		return [
+			{
+				id: 'actuators-running',
+				label: 'Running',
+				value: `${runningCount} of ${fittedActuators.length}`,
+				dot: true,
+				tone: runningCount ? 'good' : 'default'
+			}
+		];
+	});
 
 	onMount(async () => {
 		await Promise.all([
 			syncEcosystemActuatorsState(ecosystemUID),
+			syncEcosystemNycthemeralCycleData(ecosystemUID),
 			...actuatorTypes.map(async (actuatorType) => {
 				actuatorsRecords[actuatorType] = await fetchEcosystemActuatorRecords(
 					ecosystemUID,
@@ -160,54 +137,232 @@
 	});
 </script>
 
-<HeaderLine title="Actuators in {ecosystemName}" />
+{#snippet fitted()}
+	{#if fittedActuators.length}
+		{fittedActuators.length}
+		{fittedActuators.length === 1 ? 'actuator' : 'actuators'} fitted
+	{/if}
+{/snippet}
 
-{#if gaiaState.ecosystemsActuatorsState[ecosystemUID]}
-	{#each Object.entries(actuatorsRecords) as [actuator, actuatorRecords] (actuator)}
-		{@const actuatorState = gaiaState.ecosystemsActuatorsState[ecosystemUID][actuator]}
-		{#if actuatorState && (actuatorState['active'] || hasBeenActive(actuatorRecords))}
-			{@const drawGraph = actuatorState['active'] || actuatorRecords['values'].length >= 3}
-			<Box title={capitalize(actuator)} direction="row" maxWidth={drawGraph ? null : '325px'}>
-				{#if actuatorState['active']}
-					<BoxItem maxWidth={drawGraph ? '305px' : null}>
-						<Switch
-							actuatorType={actuator}
-							status={actuatorState['status']}
-							mode={actuatorState['mode']}
-							useTimer={true}
-							onswitch={(payload) => {
-								updateActuatorMode(
-									ecosystemUID,
-									payload['actuatorType'],
-									payload['mode'],
-									payload['countdown']
-								);
-							}}
-						/>
-					</BoxItem>
+<TitleBar title="Actuators in {ecosystemName}" sideBloc={fitted} />
+
+{#if fittedActuators.length}
+	<p class="legend">
+		<span><i class="ran"></i>Ran</span>
+		<span><i class="running"></i>Running now</span>
+		<span><i class="dark"></i>Dark period</span>
+		<span><i class="held"></i>Held by hand</span>
+		<span class="scale">Last 7 days</span>
+	</p>
+
+	{#each fittedActuators as actuatorType (actuatorType)}
+		{@const actuatorState = actuatorsState[actuatorType]}
+		<article class="actuator" class:running={actuatorState['status']}>
+			<header>
+				<span class="name">
+					<Fa icon={icons[actuatorType]} />
+					{capitalize(actuatorType)}
+				</span>
+				<!-- A proportional actuator says how hard it is working; a level of 0
+				     while it is off would only repeat what the panel already says. -->
+				{#if actuatorState['status'] && typeof actuatorState['level'] === 'number' && actuatorState['level'] < 100}
+					<span class="level">
+						level <b>{Math.round(actuatorState['level'] * 10) / 10}%</b>
+					</span>
 				{/if}
-				{#if drawGraph}
-					<BoxItem>
-						{@const formattedActuatorRecords = formatActuatorsRecords(
-							actuatorRecords,
-							actuatorState,
-							startPoint,
-							endPoint
-						)}
-						{@const graphData = formatRecordsForGraphs(formattedActuatorRecords)}
-						<Graph
-							datasets={graphData.datasets}
-							labels={graphData.labels}
-							suggestedMax="1"
-							height="200px"
-							legend={{
-								display: true,
-								position: 'right'
-							}}
-						/>
-					</BoxItem>
-				{/if}
-			</Box>
-		{/if}
+			</header>
+			<div class="body">
+				<Switch
+					{actuatorType}
+					status={actuatorState['status']}
+					mode={actuatorState['mode']}
+					useTimer={true}
+					onswitch={(payload) => {
+						updateActuatorMode(
+							ecosystemUID,
+							payload['actuatorType'],
+							payload['mode'],
+							payload['countdown']
+						);
+					}}
+				/>
+				<ActuatorHistory
+					records={actuatorsRecords[actuatorType]?.['values'] || []}
+					status={actuatorState['status']}
+					mode={actuatorState['mode']}
+					{nycthemeralCycle}
+					{now}
+				/>
+			</div>
+		</article>
 	{/each}
+
+	{#if missingActuators.length}
+		<p class="missing">
+			Not fitted in {ecosystemName}: <b>{missingActuators.join(', ')}</b>.
+		</p>
+	{/if}
+{:else}
+	<div class="nothing">
+		<h2>No actuator in {ecosystemName}</h2>
+		<p>
+			Nothing here can be switched. Fit a light, a heater or a fan to this ecosystem and its lane
+			appears on this page.
+		</p>
+	</div>
 {/if}
+
+<style>
+	.legend {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 16px;
+		margin-bottom: 14px;
+		font-size: 0.72rem;
+		color: var(--text-dim-solid);
+	}
+
+	.legend span {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.legend i {
+		display: inline-block;
+		width: 15px;
+		height: 8px;
+		border-radius: 2px;
+	}
+
+	.legend .ran {
+		background: color-mix(in srgb, var(--text-dim-solid) 72%, transparent);
+	}
+
+	.legend .running {
+		background: var(--good-green);
+	}
+
+	.legend .dark {
+		background: var(--night-shade);
+		outline: 1px solid var(--border);
+	}
+
+	.legend .held {
+		height: 3px;
+		background: var(--amber);
+	}
+
+	.legend .scale {
+		margin-left: auto;
+	}
+
+	.actuator {
+		position: relative;
+		margin-bottom: 14px;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--surface);
+		box-shadow: var(--shadow);
+		overflow: hidden;
+		/* the panel and the day strip key off the card's width, not the viewport */
+		container-type: inline-size;
+	}
+
+	/* `Table`'s and `DataSheet`'s rail, painted only while the actuator draws
+	   power: its absence is the information. */
+	.actuator::before {
+		content: '';
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: 3px;
+		background: transparent;
+	}
+
+	.actuator.running::before {
+		background: var(--good-green);
+	}
+
+	header {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 11px 16px 9px;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.name {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+		color: var(--text);
+	}
+
+	.name :global(svg) {
+		color: var(--text-dim-solid);
+	}
+
+	.actuator.running .name :global(svg) {
+		color: var(--good-green);
+	}
+
+	.level {
+		margin-left: auto;
+		font-family: 'Open Sans', sans-serif;
+		font-variant-numeric: tabular-nums;
+		font-size: 0.78rem;
+		color: var(--text-dim-solid);
+	}
+
+	.level b {
+		color: var(--text);
+		font-weight: 600;
+	}
+
+	/* Control panel then record, the way the page has always been split — the
+	   panel keeps its own ground and draws its own edge (`Switch` mirrors this
+	   620px breakpoint). */
+	.body {
+		display: grid;
+		grid-template-columns: 300px minmax(0, 1fr);
+	}
+
+	@container (max-width: 620px) {
+		.body {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	.missing {
+		margin-bottom: 14px;
+		font-size: 0.8rem;
+		color: var(--text-dim-solid);
+	}
+
+	.missing b {
+		color: var(--text);
+		font-weight: 700;
+	}
+
+	.nothing {
+		padding: 26px 20px;
+		border: 1px dashed var(--border-strong);
+		border-radius: var(--radius);
+		background: var(--surface);
+		text-align: center;
+	}
+
+	.nothing h2 {
+		margin-bottom: 4px;
+	}
+
+	.nothing p {
+		font-size: 0.85rem;
+		color: var(--text-dim-solid);
+	}
+</style>

@@ -123,6 +123,20 @@
 		);
 	};
 
+	// Fetched once per `sensors` change via `$effect`, not inline in the
+	// template: an `{#await fetchMeasure(...)}` there re-evaluates (and
+	// re-fires the fetch) on every re-render of the card, not just when the
+	// sensor set actually changes.
+	let currentDataLoaded = $state(false);
+
+	$effect(() => {
+		const bones = sensors;
+		currentDataLoaded = false;
+		Promise.all(bones.map((bone) => fetchMeasure(bone['measure'], bone['sensors']))).then(() => {
+			currentDataLoaded = true;
+		});
+	});
+
 	const averageMeasure = function (measureSensors, measure) {
 		const values = [];
 		for (const sensor of measureSensors) {
@@ -162,16 +176,16 @@
 				{#each sensors as bone (`${uid}-${bone['level']}-${bone['measure']}`)}
 					<div class="readout">
 						<div class="rk">{measureLabel(bone['measure'])}</div>
-						{#await fetchMeasure(bone['measure'], bone['sensors'])}
+						{#if !currentDataLoaded}
 							<div class="rv faint">…</div>
-						{:then _}
+						{:else}
 							{@const value = averageMeasure(bone['sensors'], bone['measure'])}
 							{#if value !== null}
 								<div class="rv">{value}<u>{bone['units'][0]}</u></div>
 							{:else}
 								<div class="rv faint">—</div>
 							{/if}
-						{/await}
+						{/if}
 					</div>
 				{/each}
 			</div>

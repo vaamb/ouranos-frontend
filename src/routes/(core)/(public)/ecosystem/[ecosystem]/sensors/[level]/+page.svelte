@@ -140,6 +140,10 @@
 
 	// One flat list of sensor x measure series: the tiles read it whole, the
 	// charts read it grouped back by measure.
+	// Exclude the current reading as `ecosystemsSensorsDataCurrent`ticks every
+	// few seconds while historic data only moves every ~10 minutes, and folding
+	// both into one derived would rebuild (and redraw) every chart on every
+	// current-data tick. The current reading is looked up separately.
 	let series = $derived.by(() => {
 		return skeleton.flatMap((bone) => {
 			const measure = bone['measure'];
@@ -160,7 +164,6 @@
 					// entry
 					unit: styling.units[measure] ?? sensor['unit'] ?? '',
 					color: styling.colors[measure] || styling.colors['default'] || chartColors.line,
-					current: gaiaState.ecosystemsSensorsDataCurrent[key],
 					historic: historic,
 					values: values,
 					stats: summarize(values),
@@ -174,7 +177,7 @@
 
 	let freshest = $derived.by(() => {
 		const timestamps = series
-			.map((entry) => entry.current?.['timestamp'])
+			.map((entry) => gaiaState.ecosystemsSensorsDataCurrent[entry.key]?.['timestamp'])
 			.filter((timestamp) => timestamp instanceof Date);
 		return timestamps.length ? new Date(Math.max(...timestamps)) : null;
 	});
@@ -277,11 +280,11 @@
 		return `${text}${['°C', '%', '°'].includes(trimmed) ? '' : ' '}${trimmed}`;
 	};
 
-	const readingText = function (entry) {
-		if (!entry.current) {
+	const readingText = function (current, unit) {
+		if (!current) {
 			return null;
 		}
-		return withUnit(formatValue(entry.current['value']), entry.unit);
+		return withUnit(formatValue(current['value']), unit);
 	};
 
 	const rangeText = function (entry) {
@@ -342,7 +345,7 @@
 			<SensorTile
 				label={entry.label}
 				sensor={entry.sensorTag}
-				value={entry.current?.['value'] ?? null}
+				value={gaiaState.ecosystemsSensorsDataCurrent[entry.key]?.['value'] ?? null}
 				unit={entry.unit}
 				delta={entry.stats.delta}
 				note={entry.stats.thin ? 'less than a day of records' : null}
@@ -356,6 +359,7 @@
 		<SectionHead title={measureLabel(measure)} />
 
 		{#each measureSeries as entry (entry.key)}
+			{@const current = gaiaState.ecosystemsSensorsDataCurrent[entry.key]}
 			<figure class="chart-card">
 				<figcaption>
 					<span class="cap-t">
@@ -363,7 +367,7 @@
 						{entry.sensorName}
 					</span>
 					<span class="cap-now">
-						{#if readingText(entry)}now {readingText(entry)}{/if}
+						{#if readingText(current, entry.unit)}now {readingText(current, entry.unit)}{/if}
 						{#if rangeText(entry)}
 							<span class="sep">·</span> range {rangeText(entry)}
 						{/if}

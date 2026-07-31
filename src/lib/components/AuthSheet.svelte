@@ -54,7 +54,7 @@
 		display: flex;
 		align-items: baseline;
 		gap: 10px;
-		font-family: 'Garamond', Georgia, serif;
+		font-family: 'EB Garamond', Garamond, Georgia, serif;
 		font-size: 27px;
 		font-weight: 600;
 		letter-spacing: 0.02em;
@@ -98,7 +98,7 @@
 	}
 
 	.title {
-		font-family: 'Garamond', Georgia, serif;
+		font-family: 'EB Garamond', Garamond, Georgia, serif;
 		font-size: 1.375rem;
 		font-weight: 600;
 		line-height: 1.15;

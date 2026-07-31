@@ -294,7 +294,7 @@
 	}
 
 	.panel-head h3 {
-		font-family: 'Garamond', Georgia, serif;
+		font-family: 'EB Garamond', Garamond, Georgia, serif;
 		font-weight: 600;
 		font-size: 1.2rem;
 		margin: 2px 0 0;

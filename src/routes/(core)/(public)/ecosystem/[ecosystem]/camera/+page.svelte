@@ -340,7 +340,7 @@
 	}
 
 	.nothing h2 {
-		font-family: 'Garamond', Georgia, serif;
+		font-family: 'EB Garamond', Garamond, Georgia, serif;
 		font-weight: 600;
 		font-size: 1.375rem;
 		margin: 0 0 8px;

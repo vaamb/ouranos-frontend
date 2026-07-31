@@ -141,7 +141,7 @@
 	}
 
 	.title {
-		font-family: 'Garamond', Georgia, serif;
+		font-family: 'EB Garamond', Garamond, Georgia, serif;
 		font-size: 1.375rem;
 		font-weight: 600;
 		line-height: 1.15;

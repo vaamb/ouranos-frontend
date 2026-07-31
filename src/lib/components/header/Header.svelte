@@ -121,7 +121,7 @@
 
 	.brand {
 		margin-right: auto;
-		font-family: 'Garamond', Georgia, serif;
+		font-family: 'EB Garamond', Garamond, Georgia, serif;
 		font-size: 27px;
 		font-weight: 600;
 		letter-spacing: 0.02em;

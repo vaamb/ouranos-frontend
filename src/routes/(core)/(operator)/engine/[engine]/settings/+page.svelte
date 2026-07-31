@@ -15,11 +15,13 @@
 	let engineUID = $derived(page['params']['engine']);
 	let engine = $derived(gaiaState.engines[engineUID]);
 	let engineState = $derived(gaiaState.enginesState[engineUID]);
-	let fullEcosystems = $derived.by(() => {
-		return Object.values(gaiaState.ecosystems).map((ecosystem) => ({
+	// Make sure ecosystems not in the store but linked to an engine (not seen recently
+	// for example) still get a row, but without any state.
+	let engineEcosystems = $derived.by(() => {
+		return (engine['ecosystems'] ?? []).map((ecosystem) => ({
 			...ecosystem,
-			last_seen: gaiaState.ecosystemsState[ecosystem['uid']]['last_seen'],
-			status: gaiaState.ecosystemsState[ecosystem['uid']]['status'],
+			last_seen: gaiaState.ecosystemsState[ecosystem['uid']]?.['last_seen'],
+			status: gaiaState.ecosystemsState[ecosystem['uid']]?.['status']
 		}));
 	});
 
@@ -43,7 +45,7 @@
 		crudEcosystemName = '';
 	};
 
-	let ecosystemArray = $derived(crudIndex !== undefined ? fullEcosystems[crudIndex] : []);
+	let ecosystemArray = $derived(crudIndex !== undefined ? engineEcosystems[crudIndex] : []);
 </script>
 
 <TitleBar title="{engineUID} engine" />
@@ -65,10 +67,7 @@
 		setCrudData('base_info', undefined, undefined, undefined);
 	}}
 />
-<Modal
-	showModal={crudAction === 'base_info'}
-	onclose={resetCrudData}
->
+<Modal showModal={crudAction === 'base_info'} onclose={resetCrudData}>
 	{#snippet title()}{`Update ${engineUID}' base info`}{/snippet}
 	{#snippet children(closeModal)}
 		<Form

@@ -15,9 +15,11 @@ export interface User {
 }
 
 export interface FlashMessage {
+	id: number;
 	message: string;
 	title: string | undefined;
 	timeOut: number | undefined;
+	tone: 'good' | 'bad';
 }
 
 export interface HeaderItem {

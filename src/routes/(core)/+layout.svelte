@@ -1,12 +1,12 @@
 <script>
-	import { onDestroy, onMount, tick } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import Header from '$lib/components/header/Header.svelte';
 	import StatusBanner from '$lib/components/StatusBanner.svelte';
 	import ContractBanner from '$lib/components/ContractBanner.svelte';
 	import NavLine from '$lib/components/nav/NavLine.svelte';
 	import { generateNavigation } from '$lib/components/nav/functions.js';
-	import Modal from '$lib/components/Modal.svelte';
+	import Toasts from '$lib/components/Toasts.svelte';
 
 	import { CONNECTION_STATUS, CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
 
@@ -44,16 +44,6 @@
 			servicesState.wikiTopics
 		)
 	);
-
-	// Modal-related functions and parameters
-	let anyFlashMessage = $state(appState.flashMessages.length > 0);
-
-	const refreshModal = function () {
-		anyFlashMessage = false;
-		appState.flashMessages.shift();
-		tick();
-		anyFlashMessage = appState.flashMessages.length > 0;
-	};
 
 	// Ping server, engine and ecosystem connection status
 	const updateStatus = function () {
@@ -110,15 +100,6 @@
 	});
 </script>
 
-<Modal
-	showModal={anyFlashMessage}
-	onclose={refreshModal}
-	timeOut={anyFlashMessage ? appState.flashMessages[0]['timeOut'] : undefined}
->
-	{#snippet title()}{appState.flashMessages[0]['title']}{/snippet}
-	{appState.flashMessages[0]['message']}
-</Modal>
-
 <div
 	class="wrap"
 	style="
@@ -129,6 +110,10 @@
 	<Header />
 	<NavLine siteViews={navigation['siteViews']} groups={navigation['groups']} />
 	{@render children?.()}
+</div>
+
+<div class="bottom-stack">
+	<Toasts />
 	<StatusBanner />
 	<ContractBanner />
 </div>
@@ -137,7 +122,26 @@
 	.wrap {
 		max-width: 1120px;
 		margin: 0 auto;
-		padding: clamp(16px, 3vw, 34px)
-			calc(clamp(14px, 3vw, 30px) + var(--bottom-banner-height-mobile, 0px)) 60px;
+		padding: clamp(16px, 3vw, 34px) clamp(14px, 3vw, 30px)
+			calc(60px + var(--bottom-banner-height-mobile, 0px));
+	}
+
+	.bottom-stack {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 10;
+		display: flex;
+		flex-direction: column;
+		/* The stack spans the viewport, but only the banners and the toasts are
+		   solid: everything between them lets clicks through to the page. */
+		pointer-events: none;
+	}
+
+	@media only screen and (min-width: 992px) {
+		.wrap {
+			padding-bottom: calc(60px + var(--bottom-banner-height, 0px));
+		}
 	}
 </style>

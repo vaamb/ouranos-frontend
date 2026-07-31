@@ -33,18 +33,36 @@ import {
 const ERROR_MSG =
 	'There was one or more error(s) while processing your request. Please contact the administrator.';
 
+// Development mode reports the raw failure, so it has to survive every shape one
+// can take. A request that never reached the server carries no `response` at all
+// (the network is down, it timed out, it was aborted), a response can come back
+// with an empty body, and FastAPI's `detail` is an array on a validation error.
+// None of them can be walked blindly.
+const describeError = function (error) {
+	const data = error['response']?.['data'];
+	if (data === undefined || data === null || data === '') {
+		return error['message'] ?? 'The request failed before the server answered it.';
+	}
+	if (typeof data === 'string') {
+		return data;
+	}
+	const detail = data['detail'];
+	if (detail !== undefined) {
+		return typeof detail === 'string' ? detail : JSON.stringify(detail);
+	}
+	return JSON.stringify(data);
+};
+
 const setFlashMsgError = function (error) {
 	const appMode = getAppMode();
 	let errorMsg;
+	// No title and no timeout: the toast titles itself 'Failed' and stays put
+	// until it is dismissed.
 	if (appMode === APP_MODE.development) {
 		console.log(error);
-		if (error.response.data.detail !== undefined) {
-			errorMsg = createFlashMessage(error.response.data.detail, 'Encountered an error');
-		} else {
-			errorMsg = createFlashMessage(JSON.stringify(error.response.data), 'Encountered an error');
-		}
+		errorMsg = createFlashMessage(describeError(error), undefined, undefined, 'bad');
 	} else {
-		errorMsg = createFlashMessage(ERROR_MSG);
+		errorMsg = createFlashMessage(ERROR_MSG, undefined, undefined, 'bad');
 	}
 	appState.flashMessages.push(errorMsg);
 };

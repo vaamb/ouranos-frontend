@@ -1,7 +1,6 @@
 <script>
 	let {
 		showModal = false,
-		timeOut = undefined,
 		intent = undefined, // A custom property name (eg. '--critical-red'), painted as the sheet's left rail
 		bleed = false,
 		width = undefined,
@@ -13,7 +12,6 @@
 	} = $props();
 
 	let dialog = $state(); // HTMLDialogElement
-	let timeout;
 
 	let style = $derived(
 		[intent ? `--intent: var(${intent})` : '', width ? `--sheet-width: ${width}` : '']
@@ -38,13 +36,9 @@
 			'input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
 		);
 		if (entry) entry.focus();
-		if (timeOut) {
-			timeout = setTimeout(() => closeModal(), timeOut);
-		}
 	};
 
 	const closeModal = function () {
-		if (timeout) clearTimeout(timeout);
 		dialog.close();
 	};
 </script>
@@ -72,7 +66,14 @@
 				{/if}
 			</div>
 			<button class="close" type="button" onclick={closeModal} aria-label="Close">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					aria-hidden="true"
+				>
 					<path d="M18 6 6 18M6 6l12 12" />
 				</svg>
 			</button>

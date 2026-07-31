@@ -11,22 +11,21 @@
 {/if}
 
 <style>
+	/* Sits in the flow of `(core)/+layout.svelte`'s fixed bottom stack. The
+	   heights are the ones the layout reserves as `--bottom-banner-height*` for
+	   the page's own bottom padding — keep the two in step. */
 	.contract-banner {
-		position: fixed;
-		bottom: 0;
-		right: 0;
+		pointer-events: auto;
 		font-size: 1rem;
 		font-weight: bold;
-		height: var(--bottom-banner-height-mobile, 50px);
-		width: 100%;
-		z-index: 10;
+		height: 50px;
 		background: var(--critical-red);
 		color: var(--critical-red-dark);
 	}
 
 	@media only screen and (min-width: 992px) {
 		.contract-banner {
-			height: var(--bottom-banner-height, 37px);
+			height: 37px;
 		}
 	}
 </style>

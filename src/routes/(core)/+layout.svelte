@@ -110,6 +110,9 @@
 	<Header />
 	<NavLine siteViews={navigation['siteViews']} groups={navigation['groups']} />
 	{@render children?.()}
+</div>
+
+<div class="bottom-stack">
 	<Toasts />
 	<StatusBanner />
 	<ContractBanner />
@@ -119,7 +122,26 @@
 	.wrap {
 		max-width: 1120px;
 		margin: 0 auto;
-		padding: clamp(16px, 3vw, 34px)
-			calc(clamp(14px, 3vw, 30px) + var(--bottom-banner-height-mobile, 0px)) 60px;
+		padding: clamp(16px, 3vw, 34px) clamp(14px, 3vw, 30px)
+			calc(60px + var(--bottom-banner-height-mobile, 0px));
+	}
+
+	.bottom-stack {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 10;
+		display: flex;
+		flex-direction: column;
+		/* The stack spans the viewport, but only the banners and the toasts are
+		   solid: everything between them lets clicks through to the page. */
+		pointer-events: none;
+	}
+
+	@media only screen and (min-width: 992px) {
+		.wrap {
+			padding-bottom: calc(60px + var(--bottom-banner-height, 0px));
+		}
 	}
 </style>

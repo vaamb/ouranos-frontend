@@ -9,7 +9,7 @@
 ## Unreleased
 
 ### Changed
-- **Full UI redesign** (from #309 to #347), carried out page by page and component by
+- **Full UI redesign** (from #309 to #350), carried out page by page and component by
   component, and documented in `DESIGN.md`. Its guiding principles:
   - **The chrome is quiet and the data is loud** — the solid banners, boxes, borders and
     zebra stripes that framed the content are gone; a card, a table, a data sheet and a

@@ -257,7 +257,9 @@
 		bottom: 1px;
 		padding: 3px;
 		background-color: rgba(0, 0, 0, 35%);
-		color: var(--gray-90);
+		/* Theme-independent on purpose: the caption sits on a fixed dark scrim over
+		   the picture, so it is light in both themes. */
+		color: #e6e6e6;
 		font-size: x-small;
 	}
 

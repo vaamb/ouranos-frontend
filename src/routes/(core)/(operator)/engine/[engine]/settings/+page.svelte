@@ -9,17 +9,19 @@
 	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	import { gaiaState } from '$lib/store.svelte.js';
-	import { formatDateTime, getStatusClass, isEmpty, slugify } from '$lib/utils/functions.js';
+	import { formatDateTime, getStatusClass, slugify } from '$lib/utils/functions.js';
 	import { crudRequest } from '$lib/actions.svelte.js';
 
 	let engineUID = $derived(page['params']['engine']);
 	let engine = $derived(gaiaState.engines[engineUID]);
 	let engineState = $derived(gaiaState.enginesState[engineUID]);
-	let fullEcosystems = $derived.by(() => {
-		return Object.values(gaiaState.ecosystems).map((ecosystem) => ({
+	// Make sure ecosystems not in the store but linked to an engine (not seen recently
+	// for example) still get a row, but without any state.
+	let engineEcosystems = $derived.by(() => {
+		return (engine['ecosystems'] ?? []).map((ecosystem) => ({
 			...ecosystem,
-			last_seen: gaiaState.ecosystemsState[ecosystem['uid']]['last_seen'],
-			status: gaiaState.ecosystemsState[ecosystem['uid']]['status'],
+			last_seen: gaiaState.ecosystemsState[ecosystem['uid']]?.['last_seen'],
+			status: gaiaState.ecosystemsState[ecosystem['uid']]?.['status']
 		}));
 	});
 
@@ -43,7 +45,7 @@
 		crudEcosystemName = '';
 	};
 
-	let ecosystemArray = $derived(crudIndex !== undefined ? fullEcosystems[crudIndex] : []);
+	let ecosystemArray = $derived(crudIndex !== undefined ? engineEcosystems[crudIndex] : []);
 </script>
 
 <TitleBar title="{engineUID} engine" />
@@ -65,10 +67,7 @@
 		setCrudData('base_info', undefined, undefined, undefined);
 	}}
 />
-<Modal
-	showModal={crudAction === 'base_info'}
-	onclose={resetCrudData}
->
+<Modal showModal={crudAction === 'base_info'} onclose={resetCrudData}>
 	{#snippet title()}{`Update ${engineUID}' base info`}{/snippet}
 	{#snippet children(closeModal)}
 		<Form
@@ -82,93 +81,77 @@
 	{/snippet}
 </Modal>
 
-{#if !isEmpty(engine['ecosystems'])}
-	<h2>Linked ecosystems</h2>
-	<Table
-		tableID="linkedEnvironmentsTable"
-		columns={[
-			{ label: 'Name', key: 'name' },
-			{ label: 'UID', key: 'uid' },
-			{ label: 'Status', key: 'status', isStatus: true, statusLabels: ['Running', 'Stopped'] },
-			{ label: 'Last Seen', key: 'last_seen', serializer: formatDateTime },
-			{
-				label: 'Link',
-				key: 'name',
-				isLink: true,
-				serializer: (value) => `/ecosystem/${slugify(value)}/settings`
-			}
-		]}
-		data={fullEcosystems}
-		editable={true}
-		crudOptions={['create', 'delete']}
-		createLabel="Add an ecosystem"
-		emptyText="No ecosystem on this engine yet."
-		oncrud={(payload) => {
-			const rowIndex = payload['rowIndex'];
-			setCrudData(
-				payload['action'],
-				rowIndex,
-				payload['rowIndex'] !== undefined
-					? engine['ecosystems'][rowIndex]['uid']
-					: undefined,
-				payload['rowIndex'] !== undefined
-					? engine['ecosystems'][rowIndex]['name']
-					: undefined
-			);
-		}}
-	/>
-	<Modal
-		showModal={crudAction === 'create'}
-		onclose={resetCrudData}
-	>
-		{#snippet title()}{"Create a new ecosystem"}{/snippet}
-		{#snippet children(closeModal)}
-			<Form
-				data={[
-					{ label: 'Name', key: 'name' },
-					{
-						label: 'Day start',
-						key: 'day_start',
-						type: 'time',
-						hint: 'Time in the HH:MM format'
-					},
-					{
-						label: 'Night start',
-						key: 'night_start',
-						type: 'time',
-						hint: 'Time in the HH:MM format'
-					},
-					{ label: 'Status', key: 'status', value: true, selectFrom: [true, false] }
-				]}
-				onconfirm={(payload) => {
-					payload['engine_uid'] = engineUID;
-					crudRequest(`gaia/ecosystem/u`, 'create', payload);
-					closeModal();
-				}}
-				oncancel={() => closeModal()}
-			/>
-		{/snippet}
-	</Modal>
-	<Modal
-		showModal={crudAction === 'delete'}
-		onclose={resetCrudData}
-	>
-		{#snippet title()}{`Delete ${crudEcosystemName}`}{/snippet}
-		{#snippet children(closeModal)}
-			<p>
-				Are you sure you want to delete the ecosystem {ecosystemArray['uid']} - {ecosystemArray[
-					'name'
-				]} ?
-			</p>
-			<ConfirmButtons
-				onconfirm={() => {
-					crudRequest(`gaia/ecosystem/u/${crudEcosystemUID}`, 'delete');
-					closeModal();
-				}}
-				oncancel={() => closeModal()}
-			/>
-		{/snippet}
-	</Modal>
-{:else}
-	<p>No linked ecosystem found.</p>
-{/if}
+<h2>Linked ecosystems</h2>
+<Table
+	tableID="linkedEcosystemsTable"
+	columns={[
+		{ label: 'Name', key: 'name' },
+		{ label: 'UID', key: 'uid' },
+		{ label: 'Status', key: 'status', isStatus: true, statusLabels: ['Running', 'Stopped'] },
+		{ label: 'Last Seen', key: 'last_seen', serializer: formatDateTime },
+		{
+			label: 'Link',
+			key: 'name',
+			isLink: true,
+			serializer: (value) => `/ecosystem/${slugify(value)}/settings`
+		}
+	]}
+	data={engineEcosystems}
+	editable={true}
+	crudOptions={['create', 'delete']}
+	createLabel="Add an ecosystem"
+	emptyText="No ecosystem on this engine yet."
+	oncrud={(payload) => {
+		const rowIndex = payload['rowIndex'];
+		// `rowIndex` indexes the array the table rendered, so resolve it against
+		// that same array and nothing else.
+		const ecosystem = rowIndex !== undefined ? engineEcosystems[rowIndex] : undefined;
+		setCrudData(payload['action'], rowIndex, ecosystem?.['uid'], ecosystem?.['name']);
+	}}
+/>
+<Modal showModal={crudAction === 'create'} onclose={resetCrudData}>
+	{#snippet title()}{'Create a new ecosystem'}{/snippet}
+	{#snippet children(closeModal)}
+		<Form
+			data={[
+				{ label: 'Name', key: 'name' },
+				{
+					label: 'Day start',
+					key: 'day_start',
+					type: 'time',
+					hint: 'Time in the HH:MM format'
+				},
+				{
+					label: 'Night start',
+					key: 'night_start',
+					type: 'time',
+					hint: 'Time in the HH:MM format'
+				},
+				{ label: 'Status', key: 'status', value: true, selectFrom: [true, false] }
+			]}
+			onconfirm={(payload) => {
+				payload['engine_uid'] = engineUID;
+				crudRequest(`gaia/ecosystem/u`, 'create', payload);
+				closeModal();
+			}}
+			oncancel={() => closeModal()}
+		/>
+	{/snippet}
+</Modal>
+<Modal showModal={crudAction === 'delete'} onclose={resetCrudData}>
+	{#snippet title()}{`Delete ${crudEcosystemName}`}{/snippet}
+	{#snippet children(closeModal)}
+		<p>
+			Are you sure you want to delete the ecosystem {ecosystemArray['uid']} - {ecosystemArray[
+				'name'
+			]} ?
+		</p>
+		<ConfirmButtons
+			onconfirm={() => {
+				crudRequest(`gaia/ecosystem/u/${crudEcosystemUID}`, 'delete');
+				closeModal();
+			}}
+			oncancel={() => closeModal()}
+		/>
+	{/snippet}
+</Modal>

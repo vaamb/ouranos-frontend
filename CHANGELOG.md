@@ -9,8 +9,33 @@
 ## Unreleased
 
 ### Changed
+- **Full UI redesign** (from #309 to #350), carried out page by page and component by
+  component, and documented in `DESIGN.md`. Its guiding principles:
+  - **The chrome is quiet and the data is loud** — the solid banners, boxes, borders and
+    zebra stripes that framed the content are gone; a card, a table, a data sheet and a
+    dialog are now the same single surface, separated by hairlines instead of fills
+  - **Colour is semantic, never decorative** — one accent (`--grow`) meaning "light is on",
+    one five-step severity ramp shared by warnings and calendar events, and one
+    on/off/disconnected status triple; every state also gets a word, never colour alone
+  - **Absence is information** — status rails appear only when something is carried,
+    cards render only the hardware an ecosystem actually has, and nothing is greyed out
+    to hold a place
+  - A small set of recurring devices replaces one-off layouts: status rails, state pills,
+    nycthemeral bands, section heads, and buttons that name the act they perform
+  - **A day/night colour theme** (`auto` | `light` | `dark`), where `auto` follows the
+    site's own sun rather than the operating system, with every colour going through a
+    token defined in both themes
+  - A typographic split with one job per font, tabular figures for all data, and a
+    single uppercase "kicker" label device used everywhere a label is needed
+  - Redesigns re-skin the existing generic components rather than replace them, so
+    `Form`, `Table`, `Modal` and friends keep their behaviour and all their callers
+- `SvelteKit` 2.26.0 is now the minimum required version (#311)
 - Dropped the `humanize-duration` dependency in favour of a small inline helper in
-  `computeServerUptime()`, trimming the home page bundle
+  `computeServerUptime()`, trimming the home page bundle (#308)
+- Fewer fonts loaded on the home page (#309)
+
+### Fixed
+- Default return value of `fetchEcosystemSensorsSkeleton()` (#310)
 
 ---
 

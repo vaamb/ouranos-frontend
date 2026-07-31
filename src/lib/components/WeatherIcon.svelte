@@ -17,7 +17,7 @@
 		icon,
 		height = '115px',
 		size = '70px',
-		background = 'var(--main-95)',
+		background = 'transparent',
 		color = 'var(--amber)'
 	} = $props();
 

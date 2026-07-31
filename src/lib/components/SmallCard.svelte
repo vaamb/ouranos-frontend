@@ -37,7 +37,7 @@
 	}
 
 	h4 {
-		font-family: 'Garamond', Georgia, serif;
+		font-family: 'EB Garamond', Garamond, Georgia, serif;
 		font-weight: 600;
 		font-size: 1rem;
 		margin: 0;

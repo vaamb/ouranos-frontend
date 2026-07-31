@@ -36,7 +36,7 @@
 	}
 
 	h1 {
-		font-family: 'Garamond', Georgia, serif;
+		font-family: 'EB Garamond', Garamond, Georgia, serif;
 		font-size: clamp(1.6rem, 4vw, 2.15rem);
 		font-weight: 500;
 		line-height: 1.1;

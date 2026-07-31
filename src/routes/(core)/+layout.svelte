@@ -1,12 +1,12 @@
 <script>
-	import { onDestroy, onMount, tick } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import Header from '$lib/components/header/Header.svelte';
 	import StatusBanner from '$lib/components/StatusBanner.svelte';
 	import ContractBanner from '$lib/components/ContractBanner.svelte';
 	import NavLine from '$lib/components/nav/NavLine.svelte';
 	import { generateNavigation } from '$lib/components/nav/functions.js';
-	import Modal from '$lib/components/Modal.svelte';
+	import Toasts from '$lib/components/Toasts.svelte';
 
 	import { CONNECTION_STATUS, CONNECTION_TIMEOUT } from '$lib/utils/consts.js';
 
@@ -44,16 +44,6 @@
 			servicesState.wikiTopics
 		)
 	);
-
-	// Modal-related functions and parameters
-	let anyFlashMessage = $state(appState.flashMessages.length > 0);
-
-	const refreshModal = function () {
-		anyFlashMessage = false;
-		appState.flashMessages.shift();
-		tick();
-		anyFlashMessage = appState.flashMessages.length > 0;
-	};
 
 	// Ping server, engine and ecosystem connection status
 	const updateStatus = function () {
@@ -110,15 +100,6 @@
 	});
 </script>
 
-<Modal
-	showModal={anyFlashMessage}
-	onclose={refreshModal}
-	timeOut={anyFlashMessage ? appState.flashMessages[0]['timeOut'] : undefined}
->
-	{#snippet title()}{appState.flashMessages[0]['title']}{/snippet}
-	{appState.flashMessages[0]['message']}
-</Modal>
-
 <div
 	class="wrap"
 	style="
@@ -129,6 +110,7 @@
 	<Header />
 	<NavLine siteViews={navigation['siteViews']} groups={navigation['groups']} />
 	{@render children?.()}
+	<Toasts />
 	<StatusBanner />
 	<ContractBanner />
 </div>

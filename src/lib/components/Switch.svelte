@@ -229,9 +229,9 @@
 
 	/* The state the actuator is already in reads as filled ink. */
 	.stack button[aria-pressed='true'] {
-		background: var(--text);
-		border-color: var(--text);
-		color: var(--bg);
+		background: var(--leaf);
+		border-color: var(--leaf);
+		color: var(--leaf-dark);
 	}
 
 	.stack button:focus-visible {

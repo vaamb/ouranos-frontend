@@ -15,6 +15,7 @@
 	--grow: #c11d80; /* the one semantic accent: "light is on" — never decorative */
 	--grow-soft: #c11d8018;
 	--leaf: #2f9a5e; /* live / healthy */
+	--leaf-dark: #0d261a; /* text on a solid --leaf background */
 	--amber: #cf861f; /* sun / caution */
 	--critical-red: #cf3b3b;
 	--critical-red-dark: #450c0c; /* text on a solid --critical-red background */
@@ -57,6 +58,7 @@
 	--grow: #ea51a4;
 	--grow-soft: #ea51a422;
 	--leaf: #46b877;
+	--leaf-dark: #0d261a; /* text on a solid --leaf background */
 	--amber: #e8a33d;
 	--good-green: #3fac6e;
 	--good-green-dark: #0d261a; /* text on a solid --good-green background */

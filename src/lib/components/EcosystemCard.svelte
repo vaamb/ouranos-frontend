@@ -221,6 +221,7 @@
 			</div>
 		{:else}
 			<div class="cap-strip">
+				<a class="cap" href="{resolve(`/ecosystem/${slug}/settings`)}">Settings</a>
 				{#if environmentSensors.length > 0}
 					<a class="cap" href="{resolve(`/ecosystem/${slug}/sensors/environment`)}">Environment</a>
 				{/if}

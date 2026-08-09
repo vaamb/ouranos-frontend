@@ -500,4 +500,10 @@
 		font-size: 0.85rem;
 		color: var(--text-dim-solid);
 	}
+
+	@media only screen and (max-width: 640px) {
+		.tiles {
+			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		}
+	}
 </style>

@@ -428,14 +428,6 @@
 		color: var(--grow);
 	}
 
-	.act .mode {
-		margin-left: 2px;
-		font-size: 0.56rem;
-		font-weight: 800;
-		letter-spacing: 0.05em;
-		color: var(--text-faint);
-	}
-
 	/* Capability strip: scannable footer + deep links */
 	.cap-strip {
 		display: flex;

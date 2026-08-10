@@ -86,11 +86,12 @@ class Frontend(Functionality):
                 "(Press CTRL+C to quit)"
             )
         else:
+            # `adapter-node` is configured through env vars
+            env["HOST"] = str(host)
+            env["PORT"] = str(port)
             cmd = [
                 "node",
                 str(self.frontend_dir/"build"),
-                "--host", str(host),
-                "--port", str(port),
             ]
             self.logger.info(
                 f"Node running on http://{host}:{port} (Press CTRL+C to quit)"

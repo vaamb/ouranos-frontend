@@ -35,10 +35,21 @@
 - Fewer fonts loaded on the home page (#309)
 
 ### Fixed
+- The frontend server could hang for good: its `stdout` was piped but never read, so the
+  Node/Vite process blocked as soon as it had written enough output to fill up the pipe
+  buffer (#360)
+- The frontend process is now stopped cleanly: it is waited for (and killed if it does not
+  stop in time) rather than left behind as a zombie, and the development server is started
+  through `vite` directly rather than `npm run dev`, which did not forward signals to it
+  and left it running, holding its port, after Ouranos had exited (#362)
+- `FRONTEND_HOST` and `FRONTEND_PORT` are now honoured in both modes. They are passed as
+  command-line flags to `vite`, and as the `HOST` and `PORT` environment variables to
+  `adapter-node`, which does not parse command-line arguments and was always listening on
+  `0.0.0.0:3000` (#362)
 - The Vite development server no longer rejects requests coming through a reverse proxy
   that rewrites the `Host` header. Extra host names can be listed in the new
   `FRONTEND_ALLOWED_HOSTS` config option / `OURANOS_FRONTEND_ALLOWED_HOSTS` environment
-  variable (comma-separated, `*` to accept any)
+  variable (comma-separated, `*` to accept any) (#359)
 - Default return value of `fetchEcosystemSensorsSkeleton()` (#310)
 
 ---

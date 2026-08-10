@@ -21,6 +21,7 @@
 	let chart = $state();
 
 	// Chart layout is fixed once the chart is created. It won't be updated if the props change.
+	// svelte-ignore state_referenced_locally
 	const chartLayout = {
 		scales: {
 			x: xScale || {

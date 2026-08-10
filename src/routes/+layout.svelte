@@ -18,6 +18,9 @@
 	import { isContractCompatible } from '$lib/utils/functions.js';
 
 	let { data, children } = $props();
+	// Read once, on purpose: these describe the app the page was served for, and
+	// any change to them swaps the whole tree, which only a full load can do.
+	// svelte-ignore state_referenced_locally
 	const { appMode, restContract, serverStatus, userData } = data;
 
 	appState.currentUser = createUser(userData);

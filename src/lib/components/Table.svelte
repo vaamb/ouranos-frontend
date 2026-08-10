@@ -69,6 +69,7 @@
 		return columns.length > 0 ? String(serialize(columns[0], row) ?? '') : '';
 	};
 
+	// svelte-ignore state_referenced_locally
 	if (import.meta.env.DEV && data.length > 0) {
 		/**
 		 * Check if columns and data keys match

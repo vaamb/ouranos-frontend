@@ -15,21 +15,27 @@
 	// Fill stores with pre-fetched data
 	let { data, children } = $props();
 
-	data.warnings.forEach((warning) => {
-		if (data.ecosystems[warning['created_by']]) {
-			warning['created_by'] = data.ecosystems[warning['created_by']]['name'];
-		}
-	});
+	// Read once, on purpose: the stores have to be filled while the page is
+	// rendered on the server too, so this cannot move into an `$effect`. From
+	// there on the stores are kept up to date over Socket.IO.
+	// svelte-ignore state_referenced_locally
+	{
+		data.warnings.forEach((warning) => {
+			if (data.ecosystems[warning['created_by']]) {
+				warning['created_by'] = data.ecosystems[warning['created_by']]['name'];
+			}
+		});
 
-	gaiaState.ecosystems = data.ecosystems;
-	gaiaState.ecosystemsManagement = data.ecosystemsManagement;
-	gaiaState.ecosystemsState = data.ecosystemsState;
-	gaiaState.engines = data.engines;
-	gaiaState.enginesState = data.enginesState;
-	gaiaState.warnings = data.warnings;
-	infraState.servers = data.servers;
-	servicesState.services = data.services;
-	servicesState.wikiTopics = data.wikiTopics;
+		gaiaState.ecosystems = data.ecosystems;
+		gaiaState.ecosystemsManagement = data.ecosystemsManagement;
+		gaiaState.ecosystemsState = data.ecosystemsState;
+		gaiaState.engines = data.engines;
+		gaiaState.enginesState = data.enginesState;
+		gaiaState.warnings = data.warnings;
+		infraState.servers = data.servers;
+		servicesState.services = data.services;
+		servicesState.wikiTopics = data.wikiTopics;
+	}
 
 	let navigation = $derived(
 		generateNavigation(

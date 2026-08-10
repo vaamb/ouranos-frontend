@@ -66,6 +66,11 @@ class Frontend(Functionality):
         self._patch_dotenv()
         host = current_app.config.get("FRONTEND_HOST", Config.FRONTEND_HOST)
         port = current_app.config.get("FRONTEND_PORT", Config.FRONTEND_PORT)
+        frontend_hosts = current_app.config.get("FRONTEND_ALLOWED_HOSTS", Config.FRONTEND_ALLOWED_HOSTS)
+        env = {
+            **os.environ,
+            "OURANOS_FRONTEND_ALLOWED_HOSTS": str(frontend_hosts),
+        }
         if current_app.config["DEVELOPMENT"]:
             cmd = [
                 "npm",
@@ -92,7 +97,7 @@ class Frontend(Functionality):
                 f"Node running on http://{host}:{port} (Press CTRL+C to quit)"
             )
         self.subprocess = subprocess.Popen(
-            cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+            cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=env)
 
     async def shutdown(self) -> None:
         self.subprocess.terminate()

@@ -35,6 +35,10 @@
 - Fewer fonts loaded on the home page (#309)
 
 ### Fixed
+- The Vite development server no longer rejects requests coming through a reverse proxy
+  that rewrites the `Host` header. Extra host names can be listed in the new
+  `FRONTEND_ALLOWED_HOSTS` config option / `OURANOS_FRONTEND_ALLOWED_HOSTS` environment
+  variable (comma-separated, `*` to accept any)
 - Default return value of `fetchEcosystemSensorsSkeleton()` (#310)
 
 ---

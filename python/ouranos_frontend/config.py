@@ -27,3 +27,6 @@ class Config:
     FRONTEND_HOST: str = os.environ.get("OURANOS_FRONTEND_HOST", "127.0.0.1")
     FRONTEND_PORT: int = os.environ.get("OURANOS_FRONTEND_PORT", 3000)
     FRONTEND_USE_SSL: bool = os.environ.get("OURANOS_FRONTEND_USE_SSL", False)
+    # Extra host names the Vite development server should accept in its `Host`
+    #  header.
+    FRONTEND_ALLOWED_HOSTS: str = os.environ.get("OURANOS_FRONTEND_ALLOWED_HOSTS", "")

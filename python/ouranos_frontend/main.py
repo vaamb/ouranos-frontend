@@ -96,8 +96,7 @@ class Frontend(Functionality):
             self.logger.info(
                 f"Node running on http://{host}:{port} (Press CTRL+C to quit)"
             )
-        self.subprocess = subprocess.Popen(
-            cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=env)
+        self.subprocess = subprocess.Popen(cmd, env=env)
 
     async def shutdown(self) -> None:
         self.subprocess.terminate()

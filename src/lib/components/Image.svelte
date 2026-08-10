@@ -28,6 +28,7 @@
 	// The picture on screen. A new `source` is loaded behind it and only takes its
 	// place once its bytes are there, so a refresh never blanks the frame and a
 	// failed one leaves the last good picture up.
+	// svelte-ignore state_referenced_locally
 	let displayed = $state(source);
 	let incoming = $state(null);
 	let revealing = $state(false);
@@ -38,6 +39,7 @@
 
 	// The last source asked for, kept off the reactive graph so the effect below
 	// tracks `source` alone and never re-runs on its own writes.
+	// svelte-ignore state_referenced_locally
 	let requested = source;
 	let promotion;
 

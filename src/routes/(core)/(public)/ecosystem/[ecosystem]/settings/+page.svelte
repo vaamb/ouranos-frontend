@@ -63,6 +63,7 @@
 	// The switches edit this local draft and 'Save managements' sends it. It has
 	// to be `$state` and not a `$derived` copy: `bind:checked` needs a reactive
 	// object to write into, and a plain spread is not one.
+	// svelte-ignore state_referenced_locally
 	let ecosystemManagement = $state({ ...gaiaState.ecosystemsManagement[data['ecosystemUID']] });
 
 	// Re-seed the draft when the ecosystem changes or the server sends new values.

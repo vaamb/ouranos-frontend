@@ -13,6 +13,9 @@
 
 	const topic = $derived(data['topic']);
 	const topicName = $derived(topic['name']);
+	// Seeded from the load, then owned locally: the CRUD actions below write the
+	// server's answer straight back into it.
+	// svelte-ignore state_referenced_locally
 	let articles = $state(data['articles']);
 
 	const joinTags = function (tags) {

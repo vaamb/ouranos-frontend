@@ -87,6 +87,8 @@
 		return rv;
 	};
 
+	// Seeded from the field descriptions, then owned by the inputs bound to it.
+	// svelte-ignore state_referenced_locally
 	let formDataValues = $state(getValues(data));
 	let groupedData = $derived(groupRows(data));
 

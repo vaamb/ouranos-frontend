@@ -23,12 +23,16 @@
 
 	let { data } = $props();
 
-	// Store update
-	gaiaState.ecosystemsActuatorsState = data.ecosystemsActuatorsState;
-	gaiaState.ecosystemsSensorsSkeleton = data.ecosystemsSensorsSkeleton;
-	gaiaState.ecosystemsNycthemeralCycle = data.ecosystemsNycthemeralCycleData;
-	infraState.serversCurrentData = data.serversCurrentData;
-	servicesState.weatherCurrently = data.currentWeatherForecast;
+	// Store update. Read once, on purpose: the stores have to be filled while the
+	// page is rendered on the server too, so this cannot move into an `$effect`.
+	// svelte-ignore state_referenced_locally
+	{
+		gaiaState.ecosystemsActuatorsState = data.ecosystemsActuatorsState;
+		gaiaState.ecosystemsSensorsSkeleton = data.ecosystemsSensorsSkeleton;
+		gaiaState.ecosystemsNycthemeralCycle = data.ecosystemsNycthemeralCycleData;
+		infraState.serversCurrentData = data.serversCurrentData;
+		servicesState.weatherCurrently = data.currentWeatherForecast;
+	}
 
 	// Now
 	let now = $state(new Date());
@@ -84,7 +88,7 @@
 	});
 
 	// Calendar
-	let calendarEvents = $state(data.calendarEvents);
+	let calendarEvents = $derived(data.calendarEvents);
 	let sortedCalendarEvents = $derived.by(() => {
 		const sortedEvents = {
 			happening: [],
@@ -101,7 +105,9 @@
 	});
 
 	// Seed the current-sensor-data store from the server load so the ecosystem
-	// cards can read it (and refresh individual measures on their own).
+	// cards can read it (and refresh individual measures on their own). Read once,
+	// for the same reason as the store update above.
+	// svelte-ignore state_referenced_locally
 	for (const ecosystem of data.currentSensorsData) {
 		for (const sensorRecord of ecosystem['values']) {
 			const storageKey = getKey(
@@ -117,10 +123,10 @@
 	}
 
 	// Camera pictures info is not stored in gaiaState as it changes frequently (new picture every ~1 min)
-	let ecosystemsCameraPicturesInfo = $state(data.ecosystemsCameraPicturesInfo);
+	let ecosystemsCameraPicturesInfo = $derived(data.ecosystemsCameraPicturesInfo);
 
 	// Other
-	let suntimes = $state(data.suntimes);
+	let suntimes = $derived(data.suntimes);
 
 	// On mount
 	onMount(async () => {

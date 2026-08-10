@@ -6,7 +6,7 @@
 		ontoggle = (checked) => {}
 	} = $props();
 
-	const label = id + 'Button';
+	const label = $derived(id + 'Button');
 
 	const toggle = function (event) {
 		const target = event.target;

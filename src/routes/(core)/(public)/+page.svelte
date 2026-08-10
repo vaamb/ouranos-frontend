@@ -88,7 +88,7 @@
 	});
 
 	// Calendar
-	let calendarEvents = $state(data.calendarEvents);
+	let calendarEvents = $derived(data.calendarEvents);
 	let sortedCalendarEvents = $derived.by(() => {
 		const sortedEvents = {
 			happening: [],
@@ -123,10 +123,10 @@
 	}
 
 	// Camera pictures info is not stored in gaiaState as it changes frequently (new picture every ~1 min)
-	let ecosystemsCameraPicturesInfo = $state(data.ecosystemsCameraPicturesInfo);
+	let ecosystemsCameraPicturesInfo = $derived(data.ecosystemsCameraPicturesInfo);
 
 	// Other
-	let suntimes = $state(data.suntimes);
+	let suntimes = $derived(data.suntimes);
 
 	// On mount
 	onMount(async () => {

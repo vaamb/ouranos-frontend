@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import os
 from pathlib import Path
 import subprocess
@@ -13,6 +14,8 @@ from ouranos_frontend import consts
 
 
 class Frontend(Functionality):
+    SHUTDOWN_TIMEOUT = 5.0
+
     def __init__(self, config: ConfigDict, **kwargs):
         super().__init__(config, **kwargs)
         self.subprocess: subprocess.Popen | None = None
@@ -73,11 +76,8 @@ class Frontend(Functionality):
         }
         if current_app.config["DEVELOPMENT"]:
             cmd = [
-                "npm",
-                "run",
+                str(self.frontend_dir/"node_modules/.bin/vite"),
                 "dev",
-                "--prefix", str(self.frontend_dir),
-                "--",
                 "--host", str(host),
                 "--port", str(port),
             ]
@@ -89,15 +89,33 @@ class Frontend(Functionality):
             cmd = [
                 "node",
                 str(self.frontend_dir/"build"),
-                "--",
                 "--host", str(host),
                 "--port", str(port),
             ]
             self.logger.info(
                 f"Node running on http://{host}:{port} (Press CTRL+C to quit)"
             )
-        self.subprocess = subprocess.Popen(cmd, env=env)
+        self.subprocess = subprocess.Popen(cmd, env=env, cwd=str(self.frontend_dir))
+
+    def _stop_subprocess(self) -> None:
+        """Terminate the frontend process group and reap the child process."""
+        process = self.subprocess
+        assert process is not None
+        process.terminate()
+        try:
+            process.wait(timeout=self.SHUTDOWN_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            self.logger.warning(
+                f"The frontend process did not stop within "
+                f"{self.SHUTDOWN_TIMEOUT} s, killing it."
+            )
+            process.kill()
+            process.wait()
 
     async def shutdown(self) -> None:
-        self.subprocess.terminate()
+        if self.subprocess is None:
+            return
+        # `Popen.wait()` is blocking, run it in a thread to keep the event loop
+        # free while the other functionalities shut down
+        await asyncio.to_thread(self._stop_subprocess)
         self.subprocess = None

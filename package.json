@@ -18,7 +18,7 @@
 		"@eslint/compat": "^2.0.5",
 		"@eslint/js": "^10.0.0",
 		"@playwright/test": "^1.52.0",
-		"@sveltejs/adapter-auto": "^6.0.1",
+		"@sveltejs/adapter-auto": "^7.0.1",
 		"@sveltejs/adapter-node": "^5.0.1",
 		"@sveltejs/enhanced-img": "^0.10.0",
 		"@sveltejs/kit": "^2.26.0",

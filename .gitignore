@@ -1,14 +1,21 @@
+# OS and editors
 .DS_Store
+.idea
+
+# Node
 node_modules
-/build
+/package-lock.json
+
+# SvelteKit and Vite
 /.svelte-kit
+/build
 /package
-.env.*
-!.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-.idea
+# Environment
+.env.*
+!.env.example
 
 # Python
 __pycache__/

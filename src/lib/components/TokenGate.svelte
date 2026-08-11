@@ -3,7 +3,7 @@
 	import { resolve } from '$app/paths';
 	import { navigating, page } from '$app/state';
 
-	import jwt_decode from 'jwt-decode';
+	import { jwtDecode } from 'jwt-decode';
 
 	import AuthSheet from '$lib/components/AuthSheet.svelte';
 	import Form from '$lib/components/Form.svelte';
@@ -37,7 +37,7 @@
 	let tokenData = $derived.by(() => {
 		try {
 			checkJWT(token, { sub: sub });
-			return jwt_decode(token);
+			return jwtDecode(token);
 		} catch (error) {
 			return {};
 		}
@@ -62,7 +62,7 @@
 			return null;
 		}
 		if (candidateError === null) {
-			const expiry = new Date(jwt_decode(candidate)['exp'] * 1000);
+			const expiry = new Date(jwtDecode(candidate)['exp'] * 1000);
 			return {
 				tone: '--good-green',
 				text: `Accepted. This token is valid until ${formatDate(expiry)}, ${formatTimeShort(expiry)}.`

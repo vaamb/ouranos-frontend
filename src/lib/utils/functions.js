@@ -1,4 +1,4 @@
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 import { CONNECTION_STATUS, ecosystemOperationStatus } from '$lib/utils/consts.js';
 
@@ -267,7 +267,7 @@ export const isPasswordValid = function (password) {
 
 export const checkJWT = function (token, claims = {}) {
 	try {
-		const decodedToken = jwt_decode(token);
+		const decodedToken = jwtDecode(token);
 		if (new Date() >= decodedToken.exp * 1000) {
 			throw new InvalidTokenError('Expired token');
 		} else {

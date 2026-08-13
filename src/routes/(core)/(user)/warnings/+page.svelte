@@ -54,7 +54,7 @@
 				? gaiaState.warnings[crudDataIndex]['title']
 				: ''}' created by the ecosystem '{gaiaState.warnings[crudDataIndex]
 				? gaiaState.warnings[crudDataIndex]['created_by']
-				: ''}'?
+				: ''}' as solved?
 			<ConfirmButtons
 				confirmLabel="Mark as solved"
 				onconfirm={() => {

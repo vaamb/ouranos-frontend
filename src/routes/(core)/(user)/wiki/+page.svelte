@@ -122,6 +122,9 @@
 		{#snippet children(closeModal)}
 			<p>Are you sure you want to delete '{servicesState.wikiTopics[crudIndex]['name']}' topic ?</p>
 			<ConfirmButtons
+				confirmLabel="Delete topic"
+				cancelLabel="Keep it"
+				danger
 				onconfirm={() => {
 					crudRequest(`app/services/wiki/topics/u/${servicesState.wikiTopics[crudIndex]['name']}`, 'delete')
 					.then(

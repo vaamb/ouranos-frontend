@@ -129,6 +129,9 @@
 		{#snippet children(closeModal)}
 			<p>Are you sure you want to delete '{articles[crudIndex]['name']}' article ?</p>
 			<ConfirmButtons
+				confirmLabel="Delete article"
+				cancelLabel="Keep it"
+				danger
 				onconfirm={() => {
 					crudRequest(
 						`app/services/wiki/topics/u/${topic['slug']}/u/${articles[crudIndex]['slug']}`,

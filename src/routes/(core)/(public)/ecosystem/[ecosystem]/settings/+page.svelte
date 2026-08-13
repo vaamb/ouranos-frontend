@@ -268,6 +268,7 @@
 	{#snippet children(closeModal)}
 		<p>Are you sure you want to update {ecosystemName}' subroutines management?</p>
 		<ConfirmButtons
+			confirmLabel="Save managements"
 			onconfirm={() => {
 				crudRequest(`gaia/ecosystem/u/${ecosystemUID}/management`, 'update', ecosystemManagement);
 				closeModal();
@@ -388,6 +389,9 @@
 				Are you sure you want to delete the {environmentParameter['parameter']} environment parameter?
 			</p>
 			<ConfirmButtons
+				confirmLabel="Delete parameter"
+				cancelLabel="Keep it"
+				danger
 				onconfirm={() => {
 					const parameter = environmentParameter['parameter'];
 					crudRequest(
@@ -518,6 +522,9 @@
 				Are you sure you want to delete the {weatherEvent['parameter']} weather event?
 			</p>
 			<ConfirmButtons
+				confirmLabel="Delete weather event"
+				cancelLabel="Keep it"
+				danger
 				onconfirm={() => {
 					const parameter = weatherEvent['parameter'];
 					crudRequest(`gaia/ecosystem/u/${ecosystemUID}/weather_event/u/${parameter}`, 'delete');
@@ -623,6 +630,9 @@
 		{#snippet children(closeModal)}
 			<p>Are you sure you want to delete '{hardware['name']}' hardware ?</p>
 			<ConfirmButtons
+				confirmLabel="Delete hardware"
+				cancelLabel="Keep it"
+				danger
 				onconfirm={() => {
 					const uid = hardware['uid'];
 					crudRequest(`gaia/ecosystem/u/${ecosystemUID}/hardware/u/${uid}`, 'delete');

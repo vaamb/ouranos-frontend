@@ -8,10 +8,13 @@
 
 ## Unreleased
 
+### Added
+- A link to an ecosystem's settings page from its card on the home page (#353)
+
 ### Changed
 - **Full UI redesign** (from #309 to #350), carried out page by page and component by
   component, and documented in `DESIGN.md`. Its guiding principles:
-  - **The chrome is quiet and the data is loud** — the solid banners, boxes, borders and
+  - **The chrome is quiet and the data is loud**, the solid banners, boxes, borders and
     zebra stripes that framed the content are gone; a card, a table, a data sheet and a
     dialog are now the same single surface, separated by hairlines instead of fills
   - **Colour is semantic, never decorative** — one accent (`--grow`) meaning "light is on",
@@ -29,12 +32,20 @@
     single uppercase "kicker" label device used everywhere a label is needed
   - Redesigns re-skin the existing generic components rather than replace them, so
     `Form`, `Table`, `Modal` and friends keep their behaviour and all their callers
+- Delete confirmations now name the act they perform: "Delete hardware", "Delete topic",
+  "Delete ecosystem", "Delete account"…, with "Keep it" as the safe choice and the
+  destructive button in red (#373)
+- The switch button on the actuators page is now "leaf"-coloured (#352)
 - `SvelteKit` 2.26.0 is now the minimum required version (#311)
 - Dropped the `humanize-duration` dependency in favour of a small inline helper in
   `computeServerUptime()`, trimming the home page bundle (#308)
 - Fewer fonts loaded on the home page (#309)
 
 ### Fixed
+- The engine settings page listed **every** ecosystem in the store rather than only those
+  belonging to that engine, and resolved a deletion against a different, shorter arra. 
+  The list is now built from the engine's own `ecosystems` field, which makes the row index 
+  correct by construction (#351)
 - The frontend server could hang for good: its `stdout` was piped but never read, so the
   Node/Vite process blocked as soon as it had written enough output to fill up the pipe
   buffer (#360)
@@ -51,6 +62,19 @@
   `FRONTEND_ALLOWED_HOSTS` config option / `OURANOS_FRONTEND_ALLOWED_HOSTS` environment
   variable (comma-separated, `*` to accept any) (#359)
 - Default return value of `fetchEcosystemSensorsSkeleton()` (#310)
+
+### Development
+- Dependencies updated, several across a major version: `vite` 8.2.1 (#363), `chart.js` and
+  its dependencies (#365), `@fortawesome` 7.0.1 (#366), `eslint` and `@eslint/js` 10 (#367),
+  `marked` 18 (#368), `prettier-plugin-svelte` 4 (#369), `@sveltejs/enhanced-img` 0.11 (#370),
+  `@sveltejs/adapter-auto` 7.0.1 (#371), and `jwt-decode` 4, whose named `jwtDecode` export
+  replaces the former default one (#372)
+- False positive "state_referenced_locally" warnings silenced: the store seeding from `data`
+  is a plain init-time read, not an `$effect`, because effects do not run during SSR (#355)
+- "resolution-mode" warning fixed (#358), and the "Unused CSS selector" warning in
+  `EcosystemCard` (#361)
+- `.gitignore` updated and reordered (#356, #364)
+- The purpose of `fix.js` is documented (#357)
 
 ---
 

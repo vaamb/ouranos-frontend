@@ -6,7 +6,7 @@
 
 ---
 
-## Unreleased
+## 0.12.0 — 2026-08-13
 
 ### Added
 - A link to an ecosystem's settings page from its card on the home page (#353)

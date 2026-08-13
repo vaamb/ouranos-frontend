@@ -48,14 +48,15 @@
 		showModal={crudDataIndex !== null}
 		onclose={resetCrudData}
 	>
-		{#snippet title()}{"Remove a warning"}{/snippet}
+		{#snippet title()}{"Mark a warning as solved"}{/snippet}
 		{#snippet children(closeModal)}
-			Are you sure you want to remove the warning '{gaiaState.warnings[crudDataIndex]
+			Are you sure you want to mark the warning '{gaiaState.warnings[crudDataIndex]
 				? gaiaState.warnings[crudDataIndex]['title']
 				: ''}' created by the ecosystem '{gaiaState.warnings[crudDataIndex]
 				? gaiaState.warnings[crudDataIndex]['created_by']
 				: ''}'?
 			<ConfirmButtons
+				confirmLabel="Mark as solved"
 				onconfirm={() => {
 					const warningID = gaiaState.warnings[crudDataIndex]['id'];
 					crudRequest(`gaia/warning/u/${warningID}/mark_as_solved`, 'create');

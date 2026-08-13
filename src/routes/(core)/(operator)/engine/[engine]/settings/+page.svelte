@@ -147,6 +147,9 @@
 			]} ?
 		</p>
 		<ConfirmButtons
+			confirmLabel="Delete ecosystem"
+			cancelLabel="Keep it"
+			danger
 			onconfirm={() => {
 				crudRequest(`gaia/ecosystem/u/${crudEcosystemUID}`, 'delete');
 				closeModal();

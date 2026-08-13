@@ -90,6 +90,9 @@
 		{#snippet children(closeModal)}
 			<p>Are you sure you want to delete {users[crudIndex]['username']}?</p>
 			<ConfirmButtons
+				confirmLabel="Delete user"
+				cancelLabel="Keep it"
+				danger
 				onconfirm={() => {
 					crudRequest(`user/u/${users[crudIndex]['username']}`, 'delete');
 					closeModal();

@@ -132,6 +132,7 @@
 		{#snippet children(closeModal)}
 			<p>Send a confirmation mail to {userDescription['username']}?</p>
 			<ConfirmButtons
+				confirmLabel="Send confirmation e-mail"
 				onconfirm={() => {
 					crudRequest(
 						`user/u/${userDescription['username']}/confirmation_token?send_email=true`,
@@ -152,6 +153,7 @@
 		{#snippet children(closeModal)}
 			<p>Send a mail to change {userDescription['username']}'s password ?</p>
 			<ConfirmButtons
+				confirmLabel="Send reset e-mail"
 				onconfirm={() => {
 					crudRequest(
 						`user/u/${userDescription['username']}/password_reset_token?send_email=true`,
@@ -173,6 +175,9 @@
 	{#snippet children(closeModal)}
 		<p>Are you sure you want to delete {userDescription['username']}'s account ?</p>
 		<ConfirmButtons
+			confirmLabel="Delete account"
+			cancelLabel="Keep it"
+			danger
 			onconfirm={() => {
 				crudRequest(`user/u/${userDescription['username']}/delete`, 'create').then(() => {
 					closeModal();

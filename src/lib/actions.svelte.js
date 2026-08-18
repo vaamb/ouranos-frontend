@@ -79,8 +79,8 @@ export const probePath = async function (path) {
 };
 
 // Auth-related actions
-export const refreshSessionCookie = async function () {
-	return axios.get(`${API_URL}/auth/refresh_session`, {
+export const extendSessionCookie = async function () {
+	return axios.get(`${API_URL}/auth/extend_session`, {
 		withCredentials: true
 	});
 };

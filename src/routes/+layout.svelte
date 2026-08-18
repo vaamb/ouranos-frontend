@@ -4,7 +4,7 @@
 	import MaintenanceScreen from '$lib/components/screens/Maintenance.svelte';
 	import UnreachableScreen from '$lib/components/screens/Unreachable.svelte';
 
-	import { refreshSessionCookie } from '$lib/actions.svelte.js';
+	import { extendSessionCookie } from '$lib/actions.svelte.js';
 	import {
 		connectSocketio,
 		disconnectSocketio,
@@ -47,7 +47,7 @@
 	onMount(async () => {
 		if (serverStatus === SERVER_STATUS.connected) {
 			if (appState.currentUser.isAuthenticated) {
-				await refreshSessionCookie();
+				await extendSessionCookie();
 			}
 			connectSocketio();
 			if (appState.currentUser.isAuthenticated) {

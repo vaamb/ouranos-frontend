@@ -355,7 +355,7 @@
 	<!-- Named by its uid, not its `hostname`: the monitor reports the address it
 	     binds to, which is `0.0.0.0` on a machine that serves every interface. -->
 	<p class="blurb">
-		What {serverName} has been carrying over the last {WINDOW_DAYS} days.
+		Server load for {serverName} over the last {WINDOW_DAYS} days.
 	</p>
 
 	<div class="tiles">

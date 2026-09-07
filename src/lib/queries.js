@@ -12,7 +12,7 @@ import {
 	SERVER_STATUS
 } from '$lib/utils/consts.js';
 
-const client = axios.create({
+export const client = axios.create({
 	baseURL: browser ? API_URL : LOCAL_API_URL
 });
 

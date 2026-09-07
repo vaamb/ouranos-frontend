@@ -28,11 +28,11 @@
 	// The two levels are the same page reading a different part of the greenhouse,
 	// so they differ by their words only.
 	const levels = {
-		environment: { title: 'Environment', blurb: 'the air around the plants' },
-		plants: { title: 'Plants', blurb: 'the substrate around the roots' }
+		environment: { title: 'Environment' },
+		plants: { title: 'Plants' }
 	};
 
-	let level = $derived(levels[sensorsLevel] || { title: capitalize(sensorsLevel), blurb: '' });
+	let level = $derived(levels[sensorsLevel] || { title: capitalize(sensorsLevel) });
 
 	let styling = $derived(graphs[sensorsLevel] || graphs['environment']);
 
@@ -333,11 +333,7 @@
 	<!-- The window is stated once, here, rather than repeated beside every
 	     section head. -->
 	<p class="blurb">
-		{#if level.blurb}
-			What the sensors read in {level.blurb}, over the last {WINDOW_DAYS} days.
-		{:else}
-			Sensor readings over the last {WINDOW_DAYS} days.
-		{/if}
+		Sensor readings over the last {WINDOW_DAYS} days.
 	</p>
 
 	<div class="tiles">

@@ -178,8 +178,7 @@
 
 {#if cameras.length}
 	<p class="blurb">
-		Each camera keeps one picture — the last one it took. New frames arrive as they are photographed
-		and replace what is on screen.
+		The most recent frame from each camera.
 	</p>
 
 	<div class="wall">

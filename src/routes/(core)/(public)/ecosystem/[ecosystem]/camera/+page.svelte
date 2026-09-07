@@ -177,6 +177,11 @@
 />
 
 {#if cameras.length}
+	<p class="blurb">
+		Each camera keeps one picture — the last one it took. New frames arrive as they are photographed
+		and replace what is on screen.
+	</p>
+
 	<div class="wall">
 		{#each cameras as camera (camera.uid)}
 			{@const state = getState(camera.timestamp)}
@@ -225,6 +230,13 @@
 {/if}
 
 <style>
+	.blurb {
+		max-width: 68ch;
+		margin-bottom: 16px;
+		font-size: 0.8rem;
+		color: var(--text-dim-solid);
+	}
+
 	/* Tracks are capped as well as floored: a lone camera stretched across the full
 	   page is a picture two-thirds of a metre tall, and this is a window, not a
 	   billboard. */

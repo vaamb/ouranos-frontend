@@ -294,9 +294,7 @@
 
 {#if skeleton.length}
 	<p class="blurb">
-		Once a day the chamber lights up, photographs its plants, and reduces each frame to a
-		vegetation index — a signed, unitless reading of how green the canopy is against how red it
-		is. Here are the last {WINDOW_DAYS} days.
+		Vegetation index for the last {WINDOW_DAYS} days.
 	</p>
 
 	<div class="tiles">

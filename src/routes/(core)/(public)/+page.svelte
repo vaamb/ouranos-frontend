@@ -241,8 +241,8 @@
 	{#if appState.currentUser.isAuthenticated}
 		<SmallCard title="Warnings">
 			{#if gaiaState.warnings.length > 0}
-				{#each Object.keys(sortedWarnings) as name (name)}
-					{#each sortedWarnings[name] as warning (warning)}
+				{#each Object.entries(sortedWarnings) as [name, warningsArray] (name)}
+					{#each warningsArray as warning (warning['id'])}
 						{@const color = getLevelColor(warning['level'])}
 						<div class="mod-line">
 							<span class="lv" style="background: var({color})"></span>

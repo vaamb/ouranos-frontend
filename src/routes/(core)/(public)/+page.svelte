@@ -162,7 +162,7 @@
 <section class="context">
 	{#if serviceEnabled(servicesState.services, 'calendar')}
 		<SmallCard title="Calendar" href="/calendar" linkText="All events →">
-			{#each sortedCalendarEvents['happening'] as event (event['title'])}
+			{#each sortedCalendarEvents['happening'] as event (event['id'])}
 				{@const color = getLevelColor(event['level'])}
 				<div class="mod-line">
 					<span class="lv" style="background: var({color})"></span>
@@ -171,7 +171,7 @@
 					>
 				</div>
 			{/each}
-			{#each sortedCalendarEvents['future'] as event (event['title'])}
+			{#each sortedCalendarEvents['future'] as event (event['id'])}
 				{@const color = getLevelColor(event['level'])}
 				<div class="mod-line">
 					<span class="lv" style="background: var({color})"></span>
@@ -241,8 +241,8 @@
 	{#if appState.currentUser.isAuthenticated}
 		<SmallCard title="Warnings">
 			{#if gaiaState.warnings.length > 0}
-				{#each Object.keys(sortedWarnings) as name (name)}
-					{#each sortedWarnings[name] as warning (warning)}
+				{#each Object.entries(sortedWarnings) as [name, warningsArray] (name)}
+					{#each warningsArray as warning (warning['id'])}
 						{@const color = getLevelColor(warning['level'])}
 						<div class="mod-line">
 							<span class="lv" style="background: var({color})"></span>

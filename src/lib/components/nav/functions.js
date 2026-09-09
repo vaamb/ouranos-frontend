@@ -62,6 +62,12 @@ const hasAllManagements = function (ecosystemManagement, managements) {
 	return true;
 };
 
+export const ecosystemViews = function (slug, ecosystemManagement) {
+	return ECOSYSTEM_VIEWS.filter((v) => hasAllManagements(ecosystemManagement, v['management'])).map(
+		(v) => view(v['id'], v['name'], `/ecosystem/${slug}/${v['path']}`)
+	);
+};
+
 const ecosystemStatus = function (ecosystemState) {
 	if (!ecosystemState) {
 		return STATUS.unreachable;
@@ -113,9 +119,7 @@ export const generateNavigation = function (
 		const uid = id['uid'];
 		const slug = slugify(id['name']);
 		const management = ecosystemsManagement[uid] || {};
-		const views = ECOSYSTEM_VIEWS.filter((v) => hasAllManagements(management, v['management'])).map(
-			(v) => view(v['id'], v['name'], `/ecosystem/${slug}/${v['path']}`)
-		);
+		const views = ecosystemViews(slug, management);
 		ecosystems.push({
 			id: uid,
 			name: id['name'],

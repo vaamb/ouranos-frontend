@@ -1,104 +1,206 @@
 <script>
+	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
+
+	import DataSheet from '$lib/components/DataSheet.svelte';
+	import SectionHead from '$lib/components/SectionHead.svelte';
 	import TitleBar from '$lib/components/TitleBar.svelte';
+	import { ecosystemViews } from '$lib/components/nav/functions.js';
+
+	import { gaiaState } from '$lib/store.svelte.ts';
+	import { dynamicSort, months, slugify } from '$lib/utils/functions.js';
+
+	const UMBRELLA_REPO = 'https://github.com/vaamb/gaia-ouranos';
+
+	// --- This install ----------------------------------------------------
+	// Everything here is read from the store, so the page describes whatever
+	// install is serving it rather than the one it was written on.
+	const version = $derived(page.data['appVersion']);
+	const engines = $derived(Object.values(gaiaState.engines));
+	const ecosystems = $derived(Object.values(gaiaState.ecosystems).sort(dynamicSort('name')));
+
+	// The install is as old as its oldest registration, engine or ecosystem.
+	const runningSince = $derived.by(() => {
+		const stamps = [...engines, ...ecosystems]
+			.map((record) => record['registration_date'])
+			.filter((date) => date)
+			.map((date) => new Date(date).getTime());
+		if (stamps.length === 0) {
+			return null;
+		}
+		const oldest = new Date(Math.min(...stamps));
+		return `${months[oldest.getMonth()]} ${oldest.getFullYear()}`;
+	});
+
+	const installRows = $derived([
+		{ label: 'Ouranos', value: version },
+		{ label: 'Running since', value: runningSince },
+		{ label: 'Engines', value: engines.length > 0 ? String(engines.length) : null },
+		{ label: 'Ecosystems', value: ecosystems.map((ecosystem) => ecosystem['name']) }
+	]);
+
+	// The views a visitor can open: the ones the nav line would show for that
+	// place, minus its settings — a settings page is not something to look at.
+	const places = $derived(
+		ecosystems
+			.map((ecosystem) => ({
+				uid: ecosystem['uid'],
+				name: ecosystem['name'],
+				views: ecosystemViews(
+					slugify(ecosystem['name']),
+					gaiaState.ecosystemsManagement[ecosystem['uid']] || {}
+				).filter((view) => view['id'] !== 'settings')
+			}))
+			.filter((place) => place['views'].length > 0)
+	);
+
+	// --- How it's built --------------------------------------------------
+	const repoRows = [
+		{
+			label: 'Gaia',
+			repo: 'gaia',
+			value:
+				'The edge node. Runs on a Raspberry Pi and manages the sensors, actuators, lights and climate control of its ecosystems.'
+		},
+		{
+			label: 'Ouranos core',
+			repo: 'ouranos-core',
+			value:
+				'The backend server. Aggregates the data sent by the Gaia instances, archives it and exposes it through a REST and Socket.IO API.'
+		},
+		{
+			label: 'Ouranos frontend',
+			repo: 'ouranos-frontend',
+			value: 'This web UI, built with SvelteKit.'
+		},
+		{
+			label: 'Event dispatcher',
+			repo: 'event-dispatcher',
+			value:
+				'A broker-agnostic pub/sub library, extracted from Gaia and used to communicate between every components.'
+		},
+		{
+			label: 'Gaia validators',
+			repo: 'gaia-validators',
+			value: 'The Pydantic models used as the data transfer protocol between Gaia and Ouranos.'
+		}
+	];
 </script>
 
-<TitleBar title="Concerning GAIA" />
+{#snippet repo(row)}
+	<span class="role">{row['value']}</span>
+	<a class="repo" href="https://github.com/vaamb/{row['repo']}">vaamb/{row['repo']}</a>
+{/snippet}
+
+<TitleBar title="Concerning Gaia & Ouranos" />
 
 <article class="paper">
-	<div class="prose">
+	<div class="prose lead">
 		<p>
-			GAIA, short for Greenhouse Automation Intuitive App, is a side project I started during my PhD
-			study in plant biology, aiming to replicate the functionalities of laboratory phytotrons
-			(growth chambers). It was initially conceived as a small Python script, operating on a
-			Raspberry Pi Zero, executing a basic routine. This routine involved monitoring the status of
-			lights, reading temperature and humidity data through a DHT22 sensor, and logging the
-			information into a text file.
+			Gaia-Ouranos is an automation system that monitors and controls plant growth environments:
+			greenhouses, terrariums, aquariums, or any enclosure where temperature, humidity, light and
+			CO₂ matter. One or more Raspberry Pis run Gaia, the edge automation node. They report to
+			Ouranos, a backend server that aggregates and archives the sensor data, exposes a REST and
+			WebSocket API, and serves this web UI. Everything communicates through a custom event
+			dispatcher that works in memory, over RabbitMQ or over Redis.
 		</p>
 		<p>
-			Then, as I learnt more about Python, I wanted to add some functionalities. First, I focused on
-			adding the possibility to read the configurations from a YAML file, instead of embedding them
-			directly into the main Python script. Then, as the text file used to record the sensor data
-			became impractical, I decided to use a more efficient method by logging them into a database,
-			using SQLite and plain SQL queries.
-		</p>
-		<p>
-			As the volume of data increased, I soon wanted to add visualization capabilities. To achieve
-			this, I used Flask to construct a small website and integrated JavaScript with Chart.js to
-			render basic graphs. However, with the project's growth, it became more and more resource
-			hungry on my poor Raspberry Pi Zero. As such, I chose to split GAIA into two distinct
-			sub-programs and migrate them to a more capable Pi 3B+. These programs were gaiaEngine
-			(renamed <a href="https://github.com/vaamb/gaia">Gaia</a>, in lowercase), responsible for
-			managing plant-related functionalities, and gaiaWeb (that became
-			<a href="https://github.com/vaamb/ouranos-core">Ouranos</a>, after the husband of Gaia in
-			Greek mythology), serving as the Flask server.
-		</p>
-		<p>
-			As I followed Flask tutorials, the architecture of gaiaWeb underwent a significant
-			transformation, evolving into a more organized structure. One of the changes I made at that
-			time was starting to use an ORM (SQLAlchemy) to spend less time on SQL schema and queries and
-			more on Python. In parallel, I wanted to increase Gaia's flexibility, and so I started to
-			create sensor templates as I learnt more about OOP and how to use Python classes. I also
-			realised that while the web server had to be operated on the Raspberry Pi 3B+, I could still
-			run Gaia (which I tried to keep relatively light) on my old Pi Zero. However, I faced the
-			challenge of synchronizing data between Gaia and Ouranos without relying on shared memory,
-			necessitating a more sophisticated approach.
-		</p>
-		<p>
-			The first step was to totally isolate Gaia from Ouranos. This was a task harder than I thought
-			as many Python objects and data were shared between the two sub programs (these shared objects
-			and data later became <a href="https://github.com/vaamb/gaia-validators">Gaia Validators</a>).
-			To solve this, I explored methods for sharing data between Python processes operating across
-			different interpreters and even different machines. Ultimately, I opted to use Socket.IO (a
-			clearly suboptimal solution) for sharing data between Gaia and Ouranos. This decision was
-			influenced by my prior success in using Socket.IO for real-time data updates in graph
-			visualization, where it was doing a rather good job.
-		</p>
-		<p>
-			This worked for a while, but I wanted to expand the server's capabilities further. I realized
-			that while it could be useful to instantiate multiple Flask processes down the line, certain
-			new functionalities (such as a database archiver for storing old entries in a long-term
-			storage database, a script for retrieving weather data, and another for fetching sunrise and
-			sunset times) should only be launched once. This raised the issue of sharing data across
-			multiple processes once again. However, this time I took a different approach and developed a
-			basic
-			<a href="https://github.com/vaamb/event-dispatcher">event dispatcher</a> with an API similar to
-			Socket.IO's. I tried to make this dispatcher broker agnostic, enabling versatility. It can operate
-			in-memory, utilize Redis or RabbitMQ, and adding support for additional brokers is straightforward.
-		</p>
-		<p>
-			Simultaneously, while I was making the backend more resilient, I was continuing to add
-			interactivity to the frontend, leveraging vanilla JavaScript and the capabilities of
-			Socket.IO, while still relying on Flask and Jinja2. However, as the codebase grew, I started
-			to face issues with spaghetti code, leading me to look for a solution. Enter Vue.js, a
-			JavaScript frontend framework. This decision required significant modifications to Ouranos:
-			transitioning all the Flask routes I had been working on into an API structure and migrating
-			Jinja2-based templates to Vue.js components.
-		</p>
-		<p>
-			During the final stages of my thesis, I had limited free time to play with GAIA. However, once
-			I completed it, I resumed my experiments with GAIA. Quickly, I found Vue.js to be overly
-			"boilerplate-y" and missed the ability to validate queries received by Flask. This led me to
-			switch not just one, but two of the frameworks I had been using. For the backend of Ouranos, I
-			opted for FastAPI, which introduced me to async programing and Pydantic. Pydantic became
-			integral for validating inputs across both Ouranos and Gaia. For the
-			<a href="https://github.com/vaamb/ouranos-frontend">frontend</a>, I chose Svelte (and later
-			SvelteKit), which made Javascript a bit less painful to write.
-		</p>
-		<p>
-			At that point, I started to have a good enough backbone and so I focused on making the code
-			cleaner and adding more "aesthetic" features. So in parallel of removing redundant chunks in
-			my code, trying to write more maintainable code and increasing test coverage; I started to
-			play with CI/CD pipeline (that greatly reduced the amount of errors making it to
-			"production"), photo manipulation (allowing to visualize Gaia's ecosystems from Ouranos' UI
-			and compute ecosystem health metrics) and added a ridiculously simple wiki.
-		</p>
-		<p>
-			Here is the (temporary) result of this side project, until I decide to make further changes.
-			It has been a pleasure to play with this project, as it has taught me a lot about Python,
-			project architecture, databases, JavaScript, NGINX, concurrency, RabbitMQ, and more ...
+			This project started during my PhD in plant biology, to replicate laboratory phytotrons on a
+			budget, and it has been running at home ever since.
 		</p>
 	</div>
+	<a class="cta" href={UMBRELLA_REPO}>See the code on GitHub</a>
 </article>
+
+<section>
+	<SectionHead title="This install" />
+	<DataSheet rows={installRows} />
+
+	{#if places.length > 0}
+		<p class="note">
+			Have a look. Everything below is public; nothing here can be changed without logging in.
+		</p>
+		<div class="places">
+			{#each places as place (place['uid'])}
+				<div class="place">
+					<span class="nm">{place['name']}</span>
+					<div class="chiprow">
+						{#each place['views'] as view (view['id'])}
+							<a class="chip" href={resolve(view['path'])}>{view['name']}</a>
+						{/each}
+					</div>
+				</div>
+			{/each}
+		</div>
+	{/if}
+</section>
+
+<section>
+	<SectionHead title="What's inside" />
+	<DataSheet rows={repoRows.map((row) => ({ ...row, content: repo }))} />
+</section>
+
+<section>
+	<SectionHead title="The story" />
+	<article class="paper">
+		<div class="prose">
+			<p>
+				GAIA stands for Greenhouse Automation Intuitive App. I started it during my PhD in plant
+				biology to replicate at home the functionalities of phytotrons (growth chambers) we used in
+				the lab. It started as a small Python script running a single routine on a Raspberry Pi
+				Zero: a loop that checked whether the lights were on, read the temperature and humidity from
+				a DHT22 sensor and wrote them to a text file.
+			</p>
+			<p>
+				As I learnt more Python, I wanted to add functionalities. The configuration moved out of the
+				script and into a YAML file. Soon, the text file became impractical to store data, and the
+				readings went into a SQLite database. As I wanted to visualize this data, I built a small
+				Flask website with a few Chart.js graphs.
+			</p>
+			<p>
+				That became too much for my poor Pi Zero. I split GAIA in two and moved to a Pi 3B+:
+				gaiaEngine took care of the plants, gaiaWeb was the Flask server. They became
+				<a href="https://github.com/vaamb/gaia">Gaia</a> (in lowercase) and
+				<a href="https://github.com/vaamb/ouranos-core">Ouranos</a>, after the husband of Gaia in
+				Greek mythology. Since Gaia was light enough to keep running on the old Pi Zero while
+				Ouranos needed to stay on the 3B+, the two had to become independent processes and stop
+				sharing memory. Isolating them was harder than expected, as many Python objects were used by
+				both; the ones the two still had to agree on and share became
+				<a href="https://github.com/vaamb/gaia-validators">gaia-validators</a>. For the link itself
+				I first picked Socket.IO, which was already doing a good job pushing live data to my graphs.
+			</p>
+			<p>
+				The server kept growing. Some of its jobs, such as archiving old records or fetching the
+				weather, had to run exactly once even if several web workers were started. So processes
+				needed to talk to each other too, and this time I wrote a small dedicated
+				<a href="https://github.com/vaamb/event-dispatcher">event dispatcher</a>
+				with an API close to Socket.IO's that I also used to share data between Gaia and Ouranos. This
+				event dispatcher is broker agnostic and can run in memory, over Redis or RabbitMQ, and adding
+				a new broker is easy.
+			</p>
+			<p>
+				Meanwhile, the frontend (still based on Flask and Jinja2) had accumulated enough JavaScript
+				to turn into spaghetti code. Vue.js fixed that, and turned Ouranos into a backend API in the
+				process. Then, once my thesis was defended and I had more free time for myself, Vue felt too
+				"boilerplate-y" and I started to miss the possibility to validate the queries the API
+				received. So I switched two frameworks once more: FastAPI and Pydantic on the backend (which
+				taught me asyncio, and gave both Gaia and Ouranos proper input validation), and Svelte
+				(later SvelteKit) for <a href="https://github.com/vaamb/ouranos-frontend">the frontend</a>,
+				and it finally made JavaScript a bit less painful to write.
+			</p>
+			<p>
+				Six years later it is still running every day, on my old Pi Zero and a newer Pi 4B, and it
+				has taught me a lot about Python, project architecture, databases, JavaScript, NGINX,
+				concurrency, RabbitMQ and more.
+			</p>
+			<p>
+				The next step is to get out of the Raspberry Pi's GPIO pins: Gaia now speaks a WebSocket
+				protocol to remote hardware, and an ESP32 firmware written in Rust is being written, so that
+				microcontrollers can act as sensors and actuators from anywhere in the greenhouse.
+			</p>
+		</div>
+	</article>
+</section>
 
 <style>
 	.paper {
@@ -113,5 +215,130 @@
 	.paper .prose {
 		max-width: inherit;
 		margin: 0 auto;
+	}
+
+	.lead {
+		font-size: 1.18rem;
+		text-align: left;
+		hyphens: none;
+	}
+
+	.lead p:last-child {
+		margin-bottom: 0;
+	}
+
+	/* The one solid button on the page */
+	.cta {
+		display: inline-flex;
+		align-items: center;
+		margin-top: 22px;
+		padding: 9px 16px;
+		font-family: 'Raleway', sans-serif;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+		text-decoration: none;
+		color: var(--surface);
+		background: var(--text);
+		border: 1px solid var(--text);
+		border-radius: var(--radius);
+		transition:
+			background 120ms ease,
+			border-color 120ms ease;
+	}
+
+	.cta:hover {
+		background: var(--text-dim-solid);
+		border-color: var(--text-dim-solid);
+	}
+
+	.cta:focus-visible {
+		outline: 2px solid var(--grow);
+		outline-offset: 3px;
+	}
+
+	section {
+		margin-top: clamp(28px, 5vw, 44px);
+	}
+
+	.note {
+		margin: 0 0 12px;
+		font-size: 0.85rem;
+		color: var(--text-dim-solid);
+	}
+
+	/* A place and its views, the same row the "Go to" sheet uses. */
+	.places {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.place {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px 14px;
+	}
+
+	.nm {
+		font-family: 'Raleway', sans-serif;
+		font-size: 0.9rem;
+		font-weight: 700;
+		color: var(--text);
+	}
+
+	.chiprow {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+
+	.chip {
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		color: var(--text-dim-solid);
+		text-decoration: none;
+		padding: 5px 9px;
+		border: 1px solid var(--border);
+		border-radius: 3px;
+		background: var(--surface-2);
+	}
+
+	.chip:hover {
+		color: var(--text);
+		border-color: var(--border-strong);
+	}
+
+	.chip:focus-visible {
+		outline: 2px solid var(--grow);
+		outline-offset: 2px;
+	}
+
+	/* A repo row: its role, and the repository under it in mono. */
+	.role {
+		display: block;
+	}
+
+	.repo {
+		display: inline-block;
+		margin-top: 3px;
+		font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+		font-size: 0.78rem;
+		color: var(--text-dim-solid);
+		text-decoration: none;
+		border-bottom: 1px solid var(--border-strong);
+	}
+
+	.repo:hover {
+		color: var(--text);
+		border-bottom-color: var(--text);
+	}
+
+	.repo:focus-visible {
+		outline: 2px solid var(--grow);
+		outline-offset: 2px;
 	}
 </style>

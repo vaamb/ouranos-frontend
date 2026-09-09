@@ -1,6 +1,7 @@
 <script>
 	import { onDestroy, onMount } from 'svelte';
 
+	import Footer from '$lib/components/Footer.svelte';
 	import Header from '$lib/components/header/Header.svelte';
 	import StatusBanner from '$lib/components/StatusBanner.svelte';
 	import ContractBanner from '$lib/components/ContractBanner.svelte';
@@ -116,6 +117,7 @@
 	<Header />
 	<NavLine siteViews={navigation['siteViews']} groups={navigation['groups']} />
 	{@render children?.()}
+	<Footer />
 </div>
 
 <div class="bottom-stack">

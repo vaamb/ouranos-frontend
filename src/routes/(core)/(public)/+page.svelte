@@ -128,6 +128,10 @@
 	// Other
 	let suntimes = $derived(data.suntimes);
 
+	// With a single ecosystem, its card leaves two thirds of the row empty, so the
+	// two overview sections sit side by side instead of stacking.
+	let soloEcosystem = $derived(gaiaState.ecosystemsIds.length === 1);
+
 	// On mount
 	onMount(async () => {
 		updateNowInterval = setInterval(updateNow, 3 * 1000);
@@ -148,128 +152,169 @@
 	<SkyBand sunTimes={suntimes[0]} />
 {/if}
 
-{#if gaiaState.ecosystemsIds.length > 0}
-	<SectionHead title="Ecosystems overview" />
-	<section class="ecosystems-grid">
-		{#each gaiaState.ecosystemsIds as { uid } (uid)}
-			<EcosystemCard {uid} {now} cameraPicturesInfo={ecosystemsCameraPicturesInfo[uid]} />
-		{/each}
-	</section>
-{/if}
-
-<SectionHead title="Global overview" />
-
-<section class="context">
-	{#if serviceEnabled(servicesState.services, 'calendar')}
-		<SmallCard title="Calendar" href="/calendar" linkText="All events →">
-			{#each sortedCalendarEvents['happening'] as event (event['id'])}
-				{@const color = getLevelColor(event['level'])}
-				<div class="mod-line">
-					<span class="lv" style="background: var({color})"></span>
-					<span
-						><b>{event['title']}</b> — until {event['end_time'].toLocaleDateString('en-GB')}</span
-					>
-				</div>
-			{/each}
-			{#each sortedCalendarEvents['future'] as event (event['id'])}
-				{@const color = getLevelColor(event['level'])}
-				<div class="mod-line">
-					<span class="lv" style="background: var({color})"></span>
-					<span>{event['title']} — from {event['start_time'].toLocaleDateString('en-GB')}</span>
-				</div>
-			{/each}
-			{#if sortedCalendarEvents['happening'].length === 0 && sortedCalendarEvents['future'].length === 0}
-				<div class="muted">Nothing scheduled.</div>
-			{/if}
-		</SmallCard>
+<div class="overviews" class:split={soloEcosystem}>
+	{#if gaiaState.ecosystemsIds.length > 0}
+		<div class="overview">
+			<SectionHead title="Ecosystems overview" />
+			<section class="ecosystems-grid">
+				{#each gaiaState.ecosystemsIds as { uid } (uid)}
+					<EcosystemCard {uid} {now} cameraPicturesInfo={ecosystemsCameraPicturesInfo[uid]} />
+				{/each}
+			</section>
+		</div>
 	{/if}
 
-	{#if serviceEnabled(servicesState.services, 'weather') && !isEmpty(servicesState.weatherCurrently)}
-		<SmallCard title="Weather" href="/weather" linkText="Forecast →">
-			<div class="weather">
-				<WeatherIcon
-					icon={servicesState.weatherCurrently['icon']}
-					size="40px"
-					height="48px"
-					background="transparent"
-					color="var(--amber)"
-				/>
-				<div>
-					<div class="weather-temp">
-						{servicesState.weatherCurrently['temperature'].toFixed(1)}<span class="deg">°C</span>
-					</div>
-					<div class="mini-data">
-						{capitalize(servicesState.weatherCurrently['summary'])}<br />
-						Humidity {servicesState.weatherCurrently['humidity'].toFixed(0)}% · Cloud {servicesState.weatherCurrently[
-							'cloud_cover'
-						].toFixed(0)}%<br />
-						Wind {servicesState.weatherCurrently['wind_speed'].toFixed(1)} km/h
-						{#if !isEmpty(servicesState.weatherHourly)}
-							· Precip {(servicesState.weatherHourly[0]['precipitation_probability'] * 100).toFixed(
-								0
-							)}%
-						{/if}
-					</div>
-				</div>
-			</div>
-		</SmallCard>
-	{/if}
+	<div class="overview">
+		<SectionHead title="Global overview" />
 
-	{#if appState.currentUser.can(permissions.ADMIN) && infraState.serversIds.length > 0}
-		<SmallCard title="Servers status">
-			{#each infraState.serversIds as serverIds (serverIds)}
-				{@const serverUid = serverIds['uid']}
-				{@const server = infraState.servers[serverUid]}
-				{#if !isEmpty(infraState.serversCurrentData[serverUid])}
-					{@const serverCurrentData = infraState.serversCurrentData[serverUid]}
-					<div class="server-name">{serverIds['name']}</div>
-					<div class="mini-data">
-						Uptime: {computeServerUptime(server['start_time'], now)} <br />
-						CPU load: {serverCurrentData['CPU_used']}%
-						{#if serverCurrentData['CPU_temp']}
-							· CPU temp: {serverCurrentData['CPU_temp']}°C
-						{/if}
-						<br />
-						RAM: {serverCurrentData['RAM_used']?.toFixed(1)}/{server['RAM_total'].toFixed(1)} GB · Disk:
-						{serverCurrentData['DISK_used']?.toFixed(1)}/{server['DISK_total'].toFixed(1)} GB
-					</div>
-				{/if}
-			{/each}
-		</SmallCard>
-	{/if}
-
-	{#if appState.currentUser.isAuthenticated}
-		<SmallCard title="Warnings">
-			{#if gaiaState.warnings.length > 0}
-				{#each Object.entries(sortedWarnings) as [name, warningsArray] (name)}
-					{#each warningsArray as warning (warning['id'])}
-						{@const color = getLevelColor(warning['level'])}
+		<section class="context">
+			{#if serviceEnabled(servicesState.services, 'calendar')}
+				<SmallCard title="Calendar" href="/calendar" linkText="All events →">
+					{#each sortedCalendarEvents['happening'] as event (event['id'])}
+						{@const color = getLevelColor(event['level'])}
 						<div class="mod-line">
 							<span class="lv" style="background: var({color})"></span>
-							<span><b>{name}</b> — {warning['title']}</span>
+							<span>
+								<b>{event['title']}</b>
+								— until {event['end_time'].toLocaleDateString('en-GB')}
+							</span
+							>
 						</div>
 					{/each}
-				{/each}
-			{:else}
-				<div class="muted">No active warnings.</div>
+					{#each sortedCalendarEvents['future'] as event (event['id'])}
+						{@const color = getLevelColor(event['level'])}
+						<div class="mod-line">
+							<span class="lv" style="background: var({color})"></span>
+							<span>{event['title']} — from {event['start_time'].toLocaleDateString('en-GB')}</span>
+						</div>
+					{/each}
+					{#if sortedCalendarEvents['happening'].length === 0 && sortedCalendarEvents['future'].length === 0}
+						<div class="muted">Nothing scheduled.</div>
+					{/if}
+				</SmallCard>
 			{/if}
-		</SmallCard>
-	{/if}
-</section>
+
+			{#if serviceEnabled(servicesState.services, 'weather') && !isEmpty(servicesState.weatherCurrently)}
+				<SmallCard title="Weather" href="/weather" linkText="Forecast →">
+					<div class="weather">
+						<WeatherIcon
+							icon={servicesState.weatherCurrently['icon']}
+							size="40px"
+							height="48px"
+							background="transparent"
+							color="var(--amber)"
+						/>
+						<div>
+							<div class="weather-temp">
+								{servicesState.weatherCurrently['temperature'].toFixed(1)}<span class="deg">°C</span
+								>
+							</div>
+							<div class="mini-data">
+								{capitalize(servicesState.weatherCurrently['summary'])}<br />
+								Humidity {servicesState.weatherCurrently['humidity'].toFixed(0)}% · Cloud {servicesState.weatherCurrently[
+									'cloud_cover'
+								].toFixed(0)}%<br />
+								Wind {servicesState.weatherCurrently['wind_speed'].toFixed(1)} km/h
+								{#if !isEmpty(servicesState.weatherHourly)}
+									· Precip {(
+										servicesState.weatherHourly[0]['precipitation_probability'] * 100
+									).toFixed(0)}%
+								{/if}
+							</div>
+						</div>
+					</div>
+				</SmallCard>
+			{/if}
+
+			{#if appState.currentUser.can(permissions.ADMIN) && infraState.serversIds.length > 0}
+				<SmallCard title="Servers status">
+					{#each infraState.serversIds as serverIds (serverIds)}
+						{@const serverUid = serverIds['uid']}
+						{@const server = infraState.servers[serverUid]}
+						{#if !isEmpty(infraState.serversCurrentData[serverUid])}
+							{@const serverCurrentData = infraState.serversCurrentData[serverUid]}
+							<div class="server-name">{serverIds['name']}</div>
+							<div class="mini-data">
+								Uptime: {computeServerUptime(server['start_time'], now)} <br />
+								CPU load: {serverCurrentData['CPU_used']}%
+								{#if serverCurrentData['CPU_temp']}
+									· CPU temp: {serverCurrentData['CPU_temp']}°C
+								{/if}
+								<br />
+								RAM: {serverCurrentData['RAM_used']?.toFixed(1)}/{server['RAM_total'].toFixed(1)} GB ·
+								Disk: {serverCurrentData['DISK_used']?.toFixed(1)}/{server['DISK_total'].toFixed(1)} GB
+							</div>
+						{/if}
+					{/each}
+				</SmallCard>
+			{/if}
+
+			{#if appState.currentUser.isAuthenticated}
+				<SmallCard title="Warnings">
+					{#if gaiaState.warnings.length > 0}
+						{#each Object.entries(sortedWarnings) as [name, warningsArray] (name)}
+							{#each warningsArray as warning (warning['id'])}
+								{@const color = getLevelColor(warning['level'])}
+								<div class="mod-line">
+									<span class="lv" style="background: var({color})"></span>
+									<span><b>{name}</b> — {warning['title']}</span>
+								</div>
+							{/each}
+						{/each}
+					{:else}
+						<div class="muted">No active warnings.</div>
+					{/if}
+				</SmallCard>
+			{/if}
+		</section>
+	</div>
+</div>
 
 <style>
+	/* The two overview bands. Stacked by default; side by side when a lone
+	   ecosystem card would otherwise leave most of its row empty. */
+	.overviews {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: clamp(28px, 4vw, 44px);
+	}
+
+	.overviews.split {
+		grid-template-columns: minmax(300px, 1fr) 2fr;
+		align-items: start;
+		gap: clamp(24px, 3vw, 40px);
+		/* Two cards side by side at most: a 45% minimum leaves no room for a third
+		   track, so a logged-in user's three or four cards wrap onto a second row
+		   instead of leaving an orphan on the first. */
+		--context-min: 45%;
+	}
+
+	/* Grid children default to `min-width: auto`, which lets wide content (a long
+	   ecosystem name, a readout row) push a column past its track. */
+	.overview {
+		min-width: 0;
+	}
+
 	.ecosystems-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		gap: 16px;
-		margin-bottom: clamp(28px, 4vw, 44px);
 	}
 
 	/* "Global overview" band — small cards sharing SmallCard's shell */
 	.context {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(var(--context-min, 220px), 1fr));
 		gap: 16px;
+	}
+
+	/* Too narrow for two bands abreast: fall back to stacking them. */
+	@media (max-width: 900px) {
+		.overviews.split {
+			grid-template-columns: 1fr;
+			gap: clamp(28px, 4vw, 44px);
+			--context-min: 220px;
+		}
 	}
 
 	.mod-line {
